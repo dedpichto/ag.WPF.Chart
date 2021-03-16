@@ -1,7 +1,7 @@
 ﻿<Window x:Class="ChartTest.Example"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:chart="clr-namespace:WPFChart;assembly=WPFChart"
+        xmlns:chart="clr-namespace:ag.WPF.Chart;assembly=ag.WPF.Chart"
         Title="Example" Height="300" Width="300"
         WindowState="Maximized"
         Loaded="Window_Loaded">

@@ -25,9 +25,10 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Media;
 using System.Windows.Shapes;
-using WPFChart.Annotations;
+using ag.WPF.Chart.Annotations;
+using ag.WPF.Chart.Values;
 
-namespace WPFChart
+namespace ag.WPF.Chart
 {
     /// <summary>
     /// Represents single chart series
@@ -57,7 +58,7 @@ namespace WPFChart
         private readonly ChartValues _values = new ChartValues();
         private readonly List<Rect> _realRects = new List<Rect>();
         private readonly List<Point> _realPoints = new List<Point>();
-        private readonly BrushesCollection _pieBrushes;
+        private BrushesCollection _pieBrushes;
 
         internal static string GetSectorData(DependencyObject obj)
         {
@@ -128,7 +129,7 @@ namespace WPFChart
             }
         }
         /// <summary>
-        /// Gets array of 10 brushes used for drawing chart sectors when <see cref="WPFChart.Chart.ChartStyle"/> property of control is set to <see cref="ChartStyle.SolidPie"/> or <see cref="ChartStyle.SlicedPie"/> or <see cref="WPFChart.ChartStyle.Doughnut"/>
+        /// Gets array of 10 brushes used for drawing chart sectors when <see cref="ag.WPF.Chart.Chart.ChartStyle"/> property of control is set to <see cref="ChartStyle.SolidPie"/> or <see cref="ChartStyle.SlicedPie"/> or <see cref="ag.WPF.Chart.ChartStyle.Doughnut"/>
         /// </summary>
         /// <remarks>
         /// Each series has its own copy of brushes array. By default all brushes are set to solid brushes equals with colors from Office 2013 chart color scheme, but you can replace them with your own brushes.
@@ -161,46 +162,22 @@ namespace WPFChart
         {
             foreach (var v in values)
             {
-                _values.Add(new ChartValue(v, null));
+                _values.Add(new ChartValue((v,0,0,0,0,0,0,0), null));
             }
 
-            _values.CollectionChanged += Values_CollectionChanged;
-            _pieBrushes = new BrushesCollection(PredefinedPieBrushes.Length, this);
-            var brushes = PredefinedPieBrushes.OfType<SolidColorBrush>().ToArray();
-            for (var i = 0; i < _pieBrushes.Length(); i++)
-                _pieBrushes[i] = new SolidColorBrush(brushes[i].Color);
-            Name = name;
-            Path = new Path
-            {
-                StrokeThickness = 2,
-                StrokeLineJoin = PenLineJoin.Round,
-                StrokeEndLineCap = PenLineCap.Round,
-                StrokeStartLineCap = PenLineCap.Round,
-                StrokeDashCap = PenLineCap.Round,
-                Tag = this,
-                ToolTip = new ToolTip { Placement = PlacementMode.Mouse }
-            };
-            PositivePath = new Path
-            {
-                StrokeThickness = 2,
-                StrokeLineJoin = PenLineJoin.Round,
-                StrokeEndLineCap = PenLineCap.Round,
-                StrokeStartLineCap = PenLineCap.Round,
-                StrokeDashCap = PenLineCap.Round,
-                Tag = this,
-                ToolTip = new ToolTip { Placement = PlacementMode.Mouse }
-            };
-            NegativePath = new Path
-            {
-                StrokeThickness = 2,
-                StrokeLineJoin = PenLineJoin.Round,
-                StrokeEndLineCap = PenLineCap.Round,
-                StrokeStartLineCap = PenLineCap.Round,
-                StrokeDashCap = PenLineCap.Round,
-                Tag = this,
-                ToolTip = new ToolTip { Placement = PlacementMode.Mouse }
-            };
-            _values.Path = Path;
+            initFields(name);
+        }
+
+        /// <summary>
+        /// Initializes a new instance of Series object using specified brush, name and sequence of ChartValue objects
+        /// </summary>
+        /// <param name="mainBrush">Series background</param>
+        /// <param name="name">Series name</param>
+        /// <param name="values">Series values</param>
+        public Series(Brush mainBrush, string name, IEnumerable<ChartValue> values)
+            : this(name, values)
+        {
+            MainBrush = mainBrush;
         }
 
         /// <summary>
@@ -238,9 +215,37 @@ namespace WPFChart
         {
             foreach (var v in values)
             {
-                _values.Add(new ChartValue(v.Value, v.CustomValue));
+                _values.Add(new ChartValue((v.Value.V1, v.Value.V2, v.Value.V3, v.Value.V4, v.Value.V5, v.Value.V6, v.Value.V7, v.Value.V8), v.CustomValue));
             }
 
+            initFields(name);
+        }
+
+        /// <summary>
+        /// Initializes a new instance of Series object using specified brush, name and sequence of ChartValue objects
+        /// </summary>
+        /// <param name="mainBrush">Series background</param>
+        /// <param name="secondaryBrush">Series secondary background</param>
+        /// <param name="name">Series name</param>
+        /// <param name="values">Series values</param>
+        public Series(Brush mainBrush, Brush secondaryBrush, string name, IEnumerable<ChartValue> values)
+            : this(name, values)
+        {
+            MainBrush = mainBrush;
+            SecondaryBrush = secondaryBrush;
+        }
+
+        private void Values_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            if (!(sender is ChartValues chartValues)) return;
+            var multiBindiing = BindingOperations.GetMultiBindingExpression(chartValues.Path, Path.DataProperty);
+            if (multiBindiing != null)
+                multiBindiing.UpdateTarget();
+            OnPropertyChanged("Values");
+        }
+
+        private void initFields(string name)
+        {
             _values.CollectionChanged += Values_CollectionChanged;
             _pieBrushes = new BrushesCollection(PredefinedPieBrushes.Length, this);
             var brushes = PredefinedPieBrushes.OfType<SolidColorBrush>().ToArray();
@@ -281,41 +286,6 @@ namespace WPFChart
         }
 
         /// <summary>
-        /// Initializes a new instance of Series object using specified brush, name and sequence of ChartValue objects
-        /// </summary>
-        /// <param name="mainBrush">Series background</param>
-        /// <param name="name">Series name</param>
-        /// <param name="values">Series values</param>
-        public Series(Brush mainBrush, string name, IEnumerable<ChartValue> values)
-            : this(name, values)
-        {
-            MainBrush = mainBrush;
-        }
-
-        /// <summary>
-        /// Initializes a new instance of Series object using specified brush, name and sequence of ChartValue objects
-        /// </summary>
-        /// <param name="mainBrush">Series background</param>
-        /// <param name="secondaryBrush">Series secondary background</param>
-        /// <param name="name">Series name</param>
-        /// <param name="values">Series values</param>
-        public Series(Brush mainBrush, Brush secondaryBrush, string name, IEnumerable<ChartValue> values)
-            : this(name, values)
-        {
-            MainBrush = mainBrush;
-            SecondaryBrush = secondaryBrush;
-        }
-
-        private void Values_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
-        {
-            if (!(sender is ChartValues chartValues)) return;
-            var multiBindiing = BindingOperations.GetMultiBindingExpression(chartValues.Path, Path.DataProperty);
-            if (multiBindiing != null)
-                multiBindiing.UpdateTarget();
-            OnPropertyChanged("Values");
-        }
-
-        /// <summary>
         /// Raises the PropertyChanged event when the property value has changed
         /// </summary>
         /// <param name="propertyName">Property name</param>
@@ -328,44 +298,72 @@ namespace WPFChart
         }
     }
 
-    /// <summary>
-    /// Represents collection of <see cref="ChartValue"/>
-    /// </summary>
-    public class ChartValues : ObservableCollection<ChartValue>
-    {
-        internal Path Path { get; set; }
-    }
+    ///// <summary>
+    ///// Represents collection of <see cref="ChartValue"/>
+    ///// </summary>
+    //public class ChartValues : ObservableCollection<ChartValue>
+    //{
+    //    internal Path Path { get; set; }
+    //}
 
-    /// <summary>
-    /// Represents single chart value
-    /// </summary>
-    public class ChartValue
-    {
-        /// <summary>
-        /// Gets or sets current numeric value
-        /// </summary>
-        public double Value { get; set; }
-        /// <summary>
-        /// Gets or sets custom value (usually string) associated with current value. This custom value will be displayed as chart point tooltip
-        /// </summary>
-        public object CustomValue { get; set; }
-        /// <summary>
-        /// Initializes a new instance of ChartValue object
-        /// </summary>
-        /// <param name="value">Current value</param>
-        public ChartValue(double value)
-        {
-            Value = value;
-        }
-        /// <summary>
-        /// Initializes a new instance of ChartValue object
-        /// </summary>
-        /// <param name="value">Current value</param>
-        /// <param name="customValue">Current custom value</param>
-        public ChartValue(double value, object customValue)
-            : this(value)
-        {
-            CustomValue = customValue;
-        }
-    }
+    ///// <summary>
+    ///// Represents single chart value
+    ///// </summary>
+    //public class ChartValue
+    //{
+    //    /// <summary>
+    //    /// Gets or sets current numeric value
+    //    /// </summary>
+    //    public (double V1, double V2,double V3,double V4,double V5, double V6, double V7, double V8) Value { get; set; }
+    //    /// <summary>
+    //    /// Gets or sets custom value (usually string) associated with current value. This custom value will be displayed as chart point tooltip
+    //    /// </summary>
+    //    public object CustomValue { get; set; }
+    //    /// <summary>
+    //    /// Initializes a new instance of ChartValue object
+    //    /// </summary>
+    //    /// <param name="V1">Current value</param>
+    //    public ChartValue(double V1)
+    //    {
+    //        Value = (V1, 0, 0, 0, 0, 0, 0, 0);
+    //    }
+    //    public ChartValue(double V1, double V2)
+    //    {
+    //        Value = (V1, V2, 0, 0, 0, 0, 0, 0);
+    //    }
+    //    public ChartValue(double V1, double V2,double V3)
+    //    {
+    //        Value = (V1, V2, V3, 0, 0, 0, 0, 0);
+    //    }
+    //    public ChartValue(double V1, double V2,double V3,double V4)
+    //    {
+    //        Value = (V1, V2, V3, V4, 0, 0, 0, 0);
+    //    }
+    //    public ChartValue(double V1, double V2, double V3, double V4, double V5)
+    //    {
+    //        Value = (V1, V2, V3, V4, V5, 0, 0, 0);
+    //    }
+    //    public ChartValue(double V1, double V2, double V3, double V4, double V5,double V6)
+    //    {
+    //        Value = (V1, V2, V3, V4, V5, V6, 0, 0);
+    //    }
+    //    public ChartValue(double V1, double V2, double V3, double V4, double V5, double V6,double V7)
+    //    {
+    //        Value = (V1, V2, V3, V4, V5, V6, V7, 0);
+    //    }
+    //    public ChartValue(double V1, double V2, double V3, double V4, double V5, double V6, double V7,double V8)
+    //    {
+    //        Value = (V1, V2, V3, V4, V5, V6, V7, V8);
+    //    }
+    //    /// <summary>
+    //    /// Initializes a new instance of ChartValue object
+    //    /// </summary>
+    //    /// <param name="value">Current value</param>
+    //    /// <param name="customValue">Current custom value</param>
+    //    public ChartValue((double V1, double V2, double V3, double V4, double V5, double V6, double V7, double V8) values, object customValue)
+    //        : this(values.V1, values.V2, values.V3, values.V4, values.V5, values.V6, values.V7, values.V8)
+    //    {
+    //        CustomValue = customValue;
+    //    }
+    //}
 }

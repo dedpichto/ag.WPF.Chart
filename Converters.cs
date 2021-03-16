@@ -12,6 +12,7 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
+using ag.WPF.Chart.Values;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -21,7 +22,7 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Media;
 
-namespace WPFChart
+namespace ag.WPF.Chart
 {
     internal enum Directions
     {
@@ -103,7 +104,7 @@ namespace WPFChart
                     var maxPlus = 0.0;
                     var maxMinus = 0.0;
                     var value = 0.0;
-                    foreach (var v in tuples[0].Item1.Select(v => v.Value))
+                    foreach (var v in tuples[0].Item1.Select(v => v.Value.V1))
                     {
                         value += v;
                         if (value > 0)
@@ -121,7 +122,7 @@ namespace WPFChart
                 case ChartStyle.Bars:
                 case ChartStyle.Area:
                 case ChartStyle.Bubbles:
-                    result = (from s in tuples from v in s.Item1 select Math.Abs(v.Value)).Concat(new[] { result }).Max();
+                    result = (from s in tuples from v in s.Item1 select Math.Abs(v.Value.V1)).Concat(new[] { result }).Max();
                     break;
                 case ChartStyle.StackedColumns:
                 case ChartStyle.StackedBars:
@@ -132,10 +133,10 @@ namespace WPFChart
                         {
                             for (var i = 0; i < s.Item1.Count; i++)
                             {
-                                if (s.Item1[i].Value < 0)
-                                    minusArr[i] += s.Item1[i].Value;
+                                if (s.Item1[i].Value.V1 < 0)
+                                    minusArr[i] += s.Item1[i].Value.V1;
                                 else
-                                    plusArr[i] += s.Item1[i].Value;
+                                    plusArr[i] += s.Item1[i].Value.V1;
                             }
                         }
                         result = Math.Max(Math.Abs(minusArr.Min()), plusArr.Max());
@@ -153,9 +154,9 @@ namespace WPFChart
                         {
                             for (var i = 0; i < s.Item1.Count; i++)
                             {
-                                arr1[i] += s.Item1[i].Value;
-                                if (Math.Abs(arr2[i]) < Math.Abs(s.Item1[i].Value))
-                                    arr2[i] = Math.Abs(s.Item1[i].Value);
+                                arr1[i] += s.Item1[i].Value.V1;
+                                if (Math.Abs(arr2[i]) < Math.Abs(s.Item1[i].Value.V1))
+                                    arr2[i] = Math.Abs(s.Item1[i].Value.V1);
                             }
                         }
                         result = Math.Max(arr2.Max(), arr1.Max(d => Math.Abs(d)));
@@ -171,8 +172,8 @@ namespace WPFChart
                             {
                                 var i1 = i;
                                 var sumTotal =
-                                    tuples.Where(sr => sr.Item1.Count > i1).Sum(sr => Math.Abs(sr.Item1[i1].Value));
-                                var percent = Math.Abs(s.Item1[i].Value) / sumTotal * 100;
+                                    tuples.Where(sr => sr.Item1.Count > i1).Sum(sr => Math.Abs(sr.Item1[i1].Value.V1));
+                                var percent = Math.Abs(s.Item1[i].Value.V1) / sumTotal * 100;
                                 if (arr[i] < percent)
                                     arr[i] = percent;
                             }
@@ -275,7 +276,7 @@ namespace WPFChart
 
             var series = seriesEnumerable.ToArray();
             var gm = new PathGeometry();
-            var totalValues = (from s in series from v in s.Values select v.Value).ToArray();
+            var totalValues = (from s in series from v in s.Values select v.Value.V1).ToArray();
             var dir = Utils.GetDirection(totalValues, style);
 
             switch (dir)
@@ -387,7 +388,7 @@ namespace WPFChart
 
             var series = seriesEnumerable.ToArray();
 
-            var totalValues = series[0].Values.Select(v => v.Value).ToArray();
+            var totalValues = series[0].Values.Select(v => v.Value.V1).ToArray();
 
             var tuple = Tuple.Create(series[0].Values.ToList(), 0);
             var dir = Utils.GetDirection(totalValues, ChartStyle.Waterfall);
@@ -449,12 +450,12 @@ namespace WPFChart
             var y = startY;
             for (var i = 0; i < currentSeries.Values.Count; i++)
             {
-                var value = currentSeries.Values[i].Value;
+                var value = currentSeries.Values[i].Value.V1;
                 var x = i * segSize + segSize / 16;
                 Rect rect;
                 if (value >= 0)
                 {
-                    rect = new Rect(new Point(x, y), new Point(x + columnWidth, y - currentSeries.Values[i].Value * step));
+                    rect = new Rect(new Point(x, y), new Point(x + columnWidth, y - currentSeries.Values[i].Value.V1 * step));
                     y -= rect.Height;
                     if (isPositive)
                     {
@@ -467,7 +468,7 @@ namespace WPFChart
                 }
                 else
                 {
-                    rect = new Rect(new Point(x, y), new Point(x + columnWidth, y + Math.Abs(currentSeries.Values[i].Value) * step));
+                    rect = new Rect(new Point(x, y), new Point(x + columnWidth, y + Math.Abs(currentSeries.Values[i].Value.V1) * step));
                     y += rect.Height;
                     if (!isPositive)
                     {
@@ -526,7 +527,7 @@ namespace WPFChart
             double maxX;
             double maxY;
 
-            var totalValues = (from s in series from v in s.Values select v.Value).ToArray();
+            var totalValues = (from s in series from v in s.Values select v.Value.V1).ToArray();
 
             var rawValues = series.Select(s => Tuple.Create(s.Values.ToList(), s.Index)).ToList();
             var maxCount = rawValues.Max(rw => rw.Item1.Count);
@@ -655,7 +656,7 @@ namespace WPFChart
             {
                 var x = startX;
                 var y = h - (i * segSize + COLUMN_BAR_OFFSET + index * barHeight);
-                var rect = new Rect(new Point(x, y), new Point(x + values[i].Value * step, y - barHeight));
+                var rect = new Rect(new Point(x, y), new Point(x + values[i].Value.V1 * step, y - barHeight));
                 var rg = new RectangleGeometry(rect);
                 currentSeries.RealRects.Add(rect);
                 gm.AddGeometry(rg);
@@ -708,11 +709,11 @@ namespace WPFChart
                 {
                     var i1 = i;
                     var prevsTuples =
-                        tuples.Where(t => t.Item2 < index && Math.Sign(t.Item1[i1].Value) == Math.Sign(values[i1].Value));
-                    x += prevsTuples.Sum(sr => sr.Item1[i].Value * step);
+                        tuples.Where(t => t.Item2 < index && Math.Sign(t.Item1[i1].Value.V1) == Math.Sign(values[i1].Value.V1));
+                    x += prevsTuples.Sum(sr => sr.Item1[i].Value.V1 * step);
                 }
                 var y = h - (i * segSize + COLUMN_BAR_OFFSET);
-                var rect = new Rect(new Point(x, y), new Point(x + values[i].Value * step, y - barHeight));
+                var rect = new Rect(new Point(x, y), new Point(x + values[i].Value.V1 * step, y - barHeight));
                 var rg = new RectangleGeometry(rect);
                 currentSeries.RealRects.Add(rect);
                 gm.AddGeometry(rg);
@@ -759,16 +760,16 @@ namespace WPFChart
             currentSeries.RealRects.Clear();
             for (var i = 0; i < values.Count; i++)
             {
-                var sign = Math.Sign(values[i].Value);
+                var sign = Math.Sign(values[i].Value.V1);
                 var y = h - (i * segSize + COLUMN_BAR_OFFSET);
                 var i1 = i;
-                var sumTotal = tuples.Sum(sr => Math.Abs(sr.Item1[i1].Value));
-                var percent = Math.Abs(values[i].Value) / sumTotal * 100;
+                var sumTotal = tuples.Sum(sr => Math.Abs(sr.Item1[i1].Value.V1));
+                var percent = Math.Abs(values[i].Value.V1) / sumTotal * 100;
                 var segWidth = sign * width / 100 * percent;
 
                 var prevs = tuples.Where(s => s.Item2 < index)
-                    .Where(s => Math.Sign(s.Item1[i1].Value) == sign);
-                var prevSum = prevs.Sum(pvs => Math.Abs(pvs.Item1[i1].Value));
+                    .Where(s => Math.Sign(s.Item1[i1].Value.V1) == sign);
+                var prevSum = prevs.Sum(pvs => Math.Abs(pvs.Item1[i1].Value.V1));
                 var prevPerc = prevSum / sumTotal * 100;
                 var prevWidth = width / 100 * prevPerc;
                 var x = startX + sign * prevWidth;
@@ -820,15 +821,15 @@ namespace WPFChart
             currentSeries.RealRects.Clear();
             for (var i = 0; i < values.Count; i++)
             {
-                var sign = Math.Sign(values[i].Value);
+                var sign = Math.Sign(values[i].Value.V1);
                 var x = i * segSize + COLUMN_BAR_OFFSET;
                 var i1 = i;
-                var sumTotal = tuples.Sum(sr => Math.Abs(sr.Item1[i1].Value));
-                var percent = Math.Abs(values[i].Value) / sumTotal * 100;
+                var sumTotal = tuples.Sum(sr => Math.Abs(sr.Item1[i1].Value.V1));
+                var percent = Math.Abs(values[i].Value.V1) / sumTotal * 100;
                 var segHeight = sign * height / 100 * percent;
                 var prevs = tuples.Where(s => s.Item2 < index)
-                    .Where(s => Math.Sign(s.Item1[i1].Value) == sign);
-                var prevSum = prevs.Sum(pvs => Math.Abs(pvs.Item1[i1].Value));
+                    .Where(s => Math.Sign(s.Item1[i1].Value.V1) == sign);
+                var prevSum = prevs.Sum(pvs => Math.Abs(pvs.Item1[i1].Value.V1));
                 var prevPerc = prevSum / sumTotal * 100;
                 var prevHeight = height / 100 * prevPerc;
                 var y = startY - sign * prevHeight;
@@ -887,10 +888,10 @@ namespace WPFChart
                     var i1 = i;
                     var prevs =
                         tuples.Where(
-                            s => s.Item2 < index && Math.Sign(s.Item1[i1].Value) == Math.Sign(values[i1].Value));
-                    y -= prevs.Sum(sr => sr.Item1[i].Value * step);
+                            s => s.Item2 < index && Math.Sign(s.Item1[i1].Value.V1) == Math.Sign(values[i1].Value.V1));
+                    y -= prevs.Sum(sr => sr.Item1[i].Value.V1 * step);
                 }
-                var rect = new Rect(new Point(x, y), new Point(x + columnWidth, y - values[i].Value * step));
+                var rect = new Rect(new Point(x, y), new Point(x + columnWidth, y - values[i].Value.V1 * step));
                 var rg = new RectangleGeometry(rect);
                 currentSeries.RealRects.Add(rect);
                 gm.AddGeometry(rg);
@@ -937,7 +938,7 @@ namespace WPFChart
             {
                 var x = i * segSize + COLUMN_BAR_OFFSET + index * columnWidth;
                 var y = startY;
-                var rect = new Rect(new Point(x, y), new Point(x + columnWidth, y - values[i].Value * step));
+                var rect = new Rect(new Point(x, y), new Point(x + columnWidth, y - values[i].Value.V1 * step));
                 var rg = new RectangleGeometry(rect);
                 currentSeries.RealRects.Add(rect);
                 gm.AddGeometry(rg);
@@ -995,7 +996,7 @@ namespace WPFChart
             for (var i = 0; i < values.Count; i++)
             {
                 x = centerX + i * stepX;
-                y = centerY - values[i].Value * stepY;
+                y = centerY - values[i].Value.V1 * stepY;
                 segments.Add(new LineSegment(new Point(x, y), true));
             }
 
@@ -1061,18 +1062,18 @@ namespace WPFChart
             if (index > 0)
             {
                 var prevs = tuples.Where(s => s.Item2 < index);
-                var sum = prevs.Sum(sr => sr.Item1[0].Value);
+                var sum = prevs.Sum(sr => sr.Item1[0].Value.V1);
                 y -= sum * stepY;
             }
             var start = new Point(x, y);
             for (var i = 0; i < values.Count; i++)
             {
                 x = centerX + i * stepX;
-                y = centerY - values[i].Value * stepY;
+                y = centerY - values[i].Value.V1 * stepY;
                 if (index > 0)
                 {
                     var prevs = tuples.Where(s => s.Item2 < index);
-                    var sum = prevs.Sum(sr => sr.Item1[i].Value);
+                    var sum = prevs.Sum(sr => sr.Item1[i].Value.V1);
                     y -= sum * stepY;
                 }
                 points.Add(new Point(x, y));
@@ -1091,7 +1092,7 @@ namespace WPFChart
                 for (var i = values.Count - 1; i >= 0; i--)
                 {
                     y = centerY;
-                    var sum = prevs.Sum(sr => sr.Item1[i].Value);
+                    var sum = prevs.Sum(sr => sr.Item1[i].Value.V1);
                     y -= sum * stepY;
                     points.Add(new Point(x, y));
                     x -= stepX;
@@ -1166,9 +1167,9 @@ namespace WPFChart
                     if (prevSeries == null) return null;
                     y = prevSeries.RealPoints[i].Y;
                 }
-                var sum = tuples.Sum(s => Math.Abs(s.Item1[i].Value));
-                var sign = Math.Sign(values[i].Value);
-                var perc = Math.Abs(values[i].Value) / sum * 100;
+                var sum = tuples.Sum(s => Math.Abs(s.Item1[i].Value.V1));
+                var sign = Math.Sign(values[i].Value.V1);
+                var perc = Math.Abs(values[i].Value.V1) / sum * 100;
                 y -= sign * perc * height / 100;
                 x = stepX * i;
                 currentSeries.RealPoints.Add(new Point(x, y));
@@ -1274,9 +1275,9 @@ namespace WPFChart
                     if (prevSeries == null) return null;
                     y = prevSeries.RealPoints[i].Y;
                 }
-                var sum = tuples.Sum(s => Math.Abs(s.Item1[i].Value));
-                var sign = Math.Sign(values[i].Value);
-                var perc = Math.Abs(values[i].Value) / sum * 100;
+                var sum = tuples.Sum(s => Math.Abs(s.Item1[i].Value.V1));
+                var sign = Math.Sign(values[i].Value.V1);
+                var perc = Math.Abs(values[i].Value.V1) / sum * 100;
 
                 y -= sign * perc * height / 100;
                 var x = offsetBoundary ? boundOffset + stepX * i : stepX * i;
@@ -1370,11 +1371,11 @@ namespace WPFChart
             for (var i = 0; i < values.Count; i++)
             {
                 var x = centerX + i * stepX;
-                var y = centerY - values[i].Value * stepY;
+                var y = centerY - values[i].Value.V1 * stepY;
                 if (index > 0)
                 {
                     var prevs = tuples.Where(s => s.Item2 < index);
-                    var sum = prevs.Sum(sr => sr.Item1[i].Value);
+                    var sum = prevs.Sum(sr => sr.Item1[i].Value.V1);
                     y -= sum * stepY;
                 }
                 points.Add(new Point(x, y));
@@ -1457,7 +1458,7 @@ namespace WPFChart
             for (var i = 0; i < values.Count; i++)
             {
                 var x = centerX + i * stepX;
-                var y = centerY - values[i].Value * stepY;
+                var y = centerY - values[i].Value.V1 * stepY;
 
                 points.Add(new Point(x, y));
                 if (!style.In(ChartStyle.LinesWithMarkers, ChartStyle.SmoothLinesWithMarkers)) continue;
@@ -1575,7 +1576,7 @@ namespace WPFChart
             for (var i = 0; i < values.Count; i++)
             {
                 var x = centerX + i * stepX;
-                var y = centerY - values[i].Value * stepY;
+                var y = centerY - values[i].Value.V1 * stepY;
 
                 var es = new EllipseGeometry(new Point(x, y), segSize, segSize);
                 gm.AddGeometry(es);
@@ -1869,7 +1870,7 @@ namespace WPFChart
                 return null;
 
             var series = seriesEnumerable.ToArray();
-            var totalValues = (from s in series from v in s.Values select v.Value).ToArray();
+            var totalValues = (from s in series from v in s.Values select v.Value.V1).ToArray();
             var dir = Utils.GetDirection(totalValues, chartStyle);
             switch (dir)
             {
@@ -1917,7 +1918,7 @@ namespace WPFChart
                 return 2;
 
             var series = seriesEnumerable.ToArray();
-            var totalValues = (from s in series from v in s.Values select v.Value).ToArray();
+            var totalValues = (from s in series from v in s.Values select v.Value.V1).ToArray();
             var dir = Utils.GetDirection(totalValues, chartStyle);
             switch (dir)
             {
@@ -1965,7 +1966,7 @@ namespace WPFChart
                 return VerticalAlignment.Top;
 
             var series = seriesEnumerable.ToArray();
-            var totalValues = (from s in series from v in s.Values select v.Value).ToArray();
+            var totalValues = (from s in series from v in s.Values select v.Value.V1).ToArray();
             var dir = Utils.GetDirection(totalValues, chartStyle);
             switch (dir)
             {
@@ -2013,7 +2014,7 @@ namespace WPFChart
                 return 5;
 
             var series = seriesEnumerable.ToArray();
-            var totalValues = (from s in series from v in s.Values select v.Value).ToArray();
+            var totalValues = (from s in series from v in s.Values select v.Value.V1).ToArray();
             var dir = Utils.GetDirection(totalValues, chartStyle);
             switch (dir)
             {
@@ -2060,7 +2061,7 @@ namespace WPFChart
                 return null;
 
             var series = seriesEnumerable.ToArray();
-            var totalValues = (from s in series from v in s.Values select v.Value).ToArray();
+            var totalValues = (from s in series from v in s.Values select v.Value.V1).ToArray();
             var dir = Utils.GetDirection(totalValues, chartStyle);
 
             return dir switch
@@ -2104,7 +2105,7 @@ namespace WPFChart
                 return null;
 
             var series = seriesEnumerable.ToArray();
-            var totalValues = (from s in series from v in s.Values select v.Value).ToArray();
+            var totalValues = (from s in series from v in s.Values select v.Value.V1).ToArray();
             var dir = Utils.GetDirection(totalValues, chartStyle);
 
             return dir switch
@@ -2149,7 +2150,7 @@ namespace WPFChart
                 return null;
 
             var series = seriesEnumerable.ToArray();
-            var totalValues = (from s in series from v in s.Values select v.Value).ToArray();
+            var totalValues = (from s in series from v in s.Values select v.Value.V1).ToArray();
             var dir = Utils.GetDirection(totalValues, chartStyle);
 
             return dir switch
@@ -2193,7 +2194,7 @@ namespace WPFChart
                 return null;
 
             var series = seriesEnumerable.ToArray();
-            var totalValues = (from s in series from v in s.Values select v.Value).ToArray();
+            var totalValues = (from s in series from v in s.Values select v.Value.V1).ToArray();
             var dir = Utils.GetDirection(totalValues, chartStyle);
 
             return dir switch
@@ -2367,8 +2368,8 @@ namespace WPFChart
             }
 
             var totalValues = chartStyle != ChartStyle.Waterfall
-                ? (from s in series from v in s.Values select v.Value).ToArray()
-                : series[0].Values.Select(v => v.Value).ToArray();
+                ? (from s in series from v in s.Values select v.Value.V1).ToArray()
+                : series[0].Values.Select(v => v.Value.V1).ToArray();
 
             var dir = Utils.GetDirection(totalValues, chartStyle);
             var max = autoAdjust ? Utils.GetMaxY(rawValues, chartStyle) : maxY;
@@ -2504,8 +2505,8 @@ namespace WPFChart
             }
 
             var totalValues = chartStyle != ChartStyle.Waterfall
-                ? (from s in series from v in s.Values select v.Value).ToArray()
-                : series[0].Values.Select(v => v.Value).ToArray();
+                ? (from s in series from v in s.Values select v.Value.V1).ToArray()
+                : series[0].Values.Select(v => v.Value.V1).ToArray();
 
             var dir = Utils.GetDirection(totalValues, chartStyle);
             var max = autoAdjust ? Utils.GetMaxY(rawValues, chartStyle) : maxX;
@@ -2652,8 +2653,8 @@ namespace WPFChart
             }
 
             var totalValues = chartStyle != ChartStyle.Waterfall
-                ? (from s in series from v in s.Values select v.Value).ToArray()
-                : series[0].Values.Select(v => v.Value).ToArray();
+                ? (from s in series from v in s.Values select v.Value.V1).ToArray()
+                : series[0].Values.Select(v => v.Value.V1).ToArray();
 
             var dir = Utils.GetDirection(totalValues, chartStyle);
             var max = autoAdjust ? Utils.GetMaxY(rawValues, chartStyle) : maxY;
@@ -2813,8 +2814,8 @@ namespace WPFChart
             }
 
             var totalValues = chartStyle != ChartStyle.Waterfall
-                ? (from s in series from v in s.Values select v.Value).ToArray()
-                : series[0].Values.Select(v => v.Value).ToArray();
+                ? (from s in series from v in s.Values select v.Value.V1).ToArray()
+                : series[0].Values.Select(v => v.Value.V1).ToArray();
 
             var dir = Utils.GetDirection(totalValues, chartStyle);
             var max = autoAdjust ? Utils.GetMaxY(rawValues, chartStyle) : maxY;
@@ -3035,7 +3036,7 @@ namespace WPFChart
 
             var series = seriesEnumerable.ToArray();
             var offsetBoundary = Utils.OffsetBoundary(chartBoundary, chartStyle);
-            var totalValues = (from s in series from v in s.Values select v.Value).ToArray();
+            var totalValues = (from s in series from v in s.Values select v.Value.V1).ToArray();
             var dir = Utils.GetDirection(totalValues, chartStyle);
             var ticks = series.Select(s => s.Values.Count).Max();
 
@@ -3233,7 +3234,7 @@ namespace WPFChart
 
             var series = seriesEnumerable.ToArray();
             var offsetBoundary = Utils.OffsetBoundary(chartBoundary, chartStyle);
-            var totalValues = (from s in series from v in s.Values select v.Value).ToArray();
+            var totalValues = (from s in series from v in s.Values select v.Value.V1).ToArray();
             var dir = Utils.GetDirection(totalValues, chartStyle);
             var ticks = series.Select(s => s.Values.Count).Max();
             double xStep;
@@ -3370,8 +3371,8 @@ namespace WPFChart
             var series = seriesEnumerable.ToArray();
 
             var totalValues = chartStyle != ChartStyle.Waterfall
-               ? (from s in series from v in s.Values select v.Value).ToArray()
-               : series[0].Values.Select(v => v.Value).ToArray();
+               ? (from s in series from v in s.Values select v.Value.V1).ToArray()
+               : series[0].Values.Select(v => v.Value.V1).ToArray();
 
             var dir = Utils.GetDirection(totalValues, chartStyle);
 
@@ -3420,7 +3421,7 @@ namespace WPFChart
     }
 
     /// <summary>
-    /// Defines top coordinate of chart image when chart style is set to <see cref="ChartStyle.SolidPie"/> or <see cref="ChartStyle.SlicedPie"/> or <see cref="WPFChart.ChartStyle.Doughnut"/>
+    /// Defines top coordinate of chart image when chart style is set to <see cref="ChartStyle.SolidPie"/> or <see cref="ChartStyle.SlicedPie"/> or <see cref="ag.WPF.Chart.ChartStyle.Doughnut"/>
     /// </summary>
     public class PieTopConverter : IMultiValueConverter
     {
@@ -3454,7 +3455,7 @@ namespace WPFChart
     }
 
     /// <summary>
-    /// Defines left coordinate of chart image when chart style is set to <see cref="ChartStyle.SolidPie"/> or <see cref="ChartStyle.SlicedPie"/> or <see cref="WPFChart.ChartStyle.Doughnut"/>
+    /// Defines left coordinate of chart image when chart style is set to <see cref="ChartStyle.SolidPie"/> or <see cref="ChartStyle.SlicedPie"/> or <see cref="ag.WPF.Chart.ChartStyle.Doughnut"/>
     /// </summary>
     public class PieLeftConverter : IMultiValueConverter
     {
@@ -3488,7 +3489,7 @@ namespace WPFChart
     }
 
     /// <summary>
-    /// Defines text to be shown as pie sector tooltip, when chart style is set to <see cref="ChartStyle.SolidPie"/> or <see cref="ChartStyle.SlicedPie"/> or <see cref="WPFChart.ChartStyle.Doughnut"/>
+    /// Defines text to be shown as pie sector tooltip, when chart style is set to <see cref="ChartStyle.SolidPie"/> or <see cref="ChartStyle.SlicedPie"/> or <see cref="ag.WPF.Chart.ChartStyle.Doughnut"/>
     /// </summary>
     public class PieSectionTextConverter : IMultiValueConverter
     {
@@ -3506,12 +3507,12 @@ namespace WPFChart
                 || !(values[1] is string format)
                 || !(parameter is ChartValue chartValue))
                 return null;
-            var sum = chartValues.Sum(p => Math.Abs(p.Value));
+            var sum = chartValues.Sum(p => Math.Abs(p.Value.V1));
             if (format.EndsWith("%")) format = format.Substring(0, format.Length - 1);
-            var perc = Math.Abs(chartValue.Value) / sum * 100;
+            var perc = Math.Abs(chartValue.Value.V1) / sum * 100;
             var sectorData = chartValue.CustomValue != null
                     ? chartValue.CustomValue + " (" + perc.ToString(format) + "%)"
-                    : chartValue.Value + " (" + perc.ToString(format) + "%)";
+                    : chartValue.Value.V1 + " (" + perc.ToString(format) + "%)";
             return sectorData;
         }
 
@@ -3528,7 +3529,7 @@ namespace WPFChart
     }
 
     /// <summary>
-    /// Prepares <see cref="DrawingGroup"/> to be used for drawing chart, when chart style is set to <see cref="ChartStyle.SolidPie"/> or <see cref="ChartStyle.SlicedPie"/> or <see cref="WPFChart.ChartStyle.Doughnut"/>
+    /// Prepares <see cref="DrawingGroup"/> to be used for drawing chart, when chart style is set to <see cref="ChartStyle.SolidPie"/> or <see cref="ChartStyle.SlicedPie"/> or <see cref="ag.WPF.Chart.ChartStyle.Doughnut"/>
     /// </summary>
     public class ValuesToPieSectionsConverter : IMultiValueConverter
     {
@@ -3566,7 +3567,7 @@ namespace WPFChart
             var radius = width > height ? (height - 2 * Utils.AXIS_THICKNESS) / 2 : (width - 2 * Utils.AXIS_THICKNESS) / 2;
             var series = seriesEnumerable.First();
             var pts = series.Values.ToArray();
-            var sum = pts.Sum(p => Math.Abs(p.Value));
+            var sum = pts.Sum(p => Math.Abs(p.Value.V1));
             var currentDegrees = 90.0;
             var startPoint = new Point(radius, radius);
             var xBeg = radius;
@@ -3579,7 +3580,7 @@ namespace WPFChart
             {
                 var sectorData = pts[0].CustomValue != null
                     ? pts[0].CustomValue + " (" + 100.ToString(format) + "%)"
-                    : pts[0].Value + " (" + 100.ToString(format) + "%)";
+                    : pts[0].Value.V1 + " (" + 100.ToString(format) + "%)";
                 var ellipseGeometry = new EllipseGeometry(new Rect(new Point(0, 0), new Point(radius * 2, radius * 2)));
                 var combinedGeometry = new CombinedGeometry
                 {
@@ -3604,7 +3605,7 @@ namespace WPFChart
             var lines = new List<LineGeometry>();
             foreach (var pt in pts)
             {
-                var addition = Math.Abs(pt.Value) / sum * 360;
+                var addition = Math.Abs(pt.Value.V1) / sum * 360;
                 if (currentDegrees <= 90 && currentDegrees > 0)
                 {
                     if (currentDegrees - addition >= 0)
@@ -3692,10 +3693,10 @@ namespace WPFChart
                 //    combinedGeometry.Geometry2 = rectGeometry;
                 //}
 
-                var perc = Math.Abs(pt.Value) / sum * 100;
+                var perc = Math.Abs(pt.Value.V1) / sum * 100;
                 var sectorData = pt.CustomValue != null
                     ? pt.CustomValue + " (" + perc.ToString(format) + "%)"
-                    : pt.Value + " (" + perc.ToString(format) + "%)";
+                    : pt.Value.V1 + " (" + perc.ToString(format) + "%)";
                 combinedGeometry.SetValue(Series.SectorDataProperty, sectorData);
                 gmDrawing.Geometry = combinedGeometry;
                 dGroup.Children.Add(gmDrawing);

@@ -33,7 +33,7 @@ namespace ChartTest
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            chrt.SeriesCollection.Add(new WPFChart.Series("CPU usage", new double[100]));
+            chrt.SeriesCollection.Add(new ag.WPF.Chart.Series("CPU usage", new double[100]));
 
             _Timer.Elapsed += _Timer_Elapsed;
             _Timer.Start();
@@ -52,8 +52,8 @@ namespace ChartTest
                 var values = new double[100];
                 values[0] = next;
                 for (var i = 0; i < chrt.SeriesCollection[0].Values.Count-1; i++)
-                    values[i+1] = chrt.SeriesCollection[0].Values[i].Value;
-                chrt.SeriesCollection.Insert(0, new WPFChart.Series("CPU usage", values));
+                    values[i+1] = chrt.SeriesCollection[0].Values[i].Value.V1;
+                chrt.SeriesCollection.Insert(0, new ag.WPF.Chart.Series("CPU usage", values));
                 chrt.SeriesCollection.RemoveAt(1);
 
             }

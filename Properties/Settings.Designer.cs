@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace WPFChart.Properties {
+namespace ag.WPF.Chart.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]

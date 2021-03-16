@@ -1,7 +1,7 @@
 ﻿<Window x:Class="ChartTest.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:chart="clr-namespace:WPFChart;assembly=WPFChart"
+        xmlns:chart="clr-namespace:ag.WPF.Chart;assembly=ag.WPF.Chart"
        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         Title="MainWindow" Height="499" Width="842" Loaded="Window_Loaded" WindowState="Maximized"
         DataContext="{Binding RelativeSource={RelativeSource Mode=Self}}">

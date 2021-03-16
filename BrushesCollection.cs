@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Windows.Media;
 
-namespace WPFChart
+namespace ag.WPF.Chart
 {
     /// <summary>
-    /// Represents indexer for storing brushes used for drawing chart sectors when <see cref="WPFChart.Chart.ChartStyle"/> property of control is set to <see cref="ChartStyle.SolidPie"/> or <see cref="ChartStyle.SlicedPie"/> 
+    /// Represents indexer for storing brushes used for drawing chart sectors when <see cref="ag.WPF.Chart.Chart.ChartStyle"/> property of control is set to <see cref="ChartStyle.SolidPie"/> or <see cref="ChartStyle.SlicedPie"/> 
     /// </summary>
     public class BrushesCollection
     {

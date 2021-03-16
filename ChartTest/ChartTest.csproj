@@ -137,7 +137,6 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <None Include="excel.xlsx" />
-    <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -146,12 +145,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\WPFChart.csproj">
-      <Project>{95d1ffa0-2cb9-43a0-9e05-e10f29089877}</Project>
-      <Name>WPFChart</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Resource Include="images\aus.png" />
@@ -164,6 +157,12 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="images\pink.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ag.WPF.Chart.csproj">
+      <Project>{95d1ffa0-2cb9-43a0-9e05-e10f29089877}</Project>
+      <Name>ag.WPF.Chart</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

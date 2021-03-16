@@ -30,10 +30,11 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using System.Windows.Xps.Packaging;
-using WPFChart.Annotations;
+using ag.WPF.Chart.Annotations;
+using ag.WPF.Chart.Values;
 using Path = System.Windows.Shapes.Path;
 
-namespace WPFChart
+namespace ag.WPF.Chart
 {
     /// <summary>
     /// Specifies chart style
@@ -1031,8 +1032,8 @@ namespace WPFChart
                             break;
                         }
                         tooltip.Content = s.Values[index].CustomValue != null
-                            ? s.Values[index].CustomValue + " " + s.Values[index].Value
-                            : s.Name + " " + s.Values[index].Value.ToString(CultureInfo.InvariantCulture);
+                            ? s.Values[index].CustomValue + " " + s.Values[index].Value.V1
+                            : s.Name + " " + s.Values[index].Value.V1.ToString(CultureInfo.InvariantCulture);
                     }
                     else
                     {
@@ -1052,8 +1053,8 @@ namespace WPFChart
                             break;
                         }
                         tooltip.Content = s.Values[index].CustomValue != null
-                            ? s.Values[index].CustomValue + " " + s.Values[index].Value
-                            : s.Name + " " + s.Values[index].Value.ToString(CultureInfo.InvariantCulture);
+                            ? s.Values[index].CustomValue + " " + s.Values[index].Value.V1
+                            : s.Name + " " + s.Values[index].Value.V1.ToString(CultureInfo.InvariantCulture);
                     }
                     else
                     {
@@ -1074,8 +1075,8 @@ namespace WPFChart
                             break;
                         }
                         tooltip.Content = s.Values[index].CustomValue != null
-                            ? s.Values[index].CustomValue + " " + s.Values[index].Value
-                            : s.Name + " " + s.Values[index].Value.ToString(CultureInfo.InvariantCulture);
+                            ? s.Values[index].CustomValue + " " + s.Values[index].Value.V1
+                            : s.Name + " " + s.Values[index].Value.V1.ToString(CultureInfo.InvariantCulture);
                     }
                     else
                     {
@@ -1185,7 +1186,7 @@ namespace WPFChart
             get { return _LegendCollection; }
         }
         /// <summary>
-        /// Gets collection of <see cref="Legend"/> objects associated with chart series when chart style is set to <see cref="WPFChart.ChartStyle.SolidPie"/> or <see cref="WPFChart.ChartStyle.SlicedPie"/> or <see cref="WPFChart.ChartStyle.Doughnut"/>
+        /// Gets collection of <see cref="Legend"/> objects associated with chart series when chart style is set to <see cref="ag.WPF.Chart.ChartStyle.SolidPie"/> or <see cref="ag.WPF.Chart.ChartStyle.SlicedPie"/> or <see cref="ag.WPF.Chart.ChartStyle.Doughnut"/>
         /// </summary>
         [EditorBrowsable(EditorBrowsableState.Never), Browsable(false)]
         public ObservableCollection<FrameworkElement> PieLegends
@@ -1232,7 +1233,7 @@ namespace WPFChart
         /// <summary>
         /// Specifies whether ticks are drawn on axes
         /// </summary>
-        /// <remarks>This property will have no effect if <see cref="ChartStyle"/> property is set to <see cref="WPFChart.ChartStyle.SolidPie"/> or <see cref="WPFChart.ChartStyle.SlicedPie"/> or <see cref="WPFChart.ChartStyle.Doughnut"/></remarks>
+        /// <remarks>This property will have no effect if <see cref="ChartStyle"/> property is set to <see cref="ag.WPF.Chart.ChartStyle.SolidPie"/> or <see cref="ag.WPF.Chart.ChartStyle.SlicedPie"/> or <see cref="ag.WPF.Chart.ChartStyle.Doughnut"/></remarks>
         [Category("ChartAppearance"), Description("Specifies whether ticks are drawn on axes")]
         public bool ShowTicks
         {
@@ -1276,7 +1277,7 @@ namespace WPFChart
             set { SetValue(LegendFontSizeProperty, value); }
         }
         /// <summary>
-        /// Gets or sets the shape of legend. Can be one of <see cref="WPFChart.LegendShape"/> enumeration members
+        /// Gets or sets the shape of legend. Can be one of <see cref="ag.WPF.Chart.LegendShape"/> enumeration members
         /// </summary>
         [Category("ChartLegend"), Description("Gets or sets the shape of legend. Can be one of LegendShape enumeration members")]
         public LegendShape LegendShape
@@ -1285,7 +1286,7 @@ namespace WPFChart
             set { SetValue(LegendShapeProperty, value); }
         }
         /// <summary>
-        /// Gets or sets the size of legend. Can be one of <see cref="WPFChart.LegendSize"/> enumeration members
+        /// Gets or sets the size of legend. Can be one of <see cref="ag.WPF.Chart.LegendSize"/> enumeration members
         /// </summary>
         [Category("ChartLegend"), Description("Gets or sets the size of legend. Can be one of LegendSize enumeration members")]
         public LegendSize LegendSize
@@ -1296,7 +1297,7 @@ namespace WPFChart
         /// <summary>
         /// Specifies whether control will automatically adjust its max x- and y- values or they should be set explicitly
         /// </summary>
-        /// <remarks>This property will have no effect if <see cref="ChartStyle"/> property is set to <see cref="WPFChart.ChartStyle.SolidPie"/> or <see cref="WPFChart.ChartStyle.SlicedPie"/> or <see cref="WPFChart.ChartStyle.Doughnut"/></remarks>
+        /// <remarks>This property will have no effect if <see cref="ChartStyle"/> property is set to <see cref="ag.WPF.Chart.ChartStyle.SolidPie"/> or <see cref="ag.WPF.Chart.ChartStyle.SlicedPie"/> or <see cref="ag.WPF.Chart.ChartStyle.Doughnut"/></remarks>
         [Category("ChartMisc"), Description("Specifies whether control will automatically adjust its max x- and y- values or they should be set explicitly")]
         public bool AutoAdjust
         {
@@ -1360,9 +1361,9 @@ namespace WPFChart
             set { SetValue(YAxisCustomValuesProperty, value); }
         }
         /// <summary>
-        /// Gets or sets the visibility state of x- and y- axes numeric/custom values. Can be one of <see cref="WPFChart.AxesValuesVisibility"/> enumeration members
+        /// Gets or sets the visibility state of x- and y- axes numeric/custom values. Can be one of <see cref="ag.WPF.Chart.AxesValuesVisibility"/> enumeration members
         /// </summary>
-        /// <remarks>This property will have no effect if <see cref="ChartStyle"/> property is set to <see cref="WPFChart.ChartStyle.SolidPie"/> or <see cref="WPFChart.ChartStyle.SlicedPie"/> or <see cref="WPFChart.ChartStyle.Doughnut"/></remarks>
+        /// <remarks>This property will have no effect if <see cref="ChartStyle"/> property is set to <see cref="ag.WPF.Chart.ChartStyle.SolidPie"/> or <see cref="ag.WPF.Chart.ChartStyle.SlicedPie"/> or <see cref="ag.WPF.Chart.ChartStyle.Doughnut"/></remarks>
         [Category("ChartAppearance"), Description("Gets or sets the visibility state of x- and y- axes numeric/custom values. Can be one of AxesValuesVisibility enumeration members")]
         public AxesValuesVisibility AxesValuesVisibility
         {
@@ -1370,7 +1371,7 @@ namespace WPFChart
             set { SetValue(AxesValuesVisibilityProperty, value); }
         }
         /// <summary>
-        /// Gets or sets the chart style. Can be one of <see cref="WPFChart.ChartStyle"/> enumeration members
+        /// Gets or sets the chart style. Can be one of <see cref="ag.WPF.Chart.ChartStyle"/> enumeration members
         /// </summary>
         [Category("ChartAppearance"), Description("Gets or sets the chart style. Can be one of ChartStyle enumeration members")]
         public ChartStyle ChartStyle
@@ -1388,7 +1389,7 @@ namespace WPFChart
             set { SetValue(ShowLegendProperty, value); }
         }
         /// <summary>
-        /// Gets or sets chart legend alignment. Can be one of <see cref="WPFChart.LegendAlignment"/> enumeration members
+        /// Gets or sets chart legend alignment. Can be one of <see cref="ag.WPF.Chart.LegendAlignment"/> enumeration members
         /// </summary>
         [Category("ChartLegend"), Description("Gets or sets chart legend alignment. Can be one of LegendAlignment enumeration members")]
         public LegendAlignment LegendAlignment
@@ -1489,7 +1490,7 @@ namespace WPFChart
         /// <summary>
         /// Gets or sets the text which appears on the top/bottom of y-axis
         /// </summary>
-        /// <remarks>This property will have no effect if <see cref="ChartStyle"/> property is set to <see cref="WPFChart.ChartStyle.SolidPie"/> or <see cref="WPFChart.ChartStyle.SlicedPie"/> or <see cref="WPFChart.ChartStyle.Doughnut"/></remarks>
+        /// <remarks>This property will have no effect if <see cref="ChartStyle"/> property is set to <see cref="ag.WPF.Chart.ChartStyle.SolidPie"/> or <see cref="ag.WPF.Chart.ChartStyle.SlicedPie"/> or <see cref="ag.WPF.Chart.ChartStyle.Doughnut"/></remarks>
         [Category("ChartAppearance")]
         public string YAxisText
         {
@@ -1499,7 +1500,7 @@ namespace WPFChart
         /// <summary>
         /// Gets or sets the text which appears on the right/left of x-axis
         /// </summary>
-        /// <remarks>This property will have no effect if <see cref="ChartStyle"/> property is set to <see cref="WPFChart.ChartStyle.SolidPie"/> or <see cref="WPFChart.ChartStyle.SlicedPie"/> or <see cref="WPFChart.ChartStyle.Doughnut"/></remarks>
+        /// <remarks>This property will have no effect if <see cref="ChartStyle"/> property is set to <see cref="ag.WPF.Chart.ChartStyle.SolidPie"/> or <see cref="ag.WPF.Chart.ChartStyle.SlicedPie"/> or <see cref="ag.WPF.Chart.ChartStyle.Doughnut"/></remarks>
         [Category("ChartAppearance")]
         public string XAxisText
         {
@@ -1518,7 +1519,7 @@ namespace WPFChart
         /// <summary>
         /// Specifies whether secondary Y-axis dotted lines should be drawn on chart
         /// </summary>
-        /// <remarks>This property will have no effect if <see cref="ChartStyle"/> property is set to <see cref="WPFChart.ChartStyle.SolidPie"/> or <see cref="WPFChart.ChartStyle.SlicedPie"/> or <see cref="WPFChart.ChartStyle.Doughnut"/></remarks>
+        /// <remarks>This property will have no effect if <see cref="ChartStyle"/> property is set to <see cref="ag.WPF.Chart.ChartStyle.SolidPie"/> or <see cref="ag.WPF.Chart.ChartStyle.SlicedPie"/> or <see cref="ag.WPF.Chart.ChartStyle.Doughnut"/></remarks>
         [Category("ChartAppearance"), Description("Specifies whether secondary Y-axis dotted lines should be drawn on chart")]
         public bool ShowSecondaryYLines
         {
@@ -1528,7 +1529,7 @@ namespace WPFChart
         /// <summary>
         /// Specifies whether secondary X-axis dotted lines should be drawn on chart
         /// </summary>
-        /// <remarks>This property will have no effect if <see cref="ChartStyle"/> property is set to <see cref="WPFChart.ChartStyle.SolidPie"/> or <see cref="WPFChart.ChartStyle.SlicedPie"/> or <see cref="WPFChart.ChartStyle.Doughnut"/></remarks>
+        /// <remarks>This property will have no effect if <see cref="ChartStyle"/> property is set to <see cref="ag.WPF.Chart.ChartStyle.SolidPie"/> or <see cref="ag.WPF.Chart.ChartStyle.SlicedPie"/> or <see cref="ag.WPF.Chart.ChartStyle.Doughnut"/></remarks>
         [Category("ChartAppearance"), Description("Specifies whether secondary X-axis dotted lines should be drawn on chart")]
         public bool ShowSecondaryXLines
         {
@@ -1539,8 +1540,8 @@ namespace WPFChart
         /// Gets or sets amount of sections on x-axis
         /// </summary>
         /// <remarks>
-        /// This property has no effect if <see cref="ChartStyle"/> is set to <see cref="WPFChart.ChartStyle.Columns"/>, <see cref="WPFChart.ChartStyle.StackedColumns"/>, <see cref="WPFChart.ChartStyle.FullStackedColumns"/>, 
-        /// <see cref="WPFChart.ChartStyle.SolidPie"/> or <see cref="WPFChart.ChartStyle.SlicedPie"/> or <see cref="WPFChart.ChartStyle.Doughnut"/>
+        /// This property has no effect if <see cref="ChartStyle"/> is set to <see cref="ag.WPF.Chart.ChartStyle.Columns"/>, <see cref="ag.WPF.Chart.ChartStyle.StackedColumns"/>, <see cref="ag.WPF.Chart.ChartStyle.FullStackedColumns"/>, 
+        /// <see cref="ag.WPF.Chart.ChartStyle.SolidPie"/> or <see cref="ag.WPF.Chart.ChartStyle.SlicedPie"/> or <see cref="ag.WPF.Chart.ChartStyle.Doughnut"/>
         /// </remarks>
         [Category("ChartMisc"), Description("Gets or sets amount of sections on x-axis")]
         public int SectionsX
@@ -1552,8 +1553,8 @@ namespace WPFChart
         /// Gets or sets amount of sections on y-axis
         /// </summary>
         /// <remarks>
-        /// This property has no effect if <see cref="ChartStyle"/> is set to <see cref="WPFChart.ChartStyle.Bars"/>, <see cref="WPFChart.ChartStyle.StackedBars"/>, <see cref="WPFChart.ChartStyle.FullStackedBars"/>, 
-        /// <see cref="WPFChart.ChartStyle.SolidPie"/> or <see cref="WPFChart.ChartStyle.SlicedPie"/> or <see cref="WPFChart.ChartStyle.Doughnut"/>
+        /// This property has no effect if <see cref="ChartStyle"/> is set to <see cref="ag.WPF.Chart.ChartStyle.Bars"/>, <see cref="ag.WPF.Chart.ChartStyle.StackedBars"/>, <see cref="ag.WPF.Chart.ChartStyle.FullStackedBars"/>, 
+        /// <see cref="ag.WPF.Chart.ChartStyle.SolidPie"/> or <see cref="ag.WPF.Chart.ChartStyle.SlicedPie"/> or <see cref="ag.WPF.Chart.ChartStyle.Doughnut"/>
         /// </remarks>
         [Category("ChartMisc"), Description("Gets or sets amount of sections on y-axis")]
         public int SectionsY
@@ -2961,7 +2962,7 @@ namespace WPFChart
     }
 
     /// <summary>
-    /// Represents event args for <see cref="WPFChart.Chart.ChartPointLeftButtonDoubleClick"/> routed event
+    /// Represents event args for <see cref="ag.WPF.Chart.Chart.ChartPointLeftButtonDoubleClick"/> routed event
     /// </summary>
     public class ChartPointLeftButtonDoubleClickEventArgs : RoutedEventArgs
     {

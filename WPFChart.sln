@@ -1,24 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.40629.0
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31105.61
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WPFChart", "WPFChart.csproj", "{95D1FFA0-2CB9-43A0-9E05-E10F29089877}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ag.WPF.Chart", "ag.WPF.Chart.csproj", "{95D1FFA0-2CB9-43A0-9E05-E10F29089877}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChartTest", "ChartTest\ChartTest.csproj", "{0F9403E2-9DD9-4C41-925F-F228E44CA48E}"
 EndProject
 Global
-	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 3
-		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
-		SccTeamFoundationServer = https://andreygruber.visualstudio.com/defaultcollection
-		SccLocalPath0 = .
-		SccProjectUniqueName1 = ChartTest\\ChartTest.csproj
-		SccProjectName1 = ChartTest
-		SccLocalPath1 = ChartTest
-		SccProjectUniqueName2 = WPFChart.csproj
-		SccLocalPath2 = .
-	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
@@ -35,5 +24,8 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {367E85F6-5CE5-4131-915C-24B51A8C7B1B}
 	EndGlobalSection
 EndGlobal
