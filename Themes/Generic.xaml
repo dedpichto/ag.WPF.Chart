@@ -1,0 +1,548 @@
+﻿<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:sys="clr-namespace:System;assembly=mscorlib"
+    xmlns:local="clr-namespace:WPFChart">
+
+    <local:AxesLinesConverter x:Key="AxesLinesConverter"/>
+    <local:AxisYGridRowConverter x:Key="AxYRowConverter"/>
+    <local:AxisXGridColumnConverter x:Key="AxisXGridColumnConverter"/>
+    <local:AxisYTextAlignmentConverter x:Key="AxisYTextAlignmentConverter"/>
+    <local:AxisXTextAlignmentConverter x:Key="AxisXTextAlignmentConverter"/>
+    <local:LegendOrientationConverter x:Key="LegendOrientationConverter"/>
+    <local:AxisTicksPathConverter x:Key="AxisTicksPathConverter"/>
+    <local:HorizontalLinesPathConverter x:Key="HorizontalLinesPathConverter"/>
+    <local:VerticalLinesPathConverter x:Key="VerticalLinesPathConverter"/>
+    <local:LegendSizeConverter x:Key="LegendSizeConverter"/>
+    <local:PieLeftConverter x:Key="PieLeftConverter"/>
+    <local:PieTopConverter x:Key="PieTopConverter"/>
+    <local:ValuesToPieSectionsConverter x:Key="ValuesToPieSectionsConverter"/>
+    <local:VerticalValuesAlignmentConverter x:Key="VerticalValuesAlignmentConverter"/>
+    <local:HorizontalValuesAlignmentConverter x:Key="HorizontalValuesAlignmentConverter"/>
+    <local:VerticalValuesColumnConverter x:Key="VerticalValuesColumnConverter"/>
+    <local:HorizontalValuesRowConverter x:Key="HorizontalValuesRowConverter"/>
+    <local:VerticalValuesConverter x:Key="VerticalValuesConverter"/>
+    <local:HorizontalValuesConverter x:Key="HorizontalValuesConverter"/>
+    <local:VerticalPlaceholderWidthConverter x:Key="VerticalPlaceholderWidthConverter"/>
+    <local:HorizontalPlaceholderHeightConverter x:Key="HorizontalPlaceholderHeightConverter"/>
+    
+    <Style TargetType="{x:Type local:Chart}">
+        <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.WindowTextBrushKey}}"/>
+        <Setter Property="Background" Value="{DynamicResource {x:Static SystemColors.WindowBrushKey}}"/>
+        <Setter Property="DisabledBrush" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type local:Chart}">
+                    <Border Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock x:Name="TextCaption" Grid.Row="1" Grid.Column="3" 
+                                       Foreground="{TemplateBinding Foreground}"
+                                       Text="{TemplateBinding Caption}" 
+                                       FontFamily="{TemplateBinding CaptionFontFamily}" 
+                                       FontWeight="{TemplateBinding CaptionFontWeight}" 
+                                       FontStyle="{TemplateBinding CaptionFontStyle}" 
+                                       FontSize="{TemplateBinding CaptionFontSize}" 
+                                       FontStretch="{TemplateBinding CaptionFontStretch}"
+                                       HorizontalAlignment="Center" 
+                                       VerticalAlignment="Center" 
+                                       Margin="4,4,4,8"/>
+                            <TextBlock x:Name="TextYAxis" 
+                                       Margin="4" 
+                                       Grid.Column="3" 
+                                       VerticalAlignment="Center" 
+                                       Foreground="{TemplateBinding Foreground}"
+                                       Text="{TemplateBinding YAxisText}">
+                                <Grid.Row>
+                                    <MultiBinding Converter="{StaticResource AxYRowConverter}">
+                                        <Binding Path="SeriesCollection" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                        <Binding Path="ChartStyle" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                    </MultiBinding>
+                                </Grid.Row>
+                                <TextBlock.HorizontalAlignment>
+                                    <MultiBinding Converter="{StaticResource AxisYTextAlignmentConverter}">
+                                        <Binding Path="SeriesCollection" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                        <Binding Path="ChartStyle" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                    </MultiBinding>
+                                </TextBlock.HorizontalAlignment>
+                            </TextBlock>
+                            <TextBlock x:Name="TextXAxis" 
+                                       Margin="4" 
+                                       Grid.Row="4" 
+                                       HorizontalAlignment="Center" 
+                                       Foreground="{TemplateBinding Foreground}"
+                                       Text="{TemplateBinding XAxisText}">
+                                <Grid.Column>
+                                    <MultiBinding Converter="{StaticResource AxisXGridColumnConverter}">
+                                        <Binding Path="SeriesCollection" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                        <Binding Path="ChartStyle" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                    </MultiBinding>
+                                </Grid.Column>
+                                <TextBlock.VerticalAlignment>
+                                    <MultiBinding Converter="{StaticResource AxisXTextAlignmentConverter}">
+                                        <Binding Path="SeriesCollection" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                        <Binding Path="ChartStyle" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                    </MultiBinding>
+                                </TextBlock.VerticalAlignment>
+                                <TextBlock.LayoutTransform>
+                                    <RotateTransform Angle="90"/>
+                                </TextBlock.LayoutTransform>
+                            </TextBlock>
+                            <Border x:Name="VPLaceHolder" Grid.Row="4" Height="1">
+                                <Grid.Column>
+                                    <MultiBinding Converter="{StaticResource VerticalValuesColumnConverter}">
+                                        <Binding Path="SeriesCollection" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                        <Binding Path="ChartStyle" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                        <Binding Path="SeriesCount" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                    </MultiBinding>
+                                </Grid.Column>
+                                <Border.Width>
+                                    <MultiBinding Converter="{StaticResource VerticalPlaceholderWidthConverter}">
+                                        <Binding Path="SeriesCollection" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                        <Binding Path="ChartStyle" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                        <Binding Path="SectionsY" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                        <Binding Path="AxesValuesFormat" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                        <Binding Path="AxesFontFamily" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                        <Binding Path="AxesFontSize" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                        <Binding Path="AxesFontStyle" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                        <Binding Path="AxesFontWeight" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                        <Binding Path="AxesFontStretch" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                        <Binding Path="YAxisCustomValues" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                        <Binding Path="AutoAdjust" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                        <Binding Path="MaxY" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                        <Binding Path="SeriesCount" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                    </MultiBinding>
+                                </Border.Width>
+                            </Border>
+                            <Path x:Name="PathYAxisValues" Grid.Row="4" Fill="{TemplateBinding Foreground}">
+                                <Grid.Column>
+                                    <MultiBinding Converter="{StaticResource VerticalValuesColumnConverter}">
+                                        <Binding Path="SeriesCollection" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                        <Binding Path="ChartStyle" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                        <Binding Path="SeriesCount" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                    </MultiBinding>
+                                </Grid.Column>
+                                <Path.HorizontalAlignment>
+                                    <MultiBinding Converter="{StaticResource VerticalValuesAlignmentConverter}">
+                                        <Binding Path="SeriesCollection" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                        <Binding Path="ChartStyle" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                        <Binding Path="SeriesCount" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                    </MultiBinding>
+                                </Path.HorizontalAlignment>
+                                <Path.Data>
+                                    <MultiBinding Converter="{StaticResource VerticalValuesConverter}">
+                                        <Binding Path="ActualHeight" ElementName="PART_Canvas"/>
+                                        <Binding Path="SeriesCollection" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                        <Binding Path="ChartStyle" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                        <Binding Path="SectionsY" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                        <Binding Path="AxesValuesFormat" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                        <Binding Path="AxesFontFamily" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                        <Binding Path="AxesFontSize" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                        <Binding Path="AxesFontStyle" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                        <Binding Path="AxesFontWeight" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                        <Binding Path="AxesFontStretch" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                        <Binding Path="YAxisCustomValues" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                        <Binding Path="AutoAdjust" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                        <Binding Path="MaxY" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                        <Binding Path="FlowDirection" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                        <Binding Path="SeriesCount" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                    </MultiBinding>
+                                </Path.Data>
+                            </Path>
+                            <Border x:Name="HPLaceHolder" Grid.Column="3" Width="1">
+                                <Grid.Row>
+                                    <MultiBinding Converter="{StaticResource HorizontalValuesRowConverter}">
+                                        <Binding Path="SeriesCollection" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                        <Binding Path="ChartStyle" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                        <Binding Path="SeriesCount" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                    </MultiBinding>
+                                </Grid.Row>
+                                <Border.Height>
+                                    <MultiBinding Converter="{StaticResource HorizontalPlaceholderHeightConverter}">
+                                        <Binding Path="SeriesCollection" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                        <Binding Path="ChartStyle" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                        <Binding Path="SectionsY" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                        <Binding Path="AxesValuesFormat" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                        <Binding Path="AxesFontFamily" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                        <Binding Path="AxesFontSize" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                        <Binding Path="AxesFontStyle" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                        <Binding Path="AxesFontWeight" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                        <Binding Path="AxesFontStretch" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                        <Binding Path="XAxisCustomValues" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                        <Binding Path="AutoAdjust" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                        <Binding Path="MaxX" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                        <Binding Path="ChartBoundary" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                        <Binding Path="ActualWidth" ElementName="PART_Canvas"/>
+                                        <Binding Path="SeriesCount" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                    </MultiBinding>
+                                </Border.Height>
+                            </Border>
+                            <Path x:Name="PathXAxisValues" Grid.Column="3" Fill="{TemplateBinding Foreground}">
+                                <Grid.Row>
+                                    <MultiBinding Converter="{StaticResource HorizontalValuesRowConverter}">
+                                        <Binding Path="SeriesCollection" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                        <Binding Path="ChartStyle" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                        <Binding Path="SeriesCount" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                    </MultiBinding>
+                                </Grid.Row>
+                                <Path.VerticalAlignment>
+                                    <MultiBinding Converter="{StaticResource HorizontalValuesAlignmentConverter}">
+                                        <Binding Path="SeriesCollection" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                        <Binding Path="ChartStyle" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                        <Binding Path="SeriesCount" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                    </MultiBinding>
+                                </Path.VerticalAlignment>
+                                <Path.Data>
+                                    <MultiBinding Converter="{StaticResource HorizontalValuesConverter}">
+                                        <Binding Path="ActualWidth" ElementName="PART_Canvas"/>
+                                        <Binding Path="SeriesCollection" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                        <Binding Path="ChartStyle" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                        <Binding Path="SectionsX" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                        <Binding Path="AxesValuesFormat" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                        <Binding Path="AxesFontFamily" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                        <Binding Path="AxesFontSize" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                        <Binding Path="AxesFontStyle" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                        <Binding Path="AxesFontWeight" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                        <Binding Path="AxesFontStretch" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                        <Binding Path="XAxisCustomValues" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                        <Binding Path="AutoAdjust" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                        <Binding Path="MaxX" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                        <Binding Path="FlowDirection" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                        <Binding Path="ChartBoundary" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                        <Binding Path="SeriesCount" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                    </MultiBinding>
+                                </Path.Data>
+                            </Path>
+                            <Canvas x:Name="PART_Canvas" Grid.Row="4" Grid.Column="3" Margin="4" ClipToBounds="True">
+                                <Image x:Name="PART_PieImage" 
+                                       Stretch="Fill" 
+                                       Visibility="Collapsed" 
+                                       Opacity="{TemplateBinding ChartOpacity}"
+                                       ToolTipService.ShowDuration="{x:Static sys:Int32.MaxValue}">
+                                    <Image.ToolTip>
+                                        <ToolTip x:Name="PieTooltip"/>
+                                    </Image.ToolTip>
+                                    <Canvas.Left>
+                                        <MultiBinding Converter="{StaticResource PieLeftConverter}">
+                                            <Binding Path="ActualWidth" ElementName="PART_Canvas"/>
+                                            <Binding Path="ActualHeight" ElementName="PART_Canvas"/>
+                                        </MultiBinding>
+                                    </Canvas.Left>
+                                    <Canvas.Top>
+                                        <MultiBinding Converter="{StaticResource PieTopConverter}">
+                                            <Binding Path="ActualWidth" ElementName="PART_Canvas"/>
+                                            <Binding Path="ActualHeight" ElementName="PART_Canvas"/>
+                                        </MultiBinding>
+                                    </Canvas.Top>
+                                    <Image.Source>
+                                        <DrawingImage>
+                                            <DrawingImage.Drawing>
+                                                <MultiBinding Converter="{StaticResource ValuesToPieSectionsConverter}" >
+                                                    <Binding Path="ActualWidth" ElementName="PART_Canvas"/>
+                                                    <Binding Path="ActualHeight" ElementName="PART_Canvas"/>
+                                                    <Binding Path="SeriesCollection" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                                    <Binding Path="IsEnabled" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                                    <Binding Path="DisabledBrush" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                                    <Binding Path="Background" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                                    <Binding Path="ChartStyle" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                                    <Binding Path="AxesValuesFormat" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                                </MultiBinding>
+                                            </DrawingImage.Drawing>
+                                        </DrawingImage>
+                                    </Image.Source>
+                                </Image>
+                                <Grid x:Name="GridSeries">
+                                    <Path Stroke="{TemplateBinding Foreground}" StrokeThickness="0.5">
+                                        <Path.Data>
+                                            <MultiBinding Converter="{StaticResource AxesLinesConverter}">
+                                                <Binding ElementName="PART_Canvas" Path="ActualWidth"/>
+                                                <Binding ElementName="PART_Canvas" Path="ActualHeight"/>
+                                                <Binding Path="SeriesCollection" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                                <Binding Path="ChartStyle" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                                <Binding Path="SeriesCount" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                            </MultiBinding>
+                                        </Path.Data>
+                                    </Path>
+                                    <Path x:Name="PathTicks" Stroke="{TemplateBinding Foreground}" StrokeThickness="0.5">
+                                        <Path.Data>
+                                            <MultiBinding Converter="{StaticResource AxisTicksPathConverter}">
+                                                <Binding ElementName="PART_Canvas" Path="ActualWidth"/>
+                                                <Binding ElementName="PART_Canvas" Path="ActualHeight"/>
+                                                <Binding Path="SectionsX" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                                <Binding Path="SectionsY" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                                <Binding Path="SeriesCollection" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                                <Binding Path="ChartStyle" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                                <Binding Path="ChartBoundary" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                                <Binding Path="SeriesCount" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                            </MultiBinding>
+                                        </Path.Data>
+                                    </Path>
+                                    <Path x:Name="PathHorzLines" Stroke="{TemplateBinding Foreground}" StrokeThickness="0.3" StrokeDashArray="2,2">
+                                        <Path.Data>
+                                            <MultiBinding Converter="{StaticResource HorizontalLinesPathConverter}">
+                                                <Binding ElementName="PART_Canvas" Path="ActualWidth"/>
+                                                <Binding ElementName="PART_Canvas" Path="ActualHeight"/>
+                                                <Binding Path="SeriesCollection" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                                <Binding Path="ChartStyle" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                                <Binding Path="SectionsY" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                            </MultiBinding>
+                                        </Path.Data>
+                                    </Path>
+                                    <Path x:Name="PathVertLines" Stroke="{TemplateBinding Foreground}" StrokeThickness="0.3" StrokeDashArray="2,2">
+                                        <Path.Data>
+                                            <MultiBinding Converter="{StaticResource VerticalLinesPathConverter}">
+                                                <Binding ElementName="PART_Canvas" Path="ActualWidth"/>
+                                                <Binding ElementName="PART_Canvas" Path="ActualHeight"/>
+                                                <Binding Path="SeriesCollection" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                                <Binding Path="ChartStyle" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                                <Binding Path="SectionsX" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                                <Binding Path="ChartBoundary" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                            </MultiBinding>
+                                        </Path.Data>
+                                    </Path>
+                                </Grid>
+                            </Canvas>
+                            <ItemsControl x:Name="LegendField"
+                                          Grid.Row="7"
+                                          Grid.Column="0"
+                                          Grid.ColumnSpan="7"
+                                          ItemsSource="{Binding LegendCollection, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                          >
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <WrapPanel Orientation="{Binding LegendAlignment, RelativeSource={RelativeSource Mode=TemplatedParent}, Converter={StaticResource LegendOrientationConverter}}"
+                                                   Margin="4"/>
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                            </ItemsControl>
+                            <ItemsControl x:Name="PieLegendField"
+                                          Visibility="Collapsed"
+                                          Grid.Row="7"
+                                          Grid.Column="0"
+                                          Grid.ColumnSpan="7"
+                                          ItemsSource="{Binding PieLegends, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                          >
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <WrapPanel Orientation="{Binding LegendAlignment, RelativeSource={RelativeSource Mode=TemplatedParent}, Converter={StaticResource LegendOrientationConverter}}"
+                                                   Margin="4"/>
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                            </ItemsControl>
+                        </Grid>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="LegendAlignment" Value="Top">
+                            <Setter Property="Grid.Row" TargetName="LegendField" Value="0"/>
+                            <Setter Property="Grid.Row" TargetName="PieLegendField" Value="0"/>
+                        </Trigger>
+                        <Trigger Property="LegendAlignment" Value="Left">
+                            <Setter Property="Grid.Row" TargetName="LegendField" Value="0"/>
+                            <Setter Property="Grid.Row" TargetName="PieLegendField" Value="0"/>
+                            <Setter Property="Grid.ColumnSpan" TargetName="LegendField" Value="1"/>
+                            <Setter Property="Grid.ColumnSpan" TargetName="PieLegendField" Value="1"/>
+                            <Setter Property="Grid.RowSpan" TargetName="LegendField" Value="8"/>
+                            <Setter Property="Grid.RowSpan" TargetName="PieLegendField" Value="8"/>
+                        </Trigger>
+                        <Trigger Property="LegendAlignment" Value="Right">
+                            <Setter Property="Grid.Row" TargetName="LegendField" Value="0"/>
+                            <Setter Property="Grid.Row" TargetName="PieLegendField" Value="0"/>
+                            <Setter Property="Grid.Column" TargetName="LegendField" Value="7"/>
+                            <Setter Property="Grid.Column" TargetName="PieLegendField" Value="7"/>
+                            <Setter Property="Grid.ColumnSpan" TargetName="LegendField" Value="1"/>
+                            <Setter Property="Grid.ColumnSpan" TargetName="PieLegendField" Value="1"/>
+                            <Setter Property="Grid.RowSpan" TargetName="LegendField" Value="8"/>
+                            <Setter Property="Grid.RowSpan" TargetName="PieLegendField" Value="8"/>
+                        </Trigger>
+                        <Trigger Property="ShowTicks" Value="false">
+                            <Setter Property="Visibility" TargetName="PathTicks" Value="Hidden"/>
+                        </Trigger>
+                        <Trigger Property="ShowSecondaryXLines" Value="False">
+                            <Setter Property="Visibility" TargetName="PathHorzLines" Value="Hidden"/>
+                        </Trigger>
+                        <Trigger Property="ChartStyle" Value="Bars">
+                            <Setter Property="Visibility" TargetName="PathHorzLines" Value="Hidden"/>
+                        </Trigger>
+                        <Trigger Property="ChartStyle" Value="StackedBars">
+                            <Setter Property="Visibility" TargetName="PathHorzLines" Value="Hidden"/>
+                        </Trigger>
+                        <Trigger Property="ChartStyle" Value="FullStackedBars">
+                            <Setter Property="Visibility" TargetName="PathHorzLines" Value="Hidden"/>
+                        </Trigger>
+                        <Trigger Property="ShowSecondaryYLines" Value="False">
+                            <Setter Property="Visibility" TargetName="PathVertLines" Value="Hidden"/>
+                        </Trigger>
+                        <Trigger Property="ChartStyle" Value="Columns">
+                            <Setter Property="Visibility" TargetName="PathVertLines" Value="Hidden"/>
+                        </Trigger>
+                        <Trigger Property="ChartStyle" Value="StackedColumns">
+                            <Setter Property="Visibility" TargetName="PathVertLines" Value="Hidden"/>
+                        </Trigger>
+                        <Trigger Property="ChartStyle" Value="FullStackedColumns">
+                            <Setter Property="Visibility" TargetName="PathVertLines" Value="Hidden"/>
+                        </Trigger>
+                        <Trigger Property="ChartStyle" Value="Waterfall">
+                            <Setter Property="Visibility" TargetName="PathVertLines" Value="Hidden"/>
+                        </Trigger>
+                        <Trigger Property="Caption" Value="">
+                            <Setter Property="Visibility" TargetName="TextCaption" Value="Collapsed"/>
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="false">
+                            <Setter Property="Foreground" TargetName="TextCaption" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
+                            <Setter Property="Foreground" TargetName="TextYAxis" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
+                            <Setter Property="Foreground" TargetName="TextXAxis" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
+                        </Trigger>
+                        <Trigger Property="ShowLegend" Value="false">
+                            <Setter Property="Visibility" TargetName="LegendField" Value="Collapsed"/>
+                            <Setter Property="Visibility" TargetName="PieLegendField" Value="Collapsed"/>
+                        </Trigger>
+                        <Trigger Property="AxesValuesVisibility" Value="Horizontal">
+                            <Setter Property="Visibility" TargetName="VPLaceHolder" Value="Collapsed"/>
+                            <Setter Property="Visibility" TargetName="PathYAxisValues" Value="Collapsed"/>
+                        </Trigger>
+                        <Trigger Property="AxesValuesVisibility" Value="Vertical">
+                            <Setter Property="Visibility" TargetName="HPLaceHolder" Value="Collapsed"/>
+                            <Setter Property="Visibility" TargetName="PathXAxisValues" Value="Collapsed"/>
+                        </Trigger>
+                        <Trigger Property="AxesValuesVisibility" Value="None">
+                            <Setter Property="Visibility" TargetName="PathXAxisValues" Value="Collapsed"/>
+                            <Setter Property="Visibility" TargetName="PathYAxisValues" Value="Collapsed"/>
+                            <Setter Property="Visibility" TargetName="VPLaceHolder" Value="Collapsed"/>
+                            <Setter Property="Visibility" TargetName="HPLaceHolder" Value="Collapsed"/>
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="false">
+                            <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
+                        </Trigger>
+                        <Trigger Property="ChartStyle" Value="SolidPie">
+                            <Setter Property="Visibility" TargetName="TextYAxis" Value="Collapsed"/>
+                            <Setter Property="Visibility" TargetName="TextXAxis" Value="Collapsed"/>
+                            <Setter Property="Visibility" TargetName="GridSeries" Value="Collapsed"/>
+                            <Setter Property="Visibility" TargetName="LegendField" Value="Collapsed"/>
+                            <Setter Property="Visibility" TargetName="PathXAxisValues" Value="Collapsed"/>
+                            <Setter Property="Visibility" TargetName="PathYAxisValues" Value="Collapsed"/>
+                            <Setter Property="Visibility" TargetName="VPLaceHolder" Value="Collapsed"/>
+                            <Setter Property="Visibility" TargetName="HPLaceHolder" Value="Collapsed"/>
+                            <Setter Property="Visibility" TargetName="PART_PieImage" Value="Visible"/>
+                        </Trigger>
+                        <Trigger Property="ChartStyle" Value="SlicedPie">
+                            <Setter Property="Visibility" TargetName="TextYAxis" Value="Collapsed"/>
+                            <Setter Property="Visibility" TargetName="TextXAxis" Value="Collapsed"/>
+                            <Setter Property="Visibility" TargetName="GridSeries" Value="Collapsed"/>
+                            <Setter Property="Visibility" TargetName="LegendField" Value="Collapsed"/>
+                            <Setter Property="Visibility" TargetName="PathXAxisValues" Value="Collapsed"/>
+                            <Setter Property="Visibility" TargetName="PathYAxisValues" Value="Collapsed"/>
+                            <Setter Property="Visibility" TargetName="VPLaceHolder" Value="Collapsed"/>
+                            <Setter Property="Visibility" TargetName="HPLaceHolder" Value="Collapsed"/>
+                            <Setter Property="Visibility" TargetName="PART_PieImage" Value="Visible"/>
+                        </Trigger>
+                        <Trigger Property="ChartStyle" Value="Doughnut">
+                            <Setter Property="Visibility" TargetName="TextYAxis" Value="Collapsed"/>
+                            <Setter Property="Visibility" TargetName="TextXAxis" Value="Collapsed"/>
+                            <Setter Property="Visibility" TargetName="GridSeries" Value="Collapsed"/>
+                            <Setter Property="Visibility" TargetName="LegendField" Value="Collapsed"/>
+                            <Setter Property="Visibility" TargetName="PathXAxisValues" Value="Collapsed"/>
+                            <Setter Property="Visibility" TargetName="PathYAxisValues" Value="Collapsed"/>
+                            <Setter Property="Visibility" TargetName="VPLaceHolder" Value="Collapsed"/>
+                            <Setter Property="Visibility" TargetName="HPLaceHolder" Value="Collapsed"/>
+                            <Setter Property="Visibility" TargetName="PART_PieImage" Value="Visible"/>
+                        </Trigger>
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="ShowLegend" Value="true"/>
+                                <Condition Property="ChartStyle" Value="SolidPie"/>
+                            </MultiTrigger.Conditions>
+                            <Setter Property="Visibility" TargetName="PieLegendField" Value="Visible"/>
+                        </MultiTrigger>
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="ShowLegend" Value="true"/>
+                                <Condition Property="ChartStyle" Value="SlicedPie"/>
+                            </MultiTrigger.Conditions>
+                            <Setter Property="Visibility" TargetName="PieLegendField" Value="Visible"/>
+                        </MultiTrigger>
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="ShowLegend" Value="true"/>
+                                <Condition Property="ChartStyle" Value="Doughnut"/>
+                            </MultiTrigger.Conditions>
+                            <Setter Property="Visibility" TargetName="PieLegendField" Value="Visible"/>
+                        </MultiTrigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="{x:Type local:Legend}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type local:Legend}">
+                    <Border>
+                        <StackPanel x:Name="stack" Orientation="Horizontal">
+                            <Rectangle x:Name="rect" 
+                                       Width="{Binding LegendSize, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:Chart}, Converter={StaticResource LegendSizeConverter}}" 
+                                       Height="{Binding LegendSize, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:Chart}, Converter={StaticResource LegendSizeConverter}}" 
+                                       Fill="{TemplateBinding LegendBackground}" Margin="2"/>
+                            <Ellipse x:Name="ellipse" 
+                                     Visibility="Collapsed"
+                                     Width="{Binding LegendSize, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:Chart}, Converter={StaticResource LegendSizeConverter}}" 
+                                     Height="{Binding LegendSize, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:Chart}, Converter={StaticResource LegendSizeConverter}}" 
+                                     Fill="{TemplateBinding LegendBackground}" Margin="2"/>
+                            <!--Text block has FlowDirection explicitly set to LeftToRight in order to preserve correct string order when parent FlowDirection is set to RightToLeft-->
+                            <TextBlock x:Name="LegendText" 
+                                       FlowDirection="LeftToRight"
+                                       Text="{TemplateBinding Text}" 
+                                       FontFamily="{Binding LegendFontFamily, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:Chart}}"
+                                       FontStyle="{Binding LegendFontStyle, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:Chart}}"
+                                       FontWeight="{Binding LegendFontWeight, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:Chart}}"
+                                       FontSize="{Binding LegendFontSize, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:Chart}}"
+                                       VerticalAlignment="Center"
+                                       Margin="2"/>
+                        </StackPanel>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <DataTrigger Binding="{Binding LegendAlignment, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:Chart}}" Value="Left">
+                            <Setter Property="HorizontalAlignment" TargetName="rect" Value="Center"/>
+                            <Setter Property="HorizontalAlignment" TargetName="ellipse" Value="Center"/>
+                            <Setter Property="HorizontalAlignment" TargetName="LegendText" Value="Center"/>
+                            <Setter Property="Orientation" TargetName="stack" Value="Vertical"/>
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding LegendAlignment, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:Chart}}" Value="Right">
+                            <Setter Property="HorizontalAlignment" TargetName="rect" Value="Center"/>
+                            <Setter Property="HorizontalAlignment" TargetName="ellipse" Value="Center"/>
+                            <Setter Property="HorizontalAlignment" TargetName="LegendText" Value="Center"/>
+                            <Setter Property="Orientation" TargetName="stack" Value="Vertical"/>
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding LegendShape, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:Chart}}" Value="Circle">
+                            <Setter Property="Visibility" TargetName="ellipse" Value="Visible"/>
+                            <Setter Property="Visibility" TargetName="rect" Value="Collapsed"/>
+                        </DataTrigger>
+                        <Trigger Property="IsEnabled" Value="false">
+                            <Setter Property="Foreground" TargetName="LegendText" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+</ResourceDictionary>

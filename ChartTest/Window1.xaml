@@ -1,0 +1,9 @@
+﻿<Window x:Class="ChartTest.Window1"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:chart="clr-namespace:WPFChart;assembly=WPFChart"
+        Title="Window1" Height="300" Width="300" Loaded="Window_Loaded">
+    <Grid x:Name="grd">
+        <chart:Chart x:Name="chrt" Margin="24" SectionsX="10" AutoAdjust="False" AxesValuesFormat="0%" ChartStyle="Lines"  AxesValuesVisibility="Vertical" ShowSecondaryXLines="True" ShowSecondaryYLines="True"/>
+    </Grid>
+</Window>
