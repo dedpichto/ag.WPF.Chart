@@ -21,6 +21,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Media;
+using System.Windows.Shapes;
 
 namespace ag.WPF.Chart
 {
@@ -34,6 +35,14 @@ namespace ag.WPF.Chart
         NorthWest
     }
 
+    internal enum Quadrants
+    {
+        UpRight,
+        DownRight,
+        DownLeft,
+        UpLeft
+    }
+
     internal static class Utils
     {
         internal const double AXIS_THICKNESS = 0.5;
@@ -41,6 +50,76 @@ namespace ag.WPF.Chart
         internal const double RECT_SIZE = 3.0;
 
         internal static Border Border { get; } = new Border();
+
+        internal static Quadrants GetQuadrant(double degrees)
+        {
+            if (degrees >= 0 && degrees <= 90)
+                return Quadrants.UpRight;
+            if (degrees <= 360 && degrees >= 270)
+                return Quadrants.DownRight;
+            if (degrees <= 270 && degrees >= 180)
+                return Quadrants.DownLeft;
+            return Quadrants.UpLeft;
+        }
+
+        internal static Quadrants GetRadarQuadrant(double degrees)
+        {
+            if (degrees >= 0 && degrees <= 90)
+                return Quadrants.UpLeft;
+            if (degrees <= 360 && degrees >= 270)
+                return Quadrants.DownLeft;
+            if (degrees <= 270 && degrees >= 180)
+                return Quadrants.DownRight;
+            if (degrees > 360)
+                return Quadrants.UpLeft;
+            return Quadrants.UpRight;
+        }
+
+        internal static (int ticksCount, int linesCount) GetRadarTicksCount(Series[] seriesArray)
+        {
+            var currentCount = seriesArray.Max(s => s.Values.Count);
+            var max = seriesArray.SelectMany(s => s.Values.Select(v => v.Value.V1)).Max();
+            var min = seriesArray.SelectMany(s => s.Values.Select(v => v.Value.V1)).Min();
+
+            if (min > 0)
+                min = 0;
+
+            var aMax = Math.Abs(max);
+            var aMin = Math.Abs(min);
+
+            var delimMax = Math.Pow(10, aMax.ToString().Length - 1);
+            var delimMin = Math.Pow(10, aMin.ToString().Length - 1);
+
+            if (aMax > delimMax)
+                aMax = (int)(aMax / Math.Pow(10, aMax.ToString().Length - 1) + 1) * Math.Pow(10, aMax.ToString().Length - 1);
+            else
+                aMax = (int)aMax;
+            if (aMin > delimMin)
+                aMin = (int)(aMin / Math.Pow(10, aMin.ToString().Length - 1) + 1) * Math.Pow(10, aMin.ToString().Length - 1);
+            else
+                aMin = (int)aMin;
+
+            max = Math.Sign(max) * aMax;
+            min = Math.Sign(min) * aMin;
+
+            var diff = 0;
+
+            if (max > 0 && min < 0)
+                diff = (int)(Math.Abs(min) + max);
+            else if (max < 0 && min < 0)
+                diff = (int)Math.Abs(max + min);
+            else if (max > 0 && min >= 0)
+                diff = (int)(max - min);
+
+            var result = currentCount;
+            var valuesCount = currentCount;
+            currentCount = diff / result;
+            while (currentCount % 10 != 0)
+            {
+                currentCount = diff / --result;
+            }
+            return (valuesCount, result-1);
+        }
 
         internal static Tuple<double, int> Limits(ChartStyle style, bool offsetBoundary, int stopsX, int ticks,
             double boundOffset, double width)
@@ -510,7 +589,7 @@ namespace ag.WPF.Chart
                 || !(values[1] is double height)
                 || !(values[2] is IEnumerable<Series> seriesEnumerable)
                 || !(values[3] is ChartStyle chartStyle)
-                || chartStyle.In(ChartStyle.SolidPie, ChartStyle.SlicedPie, ChartStyle.Doughnut, ChartStyle.Waterfall)
+                || chartStyle.In(ChartStyle.SolidPie, ChartStyle.SlicedPie, ChartStyle.Doughnut, ChartStyle.Waterfall, ChartStyle.Radar, ChartStyle.RadarWithMarkers)
                 || !(values[4] is int index)
                 || !(values[5] is bool autoAdjust)
                 || !(values[6] is double maxXConv)
@@ -2300,6 +2379,8 @@ namespace ag.WPF.Chart
                 case ChartStyle.FullStackedColumns:
                 case ChartStyle.Bubbles:
                 case ChartStyle.Waterfall:
+                case ChartStyle.Radar:
+                case ChartStyle.RadarWithMarkers:
                     return null;
             }
             return isEnabled ? enabledBrush : disabledBrush;
@@ -2489,7 +2570,7 @@ namespace ag.WPF.Chart
             if (!series.Any()) return width;
 
 
-            if (chartStyle.In(ChartStyle.Bars, ChartStyle.StackedBars, ChartStyle.FullStackedBars))
+            if (chartStyle.In(ChartStyle.Bars, ChartStyle.StackedBars, ChartStyle.FullStackedBars, ChartStyle.Radar, ChartStyle.RadarWithMarkers))
                 return 0.0;
 
             var rawValues = chartStyle != ChartStyle.Waterfall
@@ -2625,7 +2706,7 @@ namespace ag.WPF.Chart
                 || !(values[13] is FlowDirection flowDir))
                 return null;
 
-            if (chartStyle.In(ChartStyle.Bars, ChartStyle.StackedBars, ChartStyle.FullStackedBars))
+            if (chartStyle.In(ChartStyle.Bars, ChartStyle.StackedBars, ChartStyle.FullStackedBars, ChartStyle.SlicedPie, ChartStyle.SolidPie, ChartStyle.Doughnut, ChartStyle.Radar, ChartStyle.RadarWithMarkers))
                 return null;
             if (!seriesEnumerable.Any())
                 return null;
@@ -2787,7 +2868,7 @@ namespace ag.WPF.Chart
                 || !(values[14] is ChartBoundary chartBoundary))
                 return null;
 
-            if (chartStyle.In(ChartStyle.Area, ChartStyle.StackedArea, ChartStyle.FullStackedArea))
+            if (chartStyle.In(ChartStyle.Area, ChartStyle.StackedArea, ChartStyle.FullStackedArea, ChartStyle.SlicedPie, ChartStyle.SolidPie, ChartStyle.Doughnut, ChartStyle.Radar, ChartStyle.RadarWithMarkers))
                 return null;
             if (!seriesEnumerable.Any()) return null;
 
@@ -3025,7 +3106,7 @@ namespace ag.WPF.Chart
                 || !(values[6] is ChartBoundary chartBoundary))
                 return null;
 
-            if (chartStyle.In(ChartStyle.Area, ChartStyle.StackedArea, ChartStyle.FullStackedArea))
+            if (chartStyle.In(ChartStyle.Area, ChartStyle.StackedArea, ChartStyle.FullStackedArea, ChartStyle.Radar, ChartStyle.RadarWithMarkers))
                 return null;
             if (!seriesEnumerable.Any())
                 return null;
@@ -3528,19 +3609,198 @@ namespace ag.WPF.Chart
         }
     }
 
+    public class RadarLinesPathConverter : IMultiValueConverter
+    {
+        public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (values == null
+                //|| values.Length != 8
+                || !(values[0] is double width)
+                || !(values[1] is double height)
+                || !(values[2] is IEnumerable<Series> seriesEnumerable)
+                || !seriesEnumerable.Any()
+                || !(values[3] is ChartStyle chartStyle)
+                || !chartStyle.In(ChartStyle.Radar, ChartStyle.RadarWithMarkers)
+                //|| !(values[6] is string format)
+                || !(values[4] is FontFamily fontFamily)
+                || !(values[5] is double fontSize)
+                || !(values[6] is FontStyle fontStyle)
+                || !(values[7] is FontWeight fontWeight)
+                || !(values[8] is FontStretch fontStretch)
+                || !(values[9] is IEnumerable<string> customEnumerable))
+                return null;
+
+            var gm = new PathGeometry();
+            var customValues = customEnumerable.ToArray();
+
+            var series = seriesEnumerable.ToArray();
+            var currentDegrees = 0.0;
+            var (pointsCount, linesCount) = Utils.GetRadarTicksCount(series);// series.Max(s => s.Values.Count);
+            var degreesStep = 360 / pointsCount;
+
+            var maxCv = customValues.Any() ? customValues.Max(v => (v, v.Length)) : (v: "", Length: 0);
+            var number = maxCv.Length > pointsCount.ToString(culture).Length ? maxCv.v : pointsCount.ToString(culture);
+            var fmt = new FormattedText(number, culture, FlowDirection.LeftToRight,
+                new Typeface(fontFamily, fontStyle, fontWeight, fontStretch), fontSize, Brushes.Black, VisualTreeHelper.GetDpi(Utils.Border).PixelsPerDip);
+
+            var radius = width > height ? (height - 2 * Utils.AXIS_THICKNESS) / 2 : (width - 2 * Utils.AXIS_THICKNESS) / 2;
+            var centerPoint = new Point(radius, radius);
+            if (width > height)
+                radius -= (2 * fmt.Height + 8);
+            else
+                radius -= (2 * fmt.Width + 8);
+            var xBeg = radius;
+            var yBeg = 90.0;
+            var distanceStep = radius / linesCount;
+
+            for (var step = 0; step < linesCount; step++)
+            {
+                var distance = radius - distanceStep * step;
+                var points = new List<Point>();
+                for (var i = 0; i < pointsCount; i++)
+                {
+                    currentDegrees = 90 + i * degreesStep;
+                    var rads = currentDegrees * Math.PI / 180;
+                    xBeg = centerPoint.X - distance * Math.Cos(rads);
+                    yBeg = centerPoint.Y - distance * Math.Sin(rads);
+                    points.Add(new Point(xBeg, yBeg));
+                }
+
+                for (var i = 0; i < points.Count - 1; i++)
+                {
+                    gm.AddGeometry(new LineGeometry(points[i], points[i + 1]));
+                }
+                gm.AddGeometry(new LineGeometry(points[points.Count - 1], points[0]));
+            }
+
+            return gm;
+
+        }
+
+        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
+        {
+            return null;
+        }
+    }
+
+    public class RadarValuesPathConverter : IMultiValueConverter
+    {
+        public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (values == null
+                //|| values.Length != 8
+                || !(values[0] is double width)
+                || !(values[1] is double height)
+                || !(values[2] is IEnumerable<Series> seriesEnumerable)
+                || !seriesEnumerable.Any()
+                || !(values[3] is ChartStyle chartStyle)
+                || !chartStyle.In(ChartStyle.Radar, ChartStyle.RadarWithMarkers)
+                //|| !(values[6] is string format)
+                || !(values[4] is FontFamily fontFamily)
+                || !(values[5] is double fontSize)
+                || !(values[6] is FontStyle fontStyle)
+                || !(values[7] is FontWeight fontWeight)
+                || !(values[8] is FontStretch fontStretch)
+                || !(values[9] is FlowDirection flowDir)
+                || !(values[10] is IEnumerable<string> customEnumerable))
+                return null;
+
+            var gm = new PathGeometry();
+            var customValues = customEnumerable.ToArray();
+
+            var series = seriesEnumerable.ToArray();
+            var currentDegrees = 0.0;
+            var maxCount = series.Max(s => s.Values.Count);
+            var degreesStep = 360 / maxCount;
+
+            var maxCv = customValues.Any() ? customValues.Max(v => (v, v.Length)) : (v: "", Length: 0);
+            var number = maxCv.Length > maxCount.ToString(culture).Length ? maxCv.v : maxCount.ToString(culture);
+            var fmt = new FormattedText(number, culture, FlowDirection.LeftToRight,
+                new Typeface(fontFamily, fontStyle, fontWeight, fontStretch), fontSize, Brushes.Black, VisualTreeHelper.GetDpi(Utils.Border).PixelsPerDip);
+
+            var radius = width > height ? (height - 2 * Utils.AXIS_THICKNESS) / 2 : (width - 2 * Utils.AXIS_THICKNESS) / 2;
+            var centerPoint = new Point(radius, radius);
+            if (width > height)
+                radius -= (2 * fmt.Height + 8);
+            else
+                radius -= (2 * fmt.Width + 8);
+
+            for (var i = 0; i < maxCount; i++)
+            {
+                currentDegrees = 90 + i * degreesStep;
+                var rads = currentDegrees * Math.PI / 180;
+                var num = customValues.Length > i ? customValues[i] : (i + 1).ToString(culture);
+                fmt = new FormattedText(num, culture, FlowDirection.LeftToRight,
+                    new Typeface(fontFamily, fontStyle, fontWeight, fontStretch), fontSize, Brushes.Black, VisualTreeHelper.GetDpi(Utils.Border).PixelsPerDip);
+                var x = centerPoint.X - (radius + 4) * Math.Cos(rads);
+                var y = centerPoint.Y - (radius + 4) * Math.Sin(rads);
+                if (currentDegrees == 90)
+                {
+                    x -= fmt.Width / 2;
+                    y -= (fmt.Height + 4);
+                }
+                else if (currentDegrees == 180)
+                {
+                    x += 4;
+                    y -= fmt.Height / 2;
+                }
+                else if (currentDegrees == 270)
+                {
+                    x -= fmt.Width / 2;
+                    y += 4;
+                }
+                else if (currentDegrees == 360)
+                {
+                    x -= (fmt.Width + 4);
+                    y -= fmt.Height / 2;
+                }
+                else
+                {
+                    var quadrant = Utils.GetRadarQuadrant(currentDegrees);
+
+                    switch (quadrant)
+                    {
+                        case Quadrants.UpRight:
+                            y -= (fmt.Height / 2);
+                            x += 4;
+                            break;
+                        case Quadrants.DownRight:
+                            x += 4;
+                            y -= fmt.Height / 2;
+                            break;
+                        case Quadrants.DownLeft:
+                            x -= (fmt.Width + 4);
+                            y -= fmt.Height / 2;
+                            break;
+                        case Quadrants.UpLeft:
+                            x -= (fmt.Width + 4);
+                            y -= fmt.Height / 2;
+                            break;
+                    }
+                }
+                var pt = new Point(x, y);
+
+                var ngm = fmt.BuildGeometry(pt);
+                if (flowDir == FlowDirection.RightToLeft)
+                    ngm.Transform = new ScaleTransform { ScaleX = -1, CenterX = x + fmt.Width / 2, CenterY = y + fmt.Height / 2 };
+                gm.AddGeometry(ngm);
+            }
+
+            return gm;
+
+        }
+
+        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
+        {
+            return null;
+        }
+    }
+
     /// <summary>
     /// Prepares <see cref="DrawingGroup"/> to be used for drawing chart, when chart style is set to <see cref="ChartStyle.SolidPie"/> or <see cref="ChartStyle.SlicedPie"/> or <see cref="ag.WPF.Chart.ChartStyle.Doughnut"/>
     /// </summary>
     public class ValuesToPieSectionsConverter : IMultiValueConverter
     {
-        private enum Quadrants
-        {
-            UpRight,
-            DownRight,
-            DownLeft,
-            UpLeft
-        }
-
         /// <summary>Converts source values to a value for the binding target. The data binding engine calls this method when it propagates the values from source bindings to the binding target.</summary>
         /// <returns>A converted value.If the method returns null, the valid null value is used.A return value of <see cref="T:System.Windows.DependencyProperty" />.<see cref="F:System.Windows.DependencyProperty.UnsetValue" /> indicates that the converter did not produce a value, and that the binding will use the <see cref="P:System.Windows.Data.BindingBase.FallbackValue" /> if it is available, or else will use the default value.A return value of <see cref="T:System.Windows.Data.Binding" />.<see cref="F:System.Windows.Data.Binding.DoNothing" /> indicates that the binding does not transfer the value or use the <see cref="P:System.Windows.Data.BindingBase.FallbackValue" /> or the default value.</returns>
         /// <param name="values">The array of values that the source bindings in the <see cref="T:System.Windows.Data.MultiBinding" /> produces. The value <see cref="F:System.Windows.DependencyProperty.UnsetValue" /> indicates that the source binding has no value to provide for conversion.</param>
@@ -3641,7 +3901,7 @@ namespace ag.WPF.Chart
                 segments.Add(new LineSegment(start, true));
 
                 var rads = currentDegrees * Math.PI / 180;
-                var quadrant = getQuadrant(currentDegrees);
+                var quadrant = Utils.GetQuadrant(currentDegrees);
                 switch (quadrant)
                 {
                     case Quadrants.UpRight:
@@ -3726,17 +3986,6 @@ namespace ag.WPF.Chart
         public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
         {
             return null;
-        }
-
-        private Quadrants getQuadrant(double degrees)
-        {
-            if (degrees >= 0 && degrees <= 90)
-                return Quadrants.UpRight;
-            if (degrees <= 360 && degrees >= 270)
-                return Quadrants.DownRight;
-            if (degrees <= 270 && degrees >= 180)
-                return Quadrants.DownLeft;
-            return Quadrants.UpLeft;
         }
     }
 }

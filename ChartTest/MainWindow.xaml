@@ -46,7 +46,7 @@
                          AxesValuesVisibility="Both" 
                          Caption="Sample chart" 
                          XAxisCustomValues="{Binding CustomXTexts}"
-                         ChartStyle="Waterfall"
+                         ChartStyle="Radar"
                          ChartPointLeftButtonDoubleClick="Chart_MarkerLeftButtonDoubleClick">
             </chart:Chart>
             <xctk:PropertyGrid Grid.Row="0" Grid.Column="2" SelectedObject="{Binding ElementName=chTest}" AutoGenerateProperties="True" Margin="4">

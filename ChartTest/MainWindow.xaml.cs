@@ -43,17 +43,18 @@ namespace ChartTest
             //var values1 = new[] { new ChartValue(40, "Gray marble"), new ChartValue(35, "Blue marble"), new ChartValue(25, "Pink marble") };
             //var values2 = new double[] {20, 50};
             //var values3 = new double[] {-60, -20, -27, -45};
-            var values1 = new double[] { 10, 20, -100, 7, 17 };
+            var values1 = new double[] { 10, 20, 210, 7, 17 ,37,89,56,324};
             var values2 = new double[] { 30, 115, 175, 93, 37.5 };
             var values3 = new double[] { 60, -128.3, 37 };
+            var values4 = new double[] { 0.1, -0.3, 0.5, 0.17 };
 
             //chTest.ChartStyle = ChartStyle.Columns;
             //chTest.SeriesCollection.Add(S1);
             //chTest.SeriesCollection.Add(S2);
 
             Series.Add(new Series("Series 1", values1));
-            Series.Add(new Series("Series 2", values2));
-            Series.Add(new Series("Series 3", values3));
+            //Series.Add(new Series("Series 2", values2));
+            //Series.Add(new Series("Series 3", values3));
 
             //chTest.SeriesCollection.Add(new Series("Series 3", values3));
 

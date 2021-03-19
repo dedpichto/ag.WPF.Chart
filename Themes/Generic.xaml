@@ -25,7 +25,9 @@
     <local:HorizontalValuesConverter x:Key="HorizontalValuesConverter"/>
     <local:VerticalPlaceholderWidthConverter x:Key="VerticalPlaceholderWidthConverter"/>
     <local:HorizontalPlaceholderHeightConverter x:Key="HorizontalPlaceholderHeightConverter"/>
-    
+    <local:RadarValuesPathConverter x:Key="RadarValuesPathConverter"/>
+    <local:RadarLinesPathConverter x:Key="RadarLinesPathConverter"/>
+
     <Style TargetType="{x:Type local:Chart}">
         <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.WindowTextBrushKey}}"/>
         <Setter Property="Background" Value="{DynamicResource {x:Static SystemColors.WindowBrushKey}}"/>
@@ -233,7 +235,7 @@
                                     </MultiBinding>
                                 </Path.Data>
                             </Path>
-                            <Canvas x:Name="PART_Canvas" Grid.Row="4" Grid.Column="3" Margin="4" ClipToBounds="True">
+                            <Canvas x:Name="PART_Canvas" Background="Transparent" Grid.Row="4" Grid.Column="3" Margin="4" ClipToBounds="True">
                                 <Image x:Name="PART_PieImage" 
                                        Stretch="Fill" 
                                        Visibility="Collapsed" 
@@ -272,7 +274,42 @@
                                     </Image.Source>
                                 </Image>
                                 <Grid x:Name="GridSeries">
-                                    <Path Stroke="{TemplateBinding Foreground}" StrokeThickness="0.5">
+                                    <Path x:Name="PathRadarValues" Fill="{TemplateBinding Foreground}" Visibility="Collapsed">
+                                        <Path.Data>
+                                            <MultiBinding Converter="{StaticResource RadarValuesPathConverter}">
+                                                <Binding ElementName="PART_Canvas" Path="ActualWidth"/>
+                                                <Binding ElementName="PART_Canvas" Path="ActualHeight"/>
+                                                <Binding Path="SeriesCollection" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                                <Binding Path="ChartStyle" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                                <Binding Path="AxesFontFamily" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                                <Binding Path="AxesFontSize" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                                <Binding Path="AxesFontStyle" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                                <Binding Path="AxesFontWeight" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                                <Binding Path="AxesFontStretch" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                                <Binding Path="FlowDirection" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                                <Binding Path="XAxisCustomValues" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                                <Binding Path="SeriesCount" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                            </MultiBinding>
+                                        </Path.Data>
+                                    </Path>
+                                    <Path x:Name="PathRadarLines" Stroke="{TemplateBinding Foreground}" StrokeThickness="0.3" Visibility="Collapsed">
+                                        <Path.Data>
+                                            <MultiBinding Converter="{StaticResource RadarLinesPathConverter}">
+                                                <Binding ElementName="PART_Canvas" Path="ActualWidth"/>
+                                                <Binding ElementName="PART_Canvas" Path="ActualHeight"/>
+                                                <Binding Path="SeriesCollection" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                                <Binding Path="ChartStyle" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                                <Binding Path="AxesFontFamily" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                                <Binding Path="AxesFontSize" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                                <Binding Path="AxesFontStyle" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                                <Binding Path="AxesFontWeight" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                                <Binding Path="AxesFontStretch" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                                <Binding Path="XAxisCustomValues" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                                <Binding Path="SeriesCount" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                            </MultiBinding>
+                                        </Path.Data>
+                                    </Path>
+                                    <Path x:Name="PathAxesLines" Stroke="{TemplateBinding Foreground}" StrokeThickness="0.5">
                                         <Path.Data>
                                             <MultiBinding Converter="{StaticResource AxesLinesConverter}">
                                                 <Binding ElementName="PART_Canvas" Path="ActualWidth"/>
@@ -330,7 +367,7 @@
                                           >
                                 <ItemsControl.ItemsPanel>
                                     <ItemsPanelTemplate>
-                                        <WrapPanel Orientation="{Binding LegendAlignment, RelativeSource={RelativeSource Mode=TemplatedParent}, Converter={StaticResource LegendOrientationConverter}}"
+                                        <WrapPanel Orientation="{Binding LegendAlignment, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:Chart}, Converter={StaticResource LegendOrientationConverter}}"
                                                    Margin="4"/>
                                     </ItemsPanelTemplate>
                                 </ItemsControl.ItemsPanel>
@@ -344,7 +381,7 @@
                                           >
                                 <ItemsControl.ItemsPanel>
                                     <ItemsPanelTemplate>
-                                        <WrapPanel Orientation="{Binding LegendAlignment, RelativeSource={RelativeSource Mode=TemplatedParent}, Converter={StaticResource LegendOrientationConverter}}"
+                                        <WrapPanel Orientation="{Binding LegendAlignment, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:Chart}, Converter={StaticResource LegendOrientationConverter}}"
                                                    Margin="4"/>
                                     </ItemsPanelTemplate>
                                 </ItemsControl.ItemsPanel>
@@ -465,6 +502,40 @@
                             <Setter Property="Visibility" TargetName="VPLaceHolder" Value="Collapsed"/>
                             <Setter Property="Visibility" TargetName="HPLaceHolder" Value="Collapsed"/>
                             <Setter Property="Visibility" TargetName="PART_PieImage" Value="Visible"/>
+                        </Trigger>
+                        <Trigger Property="ChartStyle" Value="Radar">
+                            <Setter Property="Visibility" TargetName="TextYAxis" Value="Collapsed"/>
+                            <Setter Property="Visibility" TargetName="TextXAxis" Value="Collapsed"/>
+                            <!--<Setter Property="Visibility" TargetName="GridSeries" Value="Collapsed"/>-->
+                            <Setter Property="Visibility" TargetName="LegendField" Value="Collapsed"/>
+                            <Setter Property="Visibility" TargetName="PathXAxisValues" Value="Collapsed"/>
+                            <Setter Property="Visibility" TargetName="PathYAxisValues" Value="Collapsed"/>
+                            <Setter Property="Visibility" TargetName="VPLaceHolder" Value="Collapsed"/>
+                            <Setter Property="Visibility" TargetName="HPLaceHolder" Value="Collapsed"/>
+                            <Setter Property="Visibility" TargetName="PART_PieImage" Value="Collapsed"/>
+                            <Setter Property="Visibility" TargetName="PathVertLines" Value="Collapsed"/>
+                            <Setter Property="Visibility" TargetName="PathHorzLines" Value="Collapsed"/>
+                            <Setter Property="Visibility" TargetName="PathTicks" Value="Collapsed"/>
+                            <Setter Property="Visibility" TargetName="PathAxesLines" Value="Collapsed"/>
+                            <Setter Property="Visibility" TargetName="PathRadarValues" Value="Visible"/>
+                            <Setter Property="Visibility" TargetName="PathRadarLines" Value="Visible"/>
+                        </Trigger>
+                        <Trigger Property="ChartStyle" Value="RadarWithMarkers">
+                            <Setter Property="Visibility" TargetName="TextYAxis" Value="Collapsed"/>
+                            <Setter Property="Visibility" TargetName="TextXAxis" Value="Collapsed"/>
+                            <!--<Setter Property="Visibility" TargetName="GridSeries" Value="Collapsed"/>-->
+                            <Setter Property="Visibility" TargetName="LegendField" Value="Collapsed"/>
+                            <Setter Property="Visibility" TargetName="PathXAxisValues" Value="Collapsed"/>
+                            <Setter Property="Visibility" TargetName="PathYAxisValues" Value="Collapsed"/>
+                            <Setter Property="Visibility" TargetName="VPLaceHolder" Value="Collapsed"/>
+                            <Setter Property="Visibility" TargetName="HPLaceHolder" Value="Collapsed"/>
+                            <Setter Property="Visibility" TargetName="PART_PieImage" Value="Collapsed"/>
+                            <Setter Property="Visibility" TargetName="PathVertLines" Value="Collapsed"/>
+                            <Setter Property="Visibility" TargetName="PathHorzLines" Value="Collapsed"/>
+                            <Setter Property="Visibility" TargetName="PathTicks" Value="Collapsed"/>
+                            <Setter Property="Visibility" TargetName="PathAxesLines" Value="Collapsed"/>
+                            <Setter Property="Visibility" TargetName="PathRadarValues" Value="Visible"/>
+                            <Setter Property="Visibility" TargetName="PathRadarLines" Value="Visible"/>
                         </Trigger>
                         <MultiTrigger>
                             <MultiTrigger.Conditions>

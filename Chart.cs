@@ -144,7 +144,15 @@ namespace ag.WPF.Chart
         /// <summary>
         /// Style represented by cumulated effect of positive and negative values
         /// </summary>
-        Waterfall
+        Waterfall,
+        /// <summary>
+        /// Style represented by radar
+        /// </summary>
+        Radar,
+        /// <summary>
+        /// Style represented by radar with markers
+        /// </summary>
+        RadarWithMarkers
     }
 
     /// <summary>
