@@ -31,6 +31,7 @@ namespace ChartTest
 
         public ObservableCollection<Series> Series { get; } = new ObservableCollection<Series>();
         public List<string> CustomXTexts { get; } = new List<string>(new string[] { "Canada", "Russia", "USA" });
+        public List<string> CustomYTexts { get; } = new List<string>(new string[] { "Oil", "Gas", "Electricity" });
         //public Series S1 { get; } = new Series("Series 1", new double[] { -40, -20, -60 });
         //public Series S2 { get; } = new Series("Series 2", new double[] { 30, 115, 175, 93, 37.5 });
         private void Window_Loaded(object sender, RoutedEventArgs e)
@@ -43,18 +44,21 @@ namespace ChartTest
             //var values1 = new[] { new ChartValue(40, "Gray marble"), new ChartValue(35, "Blue marble"), new ChartValue(25, "Pink marble") };
             //var values2 = new double[] {20, 50};
             //var values3 = new double[] {-60, -20, -27, -45};
-            var values1 = new double[] { 10, 20, 210, 7, 17 ,37,89,56,324};
-            var values2 = new double[] { 30, 115, 175, 93, 37.5 };
+            var values1 = new double[] { -327, 20, 210, 27, 17 ,37,89,56,324};
+            var values2 = new double[] { 30, 115, 175, 593, 37.5 };
             var values3 = new double[] { 60, -128.3, 37 };
-            var values4 = new double[] { 0.1, -0.3, 0.5, 0.17 };
+            var values4 = new double[] { 1,8.3,-11,-12,-13,-14,-121};
+            var values5 = new double[] { 1,2,3,4,5};
 
             //chTest.ChartStyle = ChartStyle.Columns;
             //chTest.SeriesCollection.Add(S1);
             //chTest.SeriesCollection.Add(S2);
 
             Series.Add(new Series("Series 1", values1));
-            //Series.Add(new Series("Series 2", values2));
-            //Series.Add(new Series("Series 3", values3));
+            Series.Add(new Series("Series 2", values2));
+            Series.Add(new Series("Series 3", values3));
+            Series.Add(new Series("Series 4", values4));
+            Series.Add(new Series("Series 5", values5));
 
             //chTest.SeriesCollection.Add(new Series("Series 3", values3));
 

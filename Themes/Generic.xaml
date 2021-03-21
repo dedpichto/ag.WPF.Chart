@@ -25,7 +25,7 @@
     <local:HorizontalValuesConverter x:Key="HorizontalValuesConverter"/>
     <local:VerticalPlaceholderWidthConverter x:Key="VerticalPlaceholderWidthConverter"/>
     <local:HorizontalPlaceholderHeightConverter x:Key="HorizontalPlaceholderHeightConverter"/>
-    <local:RadarValuesPathConverter x:Key="RadarValuesPathConverter"/>
+    <local:RadarAxesValuesConverter x:Key="RadarAxesValuesConverter"/>
     <local:RadarLinesPathConverter x:Key="RadarLinesPathConverter"/>
 
     <Style TargetType="{x:Type local:Chart}">
@@ -276,7 +276,7 @@
                                 <Grid x:Name="GridSeries">
                                     <Path x:Name="PathRadarValues" Fill="{TemplateBinding Foreground}" Visibility="Collapsed">
                                         <Path.Data>
-                                            <MultiBinding Converter="{StaticResource RadarValuesPathConverter}">
+                                            <MultiBinding Converter="{StaticResource RadarAxesValuesConverter}">
                                                 <Binding ElementName="PART_Canvas" Path="ActualWidth"/>
                                                 <Binding ElementName="PART_Canvas" Path="ActualHeight"/>
                                                 <Binding Path="SeriesCollection" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
@@ -288,6 +288,9 @@
                                                 <Binding Path="AxesFontStretch" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                                 <Binding Path="FlowDirection" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                                 <Binding Path="XAxisCustomValues" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                                <Binding Path="YAxisCustomValues" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                                <Binding Path="SectionsY" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                                <Binding Path="AxesValuesFormat" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                                 <Binding Path="SeriesCount" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                             </MultiBinding>
                                         </Path.Data>
@@ -305,6 +308,7 @@
                                                 <Binding Path="AxesFontWeight" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                                 <Binding Path="AxesFontStretch" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                                 <Binding Path="XAxisCustomValues" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                                <Binding Path="SectionsY" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                                 <Binding Path="SeriesCount" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                             </MultiBinding>
                                         </Path.Data>

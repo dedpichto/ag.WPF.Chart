@@ -75,14 +75,38 @@ namespace ag.WPF.Chart
             return Quadrants.UpRight;
         }
 
-        internal static (int ticksCount, int linesCount) GetRadarTicksCount(Series[] seriesArray)
+        internal static (int ticksCount, int linesCount) GetRadarTicksCount(Series[] seriesArray, int stops = 10, bool autoAdjust = true, double maxY = 100)
         {
-            var currentCount = seriesArray.Max(s => s.Values.Count);
-            var max = seriesArray.SelectMany(s => s.Values.Select(v => v.Value.V1)).Max();
-            var min = seriesArray.SelectMany(s => s.Values.Select(v => v.Value.V1)).Min();
+            //var differences = seriesArray.Select(s =>
+            //{
+            //    var df = new List<double>();
+            //    for (var i = 0; i < s.Values.Count - 1; i++)
+            //    {
+            //        var v1 = s.Values[i].Value.V1;
+            //        var v2 = s.Values[i + 1].Value.V1;
+            //        if (v1 >= 0 && v2 >= 0)
+            //            df.Add(Math.Abs(v1 - v2));
+            //        else if (v1 < 0 && v2 > 0)
+            //            df.Add(Math.Abs(v1) + v2);
+            //        else if (v1 > 0 && v2 < 0)
+            //            df.Add(v1 + Math.Abs(v2));
+            //        else
+            //            df.Add(Math.Abs(v1 + v2));
+            //    }
+            //    return df;
+            //}).ToArray();
 
-            if (min > 0)
+            var currentCount = autoAdjust ? seriesArray.Max(s => s.Values.Count) : (int)maxY;
+
+            return (stops + 1, stops);
+            var values = seriesArray.SelectMany(s => s.Values.Select(v => v.Value.V1));
+            var max = values.Max();
+            var min = values.Min();
+
+            if (values.All(v => v >= 0))
                 min = 0;
+            if (values.All(v => v <= 0))
+                max = 0;
 
             var aMax = Math.Abs(max);
             var aMin = Math.Abs(min);
@@ -90,35 +114,68 @@ namespace ag.WPF.Chart
             var delimMax = Math.Pow(10, aMax.ToString().Length - 1);
             var delimMin = Math.Pow(10, aMin.ToString().Length - 1);
 
-            if (aMax > delimMax)
-                aMax = (int)(aMax / Math.Pow(10, aMax.ToString().Length - 1) + 1) * Math.Pow(10, aMax.ToString().Length - 1);
+            var delimeter = 10;
+            if (delimMax > 1 || delimMin > 1)
+            {
+                if (max > 0)
+                {
+                    //if (aMax != delimMax)
+                    //    aMax = (int)(aMax / delimMax + 1) * (delimMax > 1 ? delimMax : 0);
+                    //else
+                    //    aMax = (int)aMax;
+                    aMax = (int)(aMax / delimMax + 1) * (delimMax > 1 ? delimMax : 0);
+                }
+                else
+                {
+                    //if (aMax != delimMax)
+                    //    aMax = (int)(aMax / delimMax - 1) * (delimMax > 1 ? delimMax : 0);
+                    //else
+                    //    aMax = (int)aMax;
+                    aMax = (int)(aMax / delimMax - 1) * (delimMax > 1 ? delimMax : 0);
+                }
+
+                if (min < 0)
+                {
+                    //if (aMin != delimMin)
+                    //    aMin = (int)(aMin / delimMin + 1) * (delimMin > 1 ? delimMin : 0);
+                    //else
+                    //    aMin = (int)aMin;
+                    aMin = (int)(aMin / delimMin + 1) * (delimMin > 1 ? delimMin : 0);
+                }
+                else
+                {
+                    //if (aMin != delimMin)
+                    //    aMin = (int)(aMin / delimMin - 1) * (delimMin > 1 ? delimMin : 0);
+                    //else
+                    //    aMin = (int)aMin;
+                    aMin = (int)(aMin / delimMin - 1) * (delimMin > 1 ? delimMin : 0);
+                }
+            }
             else
-                aMax = (int)aMax;
-            if (aMin > delimMin)
-                aMin = (int)(aMin / Math.Pow(10, aMin.ToString().Length - 1) + 1) * Math.Pow(10, aMin.ToString().Length - 1);
-            else
-                aMin = (int)aMin;
+            {
+                delimeter = 1;
+            }
 
             max = Math.Sign(max) * aMax;
             min = Math.Sign(min) * aMin;
 
             var diff = 0;
 
-            if (max > 0 && min < 0)
+            if (max >= 0 && min <= 0)
                 diff = (int)(Math.Abs(min) + max);
-            else if (max < 0 && min < 0)
+            else if (max <= 0 && min <= 0)
                 diff = (int)Math.Abs(max + min);
-            else if (max > 0 && min >= 0)
+            else if (max >= 0 && min >= 0)
                 diff = (int)(max - min);
 
             var result = currentCount;
             var valuesCount = currentCount;
             currentCount = diff / result;
-            while (currentCount % 10 != 0)
+            while (currentCount % delimeter != 0)
             {
                 currentCount = diff / --result;
             }
-            return (valuesCount, result-1);
+            return (valuesCount, result - 1);
         }
 
         internal static Tuple<double, int> Limits(ChartStyle style, bool offsetBoundary, int stopsX, int ticks,
@@ -3627,7 +3684,8 @@ namespace ag.WPF.Chart
                 || !(values[6] is FontStyle fontStyle)
                 || !(values[7] is FontWeight fontWeight)
                 || !(values[8] is FontStretch fontStretch)
-                || !(values[9] is IEnumerable<string> customEnumerable))
+                || !(values[9] is IEnumerable<string> customEnumerable)
+                || !(values[10] is int linesCount))
                 return null;
 
             var gm = new PathGeometry();
@@ -3635,7 +3693,7 @@ namespace ag.WPF.Chart
 
             var series = seriesEnumerable.ToArray();
             var currentDegrees = 0.0;
-            var (pointsCount, linesCount) = Utils.GetRadarTicksCount(series);// series.Max(s => s.Values.Count);
+            var pointsCount = series.Max(s => s.Values.Count);
             var degreesStep = 360 / pointsCount;
 
             var maxCv = customValues.Any() ? customValues.Max(v => (v, v.Length)) : (v: "", Length: 0);
@@ -3683,7 +3741,7 @@ namespace ag.WPF.Chart
         }
     }
 
-    public class RadarValuesPathConverter : IMultiValueConverter
+    public class RadarAxesValuesConverter : IMultiValueConverter
     {
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
@@ -3695,26 +3753,30 @@ namespace ag.WPF.Chart
                 || !seriesEnumerable.Any()
                 || !(values[3] is ChartStyle chartStyle)
                 || !chartStyle.In(ChartStyle.Radar, ChartStyle.RadarWithMarkers)
-                //|| !(values[6] is string format)
                 || !(values[4] is FontFamily fontFamily)
                 || !(values[5] is double fontSize)
                 || !(values[6] is FontStyle fontStyle)
                 || !(values[7] is FontWeight fontWeight)
                 || !(values[8] is FontStretch fontStretch)
                 || !(values[9] is FlowDirection flowDir)
-                || !(values[10] is IEnumerable<string> customEnumerable))
+                || !(values[10] is IEnumerable<string> customEnumerableX)
+                || !(values[11] is IEnumerable<string> customEnumerableY)
+                || !(values[12] is int linesCount)
+                || linesCount < 2
+                || !(values[13] is string format))
                 return null;
 
             var gm = new PathGeometry();
-            var customValues = customEnumerable.ToArray();
+            var customValuesHorizontal = customEnumerableX.ToArray();
+            var customValuesVertical = customEnumerableY.ToArray();
 
             var series = seriesEnumerable.ToArray();
             var currentDegrees = 0.0;
-            var maxCount = series.Max(s => s.Values.Count);
-            var degreesStep = 360 / maxCount;
+            var pointsCount = series.Max(s => s.Values.Count);
+            var degreesStep = 360 / pointsCount;
 
-            var maxCv = customValues.Any() ? customValues.Max(v => (v, v.Length)) : (v: "", Length: 0);
-            var number = maxCv.Length > maxCount.ToString(culture).Length ? maxCv.v : maxCount.ToString(culture);
+            var maxCv = customValuesHorizontal.Any() ? customValuesHorizontal.Max(v => (v, v.Length)) : (v: "", Length: 0);
+            var number = maxCv.Length > pointsCount.ToString(culture).Length ? maxCv.v : pointsCount.ToString(culture);
             var fmt = new FormattedText(number, culture, FlowDirection.LeftToRight,
                 new Typeface(fontFamily, fontStyle, fontWeight, fontStretch), fontSize, Brushes.Black, VisualTreeHelper.GetDpi(Utils.Border).PixelsPerDip);
 
@@ -3725,11 +3787,11 @@ namespace ag.WPF.Chart
             else
                 radius -= (2 * fmt.Width + 8);
 
-            for (var i = 0; i < maxCount; i++)
+            for (var i = 0; i < pointsCount; i++)
             {
                 currentDegrees = 90 + i * degreesStep;
                 var rads = currentDegrees * Math.PI / 180;
-                var num = customValues.Length > i ? customValues[i] : (i + 1).ToString(culture);
+                var num = customValuesHorizontal.Length > i ? customValuesHorizontal[i] : (i + 1).ToString(culture);
                 fmt = new FormattedText(num, culture, FlowDirection.LeftToRight,
                     new Typeface(fontFamily, fontStyle, fontWeight, fontStretch), fontSize, Brushes.Black, VisualTreeHelper.GetDpi(Utils.Border).PixelsPerDip);
                 var x = centerPoint.X - (radius + 4) * Math.Cos(rads);
@@ -3786,8 +3848,174 @@ namespace ag.WPF.Chart
                 gm.AddGeometry(ngm);
             }
 
+            // draw y-axis values
+            var (max, min, stepNum) = getMaxMin(series, linesCount);
+            var stepY = radius / linesCount;
+            var xY = centerPoint.X - 4;
+            var yY = centerPoint.Y - radius;
+            var yNumber = max;
+            for (var i = 0; i < linesCount + 1; i++)
+            {
+                var text = customValuesVertical.Length > i ? customValuesVertical[i] : yNumber.ToString(format);
+                fmt = new FormattedText(text, culture, FlowDirection.LeftToRight,
+                    new Typeface(fontFamily, fontStyle, fontWeight, fontStretch), fontSize, Brushes.Black, VisualTreeHelper.GetDpi(Utils.Border).PixelsPerDip)
+                {
+                    TextAlignment = flowDir == FlowDirection.RightToLeft ? TextAlignment.Left : TextAlignment.Right
+                };
+                var pt = new Point(xY - 8, yY - fmt.Height / 2);
+                var ngm = fmt.BuildGeometry(pt);
+                if (flowDir == FlowDirection.RightToLeft)
+                    ngm.Transform = new ScaleTransform { ScaleX = -1, CenterX = pt.X - 8 + fmt.Width / 2, CenterY = pt.Y + fmt.Height / 2 };
+
+                gm.AddGeometry(ngm);
+                yNumber -= stepNum;
+                yY += stepY;
+            }
             return gm;
 
+        }
+
+        private (double max, double min, double step) getMaxMin(Series[] seriesArray, int linesCount)
+        {
+            var values = seriesArray.SelectMany(s => s.Values.Select(v => v.Value.V1));
+            var max = values.Max();
+            var min = values.Min();
+            var diff = 0.0;
+            var step = 0.0;
+
+            if (values.All(v => v > 0))
+                min = 0;
+            if (values.All(v => v < 0))
+                max = 0;
+
+            if (min == 0)
+            {
+                max = Math.Ceiling(max);
+                diff = getDiff(max, min);
+                step = diff / linesCount;
+                if (isInteger(step))
+                    return (max, min, step);
+                var power = Math.Abs((int)max).ToString().Length - 1;
+                max = Math.Sign(max) * roundInt((int)Math.Abs(max), (int)Math.Pow(10, power));
+                diff = getDiff(max, min);
+                step = diff / linesCount;
+                while (!isInteger(step))
+                {
+                    //delimMax = Math.Abs((int)max).ToString().Length - 1;
+                    //delimMin = Math.Abs((int)min).ToString().Length - 1;
+                    max = Math.Sign(max) * roundInt((int)Math.Abs(max), (int)Math.Pow(10, power));
+                    //min = Math.Sign(min) * roundInt((int)Math.Abs(min), (int)Math.Pow(10, powerMin));
+                    diff = getDiff(max, min);
+                    step = diff / linesCount;
+                }
+            }
+            else if (max == 0)
+            {
+                min = Math.Floor(min);
+                diff = getDiff(max, min);
+                step = diff / linesCount;
+                if (isInteger(step))
+                    return (max, min, step);
+                var power = Math.Abs((int)min).ToString().Length - 1;
+                min = Math.Sign(min) * roundInt((int)Math.Abs(min), (int)Math.Pow(10, power));
+                diff = getDiff(max, min);
+                step = diff / linesCount;
+                while (!isInteger(step))
+                {
+                    //delimMax = Math.Abs((int)max).ToString().Length - 1;
+                    //delimMin = Math.Abs((int)min).ToString().Length - 1;
+                    //max = Math.Sign(max) * roundInt((int)Math.Abs(max), (int)Math.Pow(10, powerMax));
+                    min = Math.Sign(min) * roundInt((int)Math.Abs(min), (int)Math.Pow(10, power));
+                    diff = getDiff(max, min);
+                    step = diff / linesCount;
+                }
+            }
+            else if (Math.Abs(max) > Math.Abs(min))
+            {
+                var sign = Math.Sign(min);
+                var prevMin = Math.Abs(min);
+                min = 0;
+                linesCount--;
+                max = Math.Ceiling(max);
+                diff = getDiff(max, min);
+                step = diff / linesCount;
+                if (isInteger(step) && step >= prevMin)
+                {
+                    min = sign * step;
+                    return (max, min, step);
+                }
+
+                var power = Math.Abs((int)max).ToString().Length - 1;
+                max = Math.Sign(max) * roundInt((int)Math.Abs(max), (int)Math.Pow(10, power));
+                diff = getDiff(max, min);
+                step = diff / linesCount;
+                while (!isInteger(step) || step < prevMin)
+                {
+                    //power = Math.Abs((int)max).ToString().Length - 1;
+                    max = Math.Sign(max) * roundInt((int)Math.Abs(max), (int)Math.Pow(10, power));
+                    diff = getDiff(max, min);
+                    step = diff / linesCount;
+                }
+                min = sign * step;
+            }
+            else if (Math.Abs(min) > Math.Abs(max))
+            {
+                var sign = Math.Sign(max);
+                var prevMax = Math.Abs(max);
+                max = 0;
+                linesCount--;
+                min = Math.Floor(min);
+                diff = getDiff(max, min);
+                step = diff / linesCount;
+                if (isInteger(step) && step >= prevMax)
+                {
+                    max = sign * step;
+                    return (max, min, step);
+                }
+
+                var power = Math.Abs((int)min).ToString().Length - 1;
+                min = Math.Sign(min) * roundInt((int)Math.Abs(min), (int)Math.Pow(10, power));
+                diff = getDiff(max, min);
+                step = diff / linesCount;
+                while (!isInteger(step) || step < prevMax)
+                {
+                    min = Math.Sign(min) * roundInt((int)Math.Abs(min), (int)Math.Pow(10, power));
+                    diff = getDiff(max, min);
+                    step = diff / linesCount;
+                }
+                max = sign * step;
+            }
+            return (max, min, step);
+        }
+
+        private bool isInteger(double step)
+        {
+            return Math.Abs(step % 1) <= (double.Epsilon * 100);
+        }
+
+        private int roundInt(int number, int tense)
+        {
+            // Smaller multiple
+            int a = number / tense * tense;
+
+            // Larger multiple
+            int b = a + tense;
+
+            // Return of closest of two
+            //return (number - a < b - number) ? a : b;
+            return b;
+        }
+
+        private double getDiff(double max, double min)
+        {
+            if (max >= 0 && min >= 0)
+                return Math.Abs(max - min);
+            else if (max < 0 && min > 0)
+                return Math.Abs(max) + min;
+            else if (max > 0 && min < 0)
+                return max + Math.Abs(min);
+            else
+                return Math.Abs(max + min);
         }
 
         public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
