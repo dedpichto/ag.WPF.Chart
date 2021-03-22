@@ -3781,6 +3781,7 @@ namespace ag.WPF.Chart
                 new Typeface(fontFamily, fontStyle, fontWeight, fontStretch), fontSize, Brushes.Black, VisualTreeHelper.GetDpi(Utils.Border).PixelsPerDip);
 
             var radius = width > height ? (height - 2 * Utils.AXIS_THICKNESS) / 2 : (width - 2 * Utils.AXIS_THICKNESS) / 2;
+
             var centerPoint = new Point(radius, radius);
             if (width > height)
                 radius -= (2 * fmt.Height + 8);
@@ -3849,7 +3850,8 @@ namespace ag.WPF.Chart
             }
 
             // draw y-axis values
-            var (max, min, stepNum, _) = getMaxMin(series, linesCount, radius);
+            var (max, min, stepNum, _, _) = getMaxMin(series, linesCount, radius, centerPoint);
+
             var stepY = radius / linesCount;
             var xY = centerPoint.X - 4;
             var yY = centerPoint.Y - radius;
@@ -3876,7 +3878,7 @@ namespace ag.WPF.Chart
         }
 
 
-        private (double max, double min, double step, double units) getMaxMin(Series[] seriesArray, int linesCount, double radius)
+        private (double max, double min, double step, double units, Point zeroPoint) getMaxMin(Series[] seriesArray, int linesCount, double radius, Point centerPoint)
         {
             var values = seriesArray.SelectMany(s => s.Values.Select(v => v.Value.V1));
             var max = values.Max();
@@ -3893,44 +3895,37 @@ namespace ag.WPF.Chart
             if (min == 0)
             {
                 max = Math.Ceiling(max);
-                diff = getDiff(max, min);
-                step = diff / linesCount;
-                units = diff / radius;
-                if (isInteger(step))
-                    return (max, min, step, units);
                 var power = Math.Abs((int)max).ToString().Length - 1;
-                max = Math.Sign(max) * roundInt((int)Math.Abs(max), (int)Math.Pow(10, power));
+
                 diff = getDiff(max, min);
                 step = diff / linesCount;
-                units = diff / radius;
+
                 while (!isInteger(step))
                 {
                     max = Math.Sign(max) * roundInt((int)Math.Abs(max), (int)Math.Pow(10, power));
                     diff = getDiff(max, min);
                     step = diff / linesCount;
                 }
-                units = diff / radius;
+                units = Math.Abs(radius / diff);
             }
             else if (max == 0)
             {
                 min = Math.Floor(min);
-                diff = getDiff(max, min);
-                step = diff / linesCount;
-                units = diff / radius;
-                if (isInteger(step))
-                    return (max, min, step, units);
                 var power = Math.Abs((int)min).ToString().Length - 1;
-                min = Math.Sign(min) * roundInt((int)Math.Abs(min), (int)Math.Pow(10, power));
+
                 diff = getDiff(max, min);
                 step = diff / linesCount;
-                units = diff / radius;
+
                 while (!isInteger(step))
                 {
                     min = Math.Sign(min) * roundInt((int)Math.Abs(min), (int)Math.Pow(10, power));
                     diff = getDiff(max, min);
+                    step = diff / linesCount;
                 }
-                units = diff / radius;
-                return (max, min, step, units);
+                units = Math.Abs(radius / diff);
+
+                // find zero point
+                centerPoint.Y -= step * linesCount * units;
             }
             else if (Math.Abs(max) > Math.Abs(min))
             {
@@ -3939,28 +3934,27 @@ namespace ag.WPF.Chart
                 min = 0;
                 linesCount--;
                 max = Math.Ceiling(max);
-                diff = getDiff(max, min);
-                step = diff / linesCount;
-                units = diff / radius;
-                if (isInteger(step) && step >= prevMin)
-                {
-                    min = sign * step;
-                    return (max, min, step, units);
-                }
-
                 var power = Math.Abs((int)max).ToString().Length - 1;
-                max = Math.Sign(max) * roundInt((int)Math.Abs(max), (int)Math.Pow(10, power));
+
                 diff = getDiff(max, min);
                 step = diff / linesCount;
-                units = diff / radius;
+
                 while (!isInteger(step) || step < prevMin)
                 {
                     max = Math.Sign(max) * roundInt((int)Math.Abs(max), (int)Math.Pow(10, power));
                     diff = getDiff(max, min);
                     step = diff / linesCount;
                 }
-                units = diff / radius;
                 min = sign * step;
+                units = Math.Abs(radius / (diff + Math.Abs(min)));
+
+                // find zero point
+                var temp = min;
+                while (temp < 0)
+                {
+                    temp += step;
+                    centerPoint.Y -= step * units;
+                }
             }
             else
             {
@@ -3969,30 +3963,29 @@ namespace ag.WPF.Chart
                 max = 0;
                 linesCount--;
                 min = Math.Floor(min);
-                diff = getDiff(max, min);
-                step = diff / linesCount;
-                units = diff / radius;
-                if (isInteger(step) && step >= prevMax)
-                {
-                    max = sign * step;
-                    return (max, min, step, units);
-                }
-
                 var power = Math.Abs((int)min).ToString().Length - 1;
-                min = Math.Sign(min) * roundInt((int)Math.Abs(min), (int)Math.Pow(10, power));
+
                 diff = getDiff(max, min);
                 step = diff / linesCount;
-                units = diff / radius;
+
                 while (!isInteger(step) || step < prevMax)
                 {
                     min = Math.Sign(min) * roundInt((int)Math.Abs(min), (int)Math.Pow(10, power));
                     diff = getDiff(max, min);
                     step = diff / linesCount;
                 }
-                units = diff / radius;
                 max = sign * step;
+                units = Math.Abs(radius / (diff + max));
+
+                // find zero point
+                var temp = min;
+                while (temp < 0)
+                {
+                    temp += step;
+                    centerPoint.Y -= step * units;
+                }
             }
-            return (max, min, step, units);
+            return (max, min, step, units, centerPoint);
         }
 
         private bool isInteger(double step)

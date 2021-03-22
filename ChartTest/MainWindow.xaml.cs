@@ -48,15 +48,15 @@ namespace ChartTest
             var values2 = new double[] { 30, 115, 175, 593, 37.5 };
             var values3 = new double[] { 60, -128.3, 37 };
             var values4 = new double[] { 1,8.3,72,90,130,-11,-12,-13,-14,-121};
-            var values5 = new double[] { 1,2,3,4,5};
+            var values5 = new double[] { -1,-2,-3,-4,-52};
 
             //chTest.ChartStyle = ChartStyle.Columns;
             //chTest.SeriesCollection.Add(S1);
             //chTest.SeriesCollection.Add(S2);
 
-            //Series.Add(new Series("Series 1", values1));
+            Series.Add(new Series("Series 1", values1));
             //Series.Add(new Series("Series 2", values2));
-            Series.Add(new Series("Series 3", values3));
+            //Series.Add(new Series("Series 3", values3));
             //Series.Add(new Series("Series 4", values4));
             //Series.Add(new Series("Series 5", values5));
 
