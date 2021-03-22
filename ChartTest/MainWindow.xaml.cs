@@ -44,21 +44,21 @@ namespace ChartTest
             //var values1 = new[] { new ChartValue(40, "Gray marble"), new ChartValue(35, "Blue marble"), new ChartValue(25, "Pink marble") };
             //var values2 = new double[] {20, 50};
             //var values3 = new double[] {-60, -20, -27, -45};
-            var values1 = new double[] { -327, 20, 210, 27, 17 ,37,89,56,324};
+            var values1 = new double[] { 327, 20, 210, 27, 17 ,37,89,56,324};
             var values2 = new double[] { 30, 115, 175, 593, 37.5 };
             var values3 = new double[] { 60, -128.3, 37 };
             var values4 = new double[] { 1,8.3,72,90,130,-11,-12,-13,-14,-121};
-            var values5 = new double[] { -1,-2,-3,-4,-52};
+            var values5 = new double[] { -1,-2,-3,-4,-7};
 
             //chTest.ChartStyle = ChartStyle.Columns;
             //chTest.SeriesCollection.Add(S1);
             //chTest.SeriesCollection.Add(S2);
 
-            Series.Add(new Series("Series 1", values1));
+            //Series.Add(new Series("Series 1", values1));
             //Series.Add(new Series("Series 2", values2));
             //Series.Add(new Series("Series 3", values3));
             //Series.Add(new Series("Series 4", values4));
-            //Series.Add(new Series("Series 5", values5));
+            Series.Add(new Series("Series 5", values5));
 
             //chTest.SeriesCollection.Add(new Series("Series 3", values3));
 

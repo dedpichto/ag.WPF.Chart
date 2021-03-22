@@ -75,107 +75,187 @@ namespace ag.WPF.Chart
             return Quadrants.UpRight;
         }
 
-        internal static (int ticksCount, int linesCount) GetRadarTicksCount(Series[] seriesArray, int stops = 10, bool autoAdjust = true, double maxY = 100)
+        internal static (double max, double min, double step, double units, Point zeroPoint) GetMeasuresForPositive(double max, double min, int linesCount, double radius, Point centerPoint)
         {
-            //var differences = seriesArray.Select(s =>
-            //{
-            //    var df = new List<double>();
-            //    for (var i = 0; i < s.Values.Count - 1; i++)
-            //    {
-            //        var v1 = s.Values[i].Value.V1;
-            //        var v2 = s.Values[i + 1].Value.V1;
-            //        if (v1 >= 0 && v2 >= 0)
-            //            df.Add(Math.Abs(v1 - v2));
-            //        else if (v1 < 0 && v2 > 0)
-            //            df.Add(Math.Abs(v1) + v2);
-            //        else if (v1 > 0 && v2 < 0)
-            //            df.Add(v1 + Math.Abs(v2));
-            //        else
-            //            df.Add(Math.Abs(v1 + v2));
-            //    }
-            //    return df;
-            //}).ToArray();
+            max = Math.Ceiling(max);
+            var power = Math.Abs((int)max).ToString().Length - 1;
 
-            var currentCount = autoAdjust ? seriesArray.Max(s => s.Values.Count) : (int)maxY;
+            var diff = getDiff(max, min);
+            var step = diff / linesCount;
 
-            return (stops + 1, stops);
+            while (!isInteger(step))
+            {
+                max = Math.Sign(max) * roundInt((int)Math.Abs(max), (int)Math.Pow(10, power));
+                diff = getDiff(max, min);
+                step = diff / linesCount;
+            }
+            var units = Math.Abs(radius / diff);
+
+            return (max, min, step, units, centerPoint);
+        }
+
+        internal static (double max, double min, double step, double units, Point zeroPoint) GetMeasuresForNegative(double max, double min, int linesCount, double radius, Point centerPoint)
+        {
+            min = Math.Floor(min);
+            var power = Math.Abs((int)min).ToString().Length - 1;
+
+            var diff = getDiff(max, min);
+            var step = diff / linesCount;
+
+            while (!isInteger(step))
+            {
+                min = Math.Sign(min) * roundInt((int)Math.Abs(min), (int)Math.Pow(10, power));
+                diff = getDiff(max, min);
+                step = diff / linesCount;
+            }
+            var units = Math.Abs(radius / diff);
+
+            // find zero point
+            centerPoint.Y -= step * linesCount * units;
+
+            return (max, min, step, units, centerPoint);
+        }
+
+        internal static (double max, double min, double step, double units, Point zeroPoint) GetMeasures(Series[] seriesArray, int linesCount, double radius, Point centerPoint)
+        {
             var values = seriesArray.SelectMany(s => s.Values.Select(v => v.Value.V1));
             var max = values.Max();
             var min = values.Min();
+            var diff = 0.0;
+            var step = 0.0;
+            var units = 0.0;
 
-            if (values.All(v => v >= 0))
+            if (values.All(v => v > 0))
                 min = 0;
-            if (values.All(v => v <= 0))
+            if (values.All(v => v < 0))
                 max = 0;
 
-            var aMax = Math.Abs(max);
-            var aMin = Math.Abs(min);
-
-            var delimMax = Math.Pow(10, aMax.ToString().Length - 1);
-            var delimMin = Math.Pow(10, aMin.ToString().Length - 1);
-
-            var delimeter = 10;
-            if (delimMax > 1 || delimMin > 1)
+            if (min == 0)
             {
-                if (max > 0)
-                {
-                    //if (aMax != delimMax)
-                    //    aMax = (int)(aMax / delimMax + 1) * (delimMax > 1 ? delimMax : 0);
-                    //else
-                    //    aMax = (int)aMax;
-                    aMax = (int)(aMax / delimMax + 1) * (delimMax > 1 ? delimMax : 0);
-                }
-                else
-                {
-                    //if (aMax != delimMax)
-                    //    aMax = (int)(aMax / delimMax - 1) * (delimMax > 1 ? delimMax : 0);
-                    //else
-                    //    aMax = (int)aMax;
-                    aMax = (int)(aMax / delimMax - 1) * (delimMax > 1 ? delimMax : 0);
-                }
+                //max = Math.Ceiling(max);
+                //var power = Math.Abs((int)max).ToString().Length - 1;
 
-                if (min < 0)
+                //diff = getDiff(max, min);
+                //step = diff / linesCount;
+
+                //while (!isInteger(step))
+                //{
+                //    max = Math.Sign(max) * roundInt((int)Math.Abs(max), (int)Math.Pow(10, power));
+                //    diff = getDiff(max, min);
+                //    step = diff / linesCount;
+                //}
+                //units = Math.Abs(radius / diff);
+                return GetMeasuresForPositive(max, min, linesCount, radius, centerPoint);
+            }
+            else if (max == 0)
+            {
+                //min = Math.Floor(min);
+                //var power = Math.Abs((int)min).ToString().Length - 1;
+
+                //diff = getDiff(max, min);
+                //step = diff / linesCount;
+
+                //while (!isInteger(step))
+                //{
+                //    min = Math.Sign(min) * roundInt((int)Math.Abs(min), (int)Math.Pow(10, power));
+                //    diff = getDiff(max, min);
+                //    step = diff / linesCount;
+                //}
+                //units = Math.Abs(radius / diff);
+
+                //// find zero point
+                //centerPoint.Y -= step * linesCount * units;
+                return GetMeasuresForNegative(max, min, linesCount, radius, centerPoint);
+            }
+            else if (Math.Abs(max) > Math.Abs(min))
+            {
+                var sign = Math.Sign(min);
+                var prevMin = Math.Abs(min);
+                min = 0;
+                linesCount--;
+                max = Math.Ceiling(max);
+                var power = Math.Abs((int)max).ToString().Length - 1;
+
+                diff = getDiff(max, min);
+                step = diff / linesCount;
+
+                while (!isInteger(step) || step < prevMin)
                 {
-                    //if (aMin != delimMin)
-                    //    aMin = (int)(aMin / delimMin + 1) * (delimMin > 1 ? delimMin : 0);
-                    //else
-                    //    aMin = (int)aMin;
-                    aMin = (int)(aMin / delimMin + 1) * (delimMin > 1 ? delimMin : 0);
+                    max = Math.Sign(max) * roundInt((int)Math.Abs(max), (int)Math.Pow(10, power));
+                    diff = getDiff(max, min);
+                    step = diff / linesCount;
                 }
-                else
+                min = sign * step;
+                units = Math.Abs(radius / (diff + Math.Abs(min)));
+
+                // find zero point
+                var temp = min;
+                while (temp < 0)
                 {
-                    //if (aMin != delimMin)
-                    //    aMin = (int)(aMin / delimMin - 1) * (delimMin > 1 ? delimMin : 0);
-                    //else
-                    //    aMin = (int)aMin;
-                    aMin = (int)(aMin / delimMin - 1) * (delimMin > 1 ? delimMin : 0);
+                    temp += step;
+                    centerPoint.Y -= step * units;
                 }
             }
             else
             {
-                delimeter = 1;
+                var sign = Math.Sign(max);
+                var prevMax = Math.Abs(max);
+                max = 0;
+                linesCount--;
+                min = Math.Floor(min);
+                var power = Math.Abs((int)min).ToString().Length - 1;
+
+                diff = getDiff(max, min);
+                step = diff / linesCount;
+
+                while (!isInteger(step) || step < prevMax)
+                {
+                    min = Math.Sign(min) * roundInt((int)Math.Abs(min), (int)Math.Pow(10, power));
+                    diff = getDiff(max, min);
+                    step = diff / linesCount;
+                }
+                max = sign * step;
+                units = Math.Abs(radius / (diff + max));
+
+                // find zero point
+                var temp = min;
+                while (temp < 0)
+                {
+                    temp += step;
+                    centerPoint.Y -= step * units;
+                }
             }
+            return (max, min, step, units, centerPoint);
+        }
 
-            max = Math.Sign(max) * aMax;
-            min = Math.Sign(min) * aMin;
+        private static bool isInteger(double step)
+        {
+            return Math.Abs(step % 1) <= (double.Epsilon * 100);
+        }
 
-            var diff = 0;
+        private static int roundInt(int number, int tense)
+        {
+            // Smaller multiple
+            int a = number / tense * tense;
 
-            if (max >= 0 && min <= 0)
-                diff = (int)(Math.Abs(min) + max);
-            else if (max <= 0 && min <= 0)
-                diff = (int)Math.Abs(max + min);
-            else if (max >= 0 && min >= 0)
-                diff = (int)(max - min);
+            // Larger multiple
+            int b = a + tense;
 
-            var result = currentCount;
-            var valuesCount = currentCount;
-            currentCount = diff / result;
-            while (currentCount % delimeter != 0)
-            {
-                currentCount = diff / --result;
-            }
-            return (valuesCount, result - 1);
+            // Return of closest of two
+            //return (number - a < b - number) ? a : b;
+            return b;
+        }
+
+        private static double getDiff(double max, double min)
+        {
+            if (max >= 0 && min >= 0)
+                return Math.Abs(max - min);
+            else if (max < 0 && min > 0)
+                return Math.Abs(max) + min;
+            else if (max > 0 && min < 0)
+                return max + Math.Abs(min);
+            else
+                return Math.Abs(max + min);
         }
 
         internal static Tuple<double, int> Limits(ChartStyle style, bool offsetBoundary, int stopsX, int ticks,
@@ -3850,7 +3930,7 @@ namespace ag.WPF.Chart
             }
 
             // draw y-axis values
-            var (max, min, stepNum, _, _) = getMaxMin(series, linesCount, radius, centerPoint);
+            var (max, min, stepNum, _, _) = Utils.GetMeasures(series, linesCount, radius, centerPoint);
 
             var stepY = radius / linesCount;
             var xY = centerPoint.X - 4;
@@ -3875,147 +3955,6 @@ namespace ag.WPF.Chart
             }
             return gm;
 
-        }
-
-
-        private (double max, double min, double step, double units, Point zeroPoint) getMaxMin(Series[] seriesArray, int linesCount, double radius, Point centerPoint)
-        {
-            var values = seriesArray.SelectMany(s => s.Values.Select(v => v.Value.V1));
-            var max = values.Max();
-            var min = values.Min();
-            var diff = 0.0;
-            var step = 0.0;
-            var units = 0.0;
-
-            if (values.All(v => v > 0))
-                min = 0;
-            if (values.All(v => v < 0))
-                max = 0;
-
-            if (min == 0)
-            {
-                max = Math.Ceiling(max);
-                var power = Math.Abs((int)max).ToString().Length - 1;
-
-                diff = getDiff(max, min);
-                step = diff / linesCount;
-
-                while (!isInteger(step))
-                {
-                    max = Math.Sign(max) * roundInt((int)Math.Abs(max), (int)Math.Pow(10, power));
-                    diff = getDiff(max, min);
-                    step = diff / linesCount;
-                }
-                units = Math.Abs(radius / diff);
-            }
-            else if (max == 0)
-            {
-                min = Math.Floor(min);
-                var power = Math.Abs((int)min).ToString().Length - 1;
-
-                diff = getDiff(max, min);
-                step = diff / linesCount;
-
-                while (!isInteger(step))
-                {
-                    min = Math.Sign(min) * roundInt((int)Math.Abs(min), (int)Math.Pow(10, power));
-                    diff = getDiff(max, min);
-                    step = diff / linesCount;
-                }
-                units = Math.Abs(radius / diff);
-
-                // find zero point
-                centerPoint.Y -= step * linesCount * units;
-            }
-            else if (Math.Abs(max) > Math.Abs(min))
-            {
-                var sign = Math.Sign(min);
-                var prevMin = Math.Abs(min);
-                min = 0;
-                linesCount--;
-                max = Math.Ceiling(max);
-                var power = Math.Abs((int)max).ToString().Length - 1;
-
-                diff = getDiff(max, min);
-                step = diff / linesCount;
-
-                while (!isInteger(step) || step < prevMin)
-                {
-                    max = Math.Sign(max) * roundInt((int)Math.Abs(max), (int)Math.Pow(10, power));
-                    diff = getDiff(max, min);
-                    step = diff / linesCount;
-                }
-                min = sign * step;
-                units = Math.Abs(radius / (diff + Math.Abs(min)));
-
-                // find zero point
-                var temp = min;
-                while (temp < 0)
-                {
-                    temp += step;
-                    centerPoint.Y -= step * units;
-                }
-            }
-            else
-            {
-                var sign = Math.Sign(max);
-                var prevMax = Math.Abs(max);
-                max = 0;
-                linesCount--;
-                min = Math.Floor(min);
-                var power = Math.Abs((int)min).ToString().Length - 1;
-
-                diff = getDiff(max, min);
-                step = diff / linesCount;
-
-                while (!isInteger(step) || step < prevMax)
-                {
-                    min = Math.Sign(min) * roundInt((int)Math.Abs(min), (int)Math.Pow(10, power));
-                    diff = getDiff(max, min);
-                    step = diff / linesCount;
-                }
-                max = sign * step;
-                units = Math.Abs(radius / (diff + max));
-
-                // find zero point
-                var temp = min;
-                while (temp < 0)
-                {
-                    temp += step;
-                    centerPoint.Y -= step * units;
-                }
-            }
-            return (max, min, step, units, centerPoint);
-        }
-
-        private bool isInteger(double step)
-        {
-            return Math.Abs(step % 1) <= (double.Epsilon * 100);
-        }
-
-        private int roundInt(int number, int tense)
-        {
-            // Smaller multiple
-            int a = number / tense * tense;
-
-            // Larger multiple
-            int b = a + tense;
-
-            // Return of closest of two
-            //return (number - a < b - number) ? a : b;
-            return b;
-        }
-
-        private double getDiff(double max, double min)
-        {
-            if (max >= 0 && min >= 0)
-                return Math.Abs(max - min);
-            else if (max < 0 && min > 0)
-                return Math.Abs(max) + min;
-            else if (max > 0 && min < 0)
-                return max + Math.Abs(min);
-            else
-                return Math.Abs(max + min);
         }
 
         public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
