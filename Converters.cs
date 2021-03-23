@@ -858,7 +858,7 @@ namespace ag.WPF.Chart
                 || !(values[1] is double height)
                 || !(values[2] is IEnumerable<Series> seriesEnumerable)
                 || !(values[3] is ChartStyle chartStyle)
-                || chartStyle.In(ChartStyle.SolidPie, ChartStyle.SlicedPie, ChartStyle.Doughnut, ChartStyle.Waterfall, ChartStyle.Radar, ChartStyle.RadarWithMarkers)
+                || chartStyle.In(ChartStyle.SolidPie, ChartStyle.SlicedPie, ChartStyle.Doughnut, ChartStyle.Waterfall)
                 || !(values[4] is int index)
                 || !(values[5] is bool autoAdjust)
                 || !(values[6] is double maxXConv)
@@ -868,7 +868,9 @@ namespace ag.WPF.Chart
                 || !(values[10] is double fontSize)
                 || !(values[11] is FontStyle fontStyle)
                 || !(values[12] is FontWeight fontWeight)
-                || !(values[13] is FontStretch fontStretch))
+                || !(values[13] is FontStretch fontStretch)
+                || !(values[14] is IEnumerable<string> customEnumerable)
+                || !(values[15] is int linesCount))
                 return null;
 
             var series = seriesEnumerable.ToArray();
@@ -897,6 +899,25 @@ namespace ag.WPF.Chart
 
             switch (chartStyle)
             {
+                case ChartStyle.Radar:
+                case ChartStyle.RadarWithMarkers:
+                case ChartStyle.RadarArea:
+                    var customValues = customEnumerable.ToArray();
+                    var pointsCount = series.Max(s => s.Values.Count);
+                    var maxCv = customValues.Any() ? customValues.Max(v => (v, v.Length)) : (v: "", Length: 0);
+                    var number = maxCv.Length > pointsCount.ToString(culture).Length ? maxCv.v : pointsCount.ToString(culture);
+                    var fmt = new FormattedText(number, culture, FlowDirection.LeftToRight,
+                        new Typeface(fontFamily, fontStyle, fontWeight, fontStretch), fontSize, Brushes.Black, VisualTreeHelper.GetDpi(Utils.Border).PixelsPerDip);
+
+                    var radius = width > height ? (height - 2 * Utils.AXIS_THICKNESS) / 2 : (width - 2 * Utils.AXIS_THICKNESS) / 2;
+                    var centerPoint = new Point(radius, radius);
+                    if (width > height)
+                        radius -= (2 * fmt.Height + 8);
+                    else
+                        radius -= (2 * fmt.Width + 8);
+                    var (max, min, realLinesCount, step, units, zeroPoint) = Utils.GetMeasures(series, linesCount, radius, fmt.Height, autoAdjust, centerPoint);
+                    gm = drawRadar(series.FirstOrDefault(s => s.Index == index), chartStyle, units, step, radius, pointsCount, zeroPoint);
+                    break;
                 case ChartStyle.Lines:
                 case ChartStyle.LinesWithMarkers:
                 case ChartStyle.SmoothLines:
@@ -1762,6 +1783,48 @@ namespace ag.WPF.Chart
             return gm;
         }
 
+        private PathGeometry drawRadar(Series currentSeries, ChartStyle chartStyle, double units, double stepNum, double radius, int pointsCount, Point zeroPoint)
+        {
+            var gm = new PathGeometry();
+            currentSeries.RealRects.Clear();
+            var points = new List<Point>();
+            var values = currentSeries.Values.Select(v => v.Value.V1).ToArray();
+            var xBeg = zeroPoint.X;
+            var yBeg = 90.0;
+            var currentDegrees = 0.0;
+            var degreesStep = 360 / pointsCount;
+
+            for (var i = 0; i < values.Length; i++)
+            {
+                //if (values.Length <= i)
+                //    break;
+                var distance = Math.Abs(values[i]) * units;
+
+                currentDegrees = 90 + i * degreesStep;
+                var rads = currentDegrees * Math.PI / 180;
+                xBeg = zeroPoint.X - distance * Math.Cos(rads);
+                yBeg = zeroPoint.Y - distance * Math.Sin(rads);
+                points.Add(new Point(xBeg, yBeg));
+            }
+
+            for (var i = 0; i < points.Count - 1; i++)
+            {
+                gm.AddGeometry(new LineGeometry(points[i], points[i + 1]));
+            }
+            //gm.AddGeometry(new LineGeometry(points[points.Count - 1], points[0]));
+
+            //for (var i = 0; i < values.Length; i++)
+            //{
+            //    var x = i*10;// centerX + i * stepX;
+            //    var y =i*10;// centerY - values[i].Value.V1 * stepY;
+
+            //    points.Add(new Point(x, y));
+            //}
+            //var poly = new PolyLineSegment(points, true);
+            //gm.Figures.Add(new PathFigure(points[0], new[] { poly }, false));
+            return gm;
+        }
+
         private PathGeometry drawLine(double w, double h, double maxX, double maxY, ChartStyle style, Directions dir, Series currentSeries, List<ChartValue> values, bool offsetBoundary)
         {
             double stepX, stepY;
@@ -2606,6 +2669,8 @@ namespace ag.WPF.Chart
                 case ChartStyle.LinesWithMarkers:
                 case ChartStyle.StackedLinesWithMarkers:
                 case ChartStyle.FullStackedLinesWithMarkers:
+                case ChartStyle.Radar:
+                case ChartStyle.RadarWithMarkers:
                     return null;
             }
             return isEnabled ? enabledBrush : disabledBrush;
@@ -2653,8 +2718,7 @@ namespace ag.WPF.Chart
                 case ChartStyle.FullStackedColumns:
                 case ChartStyle.Bubbles:
                 case ChartStyle.Waterfall:
-                case ChartStyle.Radar:
-                case ChartStyle.RadarWithMarkers:
+                case ChartStyle.RadarArea:
                     return null;
             }
             return isEnabled ? enabledBrush : disabledBrush;
@@ -3945,7 +4009,7 @@ namespace ag.WPF.Chart
 
             var fmtY = new FormattedText("AAA", culture, FlowDirection.LeftToRight,
                     new Typeface(fontFamily, fontStyle, fontWeight, fontStretch), fontSize, Brushes.Black, VisualTreeHelper.GetDpi(Utils.Border).PixelsPerDip);
-            var (max, min, realLinesCount, stepNum, _, _) = Utils.GetMeasures(series, linesCount, radius, fmt.Height, autoAdjust, centerPoint);
+            var (max, min, realLinesCount, stepNum, _, _) = Utils.GetMeasures(series, linesCount, radius, fmtY.Height, autoAdjust, centerPoint);
             linesCount = realLinesCount;
 
             var distanceStep = radius / linesCount;
@@ -4091,11 +4155,8 @@ namespace ag.WPF.Chart
 
             // draw y-axis values
             var fmtY = new FormattedText("AAA", culture, FlowDirection.LeftToRight,
-                    new Typeface(fontFamily, fontStyle, fontWeight, fontStretch), fontSize, Brushes.Black, VisualTreeHelper.GetDpi(Utils.Border).PixelsPerDip)
-            {
-                TextAlignment = flowDir == FlowDirection.RightToLeft ? TextAlignment.Left : TextAlignment.Right
-            };
-            var (max, min, realLinesCount, stepNum, _, _) = Utils.GetMeasures(series, linesCount, radius, fmt.Height, autoAdjust, centerPoint);
+                    new Typeface(fontFamily, fontStyle, fontWeight, fontStretch), fontSize, Brushes.Black, VisualTreeHelper.GetDpi(Utils.Border).PixelsPerDip);
+            var (max, min, realLinesCount, stepNum, _, _) = Utils.GetMeasures(series, linesCount, radius, fmtY.Height, autoAdjust, centerPoint);
             linesCount = realLinesCount;
 
             var stepY = radius / linesCount;

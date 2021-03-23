@@ -530,7 +530,7 @@
                             <Setter Property="Visibility" TargetName="TextYAxis" Value="Collapsed"/>
                             <Setter Property="Visibility" TargetName="TextXAxis" Value="Collapsed"/>
                             <!--<Setter Property="Visibility" TargetName="GridSeries" Value="Collapsed"/>-->
-                            <Setter Property="Visibility" TargetName="LegendField" Value="Collapsed"/>
+                            <!--<Setter Property="Visibility" TargetName="LegendField" Value="Collapsed"/>-->
                             <Setter Property="Visibility" TargetName="PathXAxisValues" Value="Collapsed"/>
                             <Setter Property="Visibility" TargetName="PathYAxisValues" Value="Collapsed"/>
                             <Setter Property="Visibility" TargetName="VPLaceHolder" Value="Collapsed"/>
@@ -547,7 +547,24 @@
                             <Setter Property="Visibility" TargetName="TextYAxis" Value="Collapsed"/>
                             <Setter Property="Visibility" TargetName="TextXAxis" Value="Collapsed"/>
                             <!--<Setter Property="Visibility" TargetName="GridSeries" Value="Collapsed"/>-->
-                            <Setter Property="Visibility" TargetName="LegendField" Value="Collapsed"/>
+                            <!--<Setter Property="Visibility" TargetName="LegendField" Value="Collapsed"/>-->
+                            <Setter Property="Visibility" TargetName="PathXAxisValues" Value="Collapsed"/>
+                            <Setter Property="Visibility" TargetName="PathYAxisValues" Value="Collapsed"/>
+                            <Setter Property="Visibility" TargetName="VPLaceHolder" Value="Collapsed"/>
+                            <Setter Property="Visibility" TargetName="HPLaceHolder" Value="Collapsed"/>
+                            <Setter Property="Visibility" TargetName="PART_PieImage" Value="Collapsed"/>
+                            <Setter Property="Visibility" TargetName="PathVertLines" Value="Collapsed"/>
+                            <Setter Property="Visibility" TargetName="PathHorzLines" Value="Collapsed"/>
+                            <Setter Property="Visibility" TargetName="PathTicks" Value="Collapsed"/>
+                            <Setter Property="Visibility" TargetName="PathAxesLines" Value="Collapsed"/>
+                            <Setter Property="Visibility" TargetName="PathRadarValues" Value="Visible"/>
+                            <Setter Property="Visibility" TargetName="PathRadarLines" Value="Visible"/>
+                        </Trigger>
+                        <Trigger Property="ChartStyle" Value="RadarArea">
+                            <Setter Property="Visibility" TargetName="TextYAxis" Value="Collapsed"/>
+                            <Setter Property="Visibility" TargetName="TextXAxis" Value="Collapsed"/>
+                            <!--<Setter Property="Visibility" TargetName="GridSeries" Value="Collapsed"/>-->
+                            <!--<Setter Property="Visibility" TargetName="LegendField" Value="Collapsed"/>-->
                             <Setter Property="Visibility" TargetName="PathXAxisValues" Value="Collapsed"/>
                             <Setter Property="Visibility" TargetName="PathYAxisValues" Value="Collapsed"/>
                             <Setter Property="Visibility" TargetName="VPLaceHolder" Value="Collapsed"/>

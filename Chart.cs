@@ -152,7 +152,11 @@ namespace ag.WPF.Chart
         /// <summary>
         /// Style represented by radar with markers
         /// </summary>
-        RadarWithMarkers
+        RadarWithMarkers,
+        /// <summary>
+        /// Style represented by radar areas
+        /// </summary>
+        RadarArea
     }
 
     /// <summary>
@@ -663,6 +667,14 @@ namespace ag.WPF.Chart
                         {
                             Source = this
                         });
+                        ptsBinding.Bindings.Add(new Binding("XAxisCustomValues")
+                        {
+                            Source = this
+                        });
+                        ptsBinding.Bindings.Add(new Binding("SectionsY")
+                        {
+                            Source = this
+                        });
 
                         ptsBinding.NotifyOnSourceUpdated = true;
                         series.Path.SetBinding(Path.DataProperty, ptsBinding);
@@ -713,6 +725,14 @@ namespace ag.WPF.Chart
                             Source = this
                         });
                         positiveWaterfallBinding.Bindings.Add(new Binding("AxesFontStretch")
+                        {
+                            Source = this
+                        });
+                        positiveWaterfallBinding.Bindings.Add(new Binding("XAxisCustomValues")
+                        {
+                            Source = this
+                        });
+                        positiveWaterfallBinding.Bindings.Add(new Binding("SectionsY")
                         {
                             Source = this
                         });
@@ -767,6 +787,14 @@ namespace ag.WPF.Chart
                             Source = this
                         });
                         negativeWaterfallBinding.Bindings.Add(new Binding("AxesFontStretch")
+                        {
+                            Source = this
+                        });
+                        negativeWaterfallBinding.Bindings.Add(new Binding("XAxisCustomValues")
+                        {
+                            Source = this
+                        });
+                        negativeWaterfallBinding.Bindings.Add(new Binding("SectionsY")
                         {
                             Source = this
                         });
@@ -984,7 +1012,7 @@ namespace ag.WPF.Chart
 
                         legend.SetBinding(Legend.TextProperty, new Binding("WaterfallLegends[1]") { Source = this });
 
-                        _LegendCollection.Add(legend); 
+                        _LegendCollection.Add(legend);
                         #endregion
 
                         _canvas.Children.Add(series.Path);
