@@ -336,6 +336,11 @@
                                                 <Binding Path="SeriesCollection" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                                 <Binding Path="ChartStyle" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                                 <Binding Path="ChartBoundary" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                                <Binding Path="AxesFontFamily" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                                <Binding Path="AxesFontSize" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                                <Binding Path="AxesFontStyle" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                                <Binding Path="AxesFontWeight" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                                <Binding Path="AxesFontStretch" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                                 <Binding Path="SeriesCount" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                             </MultiBinding>
                                         </Path.Data>
@@ -348,6 +353,12 @@
                                                 <Binding Path="SeriesCollection" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                                 <Binding Path="ChartStyle" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                                 <Binding Path="SectionsY" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                                <Binding Path="AxesFontFamily" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                                <Binding Path="AxesFontSize" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                                <Binding Path="AxesFontStyle" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                                <Binding Path="AxesFontWeight" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                                <Binding Path="AxesFontStretch" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                                <Binding Path="SeriesCount" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                             </MultiBinding>
                                         </Path.Data>
                                     </Path>
@@ -360,6 +371,12 @@
                                                 <Binding Path="ChartStyle" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                                 <Binding Path="SectionsX" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                                 <Binding Path="ChartBoundary" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                                <Binding Path="AxesFontFamily" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                                <Binding Path="AxesFontSize" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                                <Binding Path="AxesFontStyle" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                                <Binding Path="AxesFontWeight" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                                <Binding Path="AxesFontStretch" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                                <Binding Path="SeriesCount" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                             </MultiBinding>
                                         </Path.Data>
                                     </Path>

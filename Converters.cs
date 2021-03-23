@@ -714,7 +714,7 @@ namespace ag.WPF.Chart
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
             if (values == null
-                || values.Length != 8
+                //|| values.Length != 8
                 || !(values[0] is double width)
                 || !(values[1] is double height)
                 || !(values[2] is IEnumerable<Series> seriesEnumerable)
@@ -726,6 +726,11 @@ namespace ag.WPF.Chart
                 || !(values[5] is bool autoAdjust)
                 || !(values[6] is double maxXConv)
                 || !(values[7] is double maxYConv)
+                || !(values[8] is FontFamily fontFamily)
+                || !(values[9] is double fontSize)
+                || !(values[10] is FontStyle fontStyle)
+                || !(values[11] is FontWeight fontWeight)
+                || !(values[12] is FontStretch fontStretch)
                 || !(parameter is bool isPositive))
                 return null;
 
@@ -848,7 +853,7 @@ namespace ag.WPF.Chart
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
             if (values == null
-                || values.Length != 9
+                //|| values.Length != 9
                 || !(values[0] is double width)
                 || !(values[1] is double height)
                 || !(values[2] is IEnumerable<Series> seriesEnumerable)
@@ -858,7 +863,12 @@ namespace ag.WPF.Chart
                 || !(values[5] is bool autoAdjust)
                 || !(values[6] is double maxXConv)
                 || !(values[7] is double maxYConv)
-                || !(values[8] is ChartBoundary chartBoundary))
+                || !(values[8] is ChartBoundary chartBoundary)
+                || !(values[9] is FontFamily fontFamily)
+                || !(values[10] is double fontSize)
+                || !(values[11] is FontStyle fontStyle)
+                || !(values[12] is FontWeight fontWeight)
+                || !(values[13] is FontStretch fontStretch))
                 return null;
 
             var series = seriesEnumerable.ToArray();
@@ -3360,14 +3370,19 @@ namespace ag.WPF.Chart
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
             if (values == null
-                || values.Length != 8
+                //|| values.Length != 8
                 || !(values[0] is double width)
                 || !(values[1] is double height)
                 || !(values[2] is int stopsX)
                 || !(values[3] is int stopsY)
                 || !(values[4] is IEnumerable<Series> seriesEnumerable)
                 || !(values[5] is ChartStyle chartStyle)
-                || !(values[6] is ChartBoundary chartBoundary))
+                || !(values[6] is ChartBoundary chartBoundary)
+                || !(values[7] is FontFamily fontFamily)
+                || !(values[8] is double fontSize)
+                || !(values[9] is FontStyle fontStyle)
+                || !(values[10] is FontWeight fontWeight)
+                || !(values[11] is FontStretch fontStretch))
                 return null;
 
             if (chartStyle.In(ChartStyle.Area, ChartStyle.StackedArea, ChartStyle.FullStackedArea, ChartStyle.Radar, ChartStyle.RadarWithMarkers))
@@ -3563,13 +3578,18 @@ namespace ag.WPF.Chart
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
             if (values == null
-                || values.Length != 6
+                //|| values.Length != 6
                 || !(values[0] is double width)
                 || !(values[1] is double height)
                 || !(values[2] is IEnumerable<Series> seriesEnumerable)
                 || !(values[3] is ChartStyle chartStyle)
                 || !(values[4] is int stopsX)
-                || !(values[5] is ChartBoundary chartBoundary))
+                || !(values[5] is ChartBoundary chartBoundary)
+                || !(values[6] is FontFamily fontFamily)
+                || !(values[7] is double fontSize)
+                || !(values[8] is FontStyle fontStyle)
+                || !(values[9] is FontWeight fontWeight)
+                || !(values[10] is FontStretch fontStretch))
                 return null;
 
             if (chartStyle.In(ChartStyle.Area, ChartStyle.StackedArea, ChartStyle.FullStackedArea))
@@ -3700,12 +3720,17 @@ namespace ag.WPF.Chart
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
             if (values == null
-                || values.Length != 5
+                //|| values.Length != 5
                 || !(values[0] is double)
                 || !(values[1] is double)
                 || !(values[2] is IEnumerable<Series> seriesEnumerable)
                 || !(values[3] is ChartStyle chartStyle)
-                || !(values[4] is int stepsY))
+                || !(values[4] is int stepsY)
+                || !(values[5] is FontFamily fontFamily)
+                || !(values[6] is double fontSize)
+                || !(values[7] is FontStyle fontStyle)
+                || !(values[8] is FontWeight fontWeight)
+                || !(values[9] is FontStretch fontStretch))
                 return null;
 
             if (!seriesEnumerable.Any())

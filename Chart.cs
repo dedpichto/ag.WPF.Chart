@@ -643,6 +643,27 @@ namespace ag.WPF.Chart
                         {
                             Source = this
                         });
+                        ptsBinding.Bindings.Add(new Binding("AxesFontFamily")
+                        {
+                            Source = this
+                        });
+                        ptsBinding.Bindings.Add(new Binding("AxesFontSize")
+                        {
+                            Source = this
+                        });
+                        ptsBinding.Bindings.Add(new Binding("AxesFontStyle")
+                        {
+                            Source = this
+                        });
+                        ptsBinding.Bindings.Add(new Binding("AxesFontWeight")
+                        {
+                            Source = this
+                        });
+                        ptsBinding.Bindings.Add(new Binding("AxesFontStretch")
+                        {
+                            Source = this
+                        });
+
                         ptsBinding.NotifyOnSourceUpdated = true;
                         series.Path.SetBinding(Path.DataProperty, ptsBinding);
                         #endregion
@@ -675,6 +696,27 @@ namespace ag.WPF.Chart
                         {
                             Source = this
                         });
+                        positiveWaterfallBinding.Bindings.Add(new Binding("AxesFontFamily")
+                        {
+                            Source = this
+                        });
+                        positiveWaterfallBinding.Bindings.Add(new Binding("AxesFontSize")
+                        {
+                            Source = this
+                        });
+                        positiveWaterfallBinding.Bindings.Add(new Binding("AxesFontStyle")
+                        {
+                            Source = this
+                        });
+                        positiveWaterfallBinding.Bindings.Add(new Binding("AxesFontWeight")
+                        {
+                            Source = this
+                        });
+                        positiveWaterfallBinding.Bindings.Add(new Binding("AxesFontStretch")
+                        {
+                            Source = this
+                        });
+
                         positiveWaterfallBinding.ConverterParameter = true;
                         positiveWaterfallBinding.NotifyOnSourceUpdated = true;
                         series.PositivePath.SetBinding(Path.DataProperty, positiveWaterfallBinding);
@@ -708,6 +750,27 @@ namespace ag.WPF.Chart
                         {
                             Source = this
                         });
+                        negativeWaterfallBinding.Bindings.Add(new Binding("AxesFontFamily")
+                        {
+                            Source = this
+                        });
+                        negativeWaterfallBinding.Bindings.Add(new Binding("AxesFontSize")
+                        {
+                            Source = this
+                        });
+                        negativeWaterfallBinding.Bindings.Add(new Binding("AxesFontStyle")
+                        {
+                            Source = this
+                        });
+                        negativeWaterfallBinding.Bindings.Add(new Binding("AxesFontWeight")
+                        {
+                            Source = this
+                        });
+                        negativeWaterfallBinding.Bindings.Add(new Binding("AxesFontStretch")
+                        {
+                            Source = this
+                        });
+
                         negativeWaterfallBinding.ConverterParameter = false;
                         negativeWaterfallBinding.NotifyOnSourceUpdated = true;
                         series.NegativePath.SetBinding(Path.DataProperty, negativeWaterfallBinding);
