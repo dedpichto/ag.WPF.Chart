@@ -51,6 +51,8 @@ namespace ag.WPF.Chart
 
         internal static Border Border { get; } = new Border();
 
+        private static int[] _bases = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+
         internal static Quadrants GetQuadrant(double degrees)
         {
             if (degrees >= 0 && degrees <= 90)
@@ -75,157 +77,282 @@ namespace ag.WPF.Chart
             return Quadrants.UpRight;
         }
 
-        internal static (double max, double min, double step, double units, Point zeroPoint) GetMeasuresForPositive(double max, double min, int linesCount, double radius, Point centerPoint)
+        private static IEnumerable<double> calculatedSteps(int power, double max)
         {
+            var powers = new List<int>();
+            for (var i = 0; i <= power; i++)
+            {
+                powers.Add(i);
+            }
+            foreach (var b in _bases)
+                foreach (var p in powers)
+                    yield return max / (b * (int)Math.Pow(10, p));
+        }
+
+        internal static (double max, double min, int linesCount, double step, double units, Point zeroPoint) GetMeasuresForPositive(double max, double min, int linesCount, double radius, double fontHeight, bool autoAdjust, Point centerPoint)
+        {
+            var step = 0.0;
+            var units = 0.0;
+            // round max to next integer
             max = Math.Ceiling(max);
             var power = Math.Abs((int)max).ToString().Length - 1;
 
-            var diff = getDiff(max, min);
-            var step = diff / linesCount;
-
-            while (!isInteger(step))
+            if (autoAdjust)
             {
-                max = Math.Sign(max) * roundInt((int)Math.Abs(max), (int)Math.Pow(10, power));
-                diff = getDiff(max, min);
+                // do not increase max for integers that are equal to 10 power
+                if (max % Math.Pow(10, power) != 0)
+                    max = Math.Sign(max) * roundInt((int)Math.Abs(max), (int)Math.Pow(10, power));
+                // store max and min difference
+                var diff = getDiff(max, min);
+                // get all available integer lines counts
+                var lines = calculatedSteps(power, max).Where(l => isInteger(l)).OrderBy(l => l).Distinct().ToArray();
+                // calculate real size for each step
+                var sizes = lines.Select(s => radius / s).ToArray();
+                // get the largest step with real size more/equal font height
+                var item = sizes.Select((size, index) => new { size, index }).LastOrDefault(a => a.size >= fontHeight + 4);
+                if (item != null)
+                {
+                    // change lines count to selected one
+                    linesCount = (int)lines[item.index];
+                    // prepare step
+                    step = diff / linesCount;
+                    // prepare units
+                    units = Math.Abs(radius / diff);
+                }
+                else
+                {
+                    step = diff / linesCount;
+                    while (!isInteger(step))
+                    {
+                        max = Math.Sign(max) * roundInt((int)Math.Abs(max), (int)Math.Pow(10, power));
+                        diff = getDiff(max, min);
+                        step = diff / linesCount;
+                    }
+                    units = Math.Abs(radius / diff);
+                }
+            }
+            else
+            {
+                // store max and min difference
+                var diff = getDiff(max, min);
                 step = diff / linesCount;
-            }
-            var units = Math.Abs(radius / diff);
-
-            return (max, min, step, units, centerPoint);
-        }
-
-        internal static (double max, double min, double step, double units, Point zeroPoint) GetMeasuresForNegative(double max, double min, int linesCount, double radius, Point centerPoint)
-        {
-            min = Math.Floor(min);
-            var power = Math.Abs((int)min).ToString().Length - 1;
-
-            var diff = getDiff(max, min);
-            var step = diff / linesCount;
-
-            while (!isInteger(step))
-            {
-                min = Math.Sign(min) * roundInt((int)Math.Abs(min), (int)Math.Pow(10, power));
-                diff = getDiff(max, min);
-                step = diff / linesCount;
-            }
-            var units = Math.Abs(radius / diff);
-
-            // find zero point
-            centerPoint.Y -= step * linesCount * units;
-
-            return (max, min, step, units, centerPoint);
-        }
-
-        internal static (double max, double min, double step, double units, Point zeroPoint) GetMeasures(Series[] seriesArray, int linesCount, double radius, Point centerPoint)
-        {
-            var values = seriesArray.SelectMany(s => s.Values.Select(v => v.Value.V1));
-            var max = values.Max();
-            var min = values.Min();
-            var diff = 0.0;
-            var step = 0.0;
-            var units = 0.0;
-
-            if (values.All(v => v > 0))
-                min = 0;
-            if (values.All(v => v < 0))
-                max = 0;
-
-            if (min == 0)
-            {
-                //max = Math.Ceiling(max);
-                //var power = Math.Abs((int)max).ToString().Length - 1;
-
-                //diff = getDiff(max, min);
-                //step = diff / linesCount;
-
-                //while (!isInteger(step))
-                //{
-                //    max = Math.Sign(max) * roundInt((int)Math.Abs(max), (int)Math.Pow(10, power));
-                //    diff = getDiff(max, min);
-                //    step = diff / linesCount;
-                //}
-                //units = Math.Abs(radius / diff);
-                return GetMeasuresForPositive(max, min, linesCount, radius, centerPoint);
-            }
-            else if (max == 0)
-            {
-                //min = Math.Floor(min);
-                //var power = Math.Abs((int)min).ToString().Length - 1;
-
-                //diff = getDiff(max, min);
-                //step = diff / linesCount;
-
-                //while (!isInteger(step))
-                //{
-                //    min = Math.Sign(min) * roundInt((int)Math.Abs(min), (int)Math.Pow(10, power));
-                //    diff = getDiff(max, min);
-                //    step = diff / linesCount;
-                //}
-                //units = Math.Abs(radius / diff);
-
-                //// find zero point
-                //centerPoint.Y -= step * linesCount * units;
-                return GetMeasuresForNegative(max, min, linesCount, radius, centerPoint);
-            }
-            else if (Math.Abs(max) > Math.Abs(min))
-            {
-                var sign = Math.Sign(min);
-                var prevMin = Math.Abs(min);
-                min = 0;
-                linesCount--;
-                max = Math.Ceiling(max);
-                var power = Math.Abs((int)max).ToString().Length - 1;
-
-                diff = getDiff(max, min);
-                step = diff / linesCount;
-
-                while (!isInteger(step) || step < prevMin)
+                while (!isInteger(step))
                 {
                     max = Math.Sign(max) * roundInt((int)Math.Abs(max), (int)Math.Pow(10, power));
                     diff = getDiff(max, min);
                     step = diff / linesCount;
                 }
-                min = sign * step;
-                units = Math.Abs(radius / (diff + Math.Abs(min)));
+                units = Math.Abs(radius / diff);
+            }
 
-                // find zero point
-                var temp = min;
-                while (temp < 0)
+            // sero point Y-coordinate is stays the same
+
+            return (max, min, linesCount, step, units, centerPoint);
+        }
+
+        internal static (double max, double min, int linesCount, double step, double units, Point zeroPoint) GetMeasuresForNegative(double max, double min, int linesCount, double radius, double fontHeight, bool autoAdjust, Point centerPoint)
+        {
+            var step = 0.0;
+            var units = 0.0;
+            // round min to prevous integer
+            min = Math.Floor(min);
+            var power = Math.Abs((int)min).ToString().Length - 1;
+
+            if (autoAdjust)
+            {
+                // do not increase max for integers that are equal to 10 power
+                if (min % Math.Pow(10, power) != 0)
+                    min = Math.Sign(min) * roundInt((int)Math.Abs(min), (int)Math.Pow(10, power));
+                // store max and min difference
+                var diff = getDiff(max, min);
+                // get all available integer lines counts
+                var lines = calculatedSteps(power, Math.Abs(min)).Where(l => isInteger(l)).OrderBy(l => l).Distinct().ToArray();
+                // calculate real size for each step
+                var sizes = lines.Select(s => radius / s).ToArray();
+                // get the largest step with real size more/equal font height
+                var item = sizes.Select((size, index) => new { size, index }).LastOrDefault(a => a.size >= fontHeight + 4);
+                if (item != null)
                 {
-                    temp += step;
-                    centerPoint.Y -= step * units;
+                    // change lines count to selected one
+                    linesCount = (int)lines[item.index];
+                    // prepare step
+                    step = diff / linesCount;
+                    // prepare units
+                    units = Math.Abs(radius / diff);
+                }
+                else
+                {
+                    step = diff / linesCount;
+                    while (!isInteger(step))
+                    {
+                        min = Math.Sign(min) * roundInt((int)Math.Abs(min), (int)Math.Pow(10, power));
+                        diff = getDiff(max, min);
+                        step = diff / linesCount;
+                    }
+                    units = Math.Abs(radius / diff);
                 }
             }
             else
             {
-                var sign = Math.Sign(max);
-                var prevMax = Math.Abs(max);
-                max = 0;
-                linesCount--;
-                min = Math.Floor(min);
-                var power = Math.Abs((int)min).ToString().Length - 1;
-
-                diff = getDiff(max, min);
+                // store max and min difference
+                var diff = getDiff(max, min);
                 step = diff / linesCount;
-
-                while (!isInteger(step) || step < prevMax)
+                while (!isInteger(step))
                 {
                     min = Math.Sign(min) * roundInt((int)Math.Abs(min), (int)Math.Pow(10, power));
                     diff = getDiff(max, min);
                     step = diff / linesCount;
                 }
-                max = sign * step;
-                units = Math.Abs(radius / (diff + max));
+                units = Math.Abs(radius / diff);
+            }
+            // find zero point
+            centerPoint.Y -= step * linesCount * units;
 
-                // find zero point
-                var temp = min;
-                while (temp < 0)
+            return (max, min, linesCount, step, units, centerPoint);
+        }
+
+        internal static (double max, double min, int linesCount, double step, double units, Point zeroPoint) GetMeasuresForComplex(double max, double min, int linesCount, double radius, double fontHeight, bool autoAdjust, Point centerPoint)
+        {
+            var step = 0.0;
+            var units = 0.0;
+
+            // round max to next integer
+            max = Math.Ceiling(max);
+            var powerMax = Math.Abs((int)max).ToString().Length - 1;
+
+            // round min to prevous integer
+            min = Math.Floor(min);
+            var powerMin = Math.Abs((int)min).ToString().Length - 1;
+
+            // do not increase max for integers that are equal to 10 power
+            if (max % Math.Pow(10, powerMax) != 0)
+                max = Math.Sign(max) * roundInt((int)Math.Abs(max), (int)Math.Pow(10, powerMax));
+            // do not increase max for integers that are equal to 10 power
+            if (min % Math.Pow(10, powerMin) != 0)
+                min = Math.Sign(min) * roundInt((int)Math.Abs(min), (int)Math.Pow(10, powerMin));
+
+            if (autoAdjust)
+            {
+                // store max and min difference
+                var diff = getDiff(max, min);
+                // get all available integer lines counts
+                var lines = calculatedSteps(Math.Max(powerMax, powerMin), Math.Abs(diff)).Where(l => isInteger(l)).OrderBy(l => l).Distinct().ToArray();
+                // calculate real size for each step
+                var sizes = lines.Select(s => radius / s).ToArray();
+                // get the largest step with real size more/equal font height
+                var item = sizes.Select((size, index) => new { size, index }).LastOrDefault(a => a.size >= fontHeight + 4);
+                if (item != null)
                 {
-                    temp += step;
-                    centerPoint.Y -= step * units;
+                    // change lines count to selected one
+                    linesCount = (int)lines[item.index];
+                    // prepare step
+                    step = diff / linesCount;
+                    // prepare units
+                    units = Math.Abs(radius / diff);
+                }
+                else
+                {
+                    if (Math.Abs(max) > Math.Abs(min))
+                    {
+                        var sign = Math.Sign(min);
+                        var prevMin = Math.Abs(min);
+                        min = 0;
+                        linesCount--;
+                        diff = getDiff(max, min);
+                        step = diff / linesCount;
+                        while (!isInteger(step) || step < prevMin)
+                        {
+                            max = Math.Sign(max) * roundInt((int)Math.Abs(max), (int)Math.Pow(10, powerMax));
+                            diff = getDiff(max, min);
+                            step = diff / linesCount;
+                        }
+                        min = sign * step;
+                        units = Math.Abs(radius / (diff + Math.Abs(min)));
+                    }
+                    else
+                    {
+                        var sign = Math.Sign(max);
+                        var prevMax = Math.Abs(max);
+                        max = 0;
+                        linesCount--;
+                        diff = getDiff(max, min);
+                        step = diff / linesCount;
+                        while (!isInteger(step) || step < prevMax)
+                        {
+                            min = Math.Sign(min) * roundInt((int)Math.Abs(min), (int)Math.Pow(10, powerMin));
+                            diff = getDiff(max, min);
+                            step = diff / linesCount;
+                        }
+                        max = sign * step;
+                        units = Math.Abs(radius / (diff + max));
+                    }
                 }
             }
-            return (max, min, step, units, centerPoint);
+            else
+            {
+                // store max and min difference
+                var diff = getDiff(max, min);
+                if (Math.Abs(max) > Math.Abs(min))
+                {
+                    var sign = Math.Sign(min);
+                    var prevMin = Math.Abs(min);
+                    min = 0;
+                    linesCount--;
+                    diff = getDiff(max, min);
+                    step = diff / linesCount;
+                    while (!isInteger(step) || step < prevMin)
+                    {
+                        max = Math.Sign(max) * roundInt((int)Math.Abs(max), (int)Math.Pow(10, powerMax));
+                        diff = getDiff(max, min);
+                        step = diff / linesCount;
+                    }
+                    min = sign * step;
+                    units = Math.Abs(radius / (diff + Math.Abs(min)));
+                }
+                else
+                {
+                    var sign = Math.Sign(max);
+                    var prevMax = Math.Abs(max);
+                    max = 0;
+                    linesCount--;
+                    diff = getDiff(max, min);
+                    step = diff / linesCount;
+                    while (!isInteger(step) || step < prevMax)
+                    {
+                        min = Math.Sign(min) * roundInt((int)Math.Abs(min), (int)Math.Pow(10, powerMin));
+                        diff = getDiff(max, min);
+                        step = diff / linesCount;
+                    }
+                    max = sign * step;
+                    units = Math.Abs(radius / (diff + max));
+                }
+            }
+
+            // find zero point
+            var temp = min;
+            while (temp < 0)
+            {
+                temp += step;
+                centerPoint.Y -= step * units;
+            }
+
+            return (max, min, linesCount, step, units, centerPoint);
+        }
+
+        internal static (double max, double min, int linesCount, double step, double units, Point zeroPoint) GetMeasures(Series[] seriesArray, int linesCount, double radius, double fontHeight, bool autoAdjust, Point centerPoint)
+        {
+            var values = seriesArray.SelectMany(s => s.Values.Select(v => v.Value.V1));
+            var max = values.Max();
+            var min = values.Min();
+
+            if (values.All(v => v > 0))
+                return GetMeasuresForPositive(max, 0, linesCount, radius, fontHeight, autoAdjust, centerPoint);
+            else if (values.All(v => v < 0))
+                return GetMeasuresForNegative(0, min, linesCount, radius, fontHeight, autoAdjust, centerPoint);
+            else
+            {
+                return GetMeasuresForComplex(max, min, linesCount, radius, fontHeight, autoAdjust, centerPoint);
+            }
         }
 
         private static bool isInteger(double step)
@@ -3765,7 +3892,8 @@ namespace ag.WPF.Chart
                 || !(values[7] is FontWeight fontWeight)
                 || !(values[8] is FontStretch fontStretch)
                 || !(values[9] is IEnumerable<string> customEnumerable)
-                || !(values[10] is int linesCount))
+                || !(values[10] is int linesCount)
+                || !(values[11] is bool autoAdjust))
                 return null;
 
             var gm = new PathGeometry();
@@ -3789,6 +3917,12 @@ namespace ag.WPF.Chart
                 radius -= (2 * fmt.Width + 8);
             var xBeg = radius;
             var yBeg = 90.0;
+
+            var fmtY = new FormattedText("AAA", culture, FlowDirection.LeftToRight,
+                    new Typeface(fontFamily, fontStyle, fontWeight, fontStretch), fontSize, Brushes.Black, VisualTreeHelper.GetDpi(Utils.Border).PixelsPerDip);
+            var (max, min, realLinesCount, stepNum, _, _) = Utils.GetMeasures(series, linesCount, radius, fmt.Height, autoAdjust, centerPoint);
+            linesCount = realLinesCount;
+
             var distanceStep = radius / linesCount;
 
             for (var step = 0; step < linesCount; step++)
@@ -3843,7 +3977,8 @@ namespace ag.WPF.Chart
                 || !(values[11] is IEnumerable<string> customEnumerableY)
                 || !(values[12] is int linesCount)
                 || linesCount < 2
-                || !(values[13] is string format))
+                || !(values[13] is string format)
+                || !(values[14] is bool autoAdjust))
                 return null;
 
             var gm = new PathGeometry();
@@ -3930,7 +4065,13 @@ namespace ag.WPF.Chart
             }
 
             // draw y-axis values
-            var (max, min, stepNum, _, _) = Utils.GetMeasures(series, linesCount, radius, centerPoint);
+            var fmtY = new FormattedText("AAA", culture, FlowDirection.LeftToRight,
+                    new Typeface(fontFamily, fontStyle, fontWeight, fontStretch), fontSize, Brushes.Black, VisualTreeHelper.GetDpi(Utils.Border).PixelsPerDip)
+            {
+                TextAlignment = flowDir == FlowDirection.RightToLeft ? TextAlignment.Left : TextAlignment.Right
+            };
+            var (max, min, realLinesCount, stepNum, _, _) = Utils.GetMeasures(series, linesCount, radius, fmt.Height, autoAdjust, centerPoint);
+            linesCount = realLinesCount;
 
             var stepY = radius / linesCount;
             var xY = centerPoint.X - 4;

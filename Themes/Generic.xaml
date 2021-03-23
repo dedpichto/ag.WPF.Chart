@@ -291,6 +291,7 @@
                                                 <Binding Path="YAxisCustomValues" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                                 <Binding Path="SectionsY" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                                 <Binding Path="AxesValuesFormat" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                                <Binding Path="AutoAdjust" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                                 <Binding Path="SeriesCount" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                             </MultiBinding>
                                         </Path.Data>
@@ -309,6 +310,7 @@
                                                 <Binding Path="AxesFontStretch" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                                 <Binding Path="XAxisCustomValues" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                                 <Binding Path="SectionsY" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                                <Binding Path="AutoAdjust" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                                 <Binding Path="SeriesCount" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                             </MultiBinding>
                                         </Path.Data>
