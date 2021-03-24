@@ -60,9 +60,9 @@ namespace ChartTest
             //Series.Add(new Series("Series 2", values2));
             //Series.Add(new Series("Series 3", values3));
             //Series.Add(new Series("Series 4", values4));
-            //Series.Add(new Series("Series 5", values5));
+            Series.Add(new Series("Series 5", values5));
             //Series.Add(new Series("Series 6", values6));
-            Series.Add(new Series("Series 7", values7));
+            //Series.Add(new Series("Series 7", values7));
 
             //chTest.SeriesCollection.Add(new Series("Series 3", values3));
 

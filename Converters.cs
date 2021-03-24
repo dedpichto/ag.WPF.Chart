@@ -43,6 +43,12 @@ namespace ag.WPF.Chart
         UpLeft
     }
 
+    internal struct ZeroPoint
+    {
+        internal Point Point;
+        internal int Level;
+    }
+
     internal static class Utils
     {
         internal const double AXIS_THICKNESS = 0.5;
@@ -89,9 +95,10 @@ namespace ag.WPF.Chart
                     yield return max / (b * (int)Math.Pow(10, p));
         }
 
-        internal static (double max, double min, int linesCount, double step, double units, Point zeroPoint) GetMeasuresForPositive(double max, double min, int linesCount, double radius, double fontHeight, bool autoAdjust, Point centerPoint)
+        internal static (double max, double min, int linesCount, double step, double stepLength, double units, ZeroPoint zeroPoint) GetMeasuresForPositive(double max, double min, int linesCount, double radius, double fontHeight, bool autoAdjust, ZeroPoint centerPoint)
         {
-            var step = 0.0;
+            var stepSize = 0.0;
+            var stepLength = 0.0;
             var units = 0.0;
             // round max to next integer
             max = Math.Ceiling(max);
@@ -115,19 +122,21 @@ namespace ag.WPF.Chart
                     // change lines count to selected one
                     linesCount = (int)lines[item.index];
                     // prepare step
-                    step = diff / linesCount;
+                    stepSize = diff / linesCount;
+                    stepLength = radius / linesCount;
                     // prepare units
                     units = Math.Abs(radius / diff);
                 }
                 else
                 {
-                    step = diff / linesCount;
-                    while (!isInteger(step))
+                    stepSize = diff / linesCount;
+                    while (!isInteger(stepSize))
                     {
                         max = Math.Sign(max) * roundInt((int)Math.Abs(max), (int)Math.Pow(10, power));
                         diff = getDiff(max, min);
-                        step = diff / linesCount;
+                        stepSize = diff / linesCount;
                     }
+                    stepLength = radius / linesCount;
                     units = Math.Abs(radius / diff);
                 }
             }
@@ -135,24 +144,26 @@ namespace ag.WPF.Chart
             {
                 // store max and min difference
                 var diff = getDiff(max, min);
-                step = diff / linesCount;
-                while (!isInteger(step))
+                stepSize = diff / linesCount;
+                while (!isInteger(stepSize))
                 {
                     max = Math.Sign(max) * roundInt((int)Math.Abs(max), (int)Math.Pow(10, power));
                     diff = getDiff(max, min);
-                    step = diff / linesCount;
+                    stepSize = diff / linesCount;
                 }
+                stepLength = radius / linesCount;
                 units = Math.Abs(radius / diff);
             }
 
-            // sero point Y-coordinate is stays the same
+            // zero point Y-coordinate is stays the same and leve stays 0
 
-            return (max, min, linesCount, step, units, centerPoint);
+            return (max, min, linesCount, stepSize, stepLength, units, centerPoint);
         }
 
-        internal static (double max, double min, int linesCount, double step, double units, Point zeroPoint) GetMeasuresForNegative(double max, double min, int linesCount, double radius, double fontHeight, bool autoAdjust, Point centerPoint)
+        internal static (double max, double min, int linesCount, double stepSize, double stepLength, double units, ZeroPoint zeroPoint) GetMeasuresForNegative(double max, double min, int linesCount, double radius, double fontHeight, bool autoAdjust, ZeroPoint zeroPoint)
         {
-            var step = 0.0;
+            var stepSize = 0.0;
+            var stepLength = 0.0;
             var units = 0.0;
             // round min to prevous integer
             min = Math.Floor(min);
@@ -176,44 +187,49 @@ namespace ag.WPF.Chart
                     // change lines count to selected one
                     linesCount = (int)lines[item.index];
                     // prepare step
-                    step = diff / linesCount;
+                    stepSize = diff / linesCount;
+                    stepLength = radius / linesCount;
                     // prepare units
                     units = Math.Abs(radius / diff);
                 }
                 else
                 {
-                    step = diff / linesCount;
-                    while (!isInteger(step))
+                    stepSize = diff / linesCount;
+                    while (!isInteger(stepSize))
                     {
                         min = Math.Sign(min) * roundInt((int)Math.Abs(min), (int)Math.Pow(10, power));
                         diff = getDiff(max, min);
-                        step = diff / linesCount;
+                        stepSize = diff / linesCount;
                     }
                     units = Math.Abs(radius / diff);
+                    stepLength = radius / linesCount;
                 }
             }
             else
             {
                 // store max and min difference
                 var diff = getDiff(max, min);
-                step = diff / linesCount;
-                while (!isInteger(step))
+                stepSize = diff / linesCount;
+                while (!isInteger(stepSize))
                 {
                     min = Math.Sign(min) * roundInt((int)Math.Abs(min), (int)Math.Pow(10, power));
                     diff = getDiff(max, min);
-                    step = diff / linesCount;
+                    stepSize = diff / linesCount;
                 }
                 units = Math.Abs(radius / diff);
+                stepLength = radius / linesCount;
             }
             // find zero point
-            centerPoint.Y -= step * linesCount * units;
+            zeroPoint.Point.Y -= stepSize * linesCount * units;
+            zeroPoint.Level = linesCount;
 
-            return (max, min, linesCount, step, units, centerPoint);
+            return (max, min, linesCount, stepSize, stepLength, units, zeroPoint);
         }
 
-        internal static (double max, double min, int linesCount, double step, double units, Point zeroPoint) GetMeasuresForComplex(double max, double min, int linesCount, double radius, double fontHeight, bool autoAdjust, Point centerPoint)
+        internal static (double max, double min, int linesCount, double stepSize, double stepLength, double units, ZeroPoint zeroPoint) GetMeasuresForComplex(double max, double min, int linesCount, double radius, double fontHeight, bool autoAdjust, ZeroPoint zeroPoint)
         {
-            var step = 0.0;
+            var stepSize = 0.0;
+            var stepLength = 0.0;
             var units = 0.0;
 
             // round max to next integer
@@ -246,7 +262,8 @@ namespace ag.WPF.Chart
                     // change lines count to selected one
                     linesCount = (int)lines[item.index];
                     // prepare step
-                    step = diff / linesCount;
+                    stepSize = diff / linesCount;
+                    stepLength = radius / linesCount;
                     // prepare units
                     units = Math.Abs(radius / diff);
                 }
@@ -259,14 +276,15 @@ namespace ag.WPF.Chart
                         min = 0;
                         linesCount--;
                         diff = getDiff(max, min);
-                        step = diff / linesCount;
-                        while (!isInteger(step) || step < prevMin)
+                        stepSize = diff / linesCount;
+                        while (!isInteger(stepSize) || stepSize < prevMin)
                         {
                             max = Math.Sign(max) * roundInt((int)Math.Abs(max), (int)Math.Pow(10, powerMax));
                             diff = getDiff(max, min);
-                            step = diff / linesCount;
+                            stepSize = diff / linesCount;
                         }
-                        min = sign * step;
+                        min = sign * stepSize;
+                        stepLength = radius / linesCount;
                         units = Math.Abs(radius / (diff + Math.Abs(min)));
                     }
                     else
@@ -276,14 +294,15 @@ namespace ag.WPF.Chart
                         max = 0;
                         linesCount--;
                         diff = getDiff(max, min);
-                        step = diff / linesCount;
-                        while (!isInteger(step) || step < prevMax)
+                        stepSize = diff / linesCount;
+                        while (!isInteger(stepSize) || stepSize < prevMax)
                         {
                             min = Math.Sign(min) * roundInt((int)Math.Abs(min), (int)Math.Pow(10, powerMin));
                             diff = getDiff(max, min);
-                            step = diff / linesCount;
+                            stepSize = diff / linesCount;
                         }
-                        max = sign * step;
+                        max = sign * stepSize;
+                        stepLength = radius / linesCount;
                         units = Math.Abs(radius / (diff + max));
                     }
                 }
@@ -299,14 +318,15 @@ namespace ag.WPF.Chart
                     min = 0;
                     linesCount--;
                     diff = getDiff(max, min);
-                    step = diff / linesCount;
-                    while (!isInteger(step) || step < prevMin)
+                    stepSize = diff / linesCount;
+                    while (!isInteger(stepSize) || stepSize < prevMin)
                     {
                         max = Math.Sign(max) * roundInt((int)Math.Abs(max), (int)Math.Pow(10, powerMax));
                         diff = getDiff(max, min);
-                        step = diff / linesCount;
+                        stepSize = diff / linesCount;
                     }
-                    min = sign * step;
+                    min = sign * stepSize;
+                    stepLength = radius / linesCount;
                     units = Math.Abs(radius / (diff + Math.Abs(min)));
                 }
                 else
@@ -316,14 +336,15 @@ namespace ag.WPF.Chart
                     max = 0;
                     linesCount--;
                     diff = getDiff(max, min);
-                    step = diff / linesCount;
-                    while (!isInteger(step) || step < prevMax)
+                    stepSize = diff / linesCount;
+                    while (!isInteger(stepSize) || stepSize < prevMax)
                     {
                         min = Math.Sign(min) * roundInt((int)Math.Abs(min), (int)Math.Pow(10, powerMin));
                         diff = getDiff(max, min);
-                        step = diff / linesCount;
+                        stepSize = diff / linesCount;
                     }
-                    max = sign * step;
+                    max = sign * stepSize;
+                    stepLength = radius / linesCount;
                     units = Math.Abs(radius / (diff + max));
                 }
             }
@@ -332,26 +353,27 @@ namespace ag.WPF.Chart
             var temp = min;
             while (temp < 0)
             {
-                temp += step;
-                centerPoint.Y -= step * units;
+                temp += stepSize;
+                zeroPoint.Point.Y -= stepSize * units;
+                zeroPoint.Level++;
             }
 
-            return (max, min, linesCount, step, units, centerPoint);
+            return (max, min, linesCount, stepSize, stepLength, units, zeroPoint);
         }
 
-        internal static (double max, double min, int linesCount, double step, double units, Point zeroPoint) GetMeasures(Series[] seriesArray, int linesCount, double radius, double fontHeight, bool autoAdjust, Point centerPoint)
+        internal static (double max, double min, int linesCount, double stepSize, double stepLength, double units, ZeroPoint zeroPoint) GetMeasures(Series[] seriesArray, int linesCount, double radius, double fontHeight, bool autoAdjust, Point centerPoint)
         {
             var values = seriesArray.SelectMany(s => s.Values.Select(v => v.Value.V1));
             var max = values.Max();
             var min = values.Min();
 
             if (values.All(v => v > 0))
-                return GetMeasuresForPositive(max, 0, linesCount, radius, fontHeight, autoAdjust, centerPoint);
+                return GetMeasuresForPositive(max, 0, linesCount, radius, fontHeight, autoAdjust, new ZeroPoint { Point = centerPoint });
             else if (values.All(v => v < 0))
-                return GetMeasuresForNegative(0, min, linesCount, radius, fontHeight, autoAdjust, centerPoint);
+                return GetMeasuresForNegative(0, min, linesCount, radius, fontHeight, autoAdjust, new ZeroPoint { Point = centerPoint });
             else
             {
-                return GetMeasuresForComplex(max, min, linesCount, radius, fontHeight, autoAdjust, centerPoint);
+                return GetMeasuresForComplex(max, min, linesCount, radius, fontHeight, autoAdjust, new ZeroPoint { Point = centerPoint });
             }
         }
 
@@ -915,8 +937,8 @@ namespace ag.WPF.Chart
                         radius -= (2 * fmt.Height + 8);
                     else
                         radius -= (2 * fmt.Width + 8);
-                    var (max, min, realLinesCount, step, units, zeroPoint) = Utils.GetMeasures(series, linesCount, radius, fmt.Height, autoAdjust, centerPoint);
-                    gm = drawRadar(series.FirstOrDefault(s => s.Index == index), chartStyle, units, step, radius, pointsCount, zeroPoint);
+                    var (max, min, realLinesCount, stepSize, stepLength, units, zeroPoint) = Utils.GetMeasures(series, linesCount, radius, fmt.Height, autoAdjust, centerPoint);
+                    gm = drawRadar(series.FirstOrDefault(s => s.Index == index), chartStyle, units, stepSize, stepLength, radius, pointsCount, zeroPoint);
                     break;
                 case ChartStyle.Lines:
                 case ChartStyle.LinesWithMarkers:
@@ -1783,27 +1805,27 @@ namespace ag.WPF.Chart
             return gm;
         }
 
-        private PathGeometry drawRadar(Series currentSeries, ChartStyle chartStyle, double units, double stepNum, double radius, int pointsCount, Point zeroPoint)
+        private PathGeometry drawRadar(Series currentSeries, ChartStyle chartStyle, double units, double stepNum, double stepLength, double radius, int pointsCount, ZeroPoint zeroPoint)
         {
             var gm = new PathGeometry();
             currentSeries.RealRects.Clear();
             var points = new List<Point>();
             var values = currentSeries.Values.Select(v => v.Value.V1).ToArray();
-            var xBeg = zeroPoint.X;
+            var xBeg = zeroPoint.Point.X;
             var yBeg = 90.0;
             var currentDegrees = 0.0;
             var degreesStep = 360 / pointsCount;
 
-            for (var i = 0; i < values.Length; i++)
+            for (var i = 0; i < pointsCount; i++)
             {
-                //if (values.Length <= i)
-                //    break;
+                if (values.Length <= i)
+                    break;
                 var distance = Math.Abs(values[i]) * units;
 
                 currentDegrees = 90 + i * degreesStep;
                 var rads = currentDegrees * Math.PI / 180;
-                xBeg = zeroPoint.X - distance * Math.Cos(rads);
-                yBeg = zeroPoint.Y - distance * Math.Sin(rads);
+                xBeg = zeroPoint.Point.X - distance * Math.Cos(rads);
+                yBeg = zeroPoint.Point.Y - distance * Math.Sin(rads);
                 points.Add(new Point(xBeg, yBeg));
             }
 
@@ -1812,6 +1834,27 @@ namespace ag.WPF.Chart
                 gm.AddGeometry(new LineGeometry(points[i], points[i + 1]));
             }
             //gm.AddGeometry(new LineGeometry(points[points.Count - 1], points[0]));
+
+
+            //for (var step = 0; step < linesCount; step++)
+            //{
+            //    var distance = radius - distanceStep * step;
+            //    var points = new List<Point>();
+            //    for (var i = 0; i < pointsCount; i++)
+            //    {
+            //        currentDegrees = 90 + i * degreesStep;
+            //        var rads = currentDegrees * Math.PI / 180;
+            //        xBeg = centerPoint.X - distance * Math.Cos(rads);
+            //        yBeg = centerPoint.Y - distance * Math.Sin(rads);
+            //        points.Add(new Point(xBeg, yBeg));
+            //    }
+
+            //    for (var i = 0; i < points.Count - 1; i++)
+            //    {
+            //        gm.AddGeometry(new LineGeometry(points[i], points[i + 1]));
+            //    }
+            //    gm.AddGeometry(new LineGeometry(points[points.Count - 1], points[0]));
+            //}
 
             //for (var i = 0; i < values.Length; i++)
             //{
@@ -4009,7 +4052,7 @@ namespace ag.WPF.Chart
 
             var fmtY = new FormattedText("AAA", culture, FlowDirection.LeftToRight,
                     new Typeface(fontFamily, fontStyle, fontWeight, fontStretch), fontSize, Brushes.Black, VisualTreeHelper.GetDpi(Utils.Border).PixelsPerDip);
-            var (max, min, realLinesCount, stepNum, _, _) = Utils.GetMeasures(series, linesCount, radius, fmtY.Height, autoAdjust, centerPoint);
+            var (max, min, realLinesCount, stepSize, _, _, _) = Utils.GetMeasures(series, linesCount, radius, fmtY.Height, autoAdjust, centerPoint);
             linesCount = realLinesCount;
 
             var distanceStep = radius / linesCount;
@@ -4156,7 +4199,7 @@ namespace ag.WPF.Chart
             // draw y-axis values
             var fmtY = new FormattedText("AAA", culture, FlowDirection.LeftToRight,
                     new Typeface(fontFamily, fontStyle, fontWeight, fontStretch), fontSize, Brushes.Black, VisualTreeHelper.GetDpi(Utils.Border).PixelsPerDip);
-            var (max, min, realLinesCount, stepNum, _, _) = Utils.GetMeasures(series, linesCount, radius, fmtY.Height, autoAdjust, centerPoint);
+            var (max, min, realLinesCount, stepSize, _, _, _) = Utils.GetMeasures(series, linesCount, radius, fmtY.Height, autoAdjust, centerPoint);
             linesCount = realLinesCount;
 
             var stepY = radius / linesCount;
@@ -4177,7 +4220,7 @@ namespace ag.WPF.Chart
                     ngm.Transform = new ScaleTransform { ScaleX = -1, CenterX = pt.X - 8 + fmt.Width / 2, CenterY = pt.Y + fmt.Height / 2 };
 
                 gm.AddGeometry(ngm);
-                yNumber -= stepNum;
+                yNumber -= stepSize;
                 yY += stepY;
             }
             return gm;
