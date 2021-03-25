@@ -938,7 +938,7 @@ namespace ag.WPF.Chart
                     else
                         radius -= (2 * fmt.Width + 8);
                     var (max, min, realLinesCount, stepSize, stepLength, units, zeroPoint) = Utils.GetMeasures(series, linesCount, radius, fmt.Height, autoAdjust, centerPoint);
-                    gm = drawRadar(series.FirstOrDefault(s => s.Index == index), chartStyle, units, stepSize, stepLength, radius, pointsCount, zeroPoint);
+                    gm = drawRadar(series.FirstOrDefault(s => s.Index == index), chartStyle, units, stepSize, stepLength, radius, pointsCount, realLinesCount, zeroPoint, centerPoint);
                     break;
                 case ChartStyle.Lines:
                 case ChartStyle.LinesWithMarkers:
@@ -1805,7 +1805,7 @@ namespace ag.WPF.Chart
             return gm;
         }
 
-        private PathGeometry drawRadar(Series currentSeries, ChartStyle chartStyle, double units, double stepNum, double stepLength, double radius, int pointsCount, ZeroPoint zeroPoint)
+        private PathGeometry drawRadar(Series currentSeries, ChartStyle chartStyle, double units, double stepNum, double stepLength, double radius, int pointsCount, int linesCount, ZeroPoint zeroPoint, Point centerPoint)
         {
             var gm = new PathGeometry();
             currentSeries.RealRects.Clear();
@@ -1815,56 +1815,57 @@ namespace ag.WPF.Chart
             var yBeg = 90.0;
             var currentDegrees = 0.0;
             var degreesStep = 360 / pointsCount;
+            var zeroDistance =(linesCount- zeroPoint.Level) * stepLength;
 
-            for (var i = 0; i < pointsCount; i++)
+            if (chartStyle.In(ChartStyle.Radar,ChartStyle.RadarWithMarkers))
             {
-                if (values.Length <= i)
-                    break;
-                var distance = Math.Abs(values[i]) * units;
+                var segments = new List<PathSegment>();
+                for (var i = 0; i < values.Length; i++)
+                {
+                    //if (values.Length <= i)
+                    //    break;
+                    var distance = radius - (zeroDistance - values[i] * units);
 
-                currentDegrees = 90 + i * degreesStep;
-                var rads = currentDegrees * Math.PI / 180;
-                xBeg = zeroPoint.Point.X - distance * Math.Cos(rads);
-                yBeg = zeroPoint.Point.Y - distance * Math.Sin(rads);
-                points.Add(new Point(xBeg, yBeg));
+                    currentDegrees = 90 + i * degreesStep;
+                    var rads = currentDegrees * Math.PI / 180;
+                    xBeg = centerPoint.X - distance * Math.Cos(rads);
+                    yBeg = centerPoint.Y - distance * Math.Sin(rads);
+                    points.Add(new Point(xBeg, yBeg));
+                }
+                for (var i = 0; i < points.Count; i++)
+                {
+                    segments.Add(new LineSegment(points[i], true));
+                }
+                //gm.AddGeometry(new LineGeometry(points[points.Count - 1], points[0]));
+                gm.Figures.Add(new PathFigure(points[0], segments, true));
+                //for (var i = 0; i < points.Count - 1; i++)
+                //{
+                //    gm.AddGeometry(new LineGeometry(points[i], points[i + 1]));
+                //}
+                //gm.AddGeometry(new LineGeometry(points[points.Count - 1], points[0]));
             }
-
-            for (var i = 0; i < points.Count - 1; i++)
+            else
             {
-                gm.AddGeometry(new LineGeometry(points[i], points[i + 1]));
+                var segments = new List<PathSegment>();
+                for (var i = 0; i < values.Length; i++)
+                {
+                    //if (values.Length <= i)
+                    //    break;
+                    var distance = radius - (zeroDistance - values[i] * units);
+
+                    currentDegrees = 90 + i * degreesStep;
+                    var rads = currentDegrees * Math.PI / 180;
+                    xBeg = centerPoint.X - distance * Math.Cos(rads);
+                    yBeg = centerPoint.Y - distance * Math.Sin(rads);
+                    points.Add(new Point(xBeg, yBeg));
+                }
+                for (var i = 0; i < points.Count; i++)
+                {
+                    segments.Add(new LineSegment(points[i], true));
+                }
+                //gm.AddGeometry(new LineGeometry(points[points.Count - 1], points[0]));
+                gm.Figures.Add(new PathFigure(points[0], segments, true));
             }
-            //gm.AddGeometry(new LineGeometry(points[points.Count - 1], points[0]));
-
-
-            //for (var step = 0; step < linesCount; step++)
-            //{
-            //    var distance = radius - distanceStep * step;
-            //    var points = new List<Point>();
-            //    for (var i = 0; i < pointsCount; i++)
-            //    {
-            //        currentDegrees = 90 + i * degreesStep;
-            //        var rads = currentDegrees * Math.PI / 180;
-            //        xBeg = centerPoint.X - distance * Math.Cos(rads);
-            //        yBeg = centerPoint.Y - distance * Math.Sin(rads);
-            //        points.Add(new Point(xBeg, yBeg));
-            //    }
-
-            //    for (var i = 0; i < points.Count - 1; i++)
-            //    {
-            //        gm.AddGeometry(new LineGeometry(points[i], points[i + 1]));
-            //    }
-            //    gm.AddGeometry(new LineGeometry(points[points.Count - 1], points[0]));
-            //}
-
-            //for (var i = 0; i < values.Length; i++)
-            //{
-            //    var x = i*10;// centerX + i * stepX;
-            //    var y =i*10;// centerY - values[i].Value.V1 * stepY;
-
-            //    points.Add(new Point(x, y));
-            //}
-            //var poly = new PolyLineSegment(points, true);
-            //gm.Figures.Add(new PathFigure(points[0], new[] { poly }, false));
             return gm;
         }
 
@@ -4016,7 +4017,7 @@ namespace ag.WPF.Chart
                 || !(values[2] is IEnumerable<Series> seriesEnumerable)
                 || !seriesEnumerable.Any()
                 || !(values[3] is ChartStyle chartStyle)
-                || !chartStyle.In(ChartStyle.Radar, ChartStyle.RadarWithMarkers)
+                || !chartStyle.In(ChartStyle.Radar, ChartStyle.RadarWithMarkers, ChartStyle.RadarArea)
                 //|| !(values[6] is string format)
                 || !(values[4] is FontFamily fontFamily)
                 || !(values[5] is double fontSize)
@@ -4098,7 +4099,7 @@ namespace ag.WPF.Chart
                 || !(values[2] is IEnumerable<Series> seriesEnumerable)
                 || !seriesEnumerable.Any()
                 || !(values[3] is ChartStyle chartStyle)
-                || !chartStyle.In(ChartStyle.Radar, ChartStyle.RadarWithMarkers)
+                || !chartStyle.In(ChartStyle.Radar, ChartStyle.RadarWithMarkers,ChartStyle.RadarArea)
                 || !(values[4] is FontFamily fontFamily)
                 || !(values[5] is double fontSize)
                 || !(values[6] is FontStyle fontStyle)

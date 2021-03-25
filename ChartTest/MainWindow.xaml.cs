@@ -47,7 +47,7 @@ namespace ChartTest
             var values1 = new double[] { 327, 20, 210, 27, 17 ,37,89,56,-1324};
             var values2 = new double[] { 30, 115, 175, 593, 37.5 };
             var values3 = new double[] { 60, -128.3, 37 };
-            var values4 = new double[] { 1,8.3,72,90,130,-11,-12,-13,-14,-121};
+            var values4 = new double[] { 1,8.3,72,90,130,-23,-12,-13,-14,-121};
             var values5 = new double[] { 1,2,3,4,5,6,7};
             var values6 = new double[] { 978,1458,1459,1460,1461,425,172};
             var values7 = new double[] { -1,-2,-3,-4,-5,-6,-7};
@@ -59,8 +59,8 @@ namespace ChartTest
             //Series.Add(new Series("Series 1", values1));
             //Series.Add(new Series("Series 2", values2));
             //Series.Add(new Series("Series 3", values3));
-            //Series.Add(new Series("Series 4", values4));
-            Series.Add(new Series("Series 5", values5));
+            Series.Add(new Series("Series 4", values4));
+            //Series.Add(new Series("Series 5", values5));
             //Series.Add(new Series("Series 6", values6));
             //Series.Add(new Series("Series 7", values7));
 
