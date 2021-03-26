@@ -1121,6 +1121,7 @@ namespace ag.WPF.Chart
                 case ChartStyle.SmoothStackedLinesWithMarkers:
                 case ChartStyle.SmoothFullStackedLinesWithMarkers:
                 case ChartStyle.Bubbles:
+                case ChartStyle.RadarWithMarkers:
                     rc = s.RealRects.FirstOrDefault(r => r.Contains(e.GetPosition(_canvas)));
                     if (rc != default)
                     {

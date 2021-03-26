@@ -938,7 +938,7 @@ namespace ag.WPF.Chart
                     else
                         radius -= (2 * fmt.Width + 8);
                     var (max, min, realLinesCount, stepSize, stepLength, units, zeroPoint) = Utils.GetMeasures(series, linesCount, radius, fmt.Height, autoAdjust, centerPoint);
-                    gm = drawRadar(series.FirstOrDefault(s => s.Index == index), chartStyle, units, stepSize, stepLength, radius, pointsCount, realLinesCount, zeroPoint, centerPoint);
+                    gm = drawRadar(series.FirstOrDefault(s => s.Index == index), chartStyle, units, stepLength, radius, pointsCount, realLinesCount, zeroPoint.Level, centerPoint);
                     break;
                 case ChartStyle.Lines:
                 case ChartStyle.LinesWithMarkers:
@@ -1805,67 +1805,38 @@ namespace ag.WPF.Chart
             return gm;
         }
 
-        private PathGeometry drawRadar(Series currentSeries, ChartStyle chartStyle, double units, double stepNum, double stepLength, double radius, int pointsCount, int linesCount, ZeroPoint zeroPoint, Point centerPoint)
+        private PathGeometry drawRadar(Series currentSeries, ChartStyle chartStyle, double units, double stepLength, double radius, int pointsCount, int linesCount, int zeroLevel, Point centerPoint)
         {
             var gm = new PathGeometry();
             currentSeries.RealRects.Clear();
             var points = new List<Point>();
             var values = currentSeries.Values.Select(v => v.Value.V1).ToArray();
-            var xBeg = zeroPoint.Point.X;
-            var yBeg = 90.0;
+            var xBeg = 0.0;
+            var yBeg = 0.0;
             var currentDegrees = 0.0;
             var degreesStep = 360 / pointsCount;
-            var zeroDistance =(linesCount- zeroPoint.Level) * stepLength;
+            var zeroDistance =(linesCount- zeroLevel) * stepLength;
 
-            if (chartStyle.In(ChartStyle.Radar,ChartStyle.RadarWithMarkers))
+            var segments = new List<PathSegment>();
+            for (var i = 0; i < values.Length; i++)
             {
-                var segments = new List<PathSegment>();
-                for (var i = 0; i < values.Length; i++)
-                {
-                    //if (values.Length <= i)
-                    //    break;
-                    var distance = radius - (zeroDistance - values[i] * units);
+                var distance = radius - (zeroDistance - values[i] * units);
 
-                    currentDegrees = 90 + i * degreesStep;
-                    var rads = currentDegrees * Math.PI / 180;
-                    xBeg = centerPoint.X - distance * Math.Cos(rads);
-                    yBeg = centerPoint.Y - distance * Math.Sin(rads);
-                    points.Add(new Point(xBeg, yBeg));
-                }
-                for (var i = 0; i < points.Count; i++)
+                currentDegrees = 90 + i * degreesStep;
+                var rads = currentDegrees * Math.PI / 180;
+                xBeg = centerPoint.X - distance * Math.Cos(rads);
+                yBeg = centerPoint.Y - distance * Math.Sin(rads);
+                points.Add(new Point(xBeg, yBeg));
+                if (chartStyle == ChartStyle.RadarWithMarkers)
                 {
-                    segments.Add(new LineSegment(points[i], true));
+                    drawMarker(xBeg, yBeg, gm, currentSeries.RealRects);
                 }
-                //gm.AddGeometry(new LineGeometry(points[points.Count - 1], points[0]));
-                gm.Figures.Add(new PathFigure(points[0], segments, true));
-                //for (var i = 0; i < points.Count - 1; i++)
-                //{
-                //    gm.AddGeometry(new LineGeometry(points[i], points[i + 1]));
-                //}
-                //gm.AddGeometry(new LineGeometry(points[points.Count - 1], points[0]));
             }
-            else
+            for (var i = 0; i < points.Count; i++)
             {
-                var segments = new List<PathSegment>();
-                for (var i = 0; i < values.Length; i++)
-                {
-                    //if (values.Length <= i)
-                    //    break;
-                    var distance = radius - (zeroDistance - values[i] * units);
-
-                    currentDegrees = 90 + i * degreesStep;
-                    var rads = currentDegrees * Math.PI / 180;
-                    xBeg = centerPoint.X - distance * Math.Cos(rads);
-                    yBeg = centerPoint.Y - distance * Math.Sin(rads);
-                    points.Add(new Point(xBeg, yBeg));
-                }
-                for (var i = 0; i < points.Count; i++)
-                {
-                    segments.Add(new LineSegment(points[i], true));
-                }
-                //gm.AddGeometry(new LineGeometry(points[points.Count - 1], points[0]));
-                gm.Figures.Add(new PathFigure(points[0], segments, true));
+                segments.Add(new LineSegment(points[i], true));
             }
+            gm.Figures.Add(new PathFigure(points[0], segments, true));
             return gm;
         }
 
