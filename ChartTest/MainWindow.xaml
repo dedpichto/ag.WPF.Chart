@@ -46,7 +46,7 @@
                          AxesValuesVisibility="Both" 
                          Caption="Sample chart" 
                          XAxisCustomValues="{Binding CustomXTexts}"
-                         ChartStyle="Radar"
+                         ChartStyle="LinesWithMarkers"
                          SectionsY="5"
                          ChartPointLeftButtonDoubleClick="Chart_MarkerLeftButtonDoubleClick">
             </chart:Chart>

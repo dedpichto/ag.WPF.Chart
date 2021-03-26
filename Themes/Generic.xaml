@@ -341,6 +341,7 @@
                                                 <Binding Path="AxesFontStyle" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                                 <Binding Path="AxesFontWeight" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                                 <Binding Path="AxesFontStretch" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                                <Binding Path="AutoAdjust" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                                 <Binding Path="SeriesCount" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                             </MultiBinding>
                                         </Path.Data>
@@ -358,6 +359,7 @@
                                                 <Binding Path="AxesFontStyle" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                                 <Binding Path="AxesFontWeight" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                                 <Binding Path="AxesFontStretch" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                                <Binding Path="AutoAdjust" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                                 <Binding Path="SeriesCount" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                             </MultiBinding>
                                         </Path.Data>
