@@ -614,11 +614,13 @@
                     <Border>
                         <StackPanel x:Name="stack" Orientation="Horizontal">
                             <Rectangle x:Name="rect" 
+                                       Opacity="{Binding ChartOpacity,RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:Chart}}"
                                        Width="{Binding LegendSize, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:Chart}, Converter={StaticResource LegendSizeConverter}}" 
                                        Height="{Binding LegendSize, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:Chart}, Converter={StaticResource LegendSizeConverter}}" 
                                        Fill="{TemplateBinding LegendBackground}" Margin="2"/>
                             <Ellipse x:Name="ellipse" 
                                      Visibility="Collapsed"
+                                     Opacity="{Binding ChartOpacity,RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:Chart}}"
                                      Width="{Binding LegendSize, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:Chart}, Converter={StaticResource LegendSizeConverter}}" 
                                      Height="{Binding LegendSize, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:Chart}, Converter={StaticResource LegendSizeConverter}}" 
                                      Fill="{TemplateBinding LegendBackground}" Margin="2"/>

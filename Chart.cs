@@ -924,6 +924,7 @@ namespace ag.WPF.Chart
 
                         #region Main legend
                         var legend = new Legend() { Index = series.Index };
+
                         var legendBackgroundBinding = new MultiBinding { Converter = new PathBrushConverter() };
                         legendBackgroundBinding.Bindings.Add(new Binding("IsEnabled")
                         {
