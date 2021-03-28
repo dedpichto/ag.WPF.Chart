@@ -1266,13 +1266,73 @@ namespace ag.WPF.Chart
                     gm = drawFullStackedLine(width, height, maxX, maxY, chartStyle, dir, series, index, rawValues, offsetBoundary);
                     break;
                 case ChartStyle.Columns:
-                    maxY = autoAdjust ? Utils.GetMaxY(rawValues, chartStyle) : maxYConv;
-                    gm = drawColumns(width, height, maxY, dir, series, index, tuple.Item1);
-                    break;
+                    {
+                        switch (dir)
+                        {
+                            case Directions.NorthEast:
+                            case Directions.NorthWest:
+                            case Directions.SouthEast:
+                                centerX = Utils.AXIS_THICKNESS + boundOffset;
+                                radius = height - Utils.AXIS_THICKNESS;
+                                break;
+                            case Directions.NorthEastNorthWest:
+                                centerX = width / 2;
+                                radius = height - Utils.AXIS_THICKNESS;
+                                break;
+                            case Directions.NorthEastSouthEast:
+                                centerX = Utils.AXIS_THICKNESS + boundOffset;
+                                radius = (height - Utils.AXIS_THICKNESS) / 2;
+                                break;
+                        }
+                        centerPoint = new Point(centerX, radius);
+                        var (max, min, realLinesCount, stepSize, stepLength, units, zeroPoint) = Utils.GetMeasures(
+                           chartStyle,
+                           series,
+                           linesCount,
+                           radius,
+                           fmt.Height,
+                           autoAdjust,
+                           centerPoint,
+                           dir == Directions.NorthEastSouthEast);
+
+                        maxY = autoAdjust ? Utils.GetMaxY(rawValues, chartStyle) : maxYConv;
+                        gm = drawColumns(width, height, units, dir, series, index);
+                        break;
+                    }
                 case ChartStyle.StackedColumns:
-                    maxY = autoAdjust ? Utils.GetMaxY(rawValues, chartStyle) : maxYConv;
-                    gm = drawStackedColumns(width, height, maxY, dir, series, index, rawValues);
-                    break;
+                    {
+                        switch (dir)
+                        {
+                            case Directions.NorthEast:
+                            case Directions.NorthWest:
+                            case Directions.SouthEast:
+                                centerX = Utils.AXIS_THICKNESS + boundOffset;
+                                radius = height - Utils.AXIS_THICKNESS;
+                                break;
+                            case Directions.NorthEastNorthWest:
+                                centerX = width / 2;
+                                radius = height - Utils.AXIS_THICKNESS;
+                                break;
+                            case Directions.NorthEastSouthEast:
+                                centerX = Utils.AXIS_THICKNESS + boundOffset;
+                                radius = (height - Utils.AXIS_THICKNESS) / 2;
+                                break;
+                        }
+                        centerPoint = new Point(centerX, radius);
+                        var (max, min, realLinesCount, stepSize, stepLength, units, zeroPoint) = Utils.GetMeasures(
+                           chartStyle,
+                           series,
+                           linesCount,
+                           radius,
+                           fmt.Height,
+                           autoAdjust,
+                           centerPoint,
+                           dir == Directions.NorthEastSouthEast);
+
+                        maxY = autoAdjust ? Utils.GetMaxY(rawValues, chartStyle) : maxYConv;
+                        gm = drawStackedColumns(width, height, units, dir, series, index, rawValues);
+                        break;
+                    }
                 case ChartStyle.FullStackedColumns:
                     maxY = autoAdjust ? Utils.GetMaxY(rawValues, chartStyle) : maxYConv;
                     gm = drawFullStackedColumns(width, height, maxY, dir, series, index, rawValues);
@@ -1533,7 +1593,7 @@ namespace ag.WPF.Chart
             return gm;
         }
 
-        private PathGeometry drawStackedColumns(double w, double h, double maxLength, Directions dir, Series[] series, int index, List<Tuple<List<ChartValue>, int>> tuples)
+        private PathGeometry drawStackedColumns(double w, double h, double units, Directions dir, Series[] series, int index, List<Tuple<List<ChartValue>, int>> tuples)
         {
             var tp = tuples.FirstOrDefault(t => t.Item2 == index);
             if (tp == null) return null;
@@ -1542,7 +1602,6 @@ namespace ag.WPF.Chart
             var segSize = w / values.Count;
             var columnWidth = segSize - COLUMN_BAR_OFFSET * 2;
             var startY = Utils.AXIS_THICKNESS;
-            var step = 0.0;
             var currentSeries = series.FirstOrDefault(s => s.Index == index);
             if (currentSeries == null) return null;
 
@@ -1550,23 +1609,18 @@ namespace ag.WPF.Chart
             {
                 case Directions.NorthEast:
                     startY = h - Utils.AXIS_THICKNESS;
-                    step = (h - 2 * Utils.AXIS_THICKNESS) / maxLength;
                     break;
                 case Directions.NorthEastNorthWest:
                     startY = h - Utils.AXIS_THICKNESS;
-                    step = (h - 2 * Utils.AXIS_THICKNESS) / maxLength;
                     break;
                 case Directions.NorthWest:
                     startY = h - Utils.AXIS_THICKNESS;
-                    step = (h - 2 * Utils.AXIS_THICKNESS) / maxLength;
                     break;
                 case Directions.NorthEastSouthEast:
                     startY = h / 2;
-                    step = (h - 2 * Utils.AXIS_THICKNESS) / 2 / maxLength;
                     break;
                 case Directions.SouthEast:
                     startY = Utils.AXIS_THICKNESS;
-                    step = (h - 2 * Utils.AXIS_THICKNESS) / maxLength;
                     break;
             }
 
@@ -1581,9 +1635,9 @@ namespace ag.WPF.Chart
                     var prevs =
                         tuples.Where(
                             s => s.Item2 < index && Math.Sign(s.Item1[i1].Value.V1) == Math.Sign(values[i1].Value.V1));
-                    y -= prevs.Sum(sr => sr.Item1[i].Value.V1 * step);
+                    y -= prevs.Sum(sr => sr.Item1[i].Value.V1 * units);
                 }
-                var rect = new Rect(new Point(x, y), new Point(x + columnWidth, y - values[i].Value.V1 * step));
+                var rect = new Rect(new Point(x, y), new Point(x + columnWidth, y - values[i].Value.V1 * units));
                 var rg = new RectangleGeometry(rect);
                 currentSeries.RealRects.Add(rect);
                 gm.AddGeometry(rg);
@@ -1591,46 +1645,41 @@ namespace ag.WPF.Chart
             return gm;
         }
 
-        private PathGeometry drawColumns(double w, double h, double maxLength, Directions dir, Series[] series, int index, List<ChartValue> values)
+        private PathGeometry drawColumns(double w, double h, double units, Directions dir, Series[] series, int index)
         {
             var gm = new PathGeometry();
-            var segSize = w / values.Count;
-            var columnWidth = (segSize - COLUMN_BAR_OFFSET * 2) / series.Length;
             var startY = Utils.AXIS_THICKNESS;
-            var step = 0.0;
             var currentSeries = series.FirstOrDefault(s => s.Index == index);
+            var segSize = w / series.Max(s => s.Values.Count);
+            var columnWidth = (segSize - COLUMN_BAR_OFFSET * 2) / series.Length;
+
             if (currentSeries == null) return null;
 
             switch (dir)
             {
                 case Directions.NorthEast:
                     startY = h - Utils.AXIS_THICKNESS;
-                    step = (h - 2 * Utils.AXIS_THICKNESS) / maxLength;
                     break;
                 case Directions.NorthEastNorthWest:
                     startY = h - Utils.AXIS_THICKNESS;
-                    step = (h - 2 * Utils.AXIS_THICKNESS) / maxLength;
                     break;
                 case Directions.NorthWest:
                     startY = h - Utils.AXIS_THICKNESS;
-                    step = (h - 2 * Utils.AXIS_THICKNESS) / maxLength;
                     break;
                 case Directions.NorthEastSouthEast:
                     startY = h / 2;
-                    step = (h - 2 * Utils.AXIS_THICKNESS) / 2 / maxLength;
                     break;
                 case Directions.SouthEast:
                     startY = Utils.AXIS_THICKNESS;
-                    step = (h - 2 * Utils.AXIS_THICKNESS) / maxLength;
                     break;
             }
 
             currentSeries.RealRects.Clear();
-            for (var i = 0; i < values.Count; i++)
+            for (var i = 0; i < currentSeries.Values.Count; i++)
             {
                 var x = i * segSize + COLUMN_BAR_OFFSET + index * columnWidth;
                 var y = startY;
-                var rect = new Rect(new Point(x, y), new Point(x + columnWidth, y - values[i].Value.V1 * step));
+                var rect = new Rect(new Point(x, y), new Point(x + columnWidth, y - currentSeries.Values[i].Value.V1 * units));
                 var rg = new RectangleGeometry(rect);
                 currentSeries.RealRects.Add(rect);
                 gm.AddGeometry(rg);
@@ -2003,13 +2052,6 @@ namespace ag.WPF.Chart
             {
                 var poly = new PolyLineSegment(currentSeries.RealPoints, true);
                 gm.Figures.Add(new PathFigure(start, new[] { poly }, false));
-            }
-            else if (style.In(ChartStyle.FullStackedArea))
-            {
-                currentSeries.RealPoints.Insert(0, new Point(Utils.AXIS_THICKNESS, centerY));
-                currentSeries.RealPoints.Add(new Point(currentSeries.RealPoints[currentSeries.RealPoints.Count - 1].X, centerY));
-                var poly = new PolyLineSegment(currentSeries.RealPoints, true);
-                gm.Figures.Add(new PathFigure(start, new[] { poly }, true));
             }
             return gm;
         }
