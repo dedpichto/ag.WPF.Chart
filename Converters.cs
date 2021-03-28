@@ -3792,11 +3792,12 @@ namespace ag.WPF.Chart
 
                         for (int i = 0, j = limit - 1; i < limit; i++, j--)
                         {
+                            var indexStep = flowDir == FlowDirection.LeftToRight ? i + 1 : i;
                             var num = !Utils.StyleBars(chartStyle)
                                 ? flowDir == FlowDirection.LeftToRight ? i : j
                                 : Utils.StyleMeasuredBars(chartStyle)
-                                    ? maxMin - stepSize * j
-                                    : 10 * (i + 1);
+                                    ? flowDir == FlowDirection.LeftToRight ? maxMin - stepSize * j : maxMin - stepSize * i
+                                    : flowDir == FlowDirection.LeftToRight ? 10 * (i + 1) : 10 * (j + 1);
                             var index = flowDir == FlowDirection.LeftToRight ? i : j;
                             var number = customValues.Length > index
                                 ? customValues[index]
@@ -3805,11 +3806,23 @@ namespace ag.WPF.Chart
                                 number += "%";
                             var fmt = new FormattedText(number, culture, FlowDirection.LeftToRight,
                                 new Typeface(fontFamily, fontStyle, fontWeight, fontStretch), fontSize, Brushes.Black, VisualTreeHelper.GetDpi(Utils.Border).PixelsPerDip);
-                            var x = flowDir == FlowDirection.LeftToRight
-                                ? drawBetween
-                                    ? boundOffset + (i + 1) * xStep - fmt.Width + xStep / 2
-                                    : boundOffset + (i + 1) * xStep - fmt.Width
-                                : drawBetween ? boundOffset + (i + 1) * xStep + xStep / 2 : boundOffset + (i + 1) * xStep;
+                            double x;
+                            if (Utils.StyleBars(chartStyle))
+                            {
+                                x = flowDir == FlowDirection.LeftToRight
+                                    ? drawBetween
+                                        ? boundOffset + indexStep * xStep - fmt.Width + xStep / 2
+                                        : boundOffset + indexStep * xStep - fmt.Width
+                                    : drawBetween ? boundOffset + indexStep * xStep + xStep / 2 : boundOffset + indexStep * xStep;
+                            }
+                            else
+                            {
+                                x = flowDir == FlowDirection.LeftToRight
+                                    ? drawBetween
+                                        ? boundOffset + i * xStep - fmt.Width + xStep / 2
+                                        : boundOffset + i * xStep - fmt.Width
+                                    : drawBetween ? boundOffset + indexStep * xStep + xStep / 2 : boundOffset + indexStep * xStep;
+                            }
                             var pt = new Point(x, 0);
                             var ngm = fmt.BuildGeometry(pt);
 
@@ -3853,7 +3866,7 @@ namespace ag.WPF.Chart
                                 new Typeface(fontFamily, fontStyle, fontWeight, fontStretch), fontSize, Brushes.Black, VisualTreeHelper.GetDpi(Utils.Border).PixelsPerDip);
                             var x = i < linesCount
                                 ? i * xStep + 1 + fmt.Width / number.Length
-                                : i * xStep - fmt.Width;
+                                : flowDir == FlowDirection.LeftToRight ? i * xStep - fmt.Width : i * xStep - fmt.Width-fmt.Width / number.Length;
                             var pt = new Point(x, 0);
                             var ngm = fmt.BuildGeometry(pt);
 
@@ -3917,14 +3930,15 @@ namespace ag.WPF.Chart
                         xStep = Utils.StyleMeasuredBars(chartStyle) ? stepLength : width / 10;
                         for (int i = 0, j = linesCount; i < linesCount; i++, j--)
                         {
+                            var indexStep = flowDir == FlowDirection.LeftToRight ? i : i + 1;
                             var index = flowDir == FlowDirection.LeftToRight ? j : i;
                             var num = !Utils.StyleBars(chartStyle)
                                 ? flowDir == FlowDirection.LeftToRight
-                                ? (i - linesCount) * maxY / linesCount
-                                : (j - linesCount) * maxY / linesCount
+                                    ? (i - linesCount) * maxY / linesCount
+                                    : (j - linesCount) * maxY / linesCount
                                 : Utils.StyleMeasuredBars(chartStyle)
-                                    ? j * maxMin / linesCount
-                                    : j * 10;
+                                    ? flowDir == FlowDirection.LeftToRight ? -j * maxMin / linesCount : -(i + 1) * maxMin / linesCount
+                                    : flowDir == FlowDirection.LeftToRight ? -j * 10 : -indexStep * 10;
                             var number = customValues.Length > index
                                 ? customValues[index]
                                 : format.EndsWith("%") ? num.ToString(format.Substring(0, format.Length - 1)) + "%" : num.ToString(format);
@@ -3933,19 +3947,16 @@ namespace ag.WPF.Chart
                             var fmt = new FormattedText(number, culture, FlowDirection.LeftToRight,
                                 new Typeface(fontFamily, fontStyle, fontWeight, fontStretch), fontSize, Brushes.Black, VisualTreeHelper.GetDpi(Utils.Border).PixelsPerDip);
                             var x = flowDir == FlowDirection.LeftToRight
-                                ? (i != linesCount ? i * xStep : i * xStep - fmt.Width)
-                                : j != linesCount ? i * xStep - fmt.Width : i * xStep;
-                            var y = (flowDir == FlowDirection.LeftToRight && i != linesCount) ||
-                                    (flowDir == FlowDirection.RightToLeft && j != linesCount)
-                                ? 0
-                                : fmt.Height / 2;
+                                ? indexStep * xStep
+                                : indexStep * xStep - fmt.Width;
+                            var y = fmt.Height / 2;
                             var pt = new Point(x, y);
                             var ngm = fmt.BuildGeometry(pt);
 
                             var trgr = new TransformGroup();
                             if (flowDir == FlowDirection.LeftToRight && i != linesCount)
                                 trgr.Children.Add(new RotateTransform(45, pt.X, pt.Y + fmt.Height));
-                            else if (flowDir == FlowDirection.RightToLeft && j != linesCount)
+                            else if (flowDir == FlowDirection.RightToLeft)
                                 trgr.Children.Add(new RotateTransform(-45, pt.X + fmt.Width, pt.Y + fmt.Height));
                             if (flowDir == FlowDirection.RightToLeft)
                                 trgr.Children.Add(new ScaleTransform { ScaleX = -1, CenterX = width / 2 });
