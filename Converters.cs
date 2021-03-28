@@ -57,7 +57,7 @@ namespace ag.WPF.Chart
 
         internal static Border Border { get; } = new Border();
 
-        private static int[] _bases = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+        private static readonly int[] _bases = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
 
         internal static Quadrants GetQuadrant(double degrees)
         {
@@ -581,6 +581,13 @@ namespace ag.WPF.Chart
                        ChartStyle.SmoothStackedLines, ChartStyle.SmoothFullStackedLines,
                        ChartStyle.SmoothLinesWithMarkers, ChartStyle.SmoothStackedLinesWithMarkers,
                        ChartStyle.SmoothFullStackedLinesWithMarkers);
+        }
+
+        internal static bool StyleFullStacked(ChartStyle chartStyle)
+        {
+            return chartStyle.In(ChartStyle.FullStackedColumns, ChartStyle.FullStackedArea,
+                ChartStyle.FullStackedLines, ChartStyle.FullStackedLinesWithMarkers,
+                ChartStyle.SmoothFullStackedLines, ChartStyle.SmoothFullStackedLinesWithMarkers);
         }
 
         internal static bool OffsetBoundary(ChartBoundary boundary, ChartStyle style)
@@ -1253,6 +1260,7 @@ namespace ag.WPF.Chart
                 case ChartStyle.FullStackedLinesWithMarkers:
                 case ChartStyle.SmoothFullStackedLines:
                 case ChartStyle.SmoothFullStackedLinesWithMarkers:
+                //case ChartStyle.FullStackedArea:
                     maxX = series.Max(s => s.Values.Count);
                     maxY = autoAdjust ? Utils.GetMaxY(rawValues, chartStyle) : maxYConv;
                     gm = drawFullStackedLine(width, height, maxX, maxY, chartStyle, dir, series, index, rawValues, offsetBoundary);
@@ -1991,10 +1999,17 @@ namespace ag.WPF.Chart
                     gm.Figures.Add(new PathFigure(currentSeries.RealPoints[0], segments, false));
                 }
             }
-            else
+            else if (style.In(ChartStyle.FullStackedLines, ChartStyle.FullStackedLinesWithMarkers))
             {
                 var poly = new PolyLineSegment(currentSeries.RealPoints, true);
                 gm.Figures.Add(new PathFigure(start, new[] { poly }, false));
+            }
+            else if (style.In(ChartStyle.FullStackedArea))
+            {
+                currentSeries.RealPoints.Insert(0, new Point(Utils.AXIS_THICKNESS, centerY));
+                currentSeries.RealPoints.Add(new Point(currentSeries.RealPoints[currentSeries.RealPoints.Count - 1].X, centerY));
+                var poly = new PolyLineSegment(currentSeries.RealPoints, true);
+                gm.Figures.Add(new PathFigure(start, new[] { poly }, true));
             }
             return gm;
         }
@@ -3258,9 +3273,7 @@ namespace ag.WPF.Chart
                         var number = customValues.Length > index
                             ? customValues[index++]
                             : format.EndsWith("%") ? num.ToString(format.Substring(0, format.Length - 1)) + "%" : num.ToString(format);
-                        if (chartStyle.In(ChartStyle.FullStackedColumns, ChartStyle.FullStackedArea,
-                            ChartStyle.FullStackedLines, ChartStyle.FullStackedLinesWithMarkers,
-                            ChartStyle.SmoothFullStackedLines, ChartStyle.SmoothFullStackedLinesWithMarkers))
+                        if (Utils.StyleFullStacked(chartStyle))
                             number += "%";
                         if (maxString.Length < number.Length) maxString = number;
 
@@ -3279,9 +3292,7 @@ namespace ag.WPF.Chart
                         var number = customValues.Length > index
                             ? customValues[index++]
                             : format.EndsWith("%") ? num.ToString(format.Substring(0, format.Length - 1)) + "%" : num.ToString(format);
-                        if (chartStyle.In(ChartStyle.FullStackedColumns, ChartStyle.FullStackedArea,
-                            ChartStyle.FullStackedLines, ChartStyle.FullStackedLinesWithMarkers,
-                            ChartStyle.SmoothFullStackedLines, ChartStyle.SmoothFullStackedLinesWithMarkers))
+                        if (Utils.StyleFullStacked(chartStyle))
                             number += "%";
                         if (maxString.Length < number.Length) maxString = number;
                     }
@@ -3301,9 +3312,7 @@ namespace ag.WPF.Chart
                         var number = customValues.Length > index
                             ? customValues[index++]
                             : format.EndsWith("%") ? num.ToString(format.Substring(0, format.Length - 1)) + "%" : num.ToString(format);
-                        if (chartStyle.In(ChartStyle.FullStackedColumns, ChartStyle.FullStackedArea,
-                            ChartStyle.FullStackedLines, ChartStyle.FullStackedLinesWithMarkers,
-                            ChartStyle.SmoothFullStackedLines, ChartStyle.SmoothFullStackedLinesWithMarkers))
+                        if (Utils.StyleFullStacked(chartStyle))
                             number += "%";
                         if (maxString.Length < number.Length) maxString = number;
                     }
@@ -3430,9 +3439,7 @@ namespace ag.WPF.Chart
                autoAdjust,
                centerPoint,
                dir == Directions.NorthEastSouthEast);
-            if (chartStyle.In(ChartStyle.FullStackedColumns, ChartStyle.FullStackedArea,
-                            ChartStyle.FullStackedLines, ChartStyle.FullStackedLinesWithMarkers,
-                            ChartStyle.SmoothFullStackedLines, ChartStyle.SmoothFullStackedLinesWithMarkers))
+            if (Utils.StyleFullStacked(chartStyle))
             {
                 linesCount = 10;
                 stepLength = dir == Directions.NorthEastSouthEast ? height / 20 : height / 10;
@@ -3451,17 +3458,13 @@ namespace ag.WPF.Chart
                     for (int i = 0, index = 0; i <= limit; i++)
                     {
                         if (i == linesCount) continue;
-                        var num = (!chartStyle.In(ChartStyle.FullStackedColumns, ChartStyle.FullStackedArea,
-                            ChartStyle.FullStackedLines, ChartStyle.FullStackedLinesWithMarkers,
-                            ChartStyle.SmoothFullStackedLines, ChartStyle.SmoothFullStackedLinesWithMarkers))
+                        var num = (!Utils.StyleFullStacked(chartStyle))
                             ? (linesCount - i) * maxMin / linesCount
                             : (linesCount - i) * 10;
                         var number = customValues.Length > index
                             ? customValues[index++]
                             : format.EndsWith("%") ? num.ToString(format.Substring(0, format.Length - 1)) + "%" : num.ToString(format);
-                        if (chartStyle.In(ChartStyle.FullStackedColumns, ChartStyle.FullStackedArea,
-                            ChartStyle.FullStackedLines, ChartStyle.FullStackedLinesWithMarkers,
-                            ChartStyle.SmoothFullStackedLines, ChartStyle.SmoothFullStackedLinesWithMarkers))
+                        if (Utils.StyleFullStacked(chartStyle))
                             number += "%";
                         var fmt = new FormattedText(number, culture, FlowDirection.LeftToRight,
                             new Typeface(fontFamily, fontStyle, fontWeight, fontStretch), fontSize, Brushes.Black, VisualTreeHelper.GetDpi(Utils.Border).PixelsPerDip);
@@ -3482,17 +3485,13 @@ namespace ag.WPF.Chart
                     step = stepLength;
                     for (int i = 1, index = 0; i <= linesCount; i++)
                     {
-                        var num = (!chartStyle.In(ChartStyle.FullStackedColumns, ChartStyle.FullStackedArea,
-                            ChartStyle.FullStackedLines, ChartStyle.FullStackedLinesWithMarkers,
-                            ChartStyle.SmoothFullStackedLines, ChartStyle.SmoothFullStackedLinesWithMarkers))
+                        var num = (!Utils.StyleFullStacked(chartStyle))
                             ? i * min / linesCount
                             : i * 10 / linesCount;
                         var number = customValues.Length > index
                             ? customValues[index++]
                             : format.EndsWith("%") ? num.ToString(format.Substring(0, format.Length - 1)) + "%" : num.ToString(format);
-                        if (chartStyle.In(ChartStyle.FullStackedColumns, ChartStyle.FullStackedArea,
-                            ChartStyle.FullStackedLines, ChartStyle.FullStackedLinesWithMarkers,
-                            ChartStyle.SmoothFullStackedLines, ChartStyle.SmoothFullStackedLinesWithMarkers))
+                        if (Utils.StyleFullStacked(chartStyle))
                             number += "%";
                         var fmt = new FormattedText(number, culture, FlowDirection.LeftToRight,
                             new Typeface(fontFamily, fontStyle, fontWeight, fontStretch), fontSize, Brushes.Black, VisualTreeHelper.GetDpi(Utils.Border).PixelsPerDip);
@@ -3512,17 +3511,13 @@ namespace ag.WPF.Chart
                     step = stepLength;
                     for (int i = 0, index = 0; i < linesCount; i++)
                     {
-                        var num = (!chartStyle.In(ChartStyle.FullStackedColumns, ChartStyle.FullStackedArea,
-                            ChartStyle.FullStackedLines, ChartStyle.FullStackedLinesWithMarkers,
-                            ChartStyle.SmoothFullStackedLines, ChartStyle.SmoothFullStackedLinesWithMarkers))
+                        var num = (!Utils.StyleFullStacked(chartStyle))
                             ? maxMin - stepSize * i
                             : 100 - stepSize * i;
                         var number = customValues.Length > index
                             ? customValues[index++]
                             : format.EndsWith("%") ? num.ToString(format.Substring(0, format.Length - 1)) + "%" : num.ToString(format);
-                        if (chartStyle.In(ChartStyle.FullStackedColumns, ChartStyle.FullStackedArea,
-                            ChartStyle.FullStackedLines, ChartStyle.FullStackedLinesWithMarkers,
-                            ChartStyle.SmoothFullStackedLines, ChartStyle.SmoothFullStackedLinesWithMarkers))
+                        if (Utils.StyleFullStacked(chartStyle))
                             number += "%";
                         var fmt = new FormattedText(number, culture, FlowDirection.LeftToRight,
                             new Typeface(fontFamily, fontStyle, fontWeight, fontStretch), fontSize, Brushes.Black, VisualTreeHelper.GetDpi(Utils.Border).PixelsPerDip);
@@ -3881,9 +3876,7 @@ namespace ag.WPF.Chart
                centerPoint,
                dir == Directions.NorthEastSouthEast);
 
-            if (chartStyle.In(ChartStyle.FullStackedColumns, ChartStyle.FullStackedArea,
-                            ChartStyle.FullStackedLines, ChartStyle.FullStackedLinesWithMarkers,
-                            ChartStyle.SmoothFullStackedLines, ChartStyle.SmoothFullStackedLinesWithMarkers))
+            if (Utils.StyleFullStacked(chartStyle))
                 linesCount = 10;
             else
                 linesCount = realLinesCount;
@@ -3915,9 +3908,7 @@ namespace ag.WPF.Chart
                         if (Utils.StyleBars(chartStyle))
                             yStep = height / ticks;
                         else
-                            yStep = (chartStyle.In(ChartStyle.FullStackedColumns, ChartStyle.FullStackedArea,
-                                ChartStyle.FullStackedLines, ChartStyle.FullStackedLinesWithMarkers,
-                                ChartStyle.SmoothFullStackedLines, ChartStyle.SmoothFullStackedLinesWithMarkers))
+                            yStep = (Utils.StyleFullStacked(chartStyle))
                             ? height / 10
                             : stepLength;
                         var y = Utils.AXIS_THICKNESS;
@@ -3947,9 +3938,7 @@ namespace ag.WPF.Chart
                         if (Utils.StyleBars(chartStyle))
                             yStep = height / ticks;
                         else
-                            yStep = (chartStyle.In(ChartStyle.FullStackedColumns, ChartStyle.FullStackedArea,
-                                ChartStyle.FullStackedLines, ChartStyle.FullStackedLinesWithMarkers,
-                                ChartStyle.SmoothFullStackedLines, ChartStyle.SmoothFullStackedLinesWithMarkers))
+                            yStep = (Utils.StyleFullStacked(chartStyle))
                             ? height / 10
                             : stepLength;
                         var y = Utils.AXIS_THICKNESS;
@@ -3978,9 +3967,7 @@ namespace ag.WPF.Chart
                         if (Utils.StyleBars(chartStyle))
                             yStep = height / 2 / ticks;
                         else
-                            yStep = (chartStyle.In(ChartStyle.FullStackedColumns, ChartStyle.FullStackedArea,
-                                ChartStyle.FullStackedLines, ChartStyle.FullStackedLinesWithMarkers,
-                                ChartStyle.SmoothFullStackedLines, ChartStyle.SmoothFullStackedLinesWithMarkers))
+                            yStep = (Utils.StyleFullStacked(chartStyle))
                              ? height / 20
                              : stepLength;
                         var y = Utils.AXIS_THICKNESS;
@@ -4010,9 +3997,7 @@ namespace ag.WPF.Chart
                         if (Utils.StyleBars(chartStyle))
                             yStep = height / ticks;
                         else
-                            yStep = (chartStyle.In(ChartStyle.FullStackedColumns, ChartStyle.FullStackedArea,
-                                ChartStyle.FullStackedLines, ChartStyle.FullStackedLinesWithMarkers,
-                                ChartStyle.SmoothFullStackedLines, ChartStyle.SmoothFullStackedLinesWithMarkers))
+                            yStep = (Utils.StyleFullStacked(chartStyle))
                              ? height / 10
                              : stepLength;
                         var y = Utils.AXIS_THICKNESS;
@@ -4291,28 +4276,22 @@ namespace ag.WPF.Chart
                centerPoint,
                dir == Directions.NorthEastSouthEast);
 
-            if (chartStyle.In(ChartStyle.FullStackedColumns, ChartStyle.FullStackedArea,
-                            ChartStyle.FullStackedLines, ChartStyle.FullStackedLinesWithMarkers,
-                            ChartStyle.SmoothFullStackedLines, ChartStyle.SmoothFullStackedLinesWithMarkers))
+            if (Utils.StyleFullStacked(chartStyle))
                 realLinesCount = 10;
 
             switch (dir)
             {
                 case Directions.NorthEastSouthEast:
                     limit = realLinesCount * 2;
-                    if (chartStyle.In(ChartStyle.FullStackedColumns, ChartStyle.FullStackedArea,
-                        ChartStyle.FullStackedLines, ChartStyle.FullStackedLinesWithMarkers,
-                        ChartStyle.SmoothFullStackedLines, ChartStyle.SmoothFullStackedLinesWithMarkers))
-                    stepLength = height / 20;
-                        break;
+                    if (Utils.StyleFullStacked(chartStyle))
+                        stepLength = height / 20;
+                    break;
                 case Directions.NorthEast:
                 case Directions.NorthEastNorthWest:
                 case Directions.NorthWest:
                 case Directions.SouthEast:
                     limit = realLinesCount;
-                    if (chartStyle.In(ChartStyle.FullStackedColumns, ChartStyle.FullStackedArea,
-                        ChartStyle.FullStackedLines, ChartStyle.FullStackedLinesWithMarkers,
-                        ChartStyle.SmoothFullStackedLines, ChartStyle.SmoothFullStackedLinesWithMarkers))
+                    if (Utils.StyleFullStacked(chartStyle))
                         stepLength = height / 10;
                     break;
                 default:
