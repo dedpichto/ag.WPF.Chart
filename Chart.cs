@@ -675,6 +675,10 @@ namespace ag.WPF.Chart
                         {
                             Source = this
                         });
+                        ptsBinding.Bindings.Add(new Binding("SectionsX")
+                        {
+                            Source = this
+                        });
 
                         ptsBinding.NotifyOnSourceUpdated = true;
                         series.Path.SetBinding(Path.DataProperty, ptsBinding);
@@ -733,6 +737,10 @@ namespace ag.WPF.Chart
                             Source = this
                         });
                         positiveWaterfallBinding.Bindings.Add(new Binding("SectionsY")
+                        {
+                            Source = this
+                        });
+                        positiveWaterfallBinding.Bindings.Add(new Binding("SectionsX")
                         {
                             Source = this
                         });
@@ -795,6 +803,10 @@ namespace ag.WPF.Chart
                             Source = this
                         });
                         negativeWaterfallBinding.Bindings.Add(new Binding("SectionsY")
+                        {
+                            Source = this
+                        });
+                        negativeWaterfallBinding.Bindings.Add(new Binding("SectionsX")
                         {
                             Source = this
                         });

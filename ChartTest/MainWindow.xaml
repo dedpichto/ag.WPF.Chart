@@ -45,8 +45,8 @@
                          ShowSecondaryYLines="True" 
                          AxesValuesVisibility="Both" 
                          Caption="Sample chart" 
-                         XAxisCustomValues="{Binding CustomXTexts}"
-                         ChartStyle="LinesWithMarkers"
+                         
+                         ChartStyle="Bars"
                          SectionsY="5"
                          ChartPointLeftButtonDoubleClick="Chart_MarkerLeftButtonDoubleClick">
             </chart:Chart>
