@@ -1246,7 +1246,7 @@ namespace ag.WPF.Chart
                             fmt.Height,
                             autoAdjust,
                             centerPoint);
-                        gm = drawRadar(series.FirstOrDefault(s => s.Index == index),
+                        gm = drawRadar(series, index, rawValues,
                             chartStyle,
                             units,
                             stepLength,
@@ -2033,12 +2033,17 @@ namespace ag.WPF.Chart
             return gm;
         }
 
-        private PathGeometry drawRadar(Series currentSeries, ChartStyle chartStyle, double units, double stepLength, double radius, int pointsCount, int linesCount, int zeroLevel, Point centerPoint)
+        private PathGeometry drawRadar(Series[] series, int index, List<Tuple<List<ChartValue>, int>> tuples, ChartStyle chartStyle, double units, double stepLength, double radius, int pointsCount, int linesCount, int zeroLevel, Point centerPoint)
         {
+            var tp = tuples.FirstOrDefault(t => t.Item2 == index);
+            if (tp == null) return null;
+            var values = tp.Item1.Select(v=>v.Value.V1).ToArray();
+            var currentSeries = series.FirstOrDefault(s => s.Index == index);
+            if (currentSeries == null) return null;
+
             var gm = new PathGeometry();
             currentSeries.RealRects.Clear();
             var points = new List<Point>();
-            var values = currentSeries.Values.Select(v => v.Value.V1).ToArray();
             var xBeg = 0.0;
             var yBeg = 0.0;
             var currentDegrees = 0.0;
