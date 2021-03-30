@@ -126,6 +126,10 @@ namespace ag.WPF.Chart
         /// </summary>
         FullStackedArea,
         /// <summary>
+        /// Style represented by smooth areas
+        /// </summary>
+        SmoothArea,
+        /// <summary>
         /// Style represented by bubbles
         /// </summary>
         Bubbles,

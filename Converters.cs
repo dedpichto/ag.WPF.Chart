@@ -742,6 +742,7 @@ namespace ag.WPF.Chart
                 case ChartStyle.Columns:
                 case ChartStyle.Bars:
                 case ChartStyle.Area:
+                case ChartStyle.SmoothArea:
                 case ChartStyle.Bubbles:
                     result = (from s in tuples from v in s.Item1 select Math.Abs(v.Value.V1)).Concat(new[] { result }).Max();
                     break;
@@ -1241,6 +1242,7 @@ namespace ag.WPF.Chart
                 case ChartStyle.SmoothLines:
                 case ChartStyle.SmoothLinesWithMarkers:
                 case ChartStyle.Area:
+                case ChartStyle.SmoothArea:
                     {
                         var units = getUnitsForLines(series, chartStyle, dir, width, height, boundOffset, linesCountY, fmt.Height, autoAdjust);
                         maxX = series.Max(s => s.Values.Count);
@@ -2115,6 +2117,27 @@ namespace ag.WPF.Chart
                     gm.Figures.Add(new PathFigure(points[0], segments, false));
                 }
             }
+            else if (style == ChartStyle.SmoothArea)
+            {
+                points.Insert(0, new Point(centerX, centerY));
+                points.Add(new Point(points[points.Count - 1].X, centerY));
+                var bezierSegments = interpolatePointsWithBezierCurves(points, false);
+                if (bezierSegments == null || bezierSegments.Count == 0)
+                {
+                    var poly = new PolyLineSegment(points, true);
+                    gm.Figures.Add(new PathFigure(points[0], new[] { poly }, true));
+                }
+                else
+                {
+                    var segments = bezierSegments.Select(bz => new BezierSegment
+                    {
+                        Point1 = bz.FirstControlPoint,
+                        Point2 = bz.SecondControlPoint,
+                        Point3 = bz.EndPoint
+                    }).Cast<PathSegment>().ToList();
+                    gm.Figures.Add(new PathFigure(points[0], segments, true));
+                }
+            }
             else if (style.In(ChartStyle.Lines, ChartStyle.LinesWithMarkers))
             {
                 var poly = new PolyLineSegment(points, true);
@@ -2905,6 +2928,7 @@ namespace ag.WPF.Chart
                 case ChartStyle.Bubbles:
                 case ChartStyle.Waterfall:
                 case ChartStyle.RadarArea:
+                case ChartStyle.SmoothArea:
                     return null;
             }
             return isEnabled ? enabledBrush : disabledBrush;
@@ -3433,7 +3457,7 @@ namespace ag.WPF.Chart
                 || !(values[14] is ChartBoundary chartBoundary))
                 return null;
 
-            if (chartStyle.In(ChartStyle.Area, ChartStyle.StackedArea, ChartStyle.FullStackedArea, ChartStyle.SlicedPie, ChartStyle.SolidPie, ChartStyle.Doughnut, ChartStyle.Radar, ChartStyle.RadarWithMarkers))
+            if (chartStyle.In(ChartStyle.Area, ChartStyle.StackedArea, ChartStyle.FullStackedArea, ChartStyle.SlicedPie, ChartStyle.SolidPie, ChartStyle.Doughnut, ChartStyle.Radar, ChartStyle.RadarWithMarkers, ChartStyle.SmoothArea))
                 return null;
             if (!seriesEnumerable.Any()) return null;
 
@@ -3768,7 +3792,7 @@ namespace ag.WPF.Chart
                 || !(values[12] is bool autoAdjust))
                 return null;
 
-            if (chartStyle.In(ChartStyle.Area, ChartStyle.StackedArea, ChartStyle.FullStackedArea, ChartStyle.Radar, ChartStyle.RadarWithMarkers))
+            if (chartStyle.In(ChartStyle.Area, ChartStyle.StackedArea, ChartStyle.FullStackedArea, ChartStyle.Radar, ChartStyle.RadarWithMarkers, ChartStyle.SmoothArea))
                 return null;
             if (!seriesEnumerable.Any())
                 return null;
@@ -4091,7 +4115,7 @@ namespace ag.WPF.Chart
                 || !(values[11] is bool autoAdjust))
                 return null;
 
-            if (chartStyle.In(ChartStyle.Area, ChartStyle.StackedArea, ChartStyle.FullStackedArea))
+            if (chartStyle.In(ChartStyle.Area, ChartStyle.StackedArea, ChartStyle.FullStackedArea, ChartStyle.SmoothArea))
                 return null;
             if (!seriesEnumerable.Any())
                 return null;
