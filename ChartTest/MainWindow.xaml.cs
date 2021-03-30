@@ -54,8 +54,6 @@ namespace ChartTest
             var values8 = new double[] { 1017, -1200, -500 };
 
             //chTest.ChartStyle = ChartStyle.Columns;
-            //chTest.SeriesCollection.Add(S1);
-            //chTest.SeriesCollection.Add(S2);
 
             Series.Add(new Series("Series 1", values1));
             Series.Add(new Series("Series 2", values2));
@@ -66,17 +64,6 @@ namespace ChartTest
             Series.Add(new Series("Series 7", values7));
             Series.Add(new Series("Series 8", values8));
 
-            //chTest.SeriesCollection.Add(new Series("Series 3", values3));
-
-            //chTest.SeriesCollection.Add(new Series((Brush) TryFindResource("grayBrush"), "Series 1", values1));
-            //chTest.SeriesCollection[0].PieBrushes[0] = (Brush) TryFindResource("grayBrush");
-            //chTest.SeriesCollection[0].PieBrushes[1] = (Brush)TryFindResource("blueBrush");
-            //chTest.SeriesCollection[0].PieBrushes[2] = (Brush)TryFindResource("pinkBrush");
-
-            //chTest.SeriesCollection.Add(new Series((Brush)TryFindResource("ausBrush"), "Series 2", values2));
-
-            ////chTest.SeriesCollection.Add(new Series((Brush)TryFindResource("gbrBrush"), "Series 3", values3));
-            //chTest.ChartStyle = ChartStyle.SolidPie;
 
             var customs = new List<string> { "one", "two" };//, "three", "four", "five", "six", "seven", "eight", "nine", "ten" };
 
@@ -117,9 +104,6 @@ namespace ChartTest
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             Series.RemoveAt(0);
-            //chTest.SeriesCollection[0].Points[1] = new ChartPoint( new Value(chTest.SeriesCollection[0].Points[1].Value.X,
-            //    chTest.SeriesCollection[0].Points[1].Value.Y + 17));
-            //chTest.SeriesCollection.RemoveAt(0);
         }
 
         private void Chart_MarkerLeftButtonDoubleClick(object sender, RoutedEventArgs e)

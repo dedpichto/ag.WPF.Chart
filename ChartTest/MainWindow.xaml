@@ -40,7 +40,7 @@
                 </Border.RenderTransform>
             </Border>
             <chart:Chart x:Name="chTest" Grid.Column="1" BorderThickness="1" Margin="4" 
-                         SeriesCollection="{Binding Series}" 
+                         ItemsSource="{Binding Series}"
                          ShowSecondaryXLines="True" 
                          ShowSecondaryYLines="True" 
                          AxesValuesVisibility="Both" 

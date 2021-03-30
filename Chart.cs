@@ -15,6 +15,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Globalization;
 using System.IO;
@@ -436,10 +437,6 @@ namespace ag.WPF.Chart
         /// </summary>
         public static readonly DependencyProperty ChartBoundaryProperty;
         /// <summary>
-        /// The identifier of the <see cref="SeriesCollection"/> dependency property.
-        /// </summary>
-        public static readonly DependencyProperty SeriesCollectionProperty;
-        /// <summary>
         /// The identifier of the <see cref="SeriesCountProperty"/> dependency property.
         /// </summary>
         public static readonly DependencyProperty SeriesCountProperty;
@@ -447,8 +444,13 @@ namespace ag.WPF.Chart
         /// The identifier of the <see cref="WaterfallLegendsProperty"/> dependency property.
         /// </summary>
         public static readonly DependencyProperty WaterfallLegendsProperty;
+        /// <summary>
+        /// The identifier of the <see cref="ItemsSource"/> dependency property.
+        /// </summary>
+        public static readonly DependencyProperty ItemsSourceProperty;
         #endregion
 
+        #region ctor
         static Chart()
         {
             DefaultStyleKeyProperty.OverrideMetadata(typeof(Chart), new FrameworkPropertyMetadata(typeof(Chart)));
@@ -527,15 +529,30 @@ namespace ag.WPF.Chart
                 typeof(bool), typeof(Chart), new FrameworkPropertyMetadata(true, OnShowTicksChanged));
             ChartBoundaryProperty = DependencyProperty.Register("ChartBoundary", typeof(ChartBoundary), typeof(Chart),
                 new FrameworkPropertyMetadata(ChartBoundary.WithOffset, OnChartBoundaryChanged));
-            SeriesCollectionProperty = DependencyProperty.Register("SeriesCollection", typeof(ObservableCollection<Series>), typeof(Chart),
-                new FrameworkPropertyMetadata(new ObservableCollection<Series>(), OnSeriesCollectionChanged));
             SeriesCountProperty = DependencyProperty.Register("SeriesCount", typeof(int), typeof(Chart), new FrameworkPropertyMetadata(0));
             WaterfallLegendsProperty = DependencyProperty.RegisterAttached("WaterfallLegends", typeof(string[]), typeof(Chart), new FrameworkPropertyMetadata(new[] { "Increase", "Decrease" }));
+            ItemsSourceProperty = DependencyProperty.Register("ItemsSource", typeof(IEnumerable<Series>), typeof(Chart), new PropertyMetadata(null, (u, e) =>
+                 {
+                     if (u is Chart chart)
+                     {
+                         if (e.OldValue is INotifyCollectionChanged oldValueNotifyCollectionChanged)
+                         {
+                             oldValueNotifyCollectionChanged.CollectionChanged -= chart.ItemsSource_CollectionChanged;
+                         }
+                         if (e.NewValue is INotifyCollectionChanged newValueNotifyCollectionChanged)
+                         {
+                             newValueNotifyCollectionChanged.CollectionChanged += chart.ItemsSource_CollectionChanged;
+                         }
+                         chart.OnItemsSourceChanged((IEnumerable<Series>)e.OldValue, (IEnumerable<Series>)e.NewValue);
+                     }
+                 }));
         }
+        #endregion
 
-        private bool _Initialized;
-        private readonly ObservableCollection<FrameworkElement> _LegendCollection = new ObservableCollection<FrameworkElement>();
-        private readonly ObservableCollection<FrameworkElement> _PieLegends = new ObservableCollection<FrameworkElement>();
+        #region Private fields
+        private readonly ObservableCollection<FrameworkElement> _legendCollection = new ObservableCollection<FrameworkElement>();
+        private readonly ObservableCollection<FrameworkElement> _pieLegends = new ObservableCollection<FrameworkElement>(); 
+        #endregion
 
         #region Overrides
 
@@ -553,51 +570,16 @@ namespace ag.WPF.Chart
             {
                 _pieImage.MouseMove += PieImage_MouseMove;
             }
-
-            if (_Initialized) return;
-            SeriesCollection.CollectionChanged += SeriesCollection_CollectionChanged;
-            _Initialized = true;
         }
 
         #endregion
 
         #region Private event handlers
-        private void PieImage_MouseMove(object sender, MouseEventArgs e)
-        {
-            if (!SeriesCollection.Any()) return;
-            if (!(_pieImage.ToolTip is ToolTip tooltip)) return;
-            var position = e.GetPosition(_pieImage);
-            if (_pieImage.Source is DrawingImage dw)
-            {
-                if (dw.Drawing is DrawingGroup dwg)
-                {
-                    foreach (var gd in dwg.Children.OfType<GeometryDrawing>())
-                    {
-                        if (!(gd.Geometry is PathGeometry geometry)) continue;
-                        if (!geometry.FillContains(position)) continue;
-                        var data = (string)geometry.GetValue(Series.SectorDataProperty);
-                        if (!Equals(tooltip.Content, data))
-                        {
-                            tooltip.Content = data;
-                            tooltip.Placement = PlacementMode.Relative;
-                        }
-                        tooltip.HorizontalOffset = position.X + 10;
-                        tooltip.VerticalOffset = position.Y + 10;
-                        return;
-                    }
-                }
-            }
-            tooltip.Placement = PlacementMode.Mouse;
-            tooltip.HorizontalOffset = 0;
-            tooltip.VerticalOffset = 0;
-            tooltip.Content = SeriesCollection.First().Name;
-        }
-
-        private void SeriesCollection_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        private void ItemsSource_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             switch (e.Action)
             {
-                case System.Collections.Specialized.NotifyCollectionChangedAction.Add:
+                case NotifyCollectionChangedAction.Add:
                     {
                         if (!(e.NewItems[0] is Series series)) break;
 
@@ -623,7 +605,7 @@ namespace ag.WPF.Chart
                         var ptsBinding = new MultiBinding { Converter = new ValuesToPathConverter() };
                         ptsBinding.Bindings.Add(new Binding("ActualWidth") { ElementName = ElementCanvas });
                         ptsBinding.Bindings.Add(new Binding("ActualHeight") { ElementName = ElementCanvas });
-                        ptsBinding.Bindings.Add(new Binding("SeriesCollection")
+                        ptsBinding.Bindings.Add(new Binding("ItemsSource")
                         {
                             Source = this
                         });
@@ -692,7 +674,7 @@ namespace ag.WPF.Chart
                         var positiveWaterfallBinding = new MultiBinding { Converter = new ValuesToWaterfallConverter() };
                         positiveWaterfallBinding.Bindings.Add(new Binding("ActualWidth") { ElementName = ElementCanvas });
                         positiveWaterfallBinding.Bindings.Add(new Binding("ActualHeight") { ElementName = ElementCanvas });
-                        positiveWaterfallBinding.Bindings.Add(new Binding("SeriesCollection")
+                        positiveWaterfallBinding.Bindings.Add(new Binding("ItemsSource")
                         {
                             Source = this
                         });
@@ -758,7 +740,7 @@ namespace ag.WPF.Chart
                         var negativeWaterfallBinding = new MultiBinding { Converter = new ValuesToWaterfallConverter() };
                         negativeWaterfallBinding.Bindings.Add(new Binding("ActualWidth") { ElementName = ElementCanvas });
                         negativeWaterfallBinding.Bindings.Add(new Binding("ActualHeight") { ElementName = ElementCanvas });
-                        negativeWaterfallBinding.Bindings.Add(new Binding("SeriesCollection")
+                        negativeWaterfallBinding.Bindings.Add(new Binding("ItemsSource")
                         {
                             Source = this
                         });
@@ -955,11 +937,11 @@ namespace ag.WPF.Chart
                             Source = series
                         });
                         legendVisibilityBinding.NotifyOnSourceUpdated = true;
-                        legend.SetBinding(Legend.VisibilityProperty, legendVisibilityBinding);
+                        legend.SetBinding(VisibilityProperty, legendVisibilityBinding);
 
                         legend.SetBinding(Legend.TextProperty, new Binding("Name") { Source = series });
 
-                        _LegendCollection.Add(legend);
+                        _legendCollection.Add(legend);
                         #endregion
 
                         #region Positive waterfall legend
@@ -990,11 +972,11 @@ namespace ag.WPF.Chart
                             Source = series
                         });
                         legendVisibilityBinding.NotifyOnSourceUpdated = true;
-                        legend.SetBinding(Legend.VisibilityProperty, legendVisibilityBinding);
+                        legend.SetBinding(VisibilityProperty, legendVisibilityBinding);
 
                         legend.SetBinding(Legend.TextProperty, new Binding("WaterfallLegends[0]") { Source = this });
 
-                        _LegendCollection.Add(legend);
+                        _legendCollection.Add(legend);
                         #endregion
 
                         #region Negative waterfall legend
@@ -1025,11 +1007,11 @@ namespace ag.WPF.Chart
                             Source = series
                         });
                         legendVisibilityBinding.NotifyOnSourceUpdated = true;
-                        legend.SetBinding(Legend.VisibilityProperty, legendVisibilityBinding);
+                        legend.SetBinding(VisibilityProperty, legendVisibilityBinding);
 
                         legend.SetBinding(Legend.TextProperty, new Binding("WaterfallLegends[1]") { Source = this });
 
-                        _LegendCollection.Add(legend);
+                        _legendCollection.Add(legend);
                         #endregion
 
                         _canvas.Children.Add(series.Path);
@@ -1041,7 +1023,7 @@ namespace ag.WPF.Chart
                         SeriesCount++;
                         break;
                     }
-                case System.Collections.Specialized.NotifyCollectionChangedAction.Remove:
+                case NotifyCollectionChangedAction.Remove:
                     {
                         if (!(e.OldItems[0] is Series series)) break;
 
@@ -1055,17 +1037,17 @@ namespace ag.WPF.Chart
                         if (index > -1)
                             _canvas.Children.RemoveAt(index);
 
-                        _LegendCollection.RemoveAt(e.OldStartingIndex);
-                        for (var i = _LegendCollection.Count - 1; i >= 0; i--)
+                        _legendCollection.RemoveAt(e.OldStartingIndex);
+                        for (var i = _legendCollection.Count - 1; i >= 0; i--)
                         {
-                            if (((Legend)_LegendCollection[i]).Index == e.OldStartingIndex)
-                                _LegendCollection.RemoveAt(i);
+                            if (((Legend)_legendCollection[i]).Index == e.OldStartingIndex)
+                                _legendCollection.RemoveAt(i);
                         }
-                        foreach (Legend lg in _LegendCollection.Where(l => ((Legend)l).Index > e.OldStartingIndex))
+                        foreach (Legend lg in _legendCollection.Where(l => ((Legend)l).Index > e.OldStartingIndex))
                         {
                             lg.Index--;
                         }
-                        foreach (var sr in SeriesCollection.Where(sc => sc.Index > e.OldStartingIndex))
+                        foreach (var sr in ItemsSource.Where(sc => sc.Index > e.OldStartingIndex))
                         {
                             sr.Index--;
                             var b = BindingOperations.GetMultiBindingExpression(sr.Path, Path.DataProperty);
@@ -1078,7 +1060,37 @@ namespace ag.WPF.Chart
                         break;
                     }
             }
-            //OnPropertyChanged("SeriesCollection");
+        }
+
+        private void PieImage_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (!ItemsSource.Any()) return;
+            if (!(_pieImage.ToolTip is ToolTip tooltip)) return;
+            var position = e.GetPosition(_pieImage);
+            if (_pieImage.Source is DrawingImage dw)
+            {
+                if (dw.Drawing is DrawingGroup dwg)
+                {
+                    foreach (var gd in dwg.Children.OfType<GeometryDrawing>())
+                    {
+                        if (!(gd.Geometry is PathGeometry geometry)) continue;
+                        if (!geometry.FillContains(position)) continue;
+                        var data = (string)geometry.GetValue(Series.SectorDataProperty);
+                        if (!Equals(tooltip.Content, data))
+                        {
+                            tooltip.Content = data;
+                            tooltip.Placement = PlacementMode.Relative;
+                        }
+                        tooltip.HorizontalOffset = position.X + 10;
+                        tooltip.VerticalOffset = position.Y + 10;
+                        return;
+                    }
+                }
+            }
+            tooltip.Placement = PlacementMode.Mouse;
+            tooltip.HorizontalOffset = 0;
+            tooltip.VerticalOffset = 0;
+            tooltip.Content = ItemsSource.First().Name;
         }
 
         private void Series_PropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -1088,7 +1100,7 @@ namespace ag.WPF.Chart
                 case "Values":
                     if (sender is Series series)
                     {
-                        foreach (var sr in SeriesCollection.Where(s => s.Index != series.Index))
+                        foreach (var sr in ItemsSource.Where(s => s.Index != series.Index))
                         {
                             var b = BindingOperations.GetMultiBindingExpression(sr.Values.Path, Path.DataProperty);
                             if (b != null)
@@ -1098,13 +1110,13 @@ namespace ag.WPF.Chart
                     }
                     break;
             }
-            OnPropertyChanged("SeriesCollection");
+            OnPropertyChanged("ItemsSource");
         }
 
         private void PieBrushes_BrushChanged(object sender, BrushChangedEventArgs e)
         {
             if (e.Series == null || e.Index >= e.Series.PieBrushes.Length()) return;
-            var legend = _PieLegends[e.Index];
+            var legend = _pieLegends[e.Index];
             BindingOperations.ClearBinding(legend, Legend.LegendBackgroundProperty);
             var legendBackgroundBinding = new MultiBinding
             {
@@ -1214,7 +1226,8 @@ namespace ag.WPF.Chart
                 ChartStyle.FullStackedLinesWithMarkers, ChartStyle.SmoothLinesWithMarkers,
                 ChartStyle.SmoothStackedLinesWithMarkers, ChartStyle.SmoothFullStackedLinesWithMarkers,
                 ChartStyle.Bubbles, ChartStyle.Columns, ChartStyle.StackedColumns, ChartStyle.FullStackedColumns,
-                ChartStyle.Bars, ChartStyle.StackedBars, ChartStyle.FullStackedBars) || e.ClickCount != 2) return;
+                ChartStyle.Bars, ChartStyle.StackedBars, ChartStyle.FullStackedBars, 
+                ChartStyle.RadarWithMarkers, ChartStyle.Waterfall) || e.ClickCount != 2) return;
             var rc = s.RealRects.FirstOrDefault(r => r.Contains(e.GetPosition(_canvas)));
             if (rc == default) return;
             var index = s.RealRects.IndexOf(rc);
@@ -1224,26 +1237,6 @@ namespace ag.WPF.Chart
             }
             RaiseMarkerLeftButtonDoubleClickEvent(s.Values[index], s);
         }
-
-        //private void Values_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
-        //{
-        //    var chartValues = sender as ChartValues;
-        //    if (chartValues == null) return;
-        //    var b = BindingOperations.GetMultiBindingExpression(chartValues.Path, Path.DataProperty);
-        //    if (b != null)
-        //        b.UpdateTarget();
-
-        //    var series = chartValues.Path.Tag as Series;
-        //    if (series == null) return;
-        //    foreach (var sr in SeriesCollection.Where(s => s.Index != series.Index))
-        //    {
-        //        b = BindingOperations.GetMultiBindingExpression(sr.Values.Path, Path.DataProperty);
-        //        if (b != null)
-        //            b.UpdateTarget();
-        //    }
-        //    rebuildPieLegends(chartValues, series);
-        //    OnPropertyChanged("SeriesCollection");
-        //}
         #endregion
 
         #region Private functions
@@ -1251,7 +1244,7 @@ namespace ag.WPF.Chart
         private void rebuildPieLegends(ChartValues values, Series series)
         {
             if (series.Index > 0) return;
-            _PieLegends.Clear();
+            _pieLegends.Clear();
             for (int i = 0, brushIndex = 0; i < values.Count; i++)
             {
                 var v = values[i];
@@ -1279,7 +1272,7 @@ namespace ag.WPF.Chart
                 textBinding.Bindings.Add(new Binding("AxesValuesFormat") { Source = this });
                 legend.SetBinding(Legend.TextProperty, textBinding);
 
-                _PieLegends.Add(legend);
+                _pieLegends.Add(legend);
             }
         }
 
@@ -1293,31 +1286,19 @@ namespace ag.WPF.Chart
         //}
         #endregion
 
-        #region Public properties
-        /// <summary>
-        /// Gets collection of <see cref="Legend"/> objects associated with chart series
-        /// </summary>
-        [EditorBrowsable(EditorBrowsableState.Never), Browsable(false)]
-        public ObservableCollection<FrameworkElement> LegendCollection
-        {
-            get { return _LegendCollection; }
-        }
-        /// <summary>
-        /// Gets collection of <see cref="Legend"/> objects associated with chart series when chart style is set to <see cref="ag.WPF.Chart.ChartStyle.SolidPie"/> or <see cref="ag.WPF.Chart.ChartStyle.SlicedPie"/> or <see cref="ag.WPF.Chart.ChartStyle.Doughnut"/>
-        /// </summary>
-        [EditorBrowsable(EditorBrowsableState.Never), Browsable(false)]
-        public ObservableCollection<FrameworkElement> PieLegends
-        {
-            get { return _PieLegends; }
-        }
-
-        #endregion
-
         #region Dependency properties wrappers
         public string[] WaterfallLegends
         {
             get { return (string[])GetValue(WaterfallLegendsProperty); }
             set { SetValue(WaterfallLegendsProperty, value); }
+        }
+        /// <summary>
+        /// Gets/sets collection of <see cref="Series"/> objects associated with chart control
+        /// </summary>
+        public IEnumerable<Series> ItemsSource
+        {
+            get { return (IEnumerable<Series>)GetValue(ItemsSourceProperty); }
+            set { SetValue(ItemsSourceProperty, value); }
         }
         /// <summary>
         /// Help property forced the control to repaintt
@@ -1327,15 +1308,6 @@ namespace ag.WPF.Chart
         {
             get { return (int)GetValue(SeriesCountProperty); }
             set { SetValue(SeriesCountProperty, value); }
-        }
-        /// <summary>
-        /// Gets collection of <see cref="Series"/> objects
-        /// </summary>
-        [Category("ChartMisc"), Description("Collection of chart series")]
-        public ObservableCollection<Series> SeriesCollection
-        {
-            get { return (ObservableCollection<Series>)GetValue(SeriesCollectionProperty); }
-            set { SetValue(SeriesCollectionProperty, value); }
         }
         /// <summary>
         /// Specifies whether chart boundary is started on y-axes or with offfset from y-axes
@@ -1790,24 +1762,17 @@ namespace ag.WPF.Chart
         #endregion
 
         #region Callbacks
-        private static void OnSeriesCollectionChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
-        {
-            if (!(sender is Chart ch)) return;
-            //ch.SeriesCollection.CollectionChanged -= ch.SeriesCollection_CollectionChanged;
-            //ch.SeriesCollection.CollectionChanged += ch.SeriesCollection_CollectionChanged;
-            //ch.OnPropertyChanged("SeriesCollection");
-            ch.OnSeriesCollectionChanged((ObservableCollection<Series>)e.OldValue, (ObservableCollection<Series>)e.NewValue);
-        }
+
         /// <summary>
-        /// Invoked just before the <see cref="SeriesCollectionChangedEvent"/> event is raised on control
+        /// Invoked just before the <see cref="ItemsSourceChangedEvent"/> event is raised on control
         /// </summary>
         /// <param name="oldValue">Old value</param>
         /// <param name="newValue">New value</param>
-        protected void OnSeriesCollectionChanged(ObservableCollection<Series> oldValue, ObservableCollection<Series> newValue)
+        protected void OnItemsSourceChanged(IEnumerable<Series> oldValue, IEnumerable<Series> newValue)
         {
-            var e = new RoutedPropertyChangedEventArgs<ObservableCollection<Series>>(oldValue, newValue)
+            var e = new RoutedPropertyChangedEventArgs<IEnumerable<Series>>(oldValue, newValue)
             {
-                RoutedEvent = SeriesCollectionChangedEvent
+                RoutedEvent = ItemsSourceChangedEvent
             };
             RaiseEvent(e);
         }
@@ -2524,17 +2489,17 @@ namespace ag.WPF.Chart
 
         #region Routed events
         /// <summary>
-        /// Occurs when the <see cref="SeriesCollection"/> property has been changed in some way
+        /// Occurs when the <see cref="ItemsSource"/> property has been changed in some way
         /// </summary>
-        public event RoutedPropertyChangedEventHandler<ObservableCollection<Series>> SeriesCollectionChanged
+        public event RoutedPropertyChangedEventHandler<IEnumerable<Series>> ItemsSourceChanged
         {
-            add { AddHandler(SeriesCollectionChangedEvent, value); }
-            remove { RemoveHandler(SeriesCollectionChangedEvent, value); }
+            add { AddHandler(ItemsSourceChangedEvent, value); }
+            remove { RemoveHandler(ItemsSourceChangedEvent, value); }
         }
         /// <summary>
-        /// Identifies the <see cref="SeriesCollectionChanged"/> routed event
+        /// Identifies the <see cref="ItemsSourceChanged"/> routed event
         /// </summary>
-        public static readonly RoutedEvent SeriesCollectionChangedEvent = EventManager.RegisterRoutedEvent("SeriesCollectionChanged",
+        public static readonly RoutedEvent ItemsSourceChangedEvent = EventManager.RegisterRoutedEvent("ItemsSourceChanged",
             RoutingStrategy.Bubble, typeof(RoutedPropertyChangedEventHandler<ObservableCollection<Series>>), typeof(Chart));
 
         /// <summary>
@@ -3064,6 +3029,7 @@ namespace ag.WPF.Chart
         }
         #endregion
 
+        #region INotifyPropertyChanged members
         /// <summary>Occurs when a property value changes.</summary>
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -3075,7 +3041,8 @@ namespace ag.WPF.Chart
         protected virtual void OnPropertyChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
+        } 
+        #endregion
     }
 
     /// <summary>

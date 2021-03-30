@@ -51,9 +51,9 @@ namespace ChartTest
             };
             //chOlympic.XAxisCustomValuesBetweenTicks = true;
             chOlympic.XAxisCustomValues = cities.ToList();
-            chOlympic.SeriesCollection.Add(new Series("USA", usa));
-            chOlympic.SeriesCollection.Add(new Series("Great Britain", gbr));
-            chOlympic.SeriesCollection.Add(new Series("France", frn));
+            //chOlympic.SeriesCollection.Add(new Series("USA", usa));
+            //chOlympic.SeriesCollection.Add(new Series("Great Britain", gbr));
+            //chOlympic.SeriesCollection.Add(new Series("France", frn));
 
         }
 
