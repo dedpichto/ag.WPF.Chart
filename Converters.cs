@@ -289,12 +289,6 @@ namespace ag.WPF.Chart
 
         internal static (double max, double min, int linesCount, double stepSize, double stepLength, double units, ZeroPoint zeroPoint) GetMeasuresForComplex(ChartStyle chartStyle, double max, double min, int linesCount, double radius, double fontHeight, bool autoAdjust, ZeroPoint zeroPoint, bool splitSides)
         {
-            var stepSize = 0.0;
-            var stepLength = 0.0;
-            var units = 0.0;
-            var temp = 0.0;
-            double[] lines = null;
-            double[] sizes = null;
             int tempLines;
 
             // round max to next integer
@@ -329,7 +323,10 @@ namespace ag.WPF.Chart
 
             // get absolute max
             var absoluteMax = Math.Max(absMax, absMin);
-
+            double stepSize;
+            double stepLength;
+            double units;
+            double temp;
             if (autoAdjust)
             {
                 // store max and min difference
@@ -365,7 +362,7 @@ namespace ag.WPF.Chart
                 }
                 if (splitSides)
                 {
-                    tempLines = chartStyle.In(ChartStyle.Radar, ChartStyle.RadarWithMarkers, ChartStyle.RadarArea)
+                    tempLines = Utils.StyleRadar(chartStyle)
                        ? getLineNumbersForComplexRadar(Math.Max(powerMax, powerMin), absoluteMax, radius, fontHeight, diff, min)
                        : getLineNumbersForCoplex(Math.Max(powerMax, powerMin), absoluteMax, radius, fontHeight, diff, min);
                     if (tempLines != 0)
@@ -389,7 +386,7 @@ namespace ag.WPF.Chart
                         return (max, min, linesCount, stepSize, stepLength, units, zeroPoint);
                     }
                 }
-                tempLines = chartStyle.In(ChartStyle.Radar, ChartStyle.RadarWithMarkers, ChartStyle.RadarArea)
+                tempLines = Utils.StyleRadar(chartStyle)
                     ? getLineNumbersForComplexRadar(Math.Max(powerMax, powerMin), Math.Abs(diff), radius, fontHeight, diff, min)
                     : getLineNumbersForCoplex(Math.Max(powerMax, powerMin), Math.Abs(diff), radius, fontHeight, diff, min);
                 if (tempLines > 0)
@@ -448,7 +445,7 @@ namespace ag.WPF.Chart
             else
             {
                 // store max and min difference
-                var diff = getDiff(max, min);
+                double diff;
                 if (Math.Abs(max) > Math.Abs(min))
                 {
                     var sign = Math.Sign(min);
@@ -659,6 +656,11 @@ namespace ag.WPF.Chart
         internal static double BoundaryOffset(bool offsetBoundary, double width, int count)
         {
             return offsetBoundary ? (width - 2 * AXIS_THICKNESS) / (count + 2) / 2 : 0;
+        }
+
+        internal static bool StyleRadar(ChartStyle style)
+        {
+            return style.In(ChartStyle.Radar, ChartStyle.RadarWithMarkers, ChartStyle.RadarArea);
         }
 
         internal static bool StyleBars(ChartStyle style)
@@ -1085,29 +1087,23 @@ namespace ag.WPF.Chart
             var segSize = width / currentSeries.Values.Count;
             var columnWidth = segSize - segSize / 8;
             var startY = Utils.AXIS_THICKNESS;
-            //var step = 0.0;
 
             switch (dir)
             {
                 case Directions.NorthEast:
                     startY = height - Utils.AXIS_THICKNESS;
-                    //step = (height - 2 * Utils.AXIS_THICKNESS) / maxLength;
                     break;
                 case Directions.NorthEastNorthWest:
                     startY = height - Utils.AXIS_THICKNESS;
-                    //step = (height - 2 * Utils.AXIS_THICKNESS) / maxLength;
                     break;
                 case Directions.NorthWest:
                     startY = height - Utils.AXIS_THICKNESS;
-                    //step = (height - 2 * Utils.AXIS_THICKNESS) / maxLength;
                     break;
                 case Directions.NorthEastSouthEast:
                     startY = height / 2;
-                    //step = (height - 2 * Utils.AXIS_THICKNESS) / 2 / maxLength;
                     break;
                 case Directions.SouthEast:
                     startY = Utils.AXIS_THICKNESS;
-                    //step = (height - 2 * Utils.AXIS_THICKNESS) / maxLength;
                     break;
             }
 
@@ -1222,8 +1218,6 @@ namespace ag.WPF.Chart
             var fmt = new FormattedText(number, culture, FlowDirection.LeftToRight,
                 new Typeface(fontFamily, fontStyle, fontWeight, fontStretch), fontSize, Brushes.Black, VisualTreeHelper.GetDpi(Utils.Border).PixelsPerDip);
 
-            var radius = 0.0;
-            var centerX = 0.0;
             Point centerPoint;
             var boundOffset = Utils.BoundaryOffset(offsetBoundary, width, maxPointsCount);
             switch (chartStyle)
@@ -1232,29 +1226,14 @@ namespace ag.WPF.Chart
                 case ChartStyle.RadarWithMarkers:
                 case ChartStyle.RadarArea:
                     {
-                        radius = width > height ? (height - 2 * Utils.AXIS_THICKNESS) / 2 : (width - 2 * Utils.AXIS_THICKNESS) / 2;
+                        var radius = width > height ? (height - 2 * Utils.AXIS_THICKNESS) / 2 : (width - 2 * Utils.AXIS_THICKNESS) / 2;
                         centerPoint = new Point(radius, radius);
                         if (width > height)
                             radius -= (2 * fmt.Height + 8);
                         else
                             radius -= (2 * fmt.Width + 8);
-                        var (max, min, realLinesCount, stepSize, stepLength, units, zeroPoint) = Utils.GetMeasures(
-                            chartStyle,
-                            series,
-                            linesCountY,
-                            radius,
-                            fmt.Height,
-                            autoAdjust,
-                            centerPoint);
-                        gm = drawRadar(series, index, rawValues,
-                            chartStyle,
-                            units,
-                            stepLength,
-                            radius,
-                            maxPointsCount,
-                            realLinesCount,
-                            zeroPoint.Level,
-                            centerPoint);
+                        var (max, min, realLinesCount, stepSize, stepLength, units, zeroPoint) = Utils.GetMeasures(chartStyle, series, linesCountY, radius, fmt.Height, autoAdjust, centerPoint);
+                        gm = drawRadar(series, index, rawValues, chartStyle, units, stepLength, radius, maxPointsCount, realLinesCount, zeroPoint.Level, centerPoint);
                         break;
                     }
                 case ChartStyle.Lines:
@@ -1293,7 +1272,6 @@ namespace ag.WPF.Chart
                 case ChartStyle.FullStackedLinesWithMarkers:
                 case ChartStyle.SmoothFullStackedLines:
                 case ChartStyle.SmoothFullStackedLinesWithMarkers:
-                    //case ChartStyle.FullStackedArea:
                     maxX = series.Max(s => s.Values.Count);
                     maxY = autoAdjust ? Utils.GetMaxY(rawValues, chartStyle) : maxYConv;
                     gm = drawFullStackedLine(width, height, maxX, maxY, chartStyle, dir, series, index, rawValues, offsetBoundary);
@@ -1938,7 +1916,7 @@ namespace ag.WPF.Chart
             var tp = tuples.FirstOrDefault(t => t.Item2 == index);
             if (tp == null) return null;
             var values = tp.Item1;
-            double stepX;//, stepY;
+            double stepX;
             double centerX, centerY;
             var gm = new PathGeometry();
             var currentSeries = series.FirstOrDefault(s => s.Index == index);
@@ -1952,31 +1930,26 @@ namespace ag.WPF.Chart
                     centerX = Utils.AXIS_THICKNESS + boundOffset;
                     centerY = height - Utils.AXIS_THICKNESS;
                     stepX = offsetBoundary ? (width - 2 * Utils.AXIS_THICKNESS - 2 * boundOffset) / (maxX - 1) : (width - 2 * Utils.AXIS_THICKNESS) / (maxX - 1);
-                    //stepY = (h - 2 * Utils.AXIS_THICKNESS) / maxY;
                     break;
                 case Directions.NorthEastNorthWest:
                     centerX = width / 2;
                     centerY = height - Utils.AXIS_THICKNESS;
                     stepX = (width - 2 * Utils.AXIS_THICKNESS) / 2 / (maxX - 1);
-                    //stepY = (h - 2 * Utils.AXIS_THICKNESS) / maxY;
                     break;
                 case Directions.NorthEastSouthEast:
                     centerX = Utils.AXIS_THICKNESS + boundOffset;
                     centerY = height / 2;
                     stepX = offsetBoundary ? (width - 2 * Utils.AXIS_THICKNESS - 2 * boundOffset) / (maxX - 1) : (width - 2 * Utils.AXIS_THICKNESS) / (maxX - 1);
-                    //stepY = (h - 2 * Utils.AXIS_THICKNESS) / 2 / maxY;
                     break;
                 case Directions.SouthEast:
                     centerX = Utils.AXIS_THICKNESS + boundOffset;
                     centerY = Utils.AXIS_THICKNESS;
                     stepX = offsetBoundary ? (width - 2 * Utils.AXIS_THICKNESS - 2 * boundOffset) / (maxX - 1) : (width - 2 * Utils.AXIS_THICKNESS) / (maxX - 1);
-                    //stepY = (h - 2 * Utils.AXIS_THICKNESS) / maxY;
                     break;
                 case Directions.NorthWest:
                     centerX = width - Utils.AXIS_THICKNESS;
                     centerY = Utils.AXIS_THICKNESS;
                     stepX = (width - Utils.AXIS_THICKNESS) / (maxX - 1);
-                    //stepY = (h - Utils.AXIS_THICKNESS) / maxY;
                     break;
                 default:
                     return null;
@@ -2037,7 +2010,7 @@ namespace ag.WPF.Chart
         {
             var tp = tuples.FirstOrDefault(t => t.Item2 == index);
             if (tp == null) return null;
-            var values = tp.Item1.Select(v=>v.Value.V1).ToArray();
+            var values = tp.Item1.Select(v => v.Value.V1).ToArray();
             var currentSeries = series.FirstOrDefault(s => s.Index == index);
             if (currentSeries == null) return null;
 
@@ -2087,31 +2060,26 @@ namespace ag.WPF.Chart
                     centerX = Utils.AXIS_THICKNESS + boundOffset;
                     centerY = h - Utils.AXIS_THICKNESS;
                     stepX = offsetBoundary ? (w - 2 * Utils.AXIS_THICKNESS - 2 * boundOffset) / (maxX - 1) : (w - 2 * Utils.AXIS_THICKNESS) / (maxX - 1);
-                    //stepY = (h - 2 * Utils.AXIS_THICKNESS) / maxY;
                     break;
                 case Directions.NorthEastNorthWest:
                     centerX = w / 2;
                     centerY = h - Utils.AXIS_THICKNESS;
                     stepX = (w - 2 * Utils.AXIS_THICKNESS) / 2 / (maxX - 1);
-                    //stepY = (h - 2 * Utils.AXIS_THICKNESS) / maxY;
                     break;
                 case Directions.NorthEastSouthEast:
                     centerX = Utils.AXIS_THICKNESS + boundOffset;
                     centerY = h / 2;
                     stepX = offsetBoundary ? (w - 2 * Utils.AXIS_THICKNESS - 2 * boundOffset) / (maxX - 1) : (w - 2 * Utils.AXIS_THICKNESS) / (maxX - 1);
-                    //stepY = (h - 2 * Utils.AXIS_THICKNESS) / 2 / maxY;
                     break;
                 case Directions.SouthEast:
                     centerX = Utils.AXIS_THICKNESS + boundOffset;
                     centerY = Utils.AXIS_THICKNESS;
                     stepX = offsetBoundary ? (w - 2 * Utils.AXIS_THICKNESS - 2 * boundOffset) / (maxX - 1) : (w - 2 * Utils.AXIS_THICKNESS) / (maxX - 1);
-                    //stepY = (h - 2 * Utils.AXIS_THICKNESS) / maxY;
                     break;
                 case Directions.NorthWest:
                     centerX = w - Utils.AXIS_THICKNESS;
                     centerY = Utils.AXIS_THICKNESS;
                     stepX = (w - 2 * Utils.AXIS_THICKNESS) / (maxX - 1);
-                    //stepY = (h - 2 * Utils.AXIS_THICKNESS) / maxY;
                     break;
                 default:
                     return null;
@@ -2165,7 +2133,7 @@ namespace ag.WPF.Chart
 
         private PathGeometry drawBubbles(double width, double height, int maxX, double maxY, double units, Directions dir, Series currentSeries, bool offsetBoundary)
         {
-            double stepX;//, stepY;
+            double stepX;
             double centerX, centerY;
             var segSize = height > width ? (width - 2 * Utils.AXIS_THICKNESS) / (maxX + 2) / 2 : (height - 2 * Utils.AXIS_THICKNESS) / (maxX + 2) / 2;
 
@@ -2181,66 +2149,29 @@ namespace ag.WPF.Chart
                     centerX = Utils.AXIS_THICKNESS + boundOffset;
                     centerY = height - Utils.AXIS_THICKNESS;
                     stepX = offsetBoundary ? (width - 2 * Utils.AXIS_THICKNESS - 2 * boundOffset) / (maxX - 1) : (width - 2 * Utils.AXIS_THICKNESS) / (maxX - 1);
-                    //stepY = (h - 2 * Utils.AXIS_THICKNESS) / maxY;
                     break;
                 case Directions.NorthEastNorthWest:
                     centerX = width / 2;
                     centerY = height - Utils.AXIS_THICKNESS;
                     stepX = (width - 2 * Utils.AXIS_THICKNESS) / 2 / (maxX - 1);
-                    //stepY = (h - 2 * Utils.AXIS_THICKNESS) / maxY;
                     break;
                 case Directions.NorthEastSouthEast:
                     centerX = Utils.AXIS_THICKNESS + boundOffset;
                     centerY = height / 2;
                     stepX = offsetBoundary ? (width - 2 * Utils.AXIS_THICKNESS - 2 * boundOffset) / (maxX - 1) : (width - 2 * Utils.AXIS_THICKNESS) / (maxX - 1);
-                    //stepY = (h - 2 * Utils.AXIS_THICKNESS) / 2 / maxY;
                     break;
                 case Directions.SouthEast:
                     centerX = Utils.AXIS_THICKNESS + boundOffset;
                     centerY = Utils.AXIS_THICKNESS;
                     stepX = offsetBoundary ? (width - 2 * Utils.AXIS_THICKNESS - 2 * boundOffset) / (maxX - 1) : (width - 2 * Utils.AXIS_THICKNESS) / (maxX - 1);
-                    //stepY = (h - 2 * Utils.AXIS_THICKNESS) / maxY;
                     break;
                 case Directions.NorthWest:
                     centerX = width - Utils.AXIS_THICKNESS;
                     centerY = Utils.AXIS_THICKNESS;
                     stepX = (width - 2 * Utils.AXIS_THICKNESS) / (maxX - 1);
-                    //stepY = (h - 2 * Utils.AXIS_THICKNESS) / maxY;
                     break;
                 default:
                     return null;
-                    //case Directions.NorthEast:
-                    //    centerX = Utils.AXIS_THICKNESS;
-                    //    centerY = h - Utils.AXIS_THICKNESS;
-                    //    stepX = (w - 2 * Utils.AXIS_THICKNESS) / (maxX - 1);
-                    //    stepY = (h - 2 * Utils.AXIS_THICKNESS) / maxY;
-                    //    break;
-                    //case Directions.NorthEastNorthWest:
-                    //    centerX = w / 2;
-                    //    centerY = h - Utils.AXIS_THICKNESS;
-                    //    stepX = (w - 2 * Utils.AXIS_THICKNESS) / 2 / (maxX - 1);
-                    //    stepY = (h - 2 * Utils.AXIS_THICKNESS) / maxY;
-                    //    break;
-                    //case Directions.NorthEastSouthEast:
-                    //    centerX = Utils.AXIS_THICKNESS;
-                    //    centerY = h / 2;
-                    //    stepX = (w - 2 * Utils.AXIS_THICKNESS) / (maxX - 1);
-                    //    stepY = (h - 2 * Utils.AXIS_THICKNESS) / 2 / maxY;
-                    //    break;
-                    //case Directions.SouthEast:
-                    //    centerX = Utils.AXIS_THICKNESS;
-                    //    centerY = Utils.AXIS_THICKNESS;
-                    //    stepX = (w - 2 * Utils.AXIS_THICKNESS) / (maxX - 1);
-                    //    stepY = (h - 2 * Utils.AXIS_THICKNESS) / maxY;
-                    //    break;
-                    //case Directions.NorthWest:
-                    //    centerX = w - Utils.AXIS_THICKNESS;
-                    //    centerY = Utils.AXIS_THICKNESS;
-                    //    stepX = (w - 2 * Utils.AXIS_THICKNESS) / (maxX - 1);
-                    //    stepY = (h - 2 * Utils.AXIS_THICKNESS) / maxY;
-                    //    break;
-                    //default:
-                    //    return null;
             }
             currentSeries.RealRects.Clear();
 
@@ -4602,7 +4533,7 @@ namespace ag.WPF.Chart
                 || !(values[2] is IEnumerable<Series> seriesEnumerable)
                 || !seriesEnumerable.Any()
                 || !(values[3] is ChartStyle chartStyle)
-                || !chartStyle.In(ChartStyle.Radar, ChartStyle.RadarWithMarkers, ChartStyle.RadarArea)
+                || !Utils.StyleRadar(chartStyle)
                 //|| !(values[6] is string format)
                 || !(values[4] is FontFamily fontFamily)
                 || !(values[5] is double fontSize)
@@ -4684,7 +4615,7 @@ namespace ag.WPF.Chart
                 || !(values[2] is IEnumerable<Series> seriesEnumerable)
                 || !seriesEnumerable.Any()
                 || !(values[3] is ChartStyle chartStyle)
-                || !chartStyle.In(ChartStyle.Radar, ChartStyle.RadarWithMarkers, ChartStyle.RadarArea)
+                || !Utils.StyleRadar(chartStyle)
                 || !(values[4] is FontFamily fontFamily)
                 || !(values[5] is double fontSize)
                 || !(values[6] is FontStyle fontStyle)
