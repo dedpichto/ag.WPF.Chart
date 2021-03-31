@@ -3094,7 +3094,7 @@ namespace ag.WPF.Chart
             if (!series.Any()) return width;
 
 
-            if (chartStyle.In(ChartStyle.Bars, ChartStyle.StackedBars, ChartStyle.FullStackedBars, ChartStyle.Radar, ChartStyle.RadarWithMarkers))
+            if (chartStyle.In(ChartStyle.Bars, ChartStyle.StackedBars, ChartStyle.FullStackedBars, ChartStyle.Radar, ChartStyle.RadarWithMarkers, ChartStyle.RadarArea))
                 return 0.0;
 
             var rawValues = chartStyle != ChartStyle.Waterfall
@@ -3217,7 +3217,7 @@ namespace ag.WPF.Chart
                 || !(values[13] is FlowDirection flowDir))
                 return null;
 
-            if (chartStyle.In(ChartStyle.Bars, ChartStyle.StackedBars, ChartStyle.FullStackedBars, ChartStyle.SlicedPie, ChartStyle.SolidPie, ChartStyle.Doughnut, ChartStyle.Radar, ChartStyle.RadarWithMarkers))
+            if (chartStyle.In(ChartStyle.Bars, ChartStyle.StackedBars, ChartStyle.FullStackedBars, ChartStyle.SlicedPie, ChartStyle.SolidPie, ChartStyle.Doughnut, ChartStyle.Radar, ChartStyle.RadarWithMarkers, ChartStyle.RadarArea))
                 return null;
             if (!seriesEnumerable.Any())
                 return null;
@@ -3419,7 +3419,7 @@ namespace ag.WPF.Chart
                 || !(values[14] is ChartBoundary chartBoundary))
                 return null;
 
-            if (chartStyle.In(ChartStyle.Area, ChartStyle.StackedArea, ChartStyle.FullStackedArea, ChartStyle.SlicedPie, ChartStyle.SolidPie, ChartStyle.Doughnut, ChartStyle.Radar, ChartStyle.RadarWithMarkers, ChartStyle.SmoothArea))
+            if (chartStyle.In(ChartStyle.Area, ChartStyle.StackedArea, ChartStyle.FullStackedArea, ChartStyle.SlicedPie, ChartStyle.SolidPie, ChartStyle.Doughnut, ChartStyle.Radar, ChartStyle.RadarWithMarkers, ChartStyle.RadarArea, ChartStyle.SmoothArea))
                 return null;
             if (!seriesEnumerable.Any()) return null;
 
@@ -3747,7 +3747,7 @@ namespace ag.WPF.Chart
                 || !(values[12] is bool autoAdjust))
                 return null;
 
-            if (chartStyle.In(ChartStyle.Area, ChartStyle.StackedArea, ChartStyle.FullStackedArea, ChartStyle.Radar, ChartStyle.RadarWithMarkers, ChartStyle.SmoothArea))
+            if (chartStyle.In(ChartStyle.Area, ChartStyle.StackedArea, ChartStyle.FullStackedArea, ChartStyle.Radar, ChartStyle.RadarWithMarkers, ChartStyle.RadarArea, ChartStyle.SmoothArea))
                 return null;
             if (!seriesEnumerable.Any())
                 return null;
