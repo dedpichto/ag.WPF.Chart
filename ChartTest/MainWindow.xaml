@@ -45,7 +45,7 @@
                          ShowSecondaryYLines="True" 
                          AxesValuesVisibility="Both" 
                          Caption="Sample chart" 
-                         
+                         WaterfallLegends="{Binding WaterfallLegends}"
                          ChartStyle="RadarWithMarkers"
                          SectionsY="5"
                          ChartPointLeftButtonDoubleClick="Chart_MarkerLeftButtonDoubleClick">

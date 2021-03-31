@@ -530,7 +530,7 @@ namespace ag.WPF.Chart
             ChartBoundaryProperty = DependencyProperty.Register("ChartBoundary", typeof(ChartBoundary), typeof(Chart),
                 new FrameworkPropertyMetadata(ChartBoundary.WithOffset, OnChartBoundaryChanged));
             SeriesCountProperty = DependencyProperty.Register("SeriesCount", typeof(int), typeof(Chart), new FrameworkPropertyMetadata(0));
-            WaterfallLegendsProperty = DependencyProperty.RegisterAttached("WaterfallLegends", typeof(string[]), typeof(Chart), new FrameworkPropertyMetadata(new[] { "Increase", "Decrease" }));
+            WaterfallLegendsProperty = DependencyProperty.RegisterAttached("WaterfallLegends", typeof(IEnumerable<string>), typeof(Chart), new FrameworkPropertyMetadata(new[] { "Increase", "Decrease" }));
             ItemsSourceProperty = DependencyProperty.Register("ItemsSource", typeof(IEnumerable<Series>), typeof(Chart), new PropertyMetadata(null, (u, e) =>
                  {
                      if (u is Chart chart)
@@ -551,7 +551,7 @@ namespace ag.WPF.Chart
 
         #region Private fields
         private readonly ObservableCollection<FrameworkElement> _legendCollection = new ObservableCollection<FrameworkElement>();
-        private readonly ObservableCollection<FrameworkElement> _pieLegends = new ObservableCollection<FrameworkElement>(); 
+        private readonly ObservableCollection<FrameworkElement> _pieLegendsCollection = new ObservableCollection<FrameworkElement>(); 
         #endregion
 
         #region Overrides
@@ -941,7 +941,7 @@ namespace ag.WPF.Chart
 
                         legend.SetBinding(Legend.TextProperty, new Binding("Name") { Source = series });
 
-                        _legendCollection.Add(legend);
+                        LegendCollection.Add(legend);
                         #endregion
 
                         #region Positive waterfall legend
@@ -976,7 +976,7 @@ namespace ag.WPF.Chart
 
                         legend.SetBinding(Legend.TextProperty, new Binding("WaterfallLegends[0]") { Source = this });
 
-                        _legendCollection.Add(legend);
+                        LegendCollection.Add(legend);
                         #endregion
 
                         #region Negative waterfall legend
@@ -1011,7 +1011,7 @@ namespace ag.WPF.Chart
 
                         legend.SetBinding(Legend.TextProperty, new Binding("WaterfallLegends[1]") { Source = this });
 
-                        _legendCollection.Add(legend);
+                        LegendCollection.Add(legend);
                         #endregion
 
                         _canvas.Children.Add(series.Path);
@@ -1037,13 +1037,13 @@ namespace ag.WPF.Chart
                         if (index > -1)
                             _canvas.Children.RemoveAt(index);
 
-                        _legendCollection.RemoveAt(e.OldStartingIndex);
-                        for (var i = _legendCollection.Count - 1; i >= 0; i--)
+                        LegendCollection.RemoveAt(e.OldStartingIndex);
+                        for (var i = LegendCollection.Count - 1; i >= 0; i--)
                         {
-                            if (((Legend)_legendCollection[i]).Index == e.OldStartingIndex)
-                                _legendCollection.RemoveAt(i);
+                            if (((Legend)LegendCollection[i]).Index == e.OldStartingIndex)
+                                LegendCollection.RemoveAt(i);
                         }
-                        foreach (Legend lg in _legendCollection.Where(l => ((Legend)l).Index > e.OldStartingIndex))
+                        foreach (Legend lg in LegendCollection.Where(l => ((Legend)l).Index > e.OldStartingIndex))
                         {
                             lg.Index--;
                         }
@@ -1116,7 +1116,7 @@ namespace ag.WPF.Chart
         private void PieBrushes_BrushChanged(object sender, BrushChangedEventArgs e)
         {
             if (e.Series == null || e.Index >= e.Series.PieBrushes.Length()) return;
-            var legend = _pieLegends[e.Index];
+            var legend = PieLegendsCollection[e.Index];
             BindingOperations.ClearBinding(legend, Legend.LegendBackgroundProperty);
             var legendBackgroundBinding = new MultiBinding
             {
@@ -1244,7 +1244,7 @@ namespace ag.WPF.Chart
         private void rebuildPieLegends(ChartValues values, Series series)
         {
             if (series.Index > 0) return;
-            _pieLegends.Clear();
+            PieLegendsCollection.Clear();
             for (int i = 0, brushIndex = 0; i < values.Count; i++)
             {
                 var v = values[i];
@@ -1272,7 +1272,7 @@ namespace ag.WPF.Chart
                 textBinding.Bindings.Add(new Binding("AxesValuesFormat") { Source = this });
                 legend.SetBinding(Legend.TextProperty, textBinding);
 
-                _pieLegends.Add(legend);
+                PieLegendsCollection.Add(legend);
             }
         }
 
@@ -1660,6 +1660,12 @@ namespace ag.WPF.Chart
             get { return (string)GetValue(AxesValuesFormatProperty); }
             set { SetValue(AxesValuesFormatProperty, value); }
         }
+
+        [EditorBrowsable(EditorBrowsableState.Never), Browsable(false)]
+        public ObservableCollection<FrameworkElement> LegendCollection => _legendCollection;
+
+        [EditorBrowsable(EditorBrowsableState.Never), Browsable(false)]
+        public ObservableCollection<FrameworkElement> PieLegendsCollection => _pieLegendsCollection;
 
         #endregion
 

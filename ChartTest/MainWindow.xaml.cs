@@ -29,6 +29,7 @@ namespace ChartTest
             InitializeComponent();
         }
 
+        public List<string> WaterfallLegends { get; } = new List<string> { "Подъем", "Спуск", "Хрен знает что" };
         public ObservableCollection<Series> Series { get; } = new ObservableCollection<Series>();
         public List<string> CustomXTexts { get; } = new List<string>(new string[] { "Canada", "Russia", "USA" });
         public List<string> CustomYTexts { get; } = new List<string>(new string[] { "Oil", "Gas", "Electricity" });
@@ -127,7 +128,7 @@ namespace ChartTest
             if (!sfd.ShowDialog(this).Value)
                 return;
             chTest.SaveAsImage(sfd.FileName);
-
+            
             Process fileopener = new Process();
             fileopener.StartInfo.FileName = "explorer";
             fileopener.StartInfo.Arguments = "\"" + sfd.FileName + "\"";
