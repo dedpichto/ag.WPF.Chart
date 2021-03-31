@@ -650,20 +650,20 @@ namespace ag.WPF.Chart
                 return Math.Abs(max + min);
         }
 
-        internal static Tuple<double, int> Limits(ChartStyle style, bool offsetBoundary, int stopsX, int ticks,
+        internal static (double Step, int Limit) Limits(ChartStyle style, bool offsetBoundary, int stopsX, int ticks,
             double boundOffset, double width)
         {
             if (StyleColumns(style))
             {
-                return Tuple.Create(width / ticks, ticks);
+                return (width / ticks, ticks);
             }
             if (StyleBars(style))
             {
-                return Tuple.Create(width / stopsX, stopsX);
+                return (width / stopsX, stopsX);
             }
             return offsetBoundary
-                ? Tuple.Create((width - 2 * boundOffset) / (ticks - 1), ticks)
-                : Tuple.Create(width / (ticks - 1), ticks);
+                ? ((width - 2 * boundOffset) / (ticks - 1), ticks)
+                : (width / (ticks - 1), ticks);
         }
 
         internal static double BoundaryOffset(bool offsetBoundary, double width, int count)
@@ -738,7 +738,7 @@ namespace ag.WPF.Chart
                     var maxPlus = 0.0;
                     var maxMinus = 0.0;
                     var value = 0.0;
-                    foreach (var v in tuples[0].Item1.Select(v => v.Value.V1))
+                    foreach (var v in tuples[0].Values.Select(v => v.Value.V1))
                     {
                         value += v;
                         if (value > 0)
@@ -757,21 +757,21 @@ namespace ag.WPF.Chart
                 case ChartStyle.Area:
                 case ChartStyle.SmoothArea:
                 case ChartStyle.Bubbles:
-                    result = (from s in tuples from v in s.Item1 select Math.Abs(v.Value.V1)).Concat(new[] { result }).Max();
+                    result = (from s in tuples from v in s.Values select Math.Abs(v.Value.V1)).Concat(new[] { result }).Max();
                     break;
                 case ChartStyle.StackedColumns:
                 case ChartStyle.StackedBars:
                     {
-                        var plusArr = new double[tuples.Max(s => s.Item1.Count)];
-                        var minusArr = new double[tuples.Max(s => s.Item1.Count)];
+                        var plusArr = new double[tuples.Max(s => s.Values.Count)];
+                        var minusArr = new double[tuples.Max(s => s.Values.Count)];
                         foreach (var s in tuples)
                         {
-                            for (var i = 0; i < s.Item1.Count; i++)
+                            for (var i = 0; i < s.Values.Count; i++)
                             {
-                                if (s.Item1[i].Value.V1 < 0)
-                                    minusArr[i] += s.Item1[i].Value.V1;
+                                if (s.Values[i].Value.V1 < 0)
+                                    minusArr[i] += s.Values[i].Value.V1;
                                 else
-                                    plusArr[i] += s.Item1[i].Value.V1;
+                                    plusArr[i] += s.Values[i].Value.V1;
                             }
                         }
                         result = Math.Max(Math.Abs(minusArr.Min()), plusArr.Max());
@@ -783,15 +783,15 @@ namespace ag.WPF.Chart
                 case ChartStyle.SmoothStackedLines:
                 case ChartStyle.SmoothStackedLinesWithMarkers:
                     {
-                        var arr1 = new double[tuples.Max(s => s.Item1.Count)];
-                        var arr2 = new double[tuples.Max(s => s.Item1.Count)];
+                        var arr1 = new double[tuples.Max(s => s.Values.Count)];
+                        var arr2 = new double[tuples.Max(s => s.Values.Count)];
                         foreach (var s in tuples)
                         {
-                            for (var i = 0; i < s.Item1.Count; i++)
+                            for (var i = 0; i < s.Values.Count; i++)
                             {
-                                arr1[i] += s.Item1[i].Value.V1;
-                                if (Math.Abs(arr2[i]) < Math.Abs(s.Item1[i].Value.V1))
-                                    arr2[i] = Math.Abs(s.Item1[i].Value.V1);
+                                arr1[i] += s.Values[i].Value.V1;
+                                if (Math.Abs(arr2[i]) < Math.Abs(s.Values[i].Value.V1))
+                                    arr2[i] = Math.Abs(s.Values[i].Value.V1);
                             }
                         }
                         result = Math.Max(arr2.Max(), arr1.Max(d => Math.Abs(d)));
@@ -800,15 +800,15 @@ namespace ag.WPF.Chart
                 case ChartStyle.FullStackedColumns:
                 case ChartStyle.FullStackedBars:
                     {
-                        var arr = new double[tuples.Max(s => s.Item1.Count)];
+                        var arr = new double[tuples.Max(s => s.Values.Count)];
                         foreach (var s in tuples)
                         {
-                            for (var i = 0; i < s.Item1.Count; i++)
+                            for (var i = 0; i < s.Values.Count; i++)
                             {
                                 var i1 = i;
                                 var sumTotal =
-                                    tuples.Where(sr => sr.Item1.Count > i1).Sum(sr => Math.Abs(sr.Item1[i1].Value.V1));
-                                var percent = Math.Abs(s.Item1[i].Value.V1) / sumTotal * 100;
+                                    tuples.Where(sr => sr.Values.Count > i1).Sum(sr => Math.Abs(sr.Values[i1].Value.V1));
+                                var percent = Math.Abs(s.Values[i].Value.V1) / sumTotal * 100;
                                 if (arr[i] < percent)
                                     arr[i] = percent;
                             }
@@ -1473,8 +1473,8 @@ namespace ag.WPF.Chart
                 {
                     var i1 = i;
                     var prevsTuples =
-                        tuples.Where(t => t.Item2 < index && Math.Sign(t.Item1[i1].Value.V1) == Math.Sign(values[i1].Value.V1));
-                    x += prevsTuples.Sum(sr => sr.Item1[i].Value.V1 * units);
+                        tuples.Where(t => t.Index < index && Math.Sign(t.Values[i1].Value.V1) == Math.Sign(values[i1].Value.V1));
+                    x += prevsTuples.Sum(sr => sr.Values[i].Value.V1 * units);
                 }
                 var y = height - (i * segSize + COLUMN_BAR_OFFSET);
                 var rect = new Rect(new Point(x, y), new Point(x + values[i].Value.V1 * units, y - barHeight));
@@ -1527,13 +1527,13 @@ namespace ag.WPF.Chart
                 var sign = Math.Sign(values[i].Value.V1);
                 var y = height - (i * segSize + COLUMN_BAR_OFFSET);
                 var i1 = i;
-                var sumTotal = tuples.Sum(sr => Math.Abs(sr.Item1[i1].Value.V1));
+                var sumTotal = tuples.Sum(sr => Math.Abs(sr.Values[i1].Value.V1));
                 var percent = Math.Abs(values[i].Value.V1) / sumTotal * 100;
                 var segWidth = sign * stepX / 100 * percent;
 
-                var prevs = tuples.Where(s => s.Item2 < index)
-                    .Where(s => Math.Sign(s.Item1[i1].Value.V1) == sign);
-                var prevSum = prevs.Sum(pvs => Math.Abs(pvs.Item1[i1].Value.V1));
+                var prevs = tuples.Where(s => s.Index < index)
+                    .Where(s => Math.Sign(s.Values[i1].Value.V1) == sign);
+                var prevSum = prevs.Sum(pvs => Math.Abs(pvs.Values[i1].Value.V1));
                 var prevPerc = prevSum / sumTotal * 100;
                 var prevWidth = stepX / 100 * prevPerc;
                 var x = startX + sign * prevWidth;
@@ -1588,12 +1588,12 @@ namespace ag.WPF.Chart
                 var sign = Math.Sign(values[i].Value.V1);
                 var x = i * segSize + COLUMN_BAR_OFFSET;
                 var i1 = i;
-                var sumTotal = tuples.Sum(sr => Math.Abs(sr.Item1[i1].Value.V1));
+                var sumTotal = tuples.Sum(sr => Math.Abs(sr.Values[i1].Value.V1));
                 var percent = Math.Abs(values[i].Value.V1) / sumTotal * 100;
                 var segHeight = sign * stepY / 100 * percent;
-                var prevs = tuples.Where(s => s.Item2 < index)
-                    .Where(s => Math.Sign(s.Item1[i1].Value.V1) == sign);
-                var prevSum = prevs.Sum(pvs => Math.Abs(pvs.Item1[i1].Value.V1));
+                var prevs = tuples.Where(s => s.Index < index)
+                    .Where(s => Math.Sign(s.Values[i1].Value.V1) == sign);
+                var prevSum = prevs.Sum(pvs => Math.Abs(pvs.Values[i1].Value.V1));
                 var prevPerc = prevSum / sumTotal * 100;
                 var prevHeight = stepY / 100 * prevPerc;
                 var y = startY - sign * prevHeight;
@@ -1646,8 +1646,8 @@ namespace ag.WPF.Chart
                     var i1 = i;
                     var prevs =
                         tuples.Where(
-                            s => s.Item2 < index && Math.Sign(s.Item1[i1].Value.V1) == Math.Sign(values[i1].Value.V1));
-                    y -= prevs.Sum(sr => sr.Item1[i].Value.V1 * units);
+                            s => s.Index < index && Math.Sign(s.Values[i1].Value.V1) == Math.Sign(values[i1].Value.V1));
+                    y -= prevs.Sum(sr => sr.Values[i].Value.V1 * units);
                 }
                 var rect = new Rect(new Point(x, y), new Point(x + columnWidth, y - values[i].Value.V1 * units));
                 var rg = new RectangleGeometry(rect);
@@ -1763,7 +1763,7 @@ namespace ag.WPF.Chart
                     if (prevSeries == null) return null;
                     y = prevSeries.RealPoints[i].Y;
                 }
-                var sum = tuples.Sum(s => Math.Abs(s.Item1[i].Value.V1));
+                var sum = tuples.Sum(s => Math.Abs(s.Values[i].Value.V1));
                 var sign = Math.Sign(values[i].Value.V1);
                 var perc = Math.Abs(values[i].Value.V1) / sum * 100;
                 y -= sign * perc * stepY / 100;
@@ -1871,7 +1871,7 @@ namespace ag.WPF.Chart
                     if (prevSeries == null) return null;
                     y = prevSeries.RealPoints[i].Y;
                 }
-                var sum = tuples.Sum(s => Math.Abs(s.Item1[i].Value.V1));
+                var sum = tuples.Sum(s => Math.Abs(s.Values[i].Value.V1));
                 var sign = Math.Sign(values[i].Value.V1);
                 var perc = Math.Abs(values[i].Value.V1) / sum * 100;
 
@@ -1914,7 +1914,7 @@ namespace ag.WPF.Chart
         private PathGeometry drawStackedLine(double width, double height, double maxX, double maxY, double units, ChartStyle style,
             Directions dir, Series[] series, int index, List<(List<ChartValue> Values, int Index)> tuples, bool offsetBoundary)
         {
-            var tp = tuples.FirstOrDefault(t => t.Item2 == index);
+            var tp = tuples.FirstOrDefault(t => t.Index == index);
             if (tp == default) return null;
             var values = tp.Values;
             double stepX;
@@ -1965,8 +1965,8 @@ namespace ag.WPF.Chart
                 var y = centerY - values[i].Value.V1 * units;
                 if (index > 0)
                 {
-                    var prevs = tuples.Where(s => s.Item2 < index);
-                    var sum = prevs.Sum(sr => sr.Item1[i].Value.V1);
+                    var prevs = tuples.Where(s => s.Index < index);
+                    var sum = prevs.Sum(sr => sr.Values[i].Value.V1);
                     y -= sum * units;
                 }
                 points.Add(new Point(x, y));
@@ -2011,7 +2011,7 @@ namespace ag.WPF.Chart
         {
             var tp = tuples.FirstOrDefault(t => t.Index == index);
             if (tp == default) return null;
-            var values = tp.Item1.Select(v => v.Value.V1).ToArray();
+            var values = tp.Values.Select(v => v.Value.V1).ToArray();
             var currentSeries = series.FirstOrDefault(s => s.Index == index);
             if (currentSeries == null) return null;
 
@@ -3010,8 +3010,8 @@ namespace ag.WPF.Chart
                 case Directions.NorthEastSouthEast:
                 case Directions.SouthEast:
                     {
-                        var tpl = Utils.Limits(chartStyle, offsetBoundary, stopsX, ticks, boundOffset, width);
-                        var limit = tpl.Item2;
+                        var (Step, Limit) = Utils.Limits(chartStyle, offsetBoundary, stopsX, ticks, boundOffset, width);
+                        var limit = Limit;
                         for (var i = 0; i < limit; i++)
                         {
                             var num = i;
@@ -3515,11 +3515,11 @@ namespace ag.WPF.Chart
                 case Directions.NorthEast:
                 case Directions.NorthEastSouthEast:
                     {
-                        var tpl = Utils.Limits(chartStyle, offsetBoundary, linesCount, ticks, boundOffset, width);
+                        var (Step, Limit) = Utils.Limits(chartStyle, offsetBoundary, linesCount, ticks, boundOffset, width);
                         if (!Utils.StyleBars(chartStyle))
                         {
-                            xStep = tpl.Item1;
-                            limit = tpl.Item2;
+                            xStep = Step;
+                            limit = Limit;
                         }
                         else
                         {
@@ -3623,9 +3623,9 @@ namespace ag.WPF.Chart
                 //DONE
                 case Directions.SouthEast:
                     {
-                        var tpl = Utils.Limits(chartStyle, offsetBoundary, linesCount, ticks, boundOffset, width);
-                        xStep = tpl.Item1;
-                        limit = tpl.Item2;
+                        var (Step, Limit) = Utils.Limits(chartStyle, offsetBoundary, linesCount, ticks, boundOffset, width);
+                        xStep = Step;
+                        limit = Limit;
                         for (int i = 0, j = limit - 1; i < limit; i++, j--)
                         {
                             var num = flowDir == FlowDirection.LeftToRight
@@ -3854,9 +3854,9 @@ namespace ag.WPF.Chart
                         var x = Utils.AXIS_THICKNESS + boundOffset;
                         if (!Utils.StyleBars(chartStyle))
                         {
-                            var tpl = Utils.Limits(chartStyle, offsetBoundary, linesCountX, ticks, boundOffset, width);
-                            xStep = tpl.Item1;
-                            limit = tpl.Item2;
+                            var (Step, Limit) = Utils.Limits(chartStyle, offsetBoundary, linesCountX, ticks, boundOffset, width);
+                            xStep = Step;
+                            limit = Limit;
                         }
                         else
                         {
@@ -3925,9 +3925,9 @@ namespace ag.WPF.Chart
                         var x = Utils.AXIS_THICKNESS + boundOffset;
                         if (!Utils.StyleBars(chartStyle))
                         {
-                            var tpl = Utils.Limits(chartStyle, offsetBoundary, linesCountX, ticks, boundOffset, width);
-                            xStep = tpl.Item1;
-                            limit = tpl.Item2;
+                            var (Step, Limit) = Utils.Limits(chartStyle, offsetBoundary, linesCountX, ticks, boundOffset, width);
+                            xStep = Step;
+                            limit = Limit;
                         }
                         else
                         {
@@ -3995,9 +3995,9 @@ namespace ag.WPF.Chart
                         var x = Utils.AXIS_THICKNESS + boundOffset;
                         if (!Utils.StyleBars(chartStyle))
                         {
-                            var tpl = Utils.Limits(chartStyle, offsetBoundary, linesCountX, ticks, boundOffset, width);
-                            xStep = tpl.Item1;
-                            limit = tpl.Item2;
+                            var (Step, Limit) = Utils.Limits(chartStyle, offsetBoundary, linesCountX, ticks, boundOffset, width);
+                            xStep = Step;
+                            limit = Limit;
                         }
                         else
                         {
@@ -4147,9 +4147,9 @@ namespace ag.WPF.Chart
                         var x = Utils.AXIS_THICKNESS + boundOffset;
                         if (!Utils.StyleBars(chartStyle))
                         {
-                            var tpl = Utils.Limits(chartStyle, offsetBoundary, linesCount, ticks, boundOffset, width);
-                            xStep = tpl.Item1;
-                            limit = tpl.Item2;
+                            var (Step, Limit) = Utils.Limits(chartStyle, offsetBoundary, linesCount, ticks, boundOffset, width);
+                            xStep = Step;
+                            limit = Limit;
                         }
                         else
                         {
@@ -4189,9 +4189,9 @@ namespace ag.WPF.Chart
                         var x = Utils.AXIS_THICKNESS + boundOffset;
                         if (!Utils.StyleBars(chartStyle))
                         {
-                            var tpl = Utils.Limits(chartStyle, offsetBoundary, linesCount, ticks, boundOffset, width);
-                            xStep = tpl.Item1;
-                            limit = tpl.Item2;
+                            var (Step, Limit) = Utils.Limits(chartStyle, offsetBoundary, linesCount, ticks, boundOffset, width);
+                            xStep = Step;
+                            limit = Limit;
                         }
                         else
                         {
@@ -4230,9 +4230,9 @@ namespace ag.WPF.Chart
                         var x = Utils.AXIS_THICKNESS + boundOffset;
                         if (!Utils.StyleBars(chartStyle))
                         {
-                            var tpl = Utils.Limits(chartStyle, offsetBoundary, linesCount, ticks, boundOffset, width);
-                            xStep = tpl.Item1;
-                            limit = tpl.Item2;
+                            var (Step, Limit) = Utils.Limits(chartStyle, offsetBoundary, linesCount, ticks, boundOffset, width);
+                            xStep = Step;
+                            limit = Limit;
                         }
                         else
                         {
