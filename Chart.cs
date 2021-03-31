@@ -441,9 +441,9 @@ namespace ag.WPF.Chart
         /// </summary>
         public static readonly DependencyProperty SeriesCountProperty;
         /// <summary>
-        /// The identifier of the <see cref="WaterfallLegendsProperty"/> dependency property.
+        /// The identifier of the <see cref="CustomWaterfallLegendsProperty"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty WaterfallLegendsProperty;
+        public static readonly DependencyProperty CustomWaterfallLegendsProperty;
         /// <summary>
         /// The identifier of the <see cref="ItemsSource"/> dependency property.
         /// </summary>
@@ -509,7 +509,7 @@ namespace ag.WPF.Chart
                 new FrameworkPropertyMetadata(AxesValuesVisibility.None, OnAxesValuesVisibilityChanged));
             AxesValuesFormatProperty = DependencyProperty.Register("AxesValuesFormat", typeof(string), typeof(Chart),
                 new FrameworkPropertyMetadata("0", OnAxesValuesFormatChanged));
-            XAxisCustomValuesProperty = DependencyProperty.Register("XAxisCustomValues", typeof(List<string>), typeof(Chart),
+            XAxisCustomValuesProperty = DependencyProperty.Register("XAxisCustomValues", typeof(IEnumerable<string>), typeof(Chart),
                 new FrameworkPropertyMetadata(new List<string>(), OnXAxisCustomValuesChanged));
             YAxisCustomValuesProperty = DependencyProperty.Register("YAxisCustomValues", typeof(List<string>), typeof(Chart),
                 new FrameworkPropertyMetadata(new List<string>(), OnYAxisCustomValuesChanged));
@@ -530,7 +530,7 @@ namespace ag.WPF.Chart
             ChartBoundaryProperty = DependencyProperty.Register("ChartBoundary", typeof(ChartBoundary), typeof(Chart),
                 new FrameworkPropertyMetadata(ChartBoundary.WithOffset, OnChartBoundaryChanged));
             SeriesCountProperty = DependencyProperty.Register("SeriesCount", typeof(int), typeof(Chart), new FrameworkPropertyMetadata(0));
-            WaterfallLegendsProperty = DependencyProperty.RegisterAttached("WaterfallLegends", typeof(IEnumerable<string>), typeof(Chart), new FrameworkPropertyMetadata(new[] { "Increase", "Decrease" }));
+            CustomWaterfallLegendsProperty = DependencyProperty.RegisterAttached("CustomWaterfallLegends", typeof(IEnumerable<string>), typeof(Chart), new FrameworkPropertyMetadata(new[] { "Increase", "Decrease" }));
             ItemsSourceProperty = DependencyProperty.Register("ItemsSource", typeof(IEnumerable<Series>), typeof(Chart), new PropertyMetadata(null, (u, e) =>
                  {
                      if (u is Chart chart)
@@ -551,7 +551,7 @@ namespace ag.WPF.Chart
 
         #region Private fields
         private readonly ObservableCollection<FrameworkElement> _legendsCollection = new ObservableCollection<FrameworkElement>();
-        private readonly ObservableCollection<FrameworkElement> _pieLegendsCollection = new ObservableCollection<FrameworkElement>(); 
+        private readonly ObservableCollection<FrameworkElement> _pieLegendsCollection = new ObservableCollection<FrameworkElement>();
         #endregion
 
         #region Overrides
@@ -974,7 +974,7 @@ namespace ag.WPF.Chart
                         legendVisibilityBinding.NotifyOnSourceUpdated = true;
                         legend.SetBinding(VisibilityProperty, legendVisibilityBinding);
 
-                        legend.SetBinding(Legend.TextProperty, new Binding("WaterfallLegends[0]") { Source = this });
+                        legend.SetBinding(Legend.TextProperty, new Binding("CustomWaterfallLegends[0]") { Source = this });
 
                         LegendsCollection.Add(legend);
                         #endregion
@@ -1009,7 +1009,7 @@ namespace ag.WPF.Chart
                         legendVisibilityBinding.NotifyOnSourceUpdated = true;
                         legend.SetBinding(VisibilityProperty, legendVisibilityBinding);
 
-                        legend.SetBinding(Legend.TextProperty, new Binding("WaterfallLegends[1]") { Source = this });
+                        legend.SetBinding(Legend.TextProperty, new Binding("CustomWaterfallLegends[1]") { Source = this });
 
                         LegendsCollection.Add(legend);
                         #endregion
@@ -1067,9 +1067,9 @@ namespace ag.WPF.Chart
 
         private void values_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
-            if (SeriesCount < int.MaxValue) 
+            if (SeriesCount < int.MaxValue)
                 SeriesCount++;
-            else 
+            else
                 SeriesCount--;
         }
 
@@ -1237,7 +1237,7 @@ namespace ag.WPF.Chart
                 ChartStyle.FullStackedLinesWithMarkers, ChartStyle.SmoothLinesWithMarkers,
                 ChartStyle.SmoothStackedLinesWithMarkers, ChartStyle.SmoothFullStackedLinesWithMarkers,
                 ChartStyle.Bubbles, ChartStyle.Columns, ChartStyle.StackedColumns, ChartStyle.FullStackedColumns,
-                ChartStyle.Bars, ChartStyle.StackedBars, ChartStyle.FullStackedBars, 
+                ChartStyle.Bars, ChartStyle.StackedBars, ChartStyle.FullStackedBars,
                 ChartStyle.RadarWithMarkers, ChartStyle.Waterfall) || e.ClickCount != 2) return;
             var rc = s.RealRects.FirstOrDefault(r => r.Contains(e.GetPosition(_canvas)));
             if (rc == default) return;
@@ -1296,23 +1296,27 @@ namespace ag.WPF.Chart
         //    return Tuple.Create(m.M11, m.M22);// notice it's divided by 96 already
         //}
         #endregion
-
+        /// <summary>
+        /// Gets or sets the collection of custom legend text when <see cref="ChartStyle"/> is set to <see cref="ChartStyle.Waterfall"/>.
+        /// </summary>
         #region Dependency properties wrappers
-        public string[] WaterfallLegends
+        [Category("ChartAppearance"), Description("Gets or sets the collection of custom legend text when ChartStyle is set to ChartStyle.Waterfall")]
+        public IEnumerable<string> CustomWaterfallLegends
         {
-            get { return (string[])GetValue(WaterfallLegendsProperty); }
-            set { SetValue(WaterfallLegendsProperty, value); }
+            get { return (IEnumerable<string>)GetValue(CustomWaterfallLegendsProperty); }
+            set { SetValue(CustomWaterfallLegendsProperty, value); }
         }
         /// <summary>
-        /// Gets/sets collection of <see cref="Series"/> objects associated with chart control
+        /// Gets/sets the collection of <see cref="Series"/> objects associated with chart control.
         /// </summary>
+        [Category("ChartAppearance"), Description("Gets or sets the collection of Series objects associated with chart control")]
         public IEnumerable<Series> ItemsSource
         {
             get { return (IEnumerable<Series>)GetValue(ItemsSourceProperty); }
             set { SetValue(ItemsSourceProperty, value); }
         }
         /// <summary>
-        /// Help property forced the control to repaintt
+        /// Help property forced the control to repaint.
         /// </summary>
         [EditorBrowsable(EditorBrowsableState.Never), Browsable(false)]
         public int SeriesCount
@@ -1321,9 +1325,9 @@ namespace ag.WPF.Chart
             set { SetValue(SeriesCountProperty, value); }
         }
         /// <summary>
-        /// Specifies whether chart boundary is started on y-axes or with offfset from y-axes
+        /// Specifies whether chart boundary is started on y-axes or with offfset from y-axes.
         /// </summary>
-        /// <remarks>This property will have no effect if <see cref="ChartStyle"/> property is set to any non-line style</remarks>
+        /// <remarks>This property will have no effect if <see cref="ChartStyle"/> is set to any non-line style.</remarks>
         [Category("ChartAppearance"), Description("Specifies whether chart boundary is started on y-axes or with offfset from y-axes")]
         public ChartBoundary ChartBoundary
         {
@@ -1331,9 +1335,9 @@ namespace ag.WPF.Chart
             set { SetValue(ChartBoundaryProperty, value); }
         }
         /// <summary>
-        /// Specifies whether ticks are drawn on axes
+        /// Specifies whether ticks are drawn on axes.
         /// </summary>
-        /// <remarks>This property will have no effect if <see cref="ChartStyle"/> property is set to <see cref="ag.WPF.Chart.ChartStyle.SolidPie"/> or <see cref="ag.WPF.Chart.ChartStyle.SlicedPie"/> or <see cref="ag.WPF.Chart.ChartStyle.Doughnut"/></remarks>
+        /// <remarks>This property will have no effect if <see cref="ChartStyle"/> property is set to one of the following: <see cref="ChartStyle.SolidPie"/>, <see cref="ChartStyle.SlicedPie"/>, <see cref="ChartStyle.Doughnut"/>, <see cref="ChartStyle.Radar"/>, <see cref="ChartStyle.RadarWithMarkers"/>, <see cref="ChartStyle.RadarArea"/>.</remarks>
         [Category("ChartAppearance"), Description("Specifies whether ticks are drawn on axes")]
         public bool ShowTicks
         {
@@ -1341,7 +1345,7 @@ namespace ag.WPF.Chart
             set { SetValue(ShowTicksProperty, value); }
         }
         /// <summary>
-        /// Gets or sets legend font family
+        /// Gets or sets legend font family.
         /// </summary>
         [Category("ChartLegend"), Description("Gets or sets legend font family")]
         public FontFamily LegendFontFamily
@@ -1350,7 +1354,7 @@ namespace ag.WPF.Chart
             set { SetValue(LegendFontFamilyProperty, value); }
         }
         /// <summary>
-        /// Gets or sets legend font wweight
+        /// Gets or sets legend font wweight.
         /// </summary>
         [Category("ChartLegend"), Description("Gets or sets legend font wweight")]
         public FontWeight LegendFontWeight
@@ -1359,7 +1363,7 @@ namespace ag.WPF.Chart
             set { SetValue(LegendFontWeightProperty, value); }
         }
         /// <summary>
-        /// Gets or sets legend font style
+        /// Gets or sets legend font style.
         /// </summary>
         [Category("ChartLegend"), Description("Gets or sets legend font style")]
         public FontStyle LegendFontStyle
@@ -1368,7 +1372,7 @@ namespace ag.WPF.Chart
             set { SetValue(LegendFontStyleProperty, value); }
         }
         /// <summary>
-        /// Gets or sets legend font size
+        /// Gets or sets legend font size.
         /// </summary>
         [Category("ChartLegend"), Description("Gets or sets legend font size")]
         public double LegendFontSize
@@ -1377,7 +1381,7 @@ namespace ag.WPF.Chart
             set { SetValue(LegendFontSizeProperty, value); }
         }
         /// <summary>
-        /// Gets or sets the shape of legend. Can be one of <see cref="ag.WPF.Chart.LegendShape"/> enumeration members
+        /// Gets or sets the shape of legend. Can be one of <see cref="LegendShape"/> enumeration members.
         /// </summary>
         [Category("ChartLegend"), Description("Gets or sets the shape of legend. Can be one of LegendShape enumeration members")]
         public LegendShape LegendShape
@@ -1386,7 +1390,7 @@ namespace ag.WPF.Chart
             set { SetValue(LegendShapeProperty, value); }
         }
         /// <summary>
-        /// Gets or sets the size of legend. Can be one of <see cref="ag.WPF.Chart.LegendSize"/> enumeration members
+        /// Gets or sets the size of legend. Can be one of <see cref="LegendSize"/> enumeration members.
         /// </summary>
         [Category("ChartLegend"), Description("Gets or sets the size of legend. Can be one of LegendSize enumeration members")]
         public LegendSize LegendSize
@@ -1395,37 +1399,37 @@ namespace ag.WPF.Chart
             set { SetValue(LegendSizeProperty, value); }
         }
         /// <summary>
-        /// Specifies whether control will automatically adjust its max x- and y- values or they should be set explicitly
+        /// Specifies whether control will automatically adjust its max x- and y- values or they should be set explicitly.
         /// </summary>
-        /// <remarks>This property will have no effect if <see cref="ChartStyle"/> property is set to <see cref="ag.WPF.Chart.ChartStyle.SolidPie"/> or <see cref="ag.WPF.Chart.ChartStyle.SlicedPie"/> or <see cref="ag.WPF.Chart.ChartStyle.Doughnut"/></remarks>
-        [Category("ChartMisc"), Description("Specifies whether control will automatically adjust its max x- and y- values or they should be set explicitly")]
+        /// <remarks>This property will have no effect if <see cref="ChartStyle"/> property is set to <see cref="ChartStyle.SolidPie"/> or <see cref="ChartStyle.SlicedPie"/> or <see cref="ChartStyle.Doughnut"/>.</remarks>
+        [Category("ChartAppearance"), Description("Specifies whether control will automatically adjust its max x- and y- values or they should be set explicitly")]
         public bool AutoAdjust
         {
             get { return (bool)GetValue(AutoAdjustProperty); }
             set { SetValue(AutoAdjustProperty, value); }
         }
         /// <summary>
-        /// Gets or sets max numeric value for y-axis. The default value is 100
+        /// Gets or sets max numeric value for y-axis. The default value is 100.
         /// </summary>
-        /// <remarks>This property will have no effect if <see cref="AutoAdjust"/> property is set to true</remarks>
-        [Category("ChartMisc"), Description("Gets or sets max numeric value for y-axis. The default value is 100")]
+        /// <remarks>This property will have no effect if <see cref="AutoAdjust"/> property is set to true.</remarks>
+        [Category("ChartAppearance"), Description("Gets or sets max numeric value for y-axis. The default value is 100")]
         public double MaxY
         {
             get { return (double)GetValue(MaxYProperty); }
             set { SetValue(MaxYProperty, value); }
         }
         /// <summary>
-        /// Gets or sets max numeric value for x-axis. The default value is 100
+        /// Gets or sets max numeric value for x-axis. The default value is 100.
         /// </summary>
-        /// <remarks>This property will have no effect if <see cref="AutoAdjust"/> property is set to true</remarks>
-        [Category("ChartMisc"), Description("Gets or sets max numeric value for x-axis. The default value is 100")]
+        /// <remarks>This property will have no effect if <see cref="AutoAdjust"/> property is set to true.</remarks>
+        [Category("ChartAppearance"), Description("Gets or sets max numeric value for x-axis. The default value is 100")]
         public double MaxX
         {
             get { return (double)GetValue(MaxXProperty); }
             set { SetValue(MaxXProperty, value); }
         }
         /// <summary>
-        /// Gets or set chart opacity in range of 0.0 (fully transparent) to 1.0 (fully opaque)
+        /// Gets or set chart opacity in range of 0.0 (fully transparent) to 1.0 (fully opaque).
         /// </summary>
         [Category("ChartAppearance"), Description("Gets or set chart opacity in range of 0.0 (fully transparent) to 1.0 (fully opaque)")]
         public double ChartOpacity
@@ -1434,7 +1438,7 @@ namespace ag.WPF.Chart
             set { SetValue(ChartOpacityProperty, value); }
         }
         /// <summary>
-        /// Gets or sets the brush used for drawing the chart when control is disabled
+        /// Gets or sets the brush used for drawing the chart when control is disabled.
         /// </summary>
         [Category("ChartAppearance"), Description("Gets or sets the brush used for drawing the chart when control is disabled")]
         public Brush DisabledBrush
@@ -1443,27 +1447,27 @@ namespace ag.WPF.Chart
             set { SetValue(DisabledBrushProperty, value); }
         }
         /// <summary>
-        /// Gets or sets the sequence of values to be drawn next to x-axis instead of numeric values
+        /// Gets or sets the sequence of strings to be drawn next to x-axis instead of numeric values.
         /// </summary>
-        [Category("ChartMisc"), Description("Gets or sets the sequence of values to be drawn next to x-axis instead of numeric values")]
-        public List<string> XAxisCustomValues
+        [Category("ChartAppearance"), Description("Gets or sets the sequence of strings to be drawn next to x-axis instead of numeric values")]
+        public IEnumerable<string> XAxisCustomValues
         {
-            get { return (List<string>)GetValue(XAxisCustomValuesProperty); }
+            get { return (IEnumerable<string>)GetValue(XAxisCustomValuesProperty); }
             set { SetValue(XAxisCustomValuesProperty, value); }
         }
         /// <summary>
-        /// Gets or sets the sequence of values to be drawn next to y-axis instead of numeric values
+        /// Gets or sets the sequence of strings to be drawn next to y-axis instead of numeric values.
         /// </summary>
-        [Category("ChartMisc"), Description("Gets or sets the sequence of values to be drawn next to y-axis instead of numeric values")]
-        public List<string> YAxisCustomValues
+        [Category("ChartAppearance"), Description("Gets or sets the sequence of strings to be drawn next to y-axis instead of numeric values")]
+        public IEnumerable<string> YAxisCustomValues
         {
-            get { return (List<string>)GetValue(YAxisCustomValuesProperty); }
+            get { return (IEnumerable<string>)GetValue(YAxisCustomValuesProperty); }
             set { SetValue(YAxisCustomValuesProperty, value); }
         }
         /// <summary>
-        /// Gets or sets the visibility state of x- and y- axes numeric/custom values. Can be one of <see cref="ag.WPF.Chart.AxesValuesVisibility"/> enumeration members
+        /// Gets or sets the visibility state of x- and y- axes numeric/custom values. Can be one of <see cref="AxesValuesVisibility"/> enumeration members.
         /// </summary>
-        /// <remarks>This property will have no effect if <see cref="ChartStyle"/> property is set to <see cref="ag.WPF.Chart.ChartStyle.SolidPie"/> or <see cref="ag.WPF.Chart.ChartStyle.SlicedPie"/> or <see cref="ag.WPF.Chart.ChartStyle.Doughnut"/></remarks>
+        /// <remarks>This property will have no effect if <see cref="ChartStyle"/> property is set to <see cref="ChartStyle.SolidPie"/> or <see cref="ChartStyle.SlicedPie"/> or <see cref="ChartStyle.Doughnut"/>.</remarks>
         [Category("ChartAppearance"), Description("Gets or sets the visibility state of x- and y- axes numeric/custom values. Can be one of AxesValuesVisibility enumeration members")]
         public AxesValuesVisibility AxesValuesVisibility
         {
@@ -1471,7 +1475,7 @@ namespace ag.WPF.Chart
             set { SetValue(AxesValuesVisibilityProperty, value); }
         }
         /// <summary>
-        /// Gets or sets the chart style. Can be one of <see cref="ag.WPF.Chart.ChartStyle"/> enumeration members
+        /// Gets or sets the chart style. Can be one of <see cref="ChartStyle"/> enumeration members.
         /// </summary>
         [Category("ChartAppearance"), Description("Gets or sets the chart style. Can be one of ChartStyle enumeration members")]
         public ChartStyle ChartStyle
@@ -1480,7 +1484,7 @@ namespace ag.WPF.Chart
             set { SetValue(ChartStyleProperty, value); }
         }
         /// <summary>
-        /// Specifies whether chart legend should be shown
+        /// Specifies whether chart legend should be shown.
         /// </summary>
         [Category("ChartLegend"), Description("Specifies whether chart legend should be shown")]
         public bool ShowLegend
@@ -1489,7 +1493,7 @@ namespace ag.WPF.Chart
             set { SetValue(ShowLegendProperty, value); }
         }
         /// <summary>
-        /// Gets or sets chart legend alignment. Can be one of <see cref="ag.WPF.Chart.LegendAlignment"/> enumeration members
+        /// Gets or sets chart legend alignment. Can be one of <see cref="LegendAlignment"/> enumeration members.
         /// </summary>
         [Category("ChartLegend"), Description("Gets or sets chart legend alignment. Can be one of LegendAlignment enumeration members")]
         public LegendAlignment LegendAlignment
@@ -1498,7 +1502,7 @@ namespace ag.WPF.Chart
             set { SetValue(LegendAlignmentProperty, value); }
         }
         /// <summary>
-        /// Gets of sets the font size of chart caption
+        /// Gets of sets the font size of chart caption.
         /// </summary>
         [Category("ChartCaption"), Description("Gets of sets the font size of chart caption")]
         public double CaptionFontSize
@@ -1507,7 +1511,7 @@ namespace ag.WPF.Chart
             set { SetValue(CaptionFontSizeProperty, value); }
         }
         /// <summary>
-        /// Gets of sets the font style of chart caption
+        /// Gets of sets the font style of chart caption.
         /// </summary>
         [Category("ChartCaption"), Description("Gets of sets the font style of chart caption")]
         public FontStyle CaptionFontStyle
@@ -1516,7 +1520,7 @@ namespace ag.WPF.Chart
             set { SetValue(CaptionFontStyleProperty, value); }
         }
         /// <summary>
-        /// Gets of sets the font weight of chart caption
+        /// Gets of sets the font weight of chart caption.
         /// </summary>
         [Category("ChartCaption"), Description("Gets of sets the font weight of chart caption")]
         public FontWeight CaptionFontWeight
@@ -1525,7 +1529,7 @@ namespace ag.WPF.Chart
             set { SetValue(CaptionFontWeightProperty, value); }
         }
         /// <summary>
-        /// Gets of sets the font family of chart caption
+        /// Gets of sets the font family of chart caption.
         /// </summary>
         [Category("ChartCaption"), Description("Gets of sets the font family of chart caption")]
         public FontFamily CaptionFontFamily
@@ -1534,7 +1538,7 @@ namespace ag.WPF.Chart
             set { SetValue(CaptionFontFamilyProperty, value); }
         }
         /// <summary>
-        /// Gets of sets the font stretch of chart caption
+        /// Gets of sets the font stretch of chart caption.
         /// </summary>
         [Category("ChartCaption"), Description("Gets of sets the font stretch of chart caption")]
         public FontStretch CaptionFontStretch
@@ -1543,7 +1547,7 @@ namespace ag.WPF.Chart
             set { SetValue(CaptionFontStretchProperty, value); }
         }
         /// <summary>
-        /// Gets of sets the font family of chart axes
+        /// Gets of sets the font family of chart axes.
         /// </summary>
         [Category("ChartAppearance"), Description("Gets of sets the font family of chart axes")]
         public FontFamily AxesFontFamily
@@ -1552,7 +1556,7 @@ namespace ag.WPF.Chart
             set { SetValue(AxesFontFamilyProperty, value); }
         }
         /// <summary>
-        /// Gets of sets the font weight of chart axes
+        /// Gets of sets the font weight of chart axes.
         /// </summary>
         [Category("ChartAppearance"), Description("Gets of sets the font weight of chart axes")]
         public FontWeight AxesFontWeight
@@ -1561,7 +1565,7 @@ namespace ag.WPF.Chart
             set { SetValue(AxesFontWeightProperty, value); }
         }
         /// <summary>
-        /// Gets of sets the font size of chart axes
+        /// Gets of sets the font size of chart axes.
         /// </summary>
         [Category("ChartAppearance"), Description("Gets of sets the font size of chart axes")]
         public double AxesFontSize
@@ -1570,7 +1574,7 @@ namespace ag.WPF.Chart
             set { SetValue(AxesFontSizeProperty, value); }
         }
         /// <summary>
-        /// Gets of sets the font style of chart axes
+        /// Gets of sets the font style of chart axes.
         /// </summary>
         [Category("ChartAppearance"), Description("Gets of sets the font style of chart axes")]
         public FontStyle AxesFontStyle
@@ -1579,7 +1583,7 @@ namespace ag.WPF.Chart
             set { SetValue(AxesFontStyleProperty, value); }
         }
         /// <summary>
-        /// Gets of sets the font stretch of chart axes
+        /// Gets of sets the font stretch of chart axes.
         /// </summary>
         [Category("ChartAppearance"), Description("Gets of sets the font stretch of chart axes")]
         public FontStretch AxesFontStretch
@@ -1588,27 +1592,27 @@ namespace ag.WPF.Chart
             set { SetValue(AxesFontStretchProperty, value); }
         }
         /// <summary>
-        /// Gets or sets the text which appears on the top/bottom of y-axis
+        /// Gets or sets the text which appears on the top/bottom of y-axis.
         /// </summary>
-        /// <remarks>This property will have no effect if <see cref="ChartStyle"/> property is set to <see cref="ag.WPF.Chart.ChartStyle.SolidPie"/> or <see cref="ag.WPF.Chart.ChartStyle.SlicedPie"/> or <see cref="ag.WPF.Chart.ChartStyle.Doughnut"/></remarks>
-        [Category("ChartAppearance")]
+        /// <remarks>This property will have no effect if <see cref="ChartStyle"/> property is set to one of the following: <see cref="ChartStyle.SolidPie"/>, <see cref="ChartStyle.SlicedPie"/>, <see cref="ChartStyle.Doughnut"/>, <see cref="ChartStyle.Radar"/>, <see cref="ChartStyle.RadarWithMarkers"/>, <see cref="ChartStyle.RadarArea"/>.</remarks>
+        [Category("ChartAppearance"), Description("Gets or sets the text which appears on the top/bottom of y-axis")]
         public string YAxisText
         {
             get { return (string)GetValue(YAxisTextProperty); }
             set { SetValue(YAxisTextProperty, value); }
         }
         /// <summary>
-        /// Gets or sets the text which appears on the right/left of x-axis
+        /// Gets or sets the text which appears on the right/left of x-axis.
         /// </summary>
-        /// <remarks>This property will have no effect if <see cref="ChartStyle"/> property is set to <see cref="ag.WPF.Chart.ChartStyle.SolidPie"/> or <see cref="ag.WPF.Chart.ChartStyle.SlicedPie"/> or <see cref="ag.WPF.Chart.ChartStyle.Doughnut"/></remarks>
-        [Category("ChartAppearance")]
+        /// <remarks>This property will have no effect if <see cref="ChartStyle"/> property is set to one of the following: <see cref="ChartStyle.SolidPie"/>, <see cref="ChartStyle.SlicedPie"/>, <see cref="ChartStyle.Doughnut"/>, <see cref="ChartStyle.Radar"/>, <see cref="ChartStyle.RadarWithMarkers"/>, <see cref="ChartStyle.RadarArea"/>.</remarks>
+        [Category("ChartAppearance"), Description("Gets or sets the text which appears on the right/left of x-axis")]
         public string XAxisText
         {
             get { return (string)GetValue(XAxisTextProperty); }
             set { SetValue(XAxisTextProperty, value); }
         }
         /// <summary>
-        /// Gets or sets the chart caption
+        /// Gets or sets the chart caption.
         /// </summary>
         [Category("ChartCaption"), Description("Gets or sets the chart caption")]
         public string Caption
@@ -1617,9 +1621,9 @@ namespace ag.WPF.Chart
             set { SetValue(CaptionProperty, value); }
         }
         /// <summary>
-        /// Specifies whether secondary Y-axis dotted lines should be drawn on chart
+        /// Specifies whether secondary Y-axis dotted lines should be drawn on chart.
         /// </summary>
-        /// <remarks>This property will have no effect if <see cref="ChartStyle"/> property is set to <see cref="ag.WPF.Chart.ChartStyle.SolidPie"/> or <see cref="ag.WPF.Chart.ChartStyle.SlicedPie"/> or <see cref="ag.WPF.Chart.ChartStyle.Doughnut"/></remarks>
+        /// <remarks>This property will have no effect if <see cref="ChartStyle"/> property is set to one of the following: <see cref="ChartStyle.SolidPie"/>, <see cref="ChartStyle.SlicedPie"/>, <see cref="ChartStyle.Doughnut"/>, <see cref="ChartStyle.Radar"/>, <see cref="ChartStyle.RadarWithMarkers"/>, <see cref="ChartStyle.RadarArea"/>.</remarks>
         [Category("ChartAppearance"), Description("Specifies whether secondary Y-axis dotted lines should be drawn on chart")]
         public bool ShowSecondaryYLines
         {
@@ -1627,9 +1631,9 @@ namespace ag.WPF.Chart
             set { SetValue(ShowSecondaryYLinesProperty, value); }
         }
         /// <summary>
-        /// Specifies whether secondary X-axis dotted lines should be drawn on chart
+        /// Specifies whether secondary X-axis dotted lines should be drawn on chart.
         /// </summary>
-        /// <remarks>This property will have no effect if <see cref="ChartStyle"/> property is set to <see cref="ag.WPF.Chart.ChartStyle.SolidPie"/> or <see cref="ag.WPF.Chart.ChartStyle.SlicedPie"/> or <see cref="ag.WPF.Chart.ChartStyle.Doughnut"/></remarks>
+        /// <remarks>This property will have no effect if <see cref="ChartStyle"/> property is set to one of the following: <see cref="ChartStyle.SolidPie"/>, <see cref="ChartStyle.SlicedPie"/>, <see cref="ChartStyle.Doughnut"/>, <see cref="ChartStyle.Radar"/>, <see cref="ChartStyle.RadarWithMarkers"/>, <see cref="ChartStyle.RadarArea"/>.</remarks>
         [Category("ChartAppearance"), Description("Specifies whether secondary X-axis dotted lines should be drawn on chart")]
         public bool ShowSecondaryXLines
         {
@@ -1637,33 +1641,31 @@ namespace ag.WPF.Chart
             set { SetValue(ShowSecondaryXLinesProperty, value); }
         }
         /// <summary>
-        /// Gets or sets amount of sections on x-axis
+        /// Gets or sets amount of sections on x-axis.
         /// </summary>
-        /// <remarks>
-        /// This property has no effect if <see cref="ChartStyle"/> is set to <see cref="ag.WPF.Chart.ChartStyle.Columns"/>, <see cref="ag.WPF.Chart.ChartStyle.StackedColumns"/>, <see cref="ag.WPF.Chart.ChartStyle.FullStackedColumns"/>, 
-        /// <see cref="ag.WPF.Chart.ChartStyle.SolidPie"/> or <see cref="ag.WPF.Chart.ChartStyle.SlicedPie"/> or <see cref="ag.WPF.Chart.ChartStyle.Doughnut"/>
+        /// <remarks>This property will have no effect if <see cref="ChartStyle"/> property is set to one of the following: <see cref="ChartStyle.SolidPie"/>, <see cref="ChartStyle.SlicedPie"/>, <see cref="ChartStyle.Doughnut"/>, <see cref="ChartStyle.Radar"/>, <see cref="ChartStyle.RadarWithMarkers"/>, <see cref="ChartStyle.RadarArea"/>.</remarks>
         /// </remarks>
-        [Category("ChartMisc"), Description("Gets or sets amount of sections on x-axis")]
+        [Category("ChartAppearance"), Description("Gets or sets amount of sections on x-axis")]
         public int SectionsX
         {
             get { return (int)GetValue(SectionsXProperty); }
             set { SetValue(SectionsXProperty, value); }
         }
         /// <summary>
-        /// Gets or sets amount of sections on y-axis
+        /// Gets or sets amount of sections on y-axis.
         /// </summary>
         /// <remarks>
-        /// This property has no effect if <see cref="ChartStyle"/> is set to <see cref="ag.WPF.Chart.ChartStyle.Bars"/>, <see cref="ag.WPF.Chart.ChartStyle.StackedBars"/>, <see cref="ag.WPF.Chart.ChartStyle.FullStackedBars"/>, 
-        /// <see cref="ag.WPF.Chart.ChartStyle.SolidPie"/> or <see cref="ag.WPF.Chart.ChartStyle.SlicedPie"/> or <see cref="ag.WPF.Chart.ChartStyle.Doughnut"/>
+        /// This property has no effect if <see cref="ChartStyle"/> is set to <see cref="ChartStyle.Bars"/>, <see cref="ChartStyle.StackedBars"/>, <see cref="ChartStyle.FullStackedBars"/>, 
+        /// <see cref="ChartStyle.SolidPie"/> or <see cref="ChartStyle.SlicedPie"/> or <see cref="ChartStyle.Doughnut"/>
         /// </remarks>
-        [Category("ChartMisc"), Description("Gets or sets amount of sections on y-axis")]
+        [Category("ChartAppearance"), Description("Gets or sets amount of sections on y-axis")]
         public int SectionsY
         {
             get { return (int)GetValue(SectionsYProperty); }
             set { SetValue(SectionsYProperty, value); }
         }
         /// <summary>
-        /// Gets or sets format for numeric values drawn next to x- and/or y- axes
+        /// Gets or sets format for numeric values drawn next to x- and/or y- axes.
         /// </summary>
         [Category("ChartAppearance"), Description("Gets or sets format for numeric values drawn next to x- and/or y- axes")]
         public string AxesValuesFormat
@@ -1968,16 +1970,16 @@ namespace ag.WPF.Chart
         private static void OnXAxisCustomValuesChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
             if (!(sender is Chart ch)) return;
-            ch.OnXAxisCustomValuesChanged((List<string>)e.OldValue, (List<string>)e.NewValue);
+            ch.OnXAxisCustomValuesChanged((IEnumerable<string>)e.OldValue, (IEnumerable<string>)e.NewValue);
         }
         /// <summary>
         /// Invoked just before the <see cref="XAxisCustomValuesChangedEvent"/> event is raised on control
         /// </summary>
         /// <param name="oldValue">Old value</param>
         /// <param name="newValue">New value</param>
-        protected void OnXAxisCustomValuesChanged(List<string> oldValue, List<string> newValue)
+        protected void OnXAxisCustomValuesChanged(IEnumerable<string> oldValue, IEnumerable<string> newValue)
         {
-            var e = new RoutedPropertyChangedEventArgs<List<string>>(oldValue, newValue)
+            var e = new RoutedPropertyChangedEventArgs<IEnumerable<string>>(oldValue, newValue)
             {
                 RoutedEvent = XAxisCustomValuesChangedEvent
             };
@@ -2705,7 +2707,7 @@ namespace ag.WPF.Chart
         /// <summary>
         /// Occurs when the <see cref="XAxisCustomValues"/> property has been changed in some way
         /// </summary>
-        public event RoutedPropertyChangedEventHandler<List<string>> XAxisCustomValuesChanged
+        public event RoutedPropertyChangedEventHandler<IEnumerable<string>> XAxisCustomValuesChanged
         {
             add { AddHandler(XAxisCustomValuesChangedEvent, value); }
             remove { RemoveHandler(XAxisCustomValuesChangedEvent, value); }
@@ -2714,7 +2716,7 @@ namespace ag.WPF.Chart
         /// Identifies the <see cref="XAxisCustomValuesChanged"/> routed event
         /// </summary>
         public static readonly RoutedEvent XAxisCustomValuesChangedEvent = EventManager.RegisterRoutedEvent("XAxisCustomValuesChanged",
-            RoutingStrategy.Bubble, typeof(RoutedPropertyChangedEventHandler<List<string>>), typeof(Chart));
+            RoutingStrategy.Bubble, typeof(RoutedPropertyChangedEventHandler<IEnumerable<string>>), typeof(Chart));
 
         /// <summary>
         /// Occurs when the <see cref="AxesValuesFormat"/> property has been changed in some way
@@ -3058,12 +3060,12 @@ namespace ag.WPF.Chart
         protected virtual void OnPropertyChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        } 
+        }
         #endregion
     }
 
     /// <summary>
-    /// Represents event args for <see cref="ag.WPF.Chart.Chart.ChartPointLeftButtonDoubleClick"/> routed event
+    /// Represents event args for <see cref="Chart.ChartPointLeftButtonDoubleClick"/> routed event
     /// </summary>
     public class ChartPointLeftButtonDoubleClickEventArgs : RoutedEventArgs
     {
