@@ -964,7 +964,7 @@ namespace ag.WPF.Chart
                 || !(values[0] is ChartStyle chartStyle)
                 || !(values[1] is int index)
                 || !(parameter is bool isMain))
-                return null;
+                return Visibility.Collapsed;
 
             if (chartStyle != ChartStyle.Waterfall)
                 return isMain
@@ -1192,7 +1192,7 @@ namespace ag.WPF.Chart
                 || !(values[11] is FontStyle fontStyle)
                 || !(values[12] is FontWeight fontWeight)
                 || !(values[13] is FontStretch fontStretch)
-                || !(values[14] is IEnumerable<string> customEnumerable)
+                //|| !(values[14] is IEnumerable<string> customEnumerable)
                 || !(values[15] is int linesCountY)
                 || !(values[16] is int linesCountX))
                 return null;
@@ -1211,7 +1211,7 @@ namespace ag.WPF.Chart
 
             var dir = Utils.GetDirection(totalValues, chartStyle);
 
-            var customValues = customEnumerable.ToArray();
+            var customValues = values[14] is IEnumerable<string> customEnumerable ? customEnumerable.ToArray() : new string[] { };
             var maxPointsCount = series.Max(s => s.Values.Count);
             var maxCv = customValues.Any() ? customValues.Max(v => (v, v.Length)) : (v: "", Length: 0);
             var number = maxCv.Length > maxPointsCount.ToString(culture).Length ? maxCv.v : maxPointsCount.ToString(culture);
@@ -2451,7 +2451,7 @@ namespace ag.WPF.Chart
         /// <param name="culture">The culture to use in the converter.</param>
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (!(value is LegendAlignment legendAlignment)) return null;
+            if (!(value is LegendAlignment legendAlignment)) return Orientation.Vertical;
             return legendAlignment switch
             {
                 LegendAlignment.Top => Orientation.Horizontal,
@@ -2488,7 +2488,7 @@ namespace ag.WPF.Chart
             if (values == null
                 || !(values[0] is IEnumerable<Series> seriesEnumerable)
                 || !(values[1] is ChartStyle chartStyle))
-                return null;
+                return HorizontalAlignment.Right;
 
             var totalValues = seriesEnumerable.SelectMany(s => s.Values.Select(v => v.Value.V1)).ToArray();
             var dir = Utils.GetDirection(totalValues, chartStyle);
@@ -2502,7 +2502,7 @@ namespace ag.WPF.Chart
                 case Directions.NorthWest:
                     return HorizontalAlignment.Left;
                 default:
-                    return null;
+                    return HorizontalAlignment.Right;
             }
         }
 
@@ -2672,7 +2672,7 @@ namespace ag.WPF.Chart
             if (values == null
                 || !(values[0] is IEnumerable<Series> seriesEnumerable)
                 || !(values[1] is ChartStyle chartStyle))
-                return null;
+                return 2;
 
             var totalValues = seriesEnumerable.SelectMany(s => s.Values.Select(v => v.Value.V1).ToArray());
             var dir = Utils.GetDirection(totalValues, chartStyle);
@@ -2684,7 +2684,7 @@ namespace ag.WPF.Chart
                 Directions.NorthEastSouthEast => 2,
                 Directions.SouthEast => 6,
                 Directions.NorthWest => 2,
-                _ => null,
+                _ => 2,
             };
         }
         /// <summary>Converts a binding target value to the source binding values.</summary>
@@ -2715,7 +2715,7 @@ namespace ag.WPF.Chart
             if (values == null
                 || !(values[0] is IEnumerable<Series> seriesEnumerable)
                 || !(values[1] is ChartStyle chartStyle))
-                return null;
+                return 5;
 
             var totalValues = seriesEnumerable.SelectMany(s => s.Values.Select(v => v.Value.V1).ToArray());
             var dir = Utils.GetDirection(totalValues, chartStyle);
@@ -2727,7 +2727,7 @@ namespace ag.WPF.Chart
                 Directions.NorthEastSouthEast => 5,
                 Directions.SouthEast => 5,
                 Directions.NorthWest => 1,
-                _ => null,
+                _ => 5,
             };
         }
 
@@ -2759,7 +2759,7 @@ namespace ag.WPF.Chart
             if (values == null
                 || !(values[0] is IEnumerable<Series> seriesEnumerable)
                 || !(values[1] is ChartStyle chartStyle))
-                return null;
+                return VerticalAlignment.Bottom;
 
             var totalValues = seriesEnumerable.SelectMany(s => s.Values.Select(v => v.Value.V1).ToArray());
             var dir = Utils.GetDirection(totalValues, chartStyle);
@@ -2771,7 +2771,7 @@ namespace ag.WPF.Chart
                 Directions.NorthEastSouthEast => VerticalAlignment.Center,
                 Directions.SouthEast => VerticalAlignment.Top,
                 Directions.NorthWest => VerticalAlignment.Bottom,
-                _ => null,
+                _ => VerticalAlignment.Bottom,
             };
         }
         /// <summary>Converts a binding target value to the source binding values.</summary>
@@ -2802,7 +2802,7 @@ namespace ag.WPF.Chart
             if (values == null
                 || !(values[0] is IEnumerable<Series> seriesEnumerable)
                 || !(values[1] is ChartStyle chartStyle))
-                return null;
+                return HorizontalAlignment.Left;
 
             var totalValues = seriesEnumerable.SelectMany(s => s.Values.Select(v => v.Value.V1).ToArray());
             var dir = Utils.GetDirection(totalValues, chartStyle);
@@ -2814,7 +2814,7 @@ namespace ag.WPF.Chart
                 Directions.NorthEastSouthEast => HorizontalAlignment.Left,
                 Directions.SouthEast => HorizontalAlignment.Left,
                 Directions.NorthWest => HorizontalAlignment.Right,
-                _ => null,
+                _ => HorizontalAlignment.Left,
             };
         }
         /// <summary>Converts a binding target value to the source binding values.</summary>
@@ -2951,16 +2951,16 @@ namespace ag.WPF.Chart
                 || !(values[6] is FontStyle fontStyle)
                 || !(values[7] is FontWeight fontWeight)
                 || !(values[8] is FontStretch fontStretch)
-                || !(values[9] is IEnumerable<string> customEnumerable)
+                //|| !(values[9] is IEnumerable<string> customEnumerable)
                 || !(values[10] is bool autoAdjust)
                 || !(values[11] is double maxY)
                 || !(values[12] is ChartBoundary chartBoundary)
                 || !(values[13] is double width))
-                return null;
+                return 0;
 
             var height = 8.0;
             var series = seriesEnumerable.ToArray();
-            var customValues = customEnumerable.ToArray();
+            var customValues = values[9] is IEnumerable<string> customEnumerable ? customEnumerable.ToArray() : new string[] { };
 
             if (!series.Any()) return height;
 
@@ -3082,14 +3082,14 @@ namespace ag.WPF.Chart
                 || !(values[6] is FontStyle fontStyle)
                 || !(values[7] is FontWeight fontWeight)
                 || !(values[8] is FontStretch fontStretch)
-                || !(values[9] is IEnumerable<string> customEnumerable)
+                //|| !(values[9] is IEnumerable<string> customEnumerable)
                 || !(values[10] is bool autoAdjust)
                 || !(values[11] is double maxX))
-                return null;
+                return 0;
             var width = 28.0;
 
             var series = seriesEnumerable.ToArray();
-            var customValues = customEnumerable.ToArray();
+            var customValues = values[9] is IEnumerable<string> customEnumerable ? customEnumerable.ToArray() : new string[] { };
 
             if (!series.Any()) return width;
 
@@ -3211,7 +3211,7 @@ namespace ag.WPF.Chart
                 || !(values[7] is FontStyle fontStyle)
                 || !(values[8] is FontWeight fontWeight)
                 || !(values[9] is FontStretch fontStretch)
-                || !(values[10] is IEnumerable<string> customEnumerable)
+                //|| !(values[10] is IEnumerable<string> customEnumerable)
                 || !(values[11] is bool autoAdjust)
                 || !(values[12] is double maxY)
                 || !(values[13] is FlowDirection flowDir))
@@ -3223,7 +3223,7 @@ namespace ag.WPF.Chart
                 return null;
 
             var series = seriesEnumerable.ToArray();
-            var customValues = customEnumerable.ToArray();
+            var customValues = values[10] is IEnumerable<string> customEnumerable ? customEnumerable.ToArray() : new string[] { };
             var drawBetween = chartStyle.In(ChartStyle.Bars, ChartStyle.StackedBars, ChartStyle.FullStackedBars);
 
             double step, offset;
@@ -3412,7 +3412,7 @@ namespace ag.WPF.Chart
                 || !(values[7] is FontStyle fontStyle)
                 || !(values[8] is FontWeight fontWeight)
                 || !(values[9] is FontStretch fontStretch)
-                || !(values[10] is IEnumerable<string> customEnumerable)
+                //|| !(values[10] is IEnumerable<string> customEnumerable)
                 || !(values[11] is bool autoAdjust)
                 || !(values[12] is double maxYConv)
                 || !(values[13] is FlowDirection flowDir)
@@ -3425,7 +3425,7 @@ namespace ag.WPF.Chart
 
             var series = seriesEnumerable.ToArray();
             var drawBetween = Utils.StyleColumns(chartStyle);
-            var customValues = customEnumerable.ToArray();
+            var customValues = values[10] is IEnumerable<string> customEnumerable ? customEnumerable.ToArray() : new string[] { };
 
             double xStep;
 
@@ -4407,7 +4407,7 @@ namespace ag.WPF.Chart
             if (values == null
                 || !(values[0] is double width)
                 || !(values[1] is double height))
-                return null;
+                return 0;
             var cw = width > height ? height : width;
             return (height - cw) / 2;
         }
@@ -4440,7 +4440,7 @@ namespace ag.WPF.Chart
             if (values == null
                 || !(values[0] is double width)
                 || !(values[1] is double height))
-                return null;
+                return 0;
             var cw = width > height ? height : width;
             return (width - cw) / 2;
         }
@@ -4513,13 +4513,13 @@ namespace ag.WPF.Chart
                 || !(values[6] is FontStyle fontStyle)
                 || !(values[7] is FontWeight fontWeight)
                 || !(values[8] is FontStretch fontStretch)
-                || !(values[9] is IEnumerable<string> customEnumerable)
+                //|| !(values[9] is IEnumerable<string> customEnumerable)
                 || !(values[10] is int linesCount)
                 || !(values[11] is bool autoAdjust))
                 return null;
 
             var gm = new PathGeometry();
-            var customValues = customEnumerable.ToArray();
+            var customValues = values[9] is IEnumerable<string> customEnumerable ? customEnumerable.ToArray() : new string[] { };
 
             var series = seriesEnumerable.ToArray();
             var currentDegrees = 0.0;
@@ -4594,8 +4594,6 @@ namespace ag.WPF.Chart
                 || !(values[7] is FontWeight fontWeight)
                 || !(values[8] is FontStretch fontStretch)
                 || !(values[9] is FlowDirection flowDir)
-                || !(values[10] is IEnumerable<string> customEnumerableX)
-                || !(values[11] is IEnumerable<string> customEnumerableY)
                 || !(values[12] is int linesCount)
                 || linesCount < 2
                 || !(values[13] is string format)
@@ -4603,8 +4601,8 @@ namespace ag.WPF.Chart
                 return null;
 
             var gm = new PathGeometry();
-            var customValuesHorizontal = customEnumerableX.ToArray();
-            var customValuesVertical = customEnumerableY.ToArray();
+            var customValuesHorizontal = values[10] is IEnumerable<string> customEnumerableX ? customEnumerableX.ToArray() : new string[] { };
+            var customValuesVertical = values[11] is IEnumerable<string> customEnumerableY ? customEnumerableY.ToArray() : new string[] { };
 
             var series = seriesEnumerable.ToArray();
             var currentDegrees = 0.0;

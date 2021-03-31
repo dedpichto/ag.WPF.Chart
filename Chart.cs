@@ -510,9 +510,9 @@ namespace ag.WPF.Chart
             AxesValuesFormatProperty = DependencyProperty.Register("AxesValuesFormat", typeof(string), typeof(Chart),
                 new FrameworkPropertyMetadata("0", OnAxesValuesFormatChanged));
             XAxisCustomValuesProperty = DependencyProperty.Register("XAxisCustomValues", typeof(IEnumerable<string>), typeof(Chart),
-                new FrameworkPropertyMetadata(new List<string>(), OnXAxisCustomValuesChanged));
-            YAxisCustomValuesProperty = DependencyProperty.Register("YAxisCustomValues", typeof(List<string>), typeof(Chart),
-                new FrameworkPropertyMetadata(new List<string>(), OnYAxisCustomValuesChanged));
+                new FrameworkPropertyMetadata(null, OnXAxisCustomValuesChanged));
+            YAxisCustomValuesProperty = DependencyProperty.Register("YAxisCustomValues", typeof(IEnumerable<string>), typeof(Chart),
+                new FrameworkPropertyMetadata(null, OnYAxisCustomValuesChanged));
             DisabledBrushProperty = DependencyProperty.Register("DisabledBrush", typeof(Brush), typeof(Chart),
                 new FrameworkPropertyMetadata(null));
             MaxXProperty = DependencyProperty.Register("MaxX", typeof(double), typeof(Chart),
@@ -1989,16 +1989,16 @@ namespace ag.WPF.Chart
         private static void OnYAxisCustomValuesChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
             if (!(sender is Chart ch)) return;
-            ch.OnYAxisCustomValuesChanged((List<string>)e.OldValue, (List<string>)e.NewValue);
+            ch.OnYAxisCustomValuesChanged((IEnumerable<string>)e.OldValue, (IEnumerable<string>)e.NewValue);
         }
         /// <summary>
         /// Invoked just before the <see cref="YAxisCustomValuesChangedEvent"/> event is raised on control
         /// </summary>
         /// <param name="oldValue">Old value</param>
         /// <param name="newValue">New value</param>
-        protected void OnYAxisCustomValuesChanged(List<string> oldValue, List<string> newValue)
+        protected void OnYAxisCustomValuesChanged(IEnumerable<string> oldValue, IEnumerable<string> newValue)
         {
-            var e = new RoutedPropertyChangedEventArgs<List<string>>(oldValue, newValue)
+            var e = new RoutedPropertyChangedEventArgs<IEnumerable<string>>(oldValue, newValue)
             {
                 RoutedEvent = YAxisCustomValuesChangedEvent
             };
@@ -2693,7 +2693,7 @@ namespace ag.WPF.Chart
         /// <summary>
         /// Occurs when the <see cref="YAxisCustomValues"/> property has been changed in some way
         /// </summary>
-        public event RoutedPropertyChangedEventHandler<List<string>> YAxisCustomValuesChanged
+        public event RoutedPropertyChangedEventHandler<IEnumerable<string>> YAxisCustomValuesChanged
         {
             add { AddHandler(YAxisCustomValuesChangedEvent, value); }
             remove { RemoveHandler(YAxisCustomValuesChangedEvent, value); }
@@ -2702,7 +2702,7 @@ namespace ag.WPF.Chart
         /// Identifies the <see cref="YAxisCustomValuesChanged"/> routed event
         /// </summary>
         public static readonly RoutedEvent YAxisCustomValuesChangedEvent = EventManager.RegisterRoutedEvent("YAxisCustomValuesChanged",
-            RoutingStrategy.Bubble, typeof(RoutedPropertyChangedEventHandler<List<string>>), typeof(Chart));
+            RoutingStrategy.Bubble, typeof(RoutedPropertyChangedEventHandler<IEnumerable<string>>), typeof(Chart));
 
         /// <summary>
         /// Occurs when the <see cref="XAxisCustomValues"/> property has been changed in some way
