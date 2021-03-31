@@ -61,24 +61,24 @@ namespace ag.WPF.Chart
 
         internal static Quadrants GetQuadrant(double degrees)
         {
-            if (degrees >= 0 && degrees <= 90)
+            if (degrees >= 0.0 && degrees <= 90.0)
                 return Quadrants.UpRight;
-            if (degrees <= 360 && degrees >= 270)
+            if (degrees <= 360.0 && degrees >= 270.0)
                 return Quadrants.DownRight;
-            if (degrees <= 270 && degrees >= 180)
+            if (degrees <= 270.0 && degrees >= 180.0)
                 return Quadrants.DownLeft;
             return Quadrants.UpLeft;
         }
 
         internal static Quadrants GetRadarQuadrant(double degrees)
         {
-            if (degrees >= 0 && degrees <= 90)
+            if (degrees >= 0.0 && degrees <= 90.0)
                 return Quadrants.UpLeft;
-            if (degrees <= 360 && degrees >= 270)
+            if (degrees <= 360.0 && degrees >= 270.0)
                 return Quadrants.DownLeft;
-            if (degrees <= 270 && degrees >= 180)
+            if (degrees <= 270.0 && degrees >= 180.0)
                 return Quadrants.DownRight;
-            if (degrees > 360)
+            if (degrees > 360.0)
                 return Quadrants.UpLeft;
             return Quadrants.UpRight;
         }
@@ -2021,7 +2021,7 @@ namespace ag.WPF.Chart
             var xBeg = 0.0;
             var yBeg = 0.0;
             var currentDegrees = 0.0;
-            var degreesStep = 360 / pointsCount;
+            var degreesStep = 360.0 / pointsCount;
             var zeroDistance = (linesCount - zeroLevel) * stepLength;
 
             var segments = new List<PathSegment>();
@@ -2029,8 +2029,8 @@ namespace ag.WPF.Chart
             {
                 var distance = radius - (zeroDistance - values[i] * units);
 
-                currentDegrees = 90 + i * degreesStep;
-                var rads = currentDegrees * Math.PI / 180;
+                currentDegrees = 90.0 + i * degreesStep;
+                var rads = currentDegrees * Math.PI / 180.0;
                 xBeg = centerPoint.X - distance * Math.Cos(rads);
                 yBeg = centerPoint.Y - distance * Math.Sin(rads);
                 points.Add(new Point(xBeg, yBeg));
@@ -4524,7 +4524,7 @@ namespace ag.WPF.Chart
             var series = seriesEnumerable.ToArray();
             var currentDegrees = 0.0;
             var pointsCount = series.Max(s => s.Values.Count);
-            var degreesStep = 360 / pointsCount;
+            var degreesStep = 360.0 / pointsCount;
 
             var maxCv = customValues.Any() ? customValues.Max(v => (v, v.Length)) : (v: "", Length: 0);
             var number = maxCv.Length > pointsCount.ToString(culture).Length ? maxCv.v : pointsCount.ToString(culture);
@@ -4553,8 +4553,8 @@ namespace ag.WPF.Chart
                 var points = new List<Point>();
                 for (var i = 0; i < pointsCount; i++)
                 {
-                    currentDegrees = 90 + i * degreesStep;
-                    var rads = currentDegrees * Math.PI / 180;
+                    currentDegrees = 90.0 + i * degreesStep;
+                    var rads = currentDegrees * Math.PI / 180.0;
                     xBeg = centerPoint.X - distance * Math.Cos(rads);
                     yBeg = centerPoint.Y - distance * Math.Sin(rads);
                     points.Add(new Point(xBeg, yBeg));
@@ -4609,7 +4609,7 @@ namespace ag.WPF.Chart
             var series = seriesEnumerable.ToArray();
             var currentDegrees = 0.0;
             var pointsCount = series.Max(s => s.Values.Count);
-            var degreesStep = 360 / pointsCount;
+            var degreesStep = 360.0 / pointsCount;
 
             var maxCv = customValuesHorizontal.Any() ? customValuesHorizontal.Max(v => (v, v.Length)) : (v: "", Length: 0);
             var number = maxCv.Length > pointsCount.ToString(culture).Length ? maxCv.v : pointsCount.ToString(culture);
@@ -4626,29 +4626,29 @@ namespace ag.WPF.Chart
 
             for (var i = 0; i < pointsCount; i++)
             {
-                currentDegrees = 90 + i * degreesStep;
-                var rads = currentDegrees * Math.PI / 180;
+                currentDegrees = 90.0 + i * degreesStep;
+                var rads = currentDegrees * Math.PI / 180.0;
                 var num = customValuesHorizontal.Length > i ? customValuesHorizontal[i] : (i + 1).ToString(culture);
                 fmt = new FormattedText(num, culture, FlowDirection.LeftToRight,
                     new Typeface(fontFamily, fontStyle, fontWeight, fontStretch), fontSize, Brushes.Black, VisualTreeHelper.GetDpi(Utils.Border).PixelsPerDip);
                 var x = centerPoint.X - (radius + 4) * Math.Cos(rads);
                 var y = centerPoint.Y - (radius + 4) * Math.Sin(rads);
-                if (currentDegrees == 90)
+                if (currentDegrees == 90.0)
                 {
                     x -= fmt.Width / 2;
                     y -= (fmt.Height + 4);
                 }
-                else if (currentDegrees == 180)
+                else if (currentDegrees == 180.0)
                 {
                     x += 4;
                     y -= fmt.Height / 2;
                 }
-                else if (currentDegrees == 270)
+                else if (currentDegrees == 270.0)
                 {
                     x -= fmt.Width / 2;
                     y += 4;
                 }
-                else if (currentDegrees == 360)
+                else if (currentDegrees == 360.0)
                 {
                     x -= (fmt.Width + 4);
                     y -= fmt.Height / 2;
@@ -4790,8 +4790,8 @@ namespace ag.WPF.Chart
             var lines = new List<LineGeometry>();
             foreach (var pt in pts)
             {
-                var addition = Math.Abs(pt.Value.V1) / sum * 360;
-                if (currentDegrees <= 90 && currentDegrees > 0)
+                var addition = Math.Abs(pt.Value.V1) / sum * 360.0;
+                if (currentDegrees <= 90.0 && currentDegrees > 0)
                 {
                     if (currentDegrees - addition >= 0)
                     {
@@ -4799,12 +4799,12 @@ namespace ag.WPF.Chart
                     }
                     else
                     {
-                        currentDegrees = 360 - Math.Abs(currentDegrees - addition);
+                        currentDegrees = 360.0 - Math.Abs(currentDegrees - addition);
                     }
                 }
                 else if (Math.Abs(currentDegrees) < double.Epsilon)
                 {
-                    currentDegrees = 360 - addition;
+                    currentDegrees = 360.0 - addition;
                 }
                 else
                 {
@@ -4825,7 +4825,7 @@ namespace ag.WPF.Chart
                 var start = new Point(xBeg, yBeg);
                 segments.Add(new LineSegment(start, true));
 
-                var rads = currentDegrees * Math.PI / 180;
+                var rads = currentDegrees * Math.PI / 180.0;
                 var quadrant = Utils.GetQuadrant(currentDegrees);
                 switch (quadrant)
                 {
@@ -4852,7 +4852,7 @@ namespace ag.WPF.Chart
                     Point = new Point(xBeg, yBeg),
                     Size = new Size(radius, radius),
                     SweepDirection = SweepDirection.Clockwise,
-                    IsLargeArc = addition >= 180
+                    IsLargeArc = addition >= 180.0
                 };
                 segments.Add(arcSeg);
 

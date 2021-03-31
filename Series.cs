@@ -241,7 +241,7 @@ namespace ag.WPF.Chart
             var multiBindiing = BindingOperations.GetMultiBindingExpression(chartValues.Path, Path.DataProperty);
             if (multiBindiing != null)
                 multiBindiing.UpdateTarget();
-            OnPropertyChanged("Values");
+            OnPropertyChanged();
         }
 
         private void initFields(string name)

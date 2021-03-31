@@ -585,7 +585,7 @@ namespace ag.WPF.Chart
 
                         series.Index = e.NewStartingIndex;
                         series.PropertyChanged += Series_PropertyChanged;
-                        //s.Values.CollectionChanged += Values_CollectionChanged;
+                        series.Values.CollectionChanged += values_CollectionChanged;
 
                         if (series.MainBrush == null)
                         {
@@ -1020,7 +1020,10 @@ namespace ag.WPF.Chart
 
                         rebuildPieLegends(series.Values, series);
 
-                        SeriesCount++;
+                        if (SeriesCount < int.MaxValue)
+                            SeriesCount++;
+                        else
+                            SeriesCount--;
                         break;
                     }
                 case NotifyCollectionChangedAction.Remove:
@@ -1060,6 +1063,14 @@ namespace ag.WPF.Chart
                         break;
                     }
             }
+        }
+
+        private void values_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            if (SeriesCount < int.MaxValue) 
+                SeriesCount++;
+            else 
+                SeriesCount--;
         }
 
         private void PieImage_MouseMove(object sender, MouseEventArgs e)

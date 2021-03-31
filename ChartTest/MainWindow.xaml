@@ -80,6 +80,7 @@
             <Button Grid.Row="1" Grid.Column="0" Content="Click" Click="Button_Click"/>
             <Button Grid.Row="1" Grid.Column="1" Content="Click" Click="Button_Click_1"/>
             <Button Grid.Row="2" Grid.Column="0" Content="Save As Image" Click="Button_Click_2"/>
+            <Button x:Name="CmdAdd" Grid.Row="2" Grid.Column="1" Content="Add value" Click="CmdAdd_Click"/>
         </Grid>
     </Border>
 </Window>

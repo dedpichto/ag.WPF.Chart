@@ -46,7 +46,7 @@ namespace ChartTest
             //var values2 = new double[] {20, 50};
             //var values3 = new double[] {-60, -20, -27, -45};
             var values1 = new double[] { 327, 20, 210, 27, 17, 37, 89, 56, -1324 };
-            var values2 = new double[] { 30, 115, 175, 593, 37.5 };
+            var values2 = new double[] { 30, 115, 175, 593, 37.5};
             var values3 = new double[] { 60, -128.3, 37 };
             var values4 = new double[] { 1, 8.3, 72, 90, 130, -23, -12, -13, -14, -121 };
             var values5 = new double[] { 1, 2, 3, 4, 5, 6, 7, 17 };
@@ -142,6 +142,11 @@ namespace ChartTest
             //chTest.SaveAsImage(@"E:\chart.tif");
             //chTest.SaveAsImage(@"E:\chart.tiff");
 
+        }
+
+        private void CmdAdd_Click(object sender, RoutedEventArgs e)
+        {
+            Series[0].Values.Add(new ag.WPF.Chart.Values.ChartValue(1723));
         }
     }
 }
