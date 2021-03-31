@@ -550,7 +550,7 @@ namespace ag.WPF.Chart
         #endregion
 
         #region Private fields
-        private readonly ObservableCollection<FrameworkElement> _legendCollection = new ObservableCollection<FrameworkElement>();
+        private readonly ObservableCollection<FrameworkElement> _legendsCollection = new ObservableCollection<FrameworkElement>();
         private readonly ObservableCollection<FrameworkElement> _pieLegendsCollection = new ObservableCollection<FrameworkElement>(); 
         #endregion
 
@@ -941,7 +941,7 @@ namespace ag.WPF.Chart
 
                         legend.SetBinding(Legend.TextProperty, new Binding("Name") { Source = series });
 
-                        LegendCollection.Add(legend);
+                        LegendsCollection.Add(legend);
                         #endregion
 
                         #region Positive waterfall legend
@@ -976,7 +976,7 @@ namespace ag.WPF.Chart
 
                         legend.SetBinding(Legend.TextProperty, new Binding("WaterfallLegends[0]") { Source = this });
 
-                        LegendCollection.Add(legend);
+                        LegendsCollection.Add(legend);
                         #endregion
 
                         #region Negative waterfall legend
@@ -1011,7 +1011,7 @@ namespace ag.WPF.Chart
 
                         legend.SetBinding(Legend.TextProperty, new Binding("WaterfallLegends[1]") { Source = this });
 
-                        LegendCollection.Add(legend);
+                        LegendsCollection.Add(legend);
                         #endregion
 
                         _canvas.Children.Add(series.Path);
@@ -1037,13 +1037,13 @@ namespace ag.WPF.Chart
                         if (index > -1)
                             _canvas.Children.RemoveAt(index);
 
-                        LegendCollection.RemoveAt(e.OldStartingIndex);
-                        for (var i = LegendCollection.Count - 1; i >= 0; i--)
+                        LegendsCollection.RemoveAt(e.OldStartingIndex);
+                        for (var i = LegendsCollection.Count - 1; i >= 0; i--)
                         {
-                            if (((Legend)LegendCollection[i]).Index == e.OldStartingIndex)
-                                LegendCollection.RemoveAt(i);
+                            if (((Legend)LegendsCollection[i]).Index == e.OldStartingIndex)
+                                LegendsCollection.RemoveAt(i);
                         }
-                        foreach (Legend lg in LegendCollection.Where(l => ((Legend)l).Index > e.OldStartingIndex))
+                        foreach (Legend lg in LegendsCollection.Where(l => ((Legend)l).Index > e.OldStartingIndex))
                         {
                             lg.Index--;
                         }
@@ -1662,7 +1662,7 @@ namespace ag.WPF.Chart
         }
 
         [EditorBrowsable(EditorBrowsableState.Never), Browsable(false)]
-        public ObservableCollection<FrameworkElement> LegendCollection => _legendCollection;
+        public ObservableCollection<FrameworkElement> LegendsCollection => _legendsCollection;
 
         [EditorBrowsable(EditorBrowsableState.Never), Browsable(false)]
         public ObservableCollection<FrameworkElement> PieLegendsCollection => _pieLegendsCollection;

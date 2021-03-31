@@ -389,7 +389,7 @@
                                           Grid.Row="7"
                                           Grid.Column="0"
                                           Grid.ColumnSpan="7"
-                                          ItemsSource="{Binding LegendCollection, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                          ItemsSource="{Binding LegendsCollection, RelativeSource={RelativeSource Mode=TemplatedParent}}"
                                           >
                                 <ItemsControl.ItemsPanel>
                                     <ItemsPanelTemplate>
