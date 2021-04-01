@@ -3618,7 +3618,7 @@ namespace ag.WPF.Chart
                         {
                             var indexStep = flowDir == FlowDirection.LeftToRight ? i + 1 : i;
                             var num = !Utils.StyleBars(chartStyle)
-                                ? flowDir == FlowDirection.LeftToRight ? i : j
+                                ? Utils.StyleColumns(chartStyle) ? flowDir == FlowDirection.LeftToRight ? i + 1 : j + 1 : flowDir == FlowDirection.LeftToRight ? i : j
                                 : Utils.StyleMeasuredBars(chartStyle)
                                     ? flowDir == FlowDirection.LeftToRight ? maxMin - stepSize * j : maxMin - stepSize * i
                                     : flowDir == FlowDirection.LeftToRight ? 10 * (i + 1) : 10 * (j + 1);
@@ -3715,7 +3715,7 @@ namespace ag.WPF.Chart
                         limit = Limit;
                         for (int i = 0, j = limit - 1; i < limit; i++, j--)
                         {
-                            var num = flowDir == FlowDirection.LeftToRight
+                            var num = Utils.StyleColumns(chartStyle) ? flowDir == FlowDirection.LeftToRight ? i + 1 : j + 1 : flowDir == FlowDirection.LeftToRight
                                 ? i
                                 : j;
                             var index = flowDir == FlowDirection.LeftToRight ? i : j;
