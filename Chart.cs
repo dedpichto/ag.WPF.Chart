@@ -273,6 +273,17 @@ namespace ag.WPF.Chart
     #region Named parts
     [TemplatePart(Name = ElementCanvas, Type = typeof(Canvas))]
     [TemplatePart(Name = ElementPieImage, Type = typeof(Image))]
+    [TemplatePart(Name = ElementVPlaceholder, Type = typeof(Border))]
+    [TemplatePart(Name = ElementPathYAxisValues, Type = typeof(Path))]
+    [TemplatePart(Name = ElementHPlaceholder, Type = typeof(Border))]
+    [TemplatePart(Name = ElementPathXAxisValues, Type = typeof(Path))]
+    [TemplatePart(Name = ElementPathRadarValues, Type = typeof(Path))]
+    [TemplatePart(Name = ElementPathRadarLines, Type = typeof(Path))]
+    [TemplatePart(Name = ElementPathAxesLines, Type = typeof(Path))]
+    [TemplatePart(Name = ElementPathTicks, Type = typeof(Path))]
+    [TemplatePart(Name = ElementPathHorzLines, Type = typeof(Path))]
+    [TemplatePart(Name = ElementPathVertLines, Type = typeof(Path))]
+
     #endregion
 
     public class Chart : Control, INotifyPropertyChanged
@@ -280,11 +291,33 @@ namespace ag.WPF.Chart
         #region Constants
         private const string ElementCanvas = "PART_Canvas";
         private const string ElementPieImage = "PART_PieImage";
+        private const string ElementVPlaceholder = "PART_VPlaceHolder";
+        private const string ElementPathYAxisValues = "PART_PathYAxisValues";
+        private const string ElementHPlaceholder = "PART_HPlaceHolder";
+        private const string ElementPathXAxisValues = "PART_PathXAxisValues";
+        private const string ElementPathRadarValues = "PART_PathRadarValues";
+        private const string ElementPathRadarLines = "PART_PathRadarLines";
+        private const string ElementPathAxesLines = "PART_PathAxesLines";
+        private const string ElementPathTicks = "PART_PathTicks";
+        private const string ElementPathHorzLines = "PART_PathHorzLines";
+        private const string ElementPathVertLines = "PART_PathVertLines";
+
         #endregion
 
         #region Elements
         private Canvas _canvas;
         private Image _pieImage;
+        private Border _borderVPlaceholder;
+        private Path _pathYAxisValues;
+        private Border _borderHPlaceholder;
+        private Path _pathXAxisValues;
+        private Path _pathRadarValues;
+        private Path _pathRadarLines;
+        private Path _pathAxesLines;
+        private Path _pathTicks;
+        private Path _pathHorzLines;
+        private Path _pathVertLines;
+
         #endregion
 
         #region Dependency properties
@@ -437,10 +470,6 @@ namespace ag.WPF.Chart
         /// </summary>
         public static readonly DependencyProperty ChartBoundaryProperty;
         /// <summary>
-        /// The identifier of the <see cref="TotalCounterProperty"/> dependency property.
-        /// </summary>
-        public static readonly DependencyProperty TotalCounterProperty;
-        /// <summary>
         /// The identifier of the <see cref="CustomWaterfallLegendsProperty"/> dependency property.
         /// </summary>
         public static readonly DependencyProperty CustomWaterfallLegendsProperty;
@@ -529,7 +558,6 @@ namespace ag.WPF.Chart
                 typeof(bool), typeof(Chart), new FrameworkPropertyMetadata(true, OnShowTicksChanged));
             ChartBoundaryProperty = DependencyProperty.Register("ChartBoundary", typeof(ChartBoundary), typeof(Chart),
                 new FrameworkPropertyMetadata(ChartBoundary.WithOffset, OnChartBoundaryChanged));
-            TotalCounterProperty = DependencyProperty.Register("TotalCounter", typeof(int), typeof(Chart), new FrameworkPropertyMetadata(0));
             CustomWaterfallLegendsProperty = DependencyProperty.RegisterAttached("CustomWaterfallLegends", typeof(IEnumerable<string>), typeof(Chart), new FrameworkPropertyMetadata(new[] { "Increase", "Decrease" }));
             ItemsSourceProperty = DependencyProperty.Register("ItemsSource", typeof(IEnumerable<Series>), typeof(Chart), new PropertyMetadata(null, (u, e) =>
                  {
@@ -560,7 +588,19 @@ namespace ag.WPF.Chart
         public override void OnApplyTemplate()
         {
             base.OnApplyTemplate();
+            _borderVPlaceholder = GetTemplateChild(ElementVPlaceholder) as Border;
+            _pathYAxisValues = GetTemplateChild(ElementPathYAxisValues) as Path;
+            _borderHPlaceholder = GetTemplateChild(ElementHPlaceholder) as Border;
+            _pathXAxisValues = GetTemplateChild(ElementPathXAxisValues) as Path;
+            _pathRadarValues = GetTemplateChild(ElementPathRadarValues) as Path;
+            _pathRadarLines = GetTemplateChild(ElementPathRadarLines) as Path;
+            _pathAxesLines = GetTemplateChild(ElementPathAxesLines) as Path;
+            _pathTicks = GetTemplateChild(ElementPathTicks) as Path;
+            _pathHorzLines = GetTemplateChild(ElementPathHorzLines) as Path;
+            _pathVertLines = GetTemplateChild(ElementPathVertLines) as Path;
+
             _canvas = GetTemplateChild(ElementCanvas) as Canvas;
+
             if (_pieImage != null)
             {
                 _pieImage.MouseMove -= PieImage_MouseMove;
@@ -1019,10 +1059,8 @@ namespace ag.WPF.Chart
 
                         rebuildPieLegends(series.Values, series);
 
-                        if (TotalCounter < int.MaxValue)
-                            TotalCounter++;
-                        else
-                            TotalCounter--;
+                        updateBindings();
+
                         break;
                     }
                 case NotifyCollectionChangedAction.Remove:
@@ -1058,7 +1096,8 @@ namespace ag.WPF.Chart
                             rebuildPieLegends(sr.Values, sr);
                         }
 
-                        TotalCounter--;
+                        updateBindings();
+
                         break;
                     }
             }
@@ -1110,10 +1149,8 @@ namespace ag.WPF.Chart
                         }
                         rebuildPieLegends(series.Values, series);
                     }
-                    if (TotalCounter < int.MaxValue)
-                        TotalCounter++;
-                    else
-                        TotalCounter--;
+
+                    updateBindings();
                     break;
             }
             OnPropertyChanged("ItemsSource");
@@ -1247,6 +1284,58 @@ namespace ag.WPF.Chart
 
         #region Private functions
 
+        private void updateBindings()
+        {
+            var binding = BindingOperations.GetMultiBindingExpression(_borderVPlaceholder, Grid.ColumnProperty);
+            if (binding != null)
+                binding.UpdateTarget();
+            binding = BindingOperations.GetMultiBindingExpression(_borderVPlaceholder, WidthProperty);
+            if (binding != null)
+                binding.UpdateTarget();
+            binding = BindingOperations.GetMultiBindingExpression(_pathYAxisValues, Grid.ColumnProperty);
+            if (binding != null)
+                binding.UpdateTarget();
+            binding = BindingOperations.GetMultiBindingExpression(_pathYAxisValues, HorizontalAlignmentProperty);
+            if (binding != null)
+                binding.UpdateTarget();
+            binding = BindingOperations.GetMultiBindingExpression(_pathYAxisValues, Path.DataProperty);
+            if (binding != null)
+                binding.UpdateTarget();
+            binding = BindingOperations.GetMultiBindingExpression(_borderHPlaceholder, Grid.RowProperty);
+            if (binding != null)
+                binding.UpdateTarget();
+            binding = BindingOperations.GetMultiBindingExpression(_borderHPlaceholder, HeightProperty);
+            if (binding != null)
+                binding.UpdateTarget();
+            binding = BindingOperations.GetMultiBindingExpression(_pathXAxisValues, Grid.RowProperty);
+            if (binding != null)
+                binding.UpdateTarget();
+            binding = BindingOperations.GetMultiBindingExpression(_pathXAxisValues, VerticalAlignmentProperty);
+            if (binding != null)
+                binding.UpdateTarget();
+            binding = BindingOperations.GetMultiBindingExpression(_pathXAxisValues, Path.DataProperty);
+            if (binding != null)
+                binding.UpdateTarget();
+            binding = BindingOperations.GetMultiBindingExpression(_pathRadarValues, Path.DataProperty);
+            if (binding != null)
+                binding.UpdateTarget();
+            binding = BindingOperations.GetMultiBindingExpression(_pathRadarLines, Path.DataProperty);
+            if (binding != null)
+                binding.UpdateTarget();
+            binding = BindingOperations.GetMultiBindingExpression(_pathAxesLines, Path.DataProperty);
+            if (binding != null)
+                binding.UpdateTarget();
+            binding = BindingOperations.GetMultiBindingExpression(_pathTicks, Path.DataProperty);
+            if (binding != null)
+                binding.UpdateTarget();
+            binding = BindingOperations.GetMultiBindingExpression(_pathHorzLines, Path.DataProperty);
+            if (binding != null)
+                binding.UpdateTarget();
+            binding = BindingOperations.GetMultiBindingExpression(_pathVertLines, Path.DataProperty);
+            if (binding != null)
+                binding.UpdateTarget();
+        }
+
         private void rebuildPieLegends(ChartValues values, Series series)
         {
             if (series.Index > 0) return;
@@ -1281,20 +1370,12 @@ namespace ag.WPF.Chart
                 PieLegendsCollection.Add(legend);
             }
         }
-
-        //private Tuple<double, double> getScalingFactors()
-        //{
-        //    var presentationSource = PresentationSource.FromVisual(Application.Current.MainWindow);
-        //    if (presentationSource == null || presentationSource.CompositionTarget == null)
-        //        return Tuple.Create(1.0, 1.0);
-        //    var m = presentationSource.CompositionTarget.TransformToDevice;
-        //    return Tuple.Create(m.M11, m.M22);// notice it's divided by 96 already
-        //}
         #endregion
+
+        #region Dependency properties wrappers
         /// <summary>
         /// Gets or sets the collection of custom legend text when <see cref="ChartStyle"/> is set to <see cref="ChartStyle.Waterfall"/>.
         /// </summary>
-        #region Dependency properties wrappers
         [Category("ChartAppearance"), Description("Gets or sets the collection of custom legend text when ChartStyle is set to ChartStyle.Waterfall")]
         public IEnumerable<string> CustomWaterfallLegends
         {
@@ -1309,15 +1390,6 @@ namespace ag.WPF.Chart
         {
             get { return (IEnumerable<Series>)GetValue(ItemsSourceProperty); }
             set { SetValue(ItemsSourceProperty, value); }
-        }
-        /// <summary>
-        /// Help property forced the control to repaint.
-        /// </summary>
-        [EditorBrowsable(EditorBrowsableState.Never), Browsable(false)]
-        public int TotalCounter
-        {
-            get { return (int)GetValue(TotalCounterProperty); }
-            set { SetValue(TotalCounterProperty, value); }
         }
         /// <summary>
         /// Specifies whether chart boundary is started on y-axes or with offfset from y-axes.

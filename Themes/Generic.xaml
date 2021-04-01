@@ -110,12 +110,12 @@
                                     <RotateTransform Angle="90"/>
                                 </TextBlock.LayoutTransform>
                             </TextBlock>
-                            <Border x:Name="VPLaceHolder" Grid.Row="4" Height="1">
+                            <Border x:Name="PART_VPlaceHolder" Grid.Row="4" Height="1">
                                 <Grid.Column>
                                     <MultiBinding Converter="{StaticResource VerticalValuesColumnConverter}">
                                         <Binding Path="ItemsSource" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                         <Binding Path="ChartStyle" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
-                                        <Binding Path="TotalCounter" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                        
                                     </MultiBinding>
                                 </Grid.Column>
                                 <Border.Width>
@@ -132,23 +132,23 @@
                                         <Binding Path="YAxisCustomValues" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                         <Binding Path="AutoAdjust" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                         <Binding Path="MaxY" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
-                                        <Binding Path="TotalCounter" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                        
                                     </MultiBinding>
                                 </Border.Width>
                             </Border>
-                            <Path x:Name="PathYAxisValues" Grid.Row="4" Fill="{TemplateBinding Foreground}">
+                            <Path x:Name="PART_PathYAxisValues" Grid.Row="4" Fill="{TemplateBinding Foreground}">
                                 <Grid.Column>
                                     <MultiBinding Converter="{StaticResource VerticalValuesColumnConverter}">
                                         <Binding Path="ItemsSource" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                         <Binding Path="ChartStyle" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
-                                        <Binding Path="TotalCounter" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                        
                                     </MultiBinding>
                                 </Grid.Column>
                                 <Path.HorizontalAlignment>
                                     <MultiBinding Converter="{StaticResource VerticalValuesAlignmentConverter}">
                                         <Binding Path="ItemsSource" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                         <Binding Path="ChartStyle" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
-                                        <Binding Path="TotalCounter" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                        
                                     </MultiBinding>
                                 </Path.HorizontalAlignment>
                                 <Path.Data>
@@ -168,16 +168,16 @@
                                         <Binding Path="AutoAdjust" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                         <Binding Path="MaxY" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                         <Binding Path="FlowDirection" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
-                                        <Binding Path="TotalCounter" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                        
                                     </MultiBinding>
                                 </Path.Data>
                             </Path>
-                            <Border x:Name="HPLaceHolder" Grid.Column="3" Width="1">
+                            <Border x:Name="PART_HPlaceHolder" Grid.Column="3" Width="1">
                                 <Grid.Row>
                                     <MultiBinding Converter="{StaticResource HorizontalValuesRowConverter}">
                                         <Binding Path="ItemsSource" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                         <Binding Path="ChartStyle" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
-                                        <Binding Path="TotalCounter" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                        
                                     </MultiBinding>
                                 </Grid.Row>
                                 <Border.Height>
@@ -196,23 +196,23 @@
                                         <Binding Path="MaxX" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                         <Binding Path="ChartBoundary" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                         <Binding Path="ActualWidth" ElementName="PART_Canvas"/>
-                                        <Binding Path="TotalCounter" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                        
                                     </MultiBinding>
                                 </Border.Height>
                             </Border>
-                            <Path x:Name="PathXAxisValues" Grid.Column="3" Fill="{TemplateBinding Foreground}">
+                            <Path x:Name="PART_PathXAxisValues" Grid.Column="3" Fill="{TemplateBinding Foreground}">
                                 <Grid.Row>
                                     <MultiBinding Converter="{StaticResource HorizontalValuesRowConverter}">
                                         <Binding Path="ItemsSource" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                         <Binding Path="ChartStyle" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
-                                        <Binding Path="TotalCounter" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                        
                                     </MultiBinding>
                                 </Grid.Row>
                                 <Path.VerticalAlignment>
                                     <MultiBinding Converter="{StaticResource HorizontalValuesAlignmentConverter}">
                                         <Binding Path="ItemsSource" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                         <Binding Path="ChartStyle" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
-                                        <Binding Path="TotalCounter" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                        
                                     </MultiBinding>
                                 </Path.VerticalAlignment>
                                 <Path.Data>
@@ -232,7 +232,7 @@
                                         <Binding Path="MaxX" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                         <Binding Path="FlowDirection" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                         <Binding Path="ChartBoundary" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
-                                        <Binding Path="TotalCounter" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                        
                                     </MultiBinding>
                                 </Path.Data>
                             </Path>
@@ -275,7 +275,7 @@
                                     </Image.Source>
                                 </Image>
                                 <Grid x:Name="GridSeries">
-                                    <Path x:Name="PathRadarValues" Fill="{TemplateBinding Foreground}" Visibility="Collapsed">
+                                    <Path x:Name="PART_PathRadarValues" Fill="{TemplateBinding Foreground}" Visibility="Collapsed">
                                         <Path.Data>
                                             <MultiBinding Converter="{StaticResource RadarAxesValuesConverter}">
                                                 <Binding ElementName="PART_Canvas" Path="ActualWidth"/>
@@ -293,11 +293,11 @@
                                                 <Binding Path="SectionsY" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                                 <Binding Path="AxesValuesFormat" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                                 <Binding Path="AutoAdjust" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
-                                                <Binding Path="TotalCounter" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                                
                                             </MultiBinding>
                                         </Path.Data>
                                     </Path>
-                                    <Path x:Name="PathRadarLines" Stroke="{TemplateBinding Foreground}" StrokeThickness="0.3" Visibility="Collapsed">
+                                    <Path x:Name="PART_PathRadarLines" Stroke="{TemplateBinding Foreground}" StrokeThickness="0.3" Visibility="Collapsed">
                                         <Path.Data>
                                             <MultiBinding Converter="{StaticResource RadarLinesPathConverter}">
                                                 <Binding ElementName="PART_Canvas" Path="ActualWidth"/>
@@ -312,22 +312,22 @@
                                                 <Binding Path="XAxisCustomValues" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                                 <Binding Path="SectionsY" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                                 <Binding Path="AutoAdjust" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
-                                                <Binding Path="TotalCounter" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                                
                                             </MultiBinding>
                                         </Path.Data>
                                     </Path>
-                                    <Path x:Name="PathAxesLines" Stroke="{TemplateBinding Foreground}" StrokeThickness="0.5">
+                                    <Path x:Name="PART_PathAxesLines" Stroke="{TemplateBinding Foreground}" StrokeThickness="0.5">
                                         <Path.Data>
                                             <MultiBinding Converter="{StaticResource AxesLinesConverter}">
                                                 <Binding ElementName="PART_Canvas" Path="ActualWidth"/>
                                                 <Binding ElementName="PART_Canvas" Path="ActualHeight"/>
                                                 <Binding Path="ItemsSource" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                                 <Binding Path="ChartStyle" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
-                                                <Binding Path="TotalCounter" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                                
                                             </MultiBinding>
                                         </Path.Data>
                                     </Path>
-                                    <Path x:Name="PathTicks" Stroke="{TemplateBinding Foreground}" StrokeThickness="0.5">
+                                    <Path x:Name="PART_PathTicks" Stroke="{TemplateBinding Foreground}" StrokeThickness="0.5">
                                         <Path.Data>
                                             <MultiBinding Converter="{StaticResource AxisTicksPathConverter}">
                                                 <Binding ElementName="PART_Canvas" Path="ActualWidth"/>
@@ -343,11 +343,11 @@
                                                 <Binding Path="AxesFontWeight" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                                 <Binding Path="AxesFontStretch" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                                 <Binding Path="AutoAdjust" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
-                                                <Binding Path="TotalCounter" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                                
                                             </MultiBinding>
                                         </Path.Data>
                                     </Path>
-                                    <Path x:Name="PathHorzLines" Stroke="{TemplateBinding Foreground}" StrokeThickness="0.3" StrokeDashArray="2,2">
+                                    <Path x:Name="PART_PathHorzLines" Stroke="{TemplateBinding Foreground}" StrokeThickness="0.3" StrokeDashArray="2,2">
                                         <Path.Data>
                                             <MultiBinding Converter="{StaticResource HorizontalLinesPathConverter}">
                                                 <Binding ElementName="PART_Canvas" Path="ActualWidth"/>
@@ -361,11 +361,11 @@
                                                 <Binding Path="AxesFontWeight" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                                 <Binding Path="AxesFontStretch" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                                 <Binding Path="AutoAdjust" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
-                                                <Binding Path="TotalCounter" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                                
                                             </MultiBinding>
                                         </Path.Data>
                                     </Path>
-                                    <Path x:Name="PathVertLines" Stroke="{TemplateBinding Foreground}" StrokeThickness="0.3" StrokeDashArray="2,2">
+                                    <Path x:Name="PART_PathVertLines" Stroke="{TemplateBinding Foreground}" StrokeThickness="0.3" StrokeDashArray="2,2">
                                         <Path.Data>
                                             <MultiBinding Converter="{StaticResource VerticalLinesPathConverter}">
                                                 <Binding ElementName="PART_Canvas" Path="ActualWidth"/>
@@ -380,7 +380,7 @@
                                                 <Binding Path="AxesFontWeight" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                                 <Binding Path="AxesFontStretch" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                                 <Binding Path="AutoAdjust" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
-                                                <Binding Path="TotalCounter" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                                
                                             </MultiBinding>
                                         </Path.Data>
                                     </Path>
@@ -439,34 +439,34 @@
                             <Setter Property="Grid.RowSpan" TargetName="PieLegendField" Value="8"/>
                         </Trigger>
                         <Trigger Property="ShowTicks" Value="false">
-                            <Setter Property="Visibility" TargetName="PathTicks" Value="Hidden"/>
+                            <Setter Property="Visibility" TargetName="PART_PathTicks" Value="Hidden"/>
                         </Trigger>
                         <Trigger Property="ShowSecondaryXLines" Value="False">
-                            <Setter Property="Visibility" TargetName="PathHorzLines" Value="Hidden"/>
+                            <Setter Property="Visibility" TargetName="PART_PathHorzLines" Value="Hidden"/>
                         </Trigger>
                         <Trigger Property="ChartStyle" Value="Bars">
-                            <Setter Property="Visibility" TargetName="PathHorzLines" Value="Hidden"/>
+                            <Setter Property="Visibility" TargetName="PART_PathHorzLines" Value="Hidden"/>
                         </Trigger>
                         <Trigger Property="ChartStyle" Value="StackedBars">
-                            <Setter Property="Visibility" TargetName="PathHorzLines" Value="Hidden"/>
+                            <Setter Property="Visibility" TargetName="PART_PathHorzLines" Value="Hidden"/>
                         </Trigger>
                         <Trigger Property="ChartStyle" Value="FullStackedBars">
-                            <Setter Property="Visibility" TargetName="PathHorzLines" Value="Hidden"/>
+                            <Setter Property="Visibility" TargetName="PART_PathHorzLines" Value="Hidden"/>
                         </Trigger>
                         <Trigger Property="ShowSecondaryYLines" Value="False">
-                            <Setter Property="Visibility" TargetName="PathVertLines" Value="Hidden"/>
+                            <Setter Property="Visibility" TargetName="PART_PathVertLines" Value="Hidden"/>
                         </Trigger>
                         <Trigger Property="ChartStyle" Value="Columns">
-                            <Setter Property="Visibility" TargetName="PathVertLines" Value="Hidden"/>
+                            <Setter Property="Visibility" TargetName="PART_PathVertLines" Value="Hidden"/>
                         </Trigger>
                         <Trigger Property="ChartStyle" Value="StackedColumns">
-                            <Setter Property="Visibility" TargetName="PathVertLines" Value="Hidden"/>
+                            <Setter Property="Visibility" TargetName="PART_PathVertLines" Value="Hidden"/>
                         </Trigger>
                         <Trigger Property="ChartStyle" Value="FullStackedColumns">
-                            <Setter Property="Visibility" TargetName="PathVertLines" Value="Hidden"/>
+                            <Setter Property="Visibility" TargetName="PART_PathVertLines" Value="Hidden"/>
                         </Trigger>
                         <Trigger Property="ChartStyle" Value="Waterfall">
-                            <Setter Property="Visibility" TargetName="PathVertLines" Value="Hidden"/>
+                            <Setter Property="Visibility" TargetName="PART_PathVertLines" Value="Hidden"/>
                         </Trigger>
                         <Trigger Property="Caption" Value="">
                             <Setter Property="Visibility" TargetName="TextCaption" Value="Collapsed"/>
@@ -481,18 +481,18 @@
                             <Setter Property="Visibility" TargetName="PieLegendField" Value="Collapsed"/>
                         </Trigger>
                         <Trigger Property="AxesValuesVisibility" Value="Horizontal">
-                            <Setter Property="Visibility" TargetName="VPLaceHolder" Value="Collapsed"/>
-                            <Setter Property="Visibility" TargetName="PathYAxisValues" Value="Collapsed"/>
+                            <Setter Property="Visibility" TargetName="PART_VPlaceHolder" Value="Collapsed"/>
+                            <Setter Property="Visibility" TargetName="PART_PathYAxisValues" Value="Collapsed"/>
                         </Trigger>
                         <Trigger Property="AxesValuesVisibility" Value="Vertical">
-                            <Setter Property="Visibility" TargetName="HPLaceHolder" Value="Collapsed"/>
-                            <Setter Property="Visibility" TargetName="PathXAxisValues" Value="Collapsed"/>
+                            <Setter Property="Visibility" TargetName="PART_HPlaceHolder" Value="Collapsed"/>
+                            <Setter Property="Visibility" TargetName="PART_PathXAxisValues" Value="Collapsed"/>
                         </Trigger>
                         <Trigger Property="AxesValuesVisibility" Value="None">
-                            <Setter Property="Visibility" TargetName="PathXAxisValues" Value="Collapsed"/>
-                            <Setter Property="Visibility" TargetName="PathYAxisValues" Value="Collapsed"/>
-                            <Setter Property="Visibility" TargetName="VPLaceHolder" Value="Collapsed"/>
-                            <Setter Property="Visibility" TargetName="HPLaceHolder" Value="Collapsed"/>
+                            <Setter Property="Visibility" TargetName="PART_PathXAxisValues" Value="Collapsed"/>
+                            <Setter Property="Visibility" TargetName="PART_PathYAxisValues" Value="Collapsed"/>
+                            <Setter Property="Visibility" TargetName="PART_VPlaceHolder" Value="Collapsed"/>
+                            <Setter Property="Visibility" TargetName="PART_HPlaceHolder" Value="Collapsed"/>
                         </Trigger>
                         <Trigger Property="IsEnabled" Value="false">
                             <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
@@ -502,10 +502,10 @@
                             <Setter Property="Visibility" TargetName="TextXAxis" Value="Collapsed"/>
                             <Setter Property="Visibility" TargetName="GridSeries" Value="Collapsed"/>
                             <Setter Property="Visibility" TargetName="LegendField" Value="Collapsed"/>
-                            <Setter Property="Visibility" TargetName="PathXAxisValues" Value="Collapsed"/>
-                            <Setter Property="Visibility" TargetName="PathYAxisValues" Value="Collapsed"/>
-                            <Setter Property="Visibility" TargetName="VPLaceHolder" Value="Collapsed"/>
-                            <Setter Property="Visibility" TargetName="HPLaceHolder" Value="Collapsed"/>
+                            <Setter Property="Visibility" TargetName="PART_PathXAxisValues" Value="Collapsed"/>
+                            <Setter Property="Visibility" TargetName="PART_PathYAxisValues" Value="Collapsed"/>
+                            <Setter Property="Visibility" TargetName="PART_VPlaceHolder" Value="Collapsed"/>
+                            <Setter Property="Visibility" TargetName="PART_HPlaceHolder" Value="Collapsed"/>
                             <Setter Property="Visibility" TargetName="PART_PieImage" Value="Visible"/>
                         </Trigger>
                         <Trigger Property="ChartStyle" Value="SlicedPie">
@@ -513,10 +513,10 @@
                             <Setter Property="Visibility" TargetName="TextXAxis" Value="Collapsed"/>
                             <Setter Property="Visibility" TargetName="GridSeries" Value="Collapsed"/>
                             <Setter Property="Visibility" TargetName="LegendField" Value="Collapsed"/>
-                            <Setter Property="Visibility" TargetName="PathXAxisValues" Value="Collapsed"/>
-                            <Setter Property="Visibility" TargetName="PathYAxisValues" Value="Collapsed"/>
-                            <Setter Property="Visibility" TargetName="VPLaceHolder" Value="Collapsed"/>
-                            <Setter Property="Visibility" TargetName="HPLaceHolder" Value="Collapsed"/>
+                            <Setter Property="Visibility" TargetName="PART_PathXAxisValues" Value="Collapsed"/>
+                            <Setter Property="Visibility" TargetName="PART_PathYAxisValues" Value="Collapsed"/>
+                            <Setter Property="Visibility" TargetName="PART_VPlaceHolder" Value="Collapsed"/>
+                            <Setter Property="Visibility" TargetName="PART_HPlaceHolder" Value="Collapsed"/>
                             <Setter Property="Visibility" TargetName="PART_PieImage" Value="Visible"/>
                         </Trigger>
                         <Trigger Property="ChartStyle" Value="Doughnut">
@@ -524,10 +524,10 @@
                             <Setter Property="Visibility" TargetName="TextXAxis" Value="Collapsed"/>
                             <Setter Property="Visibility" TargetName="GridSeries" Value="Collapsed"/>
                             <Setter Property="Visibility" TargetName="LegendField" Value="Collapsed"/>
-                            <Setter Property="Visibility" TargetName="PathXAxisValues" Value="Collapsed"/>
-                            <Setter Property="Visibility" TargetName="PathYAxisValues" Value="Collapsed"/>
-                            <Setter Property="Visibility" TargetName="VPLaceHolder" Value="Collapsed"/>
-                            <Setter Property="Visibility" TargetName="HPLaceHolder" Value="Collapsed"/>
+                            <Setter Property="Visibility" TargetName="PART_PathXAxisValues" Value="Collapsed"/>
+                            <Setter Property="Visibility" TargetName="PART_PathYAxisValues" Value="Collapsed"/>
+                            <Setter Property="Visibility" TargetName="PART_VPlaceHolder" Value="Collapsed"/>
+                            <Setter Property="Visibility" TargetName="PART_HPlaceHolder" Value="Collapsed"/>
                             <Setter Property="Visibility" TargetName="PART_PieImage" Value="Visible"/>
                         </Trigger>
                         <Trigger Property="ChartStyle" Value="Radar">
@@ -535,51 +535,51 @@
                             <Setter Property="Visibility" TargetName="TextXAxis" Value="Collapsed"/>
                             <!--<Setter Property="Visibility" TargetName="GridSeries" Value="Collapsed"/>-->
                             <!--<Setter Property="Visibility" TargetName="LegendField" Value="Collapsed"/>-->
-                            <Setter Property="Visibility" TargetName="PathXAxisValues" Value="Collapsed"/>
-                            <Setter Property="Visibility" TargetName="PathYAxisValues" Value="Collapsed"/>
-                            <Setter Property="Visibility" TargetName="VPLaceHolder" Value="Collapsed"/>
-                            <Setter Property="Visibility" TargetName="HPLaceHolder" Value="Collapsed"/>
+                            <Setter Property="Visibility" TargetName="PART_PathXAxisValues" Value="Collapsed"/>
+                            <Setter Property="Visibility" TargetName="PART_PathYAxisValues" Value="Collapsed"/>
+                            <Setter Property="Visibility" TargetName="PART_VPlaceHolder" Value="Collapsed"/>
+                            <Setter Property="Visibility" TargetName="PART_HPlaceHolder" Value="Collapsed"/>
                             <Setter Property="Visibility" TargetName="PART_PieImage" Value="Collapsed"/>
-                            <Setter Property="Visibility" TargetName="PathVertLines" Value="Collapsed"/>
-                            <Setter Property="Visibility" TargetName="PathHorzLines" Value="Collapsed"/>
-                            <Setter Property="Visibility" TargetName="PathTicks" Value="Collapsed"/>
-                            <Setter Property="Visibility" TargetName="PathAxesLines" Value="Collapsed"/>
-                            <Setter Property="Visibility" TargetName="PathRadarValues" Value="Visible"/>
-                            <Setter Property="Visibility" TargetName="PathRadarLines" Value="Visible"/>
+                            <Setter Property="Visibility" TargetName="PART_PathVertLines" Value="Collapsed"/>
+                            <Setter Property="Visibility" TargetName="PART_PathHorzLines" Value="Collapsed"/>
+                            <Setter Property="Visibility" TargetName="PART_PathTicks" Value="Collapsed"/>
+                            <Setter Property="Visibility" TargetName="PART_PathAxesLines" Value="Collapsed"/>
+                            <Setter Property="Visibility" TargetName="PART_PathRadarValues" Value="Visible"/>
+                            <Setter Property="Visibility" TargetName="PART_PathRadarLines" Value="Visible"/>
                         </Trigger>
                         <Trigger Property="ChartStyle" Value="RadarWithMarkers">
                             <Setter Property="Visibility" TargetName="TextYAxis" Value="Collapsed"/>
                             <Setter Property="Visibility" TargetName="TextXAxis" Value="Collapsed"/>
                             <!--<Setter Property="Visibility" TargetName="GridSeries" Value="Collapsed"/>-->
                             <!--<Setter Property="Visibility" TargetName="LegendField" Value="Collapsed"/>-->
-                            <Setter Property="Visibility" TargetName="PathXAxisValues" Value="Collapsed"/>
-                            <Setter Property="Visibility" TargetName="PathYAxisValues" Value="Collapsed"/>
-                            <Setter Property="Visibility" TargetName="VPLaceHolder" Value="Collapsed"/>
-                            <Setter Property="Visibility" TargetName="HPLaceHolder" Value="Collapsed"/>
+                            <Setter Property="Visibility" TargetName="PART_PathXAxisValues" Value="Collapsed"/>
+                            <Setter Property="Visibility" TargetName="PART_PathYAxisValues" Value="Collapsed"/>
+                            <Setter Property="Visibility" TargetName="PART_VPlaceHolder" Value="Collapsed"/>
+                            <Setter Property="Visibility" TargetName="PART_HPlaceHolder" Value="Collapsed"/>
                             <Setter Property="Visibility" TargetName="PART_PieImage" Value="Collapsed"/>
-                            <Setter Property="Visibility" TargetName="PathVertLines" Value="Collapsed"/>
-                            <Setter Property="Visibility" TargetName="PathHorzLines" Value="Collapsed"/>
-                            <Setter Property="Visibility" TargetName="PathTicks" Value="Collapsed"/>
-                            <Setter Property="Visibility" TargetName="PathAxesLines" Value="Collapsed"/>
-                            <Setter Property="Visibility" TargetName="PathRadarValues" Value="Visible"/>
-                            <Setter Property="Visibility" TargetName="PathRadarLines" Value="Visible"/>
+                            <Setter Property="Visibility" TargetName="PART_PathVertLines" Value="Collapsed"/>
+                            <Setter Property="Visibility" TargetName="PART_PathHorzLines" Value="Collapsed"/>
+                            <Setter Property="Visibility" TargetName="PART_PathTicks" Value="Collapsed"/>
+                            <Setter Property="Visibility" TargetName="PART_PathAxesLines" Value="Collapsed"/>
+                            <Setter Property="Visibility" TargetName="PART_PathRadarValues" Value="Visible"/>
+                            <Setter Property="Visibility" TargetName="PART_PathRadarLines" Value="Visible"/>
                         </Trigger>
                         <Trigger Property="ChartStyle" Value="RadarArea">
                             <Setter Property="Visibility" TargetName="TextYAxis" Value="Collapsed"/>
                             <Setter Property="Visibility" TargetName="TextXAxis" Value="Collapsed"/>
                             <!--<Setter Property="Visibility" TargetName="GridSeries" Value="Collapsed"/>-->
                             <!--<Setter Property="Visibility" TargetName="LegendField" Value="Collapsed"/>-->
-                            <Setter Property="Visibility" TargetName="PathXAxisValues" Value="Collapsed"/>
-                            <Setter Property="Visibility" TargetName="PathYAxisValues" Value="Collapsed"/>
-                            <Setter Property="Visibility" TargetName="VPLaceHolder" Value="Collapsed"/>
-                            <Setter Property="Visibility" TargetName="HPLaceHolder" Value="Collapsed"/>
+                            <Setter Property="Visibility" TargetName="PART_PathXAxisValues" Value="Collapsed"/>
+                            <Setter Property="Visibility" TargetName="PART_PathYAxisValues" Value="Collapsed"/>
+                            <Setter Property="Visibility" TargetName="PART_VPlaceHolder" Value="Collapsed"/>
+                            <Setter Property="Visibility" TargetName="PART_HPlaceHolder" Value="Collapsed"/>
                             <Setter Property="Visibility" TargetName="PART_PieImage" Value="Collapsed"/>
-                            <Setter Property="Visibility" TargetName="PathVertLines" Value="Collapsed"/>
-                            <Setter Property="Visibility" TargetName="PathHorzLines" Value="Collapsed"/>
-                            <Setter Property="Visibility" TargetName="PathTicks" Value="Collapsed"/>
-                            <Setter Property="Visibility" TargetName="PathAxesLines" Value="Collapsed"/>
-                            <Setter Property="Visibility" TargetName="PathRadarValues" Value="Visible"/>
-                            <Setter Property="Visibility" TargetName="PathRadarLines" Value="Visible"/>
+                            <Setter Property="Visibility" TargetName="PART_PathVertLines" Value="Collapsed"/>
+                            <Setter Property="Visibility" TargetName="PART_PathHorzLines" Value="Collapsed"/>
+                            <Setter Property="Visibility" TargetName="PART_PathTicks" Value="Collapsed"/>
+                            <Setter Property="Visibility" TargetName="PART_PathAxesLines" Value="Collapsed"/>
+                            <Setter Property="Visibility" TargetName="PART_PathRadarValues" Value="Visible"/>
+                            <Setter Property="Visibility" TargetName="PART_PathRadarLines" Value="Visible"/>
                         </Trigger>
                         <MultiTrigger>
                             <MultiTrigger.Conditions>

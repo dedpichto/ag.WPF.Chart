@@ -3072,7 +3072,6 @@ namespace ag.WPF.Chart
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
             if (values == null
-                || values.Length != 13
                 || !(values[0] is IEnumerable<Series> seriesEnumerable)
                 || !(values[1] is ChartStyle chartStyle)
                 || !(values[2] is int stops)
