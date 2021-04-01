@@ -437,9 +437,9 @@ namespace ag.WPF.Chart
         /// </summary>
         public static readonly DependencyProperty ChartBoundaryProperty;
         /// <summary>
-        /// The identifier of the <see cref="SeriesCountProperty"/> dependency property.
+        /// The identifier of the <see cref="TotalCounterProperty"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty SeriesCountProperty;
+        public static readonly DependencyProperty TotalCounterProperty;
         /// <summary>
         /// The identifier of the <see cref="CustomWaterfallLegendsProperty"/> dependency property.
         /// </summary>
@@ -529,7 +529,7 @@ namespace ag.WPF.Chart
                 typeof(bool), typeof(Chart), new FrameworkPropertyMetadata(true, OnShowTicksChanged));
             ChartBoundaryProperty = DependencyProperty.Register("ChartBoundary", typeof(ChartBoundary), typeof(Chart),
                 new FrameworkPropertyMetadata(ChartBoundary.WithOffset, OnChartBoundaryChanged));
-            SeriesCountProperty = DependencyProperty.Register("SeriesCount", typeof(int), typeof(Chart), new FrameworkPropertyMetadata(0));
+            TotalCounterProperty = DependencyProperty.Register("TotalCounter", typeof(int), typeof(Chart), new FrameworkPropertyMetadata(0));
             CustomWaterfallLegendsProperty = DependencyProperty.RegisterAttached("CustomWaterfallLegends", typeof(IEnumerable<string>), typeof(Chart), new FrameworkPropertyMetadata(new[] { "Increase", "Decrease" }));
             ItemsSourceProperty = DependencyProperty.Register("ItemsSource", typeof(IEnumerable<Series>), typeof(Chart), new PropertyMetadata(null, (u, e) =>
                  {
@@ -585,7 +585,6 @@ namespace ag.WPF.Chart
 
                         series.Index = e.NewStartingIndex;
                         series.PropertyChanged += Series_PropertyChanged;
-                        series.Values.CollectionChanged += values_CollectionChanged;
 
                         if (series.MainBrush == null)
                         {
@@ -1020,10 +1019,10 @@ namespace ag.WPF.Chart
 
                         rebuildPieLegends(series.Values, series);
 
-                        if (SeriesCount < int.MaxValue)
-                            SeriesCount++;
+                        if (TotalCounter < int.MaxValue)
+                            TotalCounter++;
                         else
-                            SeriesCount--;
+                            TotalCounter--;
                         break;
                     }
                 case NotifyCollectionChangedAction.Remove:
@@ -1059,18 +1058,10 @@ namespace ag.WPF.Chart
                             rebuildPieLegends(sr.Values, sr);
                         }
 
-                        SeriesCount--;
+                        TotalCounter--;
                         break;
                     }
             }
-        }
-
-        private void values_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
-        {
-            if (SeriesCount < int.MaxValue)
-                SeriesCount++;
-            else
-                SeriesCount--;
         }
 
         private void PieImage_MouseMove(object sender, MouseEventArgs e)
@@ -1119,6 +1110,10 @@ namespace ag.WPF.Chart
                         }
                         rebuildPieLegends(series.Values, series);
                     }
+                    if (TotalCounter < int.MaxValue)
+                        TotalCounter++;
+                    else
+                        TotalCounter--;
                     break;
             }
             OnPropertyChanged("ItemsSource");
@@ -1319,10 +1314,10 @@ namespace ag.WPF.Chart
         /// Help property forced the control to repaint.
         /// </summary>
         [EditorBrowsable(EditorBrowsableState.Never), Browsable(false)]
-        public int SeriesCount
+        public int TotalCounter
         {
-            get { return (int)GetValue(SeriesCountProperty); }
-            set { SetValue(SeriesCountProperty, value); }
+            get { return (int)GetValue(TotalCounterProperty); }
+            set { SetValue(TotalCounterProperty, value); }
         }
         /// <summary>
         /// Specifies whether chart boundary is started on y-axes or with offfset from y-axes.
