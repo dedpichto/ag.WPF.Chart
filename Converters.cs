@@ -3201,34 +3201,121 @@ namespace ag.WPF.Chart
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
             if (values == null
+                || !(values[2] is ChartStyle chartStyle))
+                return null;
+
+            if (chartStyle.In(ChartStyle.SlicedPie, ChartStyle.SolidPie, ChartStyle.Doughnut, ChartStyle.Radar, ChartStyle.RadarWithMarkers, ChartStyle.RadarArea))
+                return null;
+            else if (Utils.StyleBars(chartStyle))
+                return drawVerticalValuesForBars(values, culture);
+            return drawVerticalValues(values, culture);
+        }
+
+        private PathGeometry drawVerticalValuesForBars(object[] values, CultureInfo culture)
+        {
+            if (values == null
                 || !(values[0] is double height)
                 || !(values[1] is IEnumerable<Series> seriesEnumerable)
                 || !(values[2] is ChartStyle chartStyle)
-                || !(values[3] is int linesCount)
                 || !(values[4] is string format)
                 || !(values[5] is FontFamily fontFamily)
                 || !(values[6] is double fontSize)
                 || !(values[7] is FontStyle fontStyle)
                 || !(values[8] is FontWeight fontWeight)
                 || !(values[9] is FontStretch fontStretch)
-                //|| !(values[10] is IEnumerable<string> customEnumerable)
-                || !(values[11] is bool autoAdjust)
-                || !(values[12] is double maxY)
-                || !(values[13] is FlowDirection flowDir))
+                || !(values[14] is FlowDirection flowDir))
                 return null;
 
-            if (chartStyle.In(ChartStyle.Bars, ChartStyle.StackedBars, ChartStyle.FullStackedBars, ChartStyle.SlicedPie, ChartStyle.SolidPie, ChartStyle.Doughnut, ChartStyle.Radar, ChartStyle.RadarWithMarkers, ChartStyle.RadarArea))
+            if (!seriesEnumerable.Any()) return null;
+
+            var series = seriesEnumerable.ToArray();
+
+            var customValues = values[10] is IEnumerable<string> customEnumerable ? customEnumerable.ToArray() : new string[] { };
+
+            var gm = new PathGeometry();
+
+            var rawValues = Utils.GetPaddedSeries(series);
+
+            var ticks = rawValues.Max(rw => rw.Values.Count);
+
+            var totalValues = series.SelectMany(s => s.Values.Select(v => v.Value.V1));
+
+            var dir = Utils.GetDirection(totalValues, chartStyle);
+
+            height -= Utils.AXIS_THICKNESS;
+
+            var yStep = height / ticks;
+
+            var y = height - Utils.AXIS_THICKNESS;
+
+            switch (dir)
+            {
+                case Directions.NorthEast:
+                case Directions.NorthEastNorthWest:
+                case Directions.NorthWest:
+                    {
+                        for (int i = 0, j = ticks - 1; i < ticks; i++, j--)
+                        {
+                            var num = i + 1;
+                            var number = customValues.Length > i
+                                ? customValues[i]
+                                : format.EndsWith("%") ? num.ToString(format.Substring(0, format.Length - 1)) + "%" : num.ToString(format);
+
+                            var fmt = new FormattedText(number, culture, FlowDirection.LeftToRight,
+                                new Typeface(fontFamily, fontStyle, fontWeight, fontStretch), fontSize, Brushes.Black, VisualTreeHelper.GetDpi(Utils.Border).PixelsPerDip)
+                            { TextAlignment = TextAlignment.Right };
+
+                            var pt = new Point(0, y - (yStep + fmt.Height) / 2);
+                            var ngm = fmt.BuildGeometry(pt);
+
+                            //var trgr = new TransformGroup();
+                            //trgr.Children.Add(flowDir == FlowDirection.LeftToRight
+                            //    ? new RotateTransform(45, pt.X+fmt.Width/2, pt.Y+ fmt.Height/2)
+                            //    : new RotateTransform(-45, pt.X + fmt.Width, pt.Y+ fmt.Height/2));
+                            //if (flowDir == FlowDirection.RightToLeft)
+                            //    trgr.Children.Add(new ScaleTransform { ScaleX = -1 });
+                            //ngm.Transform = trgr;
+                            if (flowDir == FlowDirection.RightToLeft)
+                                ngm.Transform = new ScaleTransform { ScaleX = -1 };
+                            gm.AddGeometry(ngm);
+                            y -= yStep;
+                        }
+                        break;
+                    }
+                default:
+                    return null;
+            }
+            return gm;
+        }
+
+        private PathGeometry drawVerticalValues(object[] values, CultureInfo culture)
+        {
+            if (values == null
+                || !(values[0] is double height)
+                || !(values[1] is IEnumerable<Series> seriesEnumerable)
+                || !(values[2] is ChartStyle chartStyle)
+                || !(values[3] is int linesCountY)
+                || !(values[4] is string format)
+                || !(values[5] is FontFamily fontFamily)
+                || !(values[6] is double fontSize)
+                || !(values[7] is FontStyle fontStyle)
+                || !(values[8] is FontWeight fontWeight)
+                || !(values[9] is FontStretch fontStretch)
+                || !(values[12] is bool autoAdjust)
+                || !(values[13] is double maxY)
+                || !(values[14] is FlowDirection flowDir))
                 return null;
+
             if (!seriesEnumerable.Any())
                 return null;
 
+            var gm = new PathGeometry();
+
             var series = seriesEnumerable.ToArray();
-            var customValues = values[10] is IEnumerable<string> customEnumerable ? customEnumerable.ToArray() : new string[] { };
+            var customValues = values[11] is IEnumerable<string> customEnumerable ? customEnumerable.ToArray() : new string[] { };
             var drawBetween = chartStyle.In(ChartStyle.Bars, ChartStyle.StackedBars, ChartStyle.FullStackedBars);
 
             double step, offset;
-
-            var gm = new PathGeometry();
 
             var rawValues = chartStyle != ChartStyle.Waterfall
                 ? Utils.GetPaddedSeries(series)
@@ -3274,7 +3361,7 @@ namespace ag.WPF.Chart
             var (max, min, realLinesCount, stepSize, stepLength, units, zeroPoint) = Utils.GetMeasures(
                chartStyle,
                series,
-               linesCount,
+               linesCountY,
                radius,
                fmtY.Height,
                autoAdjust,
@@ -3282,12 +3369,12 @@ namespace ag.WPF.Chart
                dir == Directions.NorthEastSouthEast);
             if (Utils.StyleFullStacked(chartStyle))
             {
-                linesCount = 10;
+                linesCountY = 10;
                 stepLength = dir == Directions.NorthEastSouthEast ? height / 20 : height / 10;
             }
             else
             {
-                linesCount = realLinesCount;
+                linesCountY = realLinesCount;
             }
 
             var maxMin = (int)Math.Abs(Math.Max(max, Math.Abs(min)));
@@ -3295,13 +3382,13 @@ namespace ag.WPF.Chart
             {
                 case Directions.NorthEastSouthEast:
                     step = stepLength;// height / 2 / linesCount;
-                    var limit = linesCount * 2;
+                    var limit = linesCountY * 2;
                     for (int i = 0, index = 0; i <= limit; i++)
                     {
-                        if (i == linesCount) continue;
+                        if (i == linesCountY) continue;
                         var num = !Utils.StyleFullStacked(chartStyle)
-                            ? (linesCount - i) * maxMin / linesCount
-                            : (linesCount - i) * 10;
+                            ? (linesCountY - i) * maxMin / linesCountY
+                            : (linesCountY - i) * 10;
                         var number = customValues.Length > index
                             ? customValues[index++]
                             : format.EndsWith("%") ? num.ToString(format.Substring(0, format.Length - 1)) + "%" : num.ToString(format);
@@ -3311,7 +3398,7 @@ namespace ag.WPF.Chart
                             new Typeface(fontFamily, fontStyle, fontWeight, fontStretch), fontSize, Brushes.Black, VisualTreeHelper.GetDpi(Utils.Border).PixelsPerDip);
                         if (flowDir == FlowDirection.LeftToRight)
                             fmt.TextAlignment = TextAlignment.Right;
-                        offset = i < linesCount
+                        offset = i < linesCountY
                             ? (drawBetween ? step / 2 - fmt.Height / 2 : 0)
                             : (drawBetween ? -step / 2 - fmt.Height / 2 : -fmt.Height / 2);
 
@@ -3324,11 +3411,11 @@ namespace ag.WPF.Chart
                     break;
                 case Directions.SouthEast:
                     step = stepLength;
-                    for (int i = 1, index = 0; i <= linesCount; i++)
+                    for (int i = 1, index = 0; i <= linesCountY; i++)
                     {
                         var num = (!Utils.StyleFullStacked(chartStyle))
-                            ? i * min / linesCount
-                            : i * 10 / linesCount;
+                            ? i * min / linesCountY
+                            : i * 10 / linesCountY;
                         var number = customValues.Length > index
                             ? customValues[index++]
                             : format.EndsWith("%") ? num.ToString(format.Substring(0, format.Length - 1)) + "%" : num.ToString(format);
@@ -3350,7 +3437,7 @@ namespace ag.WPF.Chart
                 case Directions.NorthEastNorthWest:
                 case Directions.NorthWest:
                     step = stepLength;
-                    for (int i = 0, index = 0; i < linesCount; i++)
+                    for (int i = 0, index = 0; i < linesCountY; i++)
                     {
                         var num = (!Utils.StyleFullStacked(chartStyle))
                             ? maxMin - stepSize * i
@@ -3536,7 +3623,7 @@ namespace ag.WPF.Chart
                                     ? flowDir == FlowDirection.LeftToRight ? maxMin - stepSize * j : maxMin - stepSize * i
                                     : flowDir == FlowDirection.LeftToRight ? 10 * (i + 1) : 10 * (j + 1);
                             var index = flowDir == FlowDirection.LeftToRight ? i : j;
-                            var number = customValues.Length > index
+                            var number = customValues.Length > index && !Utils.StyleBars(chartStyle)
                                 ? customValues[index]
                                 : format.EndsWith("%") ? num.ToString(format.Substring(0, format.Length - 1)) + "%" : num.ToString(format);
                             if (chartStyle == ChartStyle.FullStackedBars)
@@ -3592,7 +3679,7 @@ namespace ag.WPF.Chart
                                     : -(linesCount - i) * 10;
                             if (flowDir == FlowDirection.RightToLeft)
                                 num *= -1;
-                            var number = customValues.Length > index
+                            var number = customValues.Length > index && !Utils.StyleBars(chartStyle)
                                 ? customValues[index++]
                                 : format.EndsWith("%") ? num.ToString(format.Substring(0, format.Length - 1)) + "%" : num.ToString(format);
 
@@ -3632,7 +3719,7 @@ namespace ag.WPF.Chart
                                 ? i
                                 : j;
                             var index = flowDir == FlowDirection.LeftToRight ? i : j;
-                            var number = customValues.Length > index
+                            var number = customValues.Length > index && !Utils.StyleBars(chartStyle)
                                     ? customValues[index]
                                     : format.EndsWith("%") ? num.ToString(format.Substring(0, format.Length - 1)) + "%" : num.ToString(format);
 
@@ -3676,7 +3763,7 @@ namespace ag.WPF.Chart
                                 : Utils.StyleMeasuredBars(chartStyle)
                                     ? flowDir == FlowDirection.LeftToRight ? -j * maxMin / linesCount : -(i + 1) * maxMin / linesCount
                                     : flowDir == FlowDirection.LeftToRight ? -j * 10 : -indexStep * 10;
-                            var number = customValues.Length > index
+                            var number = customValues.Length > index && !Utils.StyleBars(chartStyle)
                                 ? customValues[index]
                                 : format.EndsWith("%") ? num.ToString(format.Substring(0, format.Length - 1)) + "%" : num.ToString(format);
                             if (chartStyle == ChartStyle.FullStackedBars)
@@ -3839,8 +3926,8 @@ namespace ag.WPF.Chart
                     linesCountX = realLinesCount;
             }
 
-            width -= 2 * Utils.AXIS_THICKNESS;
-            height -= 2 * Utils.AXIS_THICKNESS;
+            //width -= 2 * Utils.AXIS_THICKNESS;
+            //height -= 2 * Utils.AXIS_THICKNESS;
 
             var boundOffset = Utils.BoundaryOffset(offsetBoundary, width, ticks);
 
@@ -3877,8 +3964,10 @@ namespace ag.WPF.Chart
                             yStep = (Utils.StyleFullStacked(chartStyle))
                                 ? height / 10
                                 : stepLength;
+
+                        limit = Utils.StyleBars(chartStyle) ? ticks : linesCountY;
                         var y = Utils.AXIS_THICKNESS;
-                        for (var i = 1; i < linesCountY; i++)
+                        for (var i = 1; i < limit; i++)
                         {
                             y += yStep;
                             var start = new Point(Utils.AXIS_THICKNESS, y);
@@ -3911,7 +4000,8 @@ namespace ag.WPF.Chart
                                 ? height / 10
                                 : stepLength;
                         var y = Utils.AXIS_THICKNESS;
-                        for (var i = 1; i < linesCountY; i++)
+                        limit = Utils.StyleBars(chartStyle) ? ticks : linesCountY;
+                        for (var i = 1; i < limit; i++)
                         {
                             y += yStep;
                             var start = new Point(width / 2 - size, y);
@@ -3948,7 +4038,8 @@ namespace ag.WPF.Chart
                                  ? height / 20
                                  : stepLength;
                         var y = Utils.AXIS_THICKNESS;
-                        for (var i = 1; i < linesCountY * 2; i++)
+                        limit = Utils.StyleBars(chartStyle) ? ticks * 2 : linesCountY * 2;
+                        for (var i = 1; i < limit; i++)
                         {
                             y += yStep;
                             if (i == linesCountY) continue;
@@ -3981,7 +4072,8 @@ namespace ag.WPF.Chart
                                  ? height / 10
                                  : stepLength;
                         var y = Utils.AXIS_THICKNESS;
-                        for (var i = 1; i < linesCountY; i++)
+                        limit = Utils.StyleBars(chartStyle) ? ticks : linesCountY;
+                        for (var i = 1; i < limit; i++)
                         {
                             y += yStep;
                             var start = new Point(width - size, y);
@@ -4016,7 +4108,8 @@ namespace ag.WPF.Chart
                         else
                             yStep = stepLength;
                         var y = Utils.AXIS_THICKNESS;
-                        for (var i = 1; i < linesCountY; i++)
+                        limit = Utils.StyleBars(chartStyle) ? ticks : linesCountY;
+                        for (var i = 1; i < limit; i++)
                         {
                             y += yStep;
                             var start = new Point(-size, y);
