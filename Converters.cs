@@ -212,7 +212,7 @@ namespace ag.WPF.Chart
 
             if (fractionPower > 0)
             {
-                min =-Math.Abs(min* Math.Pow(10, fractionPower));
+                min = -Math.Abs(min * Math.Pow(10, fractionPower));
             }
 
             var power = Math.Abs((int)min).ToString().Length - 1;
@@ -512,8 +512,8 @@ namespace ag.WPF.Chart
             var maxIsZero = false;
 
             var values = seriesArray.SelectMany(s => s.Values.Select(v => v.Value.V1));
-                        max = values.Max();
-                        min = values.Min();
+            max = values.Max();
+            min = values.Min();
 
             if (StyleStackedLines(chartStyle) || chartStyle.In(ChartStyle.StackedColumns, ChartStyle.StackedBars))
             {
@@ -554,6 +554,8 @@ namespace ag.WPF.Chart
                         }
                     }
                     values = resultValues.SelectMany(a => a.Items).Select(it => it.Value.V1);
+                    max = values.Max();
+                    min = values.Min();
                     if (values.All(v => v > 0))
                     {
                         minIsZero = true;
@@ -589,18 +591,11 @@ namespace ag.WPF.Chart
             }
 
             if (minIsZero)
-            {
-                //if (getDiff(max,min) >= 1)
-                //    return GetMeasuresForPositive(max, linesCount, radius, fontHeight, 0, new ZeroPoint { Point = centerPoint });
-                //else
-                    return GetMeasuresForPositive(max, linesCount, radius, fontHeight, getMaxFractionPower(values), new ZeroPoint { Point = centerPoint });
-            }
+                return GetMeasuresForPositive(max, linesCount, radius, fontHeight, getMaxFractionPower(values), new ZeroPoint { Point = centerPoint });
             else if (maxIsZero)
                 return GetMeasuresForNegative(min, linesCount, radius, fontHeight, getMaxFractionPower(values), new ZeroPoint { Point = centerPoint });
             else
-            {
                 return GetMeasuresForComplex(chartStyle, max, min, linesCount, radius, fontHeight, getMaxFractionPower(values), new ZeroPoint { Point = centerPoint }, splitSides);
-            }
         }
 
         internal static bool IsInteger(double step)
