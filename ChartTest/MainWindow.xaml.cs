@@ -53,17 +53,21 @@ namespace ChartTest
             var values6 = new double[] { 978, 1458, 1459, 1460, 1461, 425, 172 };
             var values7 = new double[] { -1, -2, -3, -4, -5, -6, -11, -5 };
             var values8 = new double[] { 1017, -1200, -500 };
+            var values9 = new double[] { 0.234, 0.172,   0.2117,  0.37875, 1.84689 };
+            var values10 = new double[] { -0.234, -0.172,   -0.2117,  -0.37875, -1.84689 };
 
             //chTest.ChartStyle = ChartStyle.Columns;
 
-            //Series.Add(new Series("Series 1", values1));
-            //Series.Add(new Series("Series 2", values2));
-            //Series.Add(new Series("Series 3", values3));
-            //Series.Add(new Series("Series 4", values4));
+            Series.Add(new Series("Series 1", values1));
+            Series.Add(new Series("Series 2", values2));
+            Series.Add(new Series("Series 3", values3));
+            Series.Add(new Series("Series 4", values4));
             Series.Add(new Series("Series 5", values5));
-            //Series.Add(new Series("Series 6", values6));
-            //Series.Add(new Series("Series 7", values7));
-            //Series.Add(new Series("Series 8", values8));
+            Series.Add(new Series("Series 6", values6));
+            Series.Add(new Series("Series 7", values7));
+            Series.Add(new Series("Series 8", values8));
+            Series.Add(new Series("Series 9", values9));
+            Series.Add(new Series("Series 10", values10));
 
 
             var customs = new List<string> { "one", "two" };//, "three", "four", "five", "six", "seven", "eight", "nine", "ten" };

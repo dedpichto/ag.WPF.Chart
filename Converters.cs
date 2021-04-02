@@ -131,13 +131,30 @@ namespace ag.WPF.Chart
             return (list.Max(), list.Min());
         }
 
-        internal static (double max, double min, int linesCount, double step, double stepLength, double units, ZeroPoint zeroPoint) GetMeasuresForPositive(double diff, int linesCount, double radius, double fontHeight, ZeroPoint centerPoint)
+        internal static int GetDecimalPlaces(double number)
+        {
+            return BitConverter.GetBytes(decimal.GetBits((decimal)number)[3])[2];
+        }
+
+        private static int getMaxFractionPower(IEnumerable<double> numbers)
+        {
+            return numbers.Select(n => GetDecimalPlaces(n)).Max();
+        }
+
+        internal static (double max, double min, int linesCount, double step, double stepLength, double units, ZeroPoint zeroPoint) GetMeasuresForPositive(double diff, int linesCount, double radius, double fontHeight, int fractionPower, ZeroPoint centerPoint)
         {
             var stepSize = 0.0;
             var stepLength = 0.0;
             var units = 0.0;
+
             // round max to next integer
             diff = Math.Ceiling(diff);
+
+            if (fractionPower > 0)
+            {
+                diff *= Math.Pow(10, fractionPower);
+            }
+
             var power = Math.Abs((int)diff).ToString().Length - 1;
 
             var p = power >= 3 ? power - 1 : power;
@@ -146,7 +163,7 @@ namespace ag.WPF.Chart
                 diff = Math.Sign(diff) * roundInt((int)Math.Abs(diff), (int)Math.Pow(10, power));
             // difference is alway max
             // get all available integer lines counts
-            var lines = calculatedSteps(power, diff).Where(l => isInteger(l)).OrderBy(l => l).Distinct().ToArray();
+            var lines = calculatedSteps(power, diff).Where(l => IsInteger(l)).OrderBy(l => l).Distinct().ToArray();
             // calculate real size for each step
             var sizes = lines.Select(s => radius / s).ToArray();
             // get the largest step with real size more/equal font height
@@ -164,7 +181,7 @@ namespace ag.WPF.Chart
             else
             {
                 stepSize = diff / linesCount;
-                while (!isInteger(stepSize))
+                while (!IsInteger(stepSize))
                 {
                     diff = Math.Sign(diff) * roundInt((int)Math.Abs(diff), (int)Math.Pow(10, power));
                     stepSize = diff / linesCount;
@@ -175,16 +192,29 @@ namespace ag.WPF.Chart
 
             // zero point Y-coordinate is stays the same and leve stays 0
 
+            if (fractionPower > 0)
+            {
+                var m = Math.Pow(10, fractionPower);
+                diff /= m;
+                units *= m;
+                stepSize /= m;
+            }
             return (diff, 0, linesCount, stepSize, stepLength, units, centerPoint);
         }
 
-        internal static (double max, double min, int linesCount, double stepSize, double stepLength, double units, ZeroPoint zeroPoint) GetMeasuresForNegative(double min, int linesCount, double radius, double fontHeight, ZeroPoint zeroPoint)
+        internal static (double max, double min, int linesCount, double stepSize, double stepLength, double units, ZeroPoint zeroPoint) GetMeasuresForNegative(double min, int linesCount, double radius, double fontHeight, int fractionPower, ZeroPoint zeroPoint)
         {
             var stepSize = 0.0;
             var stepLength = 0.0;
             var units = 0.0;
             // round min to prevous integer
             min = Math.Floor(min);
+
+            if (fractionPower > 0)
+            {
+                min =-Math.Abs(min* Math.Pow(10, fractionPower));
+            }
+
             var power = Math.Abs((int)min).ToString().Length - 1;
 
             var p = power >= 3 ? power - 1 : power;
@@ -194,7 +224,7 @@ namespace ag.WPF.Chart
             // difference is always equal absolute value of min
             var diff = Math.Abs(min);
             // get all available integer lines counts
-            var lines = calculatedSteps(power, Math.Abs(min)).Where(l => isInteger(l)).OrderBy(l => l).Distinct().ToArray();
+            var lines = calculatedSteps(power, Math.Abs(min)).Where(l => IsInteger(l)).OrderBy(l => l).Distinct().ToArray();
             // calculate real size for each step
             var sizes = lines.Select(s => radius / s).ToArray();
             // get the largest step with real size more/equal font height
@@ -212,7 +242,7 @@ namespace ag.WPF.Chart
             else
             {
                 stepSize = diff / linesCount;
-                while (!isInteger(stepSize))
+                while (!IsInteger(stepSize))
                 {
                     min = Math.Sign(min) * roundInt((int)Math.Abs(min), (int)Math.Pow(10, power));
                     diff = Math.Abs(min);
@@ -221,9 +251,18 @@ namespace ag.WPF.Chart
                 units = Math.Abs(radius / diff);
                 stepLength = radius / linesCount;
             }
+
             // find zero point
             zeroPoint.Point.Y -= stepSize * linesCount * units;
             zeroPoint.Level = linesCount;
+
+            if (fractionPower > 0)
+            {
+                var m = Math.Pow(10, fractionPower);
+                min /= m;
+                units *= m;
+                stepSize /= m;
+            }
 
             return (0, min, linesCount, stepSize, stepLength, units, zeroPoint);
         }
@@ -231,7 +270,7 @@ namespace ag.WPF.Chart
         private static int getLineNumbersForComplexRadar(int power, double max, double radius, double fontHeight, double diff, double min)
         {
             // get all available integer lines counts
-            var lines = calculatedSteps(power, max).Where(l => isInteger(l)).OrderBy(l => l).Distinct().ToArray();
+            var lines = calculatedSteps(power, max).Where(l => IsInteger(l)).OrderBy(l => l).Distinct().ToArray();
             var sizes = lines.Select(s => radius / s).ToArray();
             // get the largest step with real size more/equal font height
             var items = sizes.Select((size, index) => new { size, index }).Where(a => a.size >= fontHeight + 4).OrderByDescending(a => a.index);
@@ -254,7 +293,7 @@ namespace ag.WPF.Chart
 
         private static int getLineNumbersForCoplex(int power, double max, double radius, double fontHeight, double diff, double min)
         {
-            var lines = calculatedSteps(power, max).Where(l => isInteger(l)).OrderBy(l => l).Distinct().ToArray();
+            var lines = calculatedSteps(power, max).Where(l => IsInteger(l)).OrderBy(l => l).Distinct().ToArray();
             var sizes = lines.Select(s => radius / s).ToArray();
             var splitItem = sizes.Select((size, index) => new { size, index }).LastOrDefault(a => a.size >= fontHeight + 4);
             if (splitItem != null)
@@ -264,16 +303,22 @@ namespace ag.WPF.Chart
             return 0;
         }
 
-        internal static (double max, double min, int linesCount, double stepSize, double stepLength, double units, ZeroPoint zeroPoint) GetMeasuresForComplex(ChartStyle chartStyle, double max, double min, int linesCount, double radius, double fontHeight, ZeroPoint zeroPoint, bool splitSides)
+        internal static (double max, double min, int linesCount, double stepSize, double stepLength, double units, ZeroPoint zeroPoint) GetMeasuresForComplex(ChartStyle chartStyle, double max, double min, int linesCount, double radius, double fontHeight, int fractionPower, ZeroPoint zeroPoint, bool splitSides)
         {
             int tempLines;
 
             // round max to next integer
             max = Math.Ceiling(max);
-            var powerMax = Math.Abs((int)max).ToString().Length - 1;
-
             // round min to prevous integer
             min = Math.Floor(min);
+
+            if (fractionPower > 0)
+            {
+                max *= Math.Pow(10, fractionPower);
+                min = -Math.Abs(min * Math.Pow(10, fractionPower));
+            }
+
+            var powerMax = Math.Abs((int)max).ToString().Length - 1;
             var powerMin = Math.Abs((int)min).ToString().Length - 1;
 
             // do not increase max for integers that are equal to 10 power
@@ -324,6 +369,7 @@ namespace ag.WPF.Chart
                 stepLength = radius / linesCount;
                 // prepare units
                 units = Math.Abs(radius / diff);
+
                 // find zero point
                 temp = min;
                 while (temp < 0)
@@ -331,6 +377,15 @@ namespace ag.WPF.Chart
                     temp += stepSize;
                     zeroPoint.Point.Y -= stepSize * units;
                     zeroPoint.Level++;
+                }
+
+                if (fractionPower > 0)
+                {
+                    var m = Math.Pow(10, fractionPower);
+                    min /= m;
+                    max /= m;
+                    units *= m;
+                    stepSize /= m;
                 }
 
                 return (max, min, linesCount, stepSize, stepLength, units, zeroPoint);
@@ -350,6 +405,7 @@ namespace ag.WPF.Chart
                     stepLength = radius / linesCount;
                     // prepare units
                     units = Math.Abs(radius / diff);
+
                     // find zero point
                     temp = min;
                     while (temp < 0)
@@ -358,6 +414,16 @@ namespace ag.WPF.Chart
                         zeroPoint.Point.Y -= stepSize * units;
                         zeroPoint.Level++;
                     }
+
+                    if (fractionPower > 0)
+                    {
+                        var m = Math.Pow(10, fractionPower);
+                        min /= m;
+                        max /= m;
+                        units *= m;
+                        stepSize /= m;
+                    }
+
                     return (max, min, linesCount, stepSize, stepLength, units, zeroPoint);
                 }
             }
@@ -385,7 +451,7 @@ namespace ag.WPF.Chart
                     linesCount--;
                     diff = getDiff(max, min);
                     stepSize = diff / linesCount;
-                    while (!isInteger(stepSize) || stepSize < prevMin)
+                    while (!IsInteger(stepSize) || stepSize < prevMin)
                     {
                         max = Math.Sign(max) * roundInt((int)Math.Abs(max), (int)Math.Pow(10, powerMax));
                         diff = getDiff(max, min);
@@ -404,7 +470,7 @@ namespace ag.WPF.Chart
                     linesCount--;
                     diff = getDiff(max, min);
                     stepSize = diff / linesCount;
-                    while (!isInteger(stepSize) || stepSize < prevMax)
+                    while (!IsInteger(stepSize) || stepSize < prevMax)
                     {
                         min = Math.Sign(min) * roundInt((int)Math.Abs(min), (int)Math.Pow(10, powerMin));
                         diff = getDiff(max, min);
@@ -426,6 +492,15 @@ namespace ag.WPF.Chart
                 zeroPoint.Level++;
             }
 
+            if (fractionPower > 0)
+            {
+                var m = Math.Pow(10, fractionPower);
+                min /= m;
+                max /= m;
+                units *= m;
+                stepSize /= m;
+            }
+
             return (max, min, linesCount, stepSize, stepLength, units, zeroPoint);
         }
 
@@ -433,7 +508,12 @@ namespace ag.WPF.Chart
         {
             var max = 0.0;
             var min = 0.0;
+            var minIsZero = false;
+            var maxIsZero = false;
+
             var values = seriesArray.SelectMany(s => s.Values.Select(v => v.Value.V1));
+                        max = values.Max();
+                        min = values.Min();
 
             if (StyleStackedLines(chartStyle) || chartStyle.In(ChartStyle.StackedColumns, ChartStyle.StackedBars))
             {
@@ -441,18 +521,11 @@ namespace ag.WPF.Chart
                 {
                     if (values.All(v => v > 0))
                     {
-                        max = values.Max();
-                        min = 0;
+                        minIsZero = true;
                     }
                     else if (values.All(v => v < 0))
                     {
-                        max = 0;
-                        min = values.Min();
-                    }
-                    else
-                    {
-                        max = values.Max();
-                        min = values.Min();
+                        maxIsZero = true;
                     }
                 }
                 else
@@ -476,24 +549,18 @@ namespace ag.WPF.Chart
                         var temps = tempValues.Where(rw => rw.Index < index);
                         for (var i = 0; i < resultValues[index].Items.Count; i++)
                         {
-                            resultValues[index].Items[i] = new ChartValue(resultValues[index].Items[i].Value.V1 + temps.Sum(t => t.Items[i].Value.V1));
+                            var v = (decimal)resultValues[index].Items[i].Value.V1 + temps.Sum(t => (decimal)t.Items[i].Value.V1);
+                            resultValues[index].Items[i] = new ChartValue((double)v);
                         }
                     }
                     values = resultValues.SelectMany(a => a.Items).Select(it => it.Value.V1);
                     if (values.All(v => v > 0))
                     {
-                        max = values.Max();
-                        min = 0;
+                        minIsZero = true;
                     }
                     else if (values.All(v => v < 0))
                     {
-                        max = 0;
-                        min = values.Min();
-                    }
-                    else
-                    {
-                        max = values.Max();
-                        min = values.Min();
+                        maxIsZero = true;
                     }
                 }
             }
@@ -502,43 +569,41 @@ namespace ag.WPF.Chart
                 (max, min) = GetMaxMinForWaterfall(seriesArray[0].Values.Select(v => v.Value.V1).ToArray());
                 if (max > 0 && min > 0)
                 {
-                    min = 0;
+                    minIsZero = true;
                 }
                 else if (max < 0 && min < 0)
                 {
-                    max = 0;
+                    maxIsZero = true;
                 }
             }
             else
             {
                 if (values.All(v => v > 0))
                 {
-                    max = values.Max();
-                    min = 0;
+                    minIsZero = true;
                 }
                 else if (values.All(v => v < 0))
                 {
-                    max = 0;
-                    min = values.Min();
-                }
-                else
-                {
-                    max = values.Max();
-                    min = values.Min();
+                    maxIsZero = true;
                 }
             }
 
-            if (min == 0)
-                return GetMeasuresForPositive(max, linesCount, radius, fontHeight, new ZeroPoint { Point = centerPoint });
-            else if (max == 0)
-                return GetMeasuresForNegative(min, linesCount, radius, fontHeight, new ZeroPoint { Point = centerPoint });
+            if (minIsZero)
+            {
+                //if (getDiff(max,min) >= 1)
+                //    return GetMeasuresForPositive(max, linesCount, radius, fontHeight, 0, new ZeroPoint { Point = centerPoint });
+                //else
+                    return GetMeasuresForPositive(max, linesCount, radius, fontHeight, getMaxFractionPower(values), new ZeroPoint { Point = centerPoint });
+            }
+            else if (maxIsZero)
+                return GetMeasuresForNegative(min, linesCount, radius, fontHeight, getMaxFractionPower(values), new ZeroPoint { Point = centerPoint });
             else
             {
-                return GetMeasuresForComplex(chartStyle, max, min, linesCount, radius, fontHeight, new ZeroPoint { Point = centerPoint }, splitSides);
+                return GetMeasuresForComplex(chartStyle, max, min, linesCount, radius, fontHeight, getMaxFractionPower(values), new ZeroPoint { Point = centerPoint }, splitSides);
             }
         }
 
-        private static bool isInteger(double step)
+        internal static bool IsInteger(double step)
         {
             return Math.Abs(step % 1) <= (double.Epsilon * 100);
         }
@@ -3297,7 +3362,18 @@ namespace ag.WPF.Chart
                 linesCountY = realLinesCount;
             }
 
-            var maxMin = (int)Math.Abs(Math.Max(max, Math.Abs(min)));
+            var maxMin = Math.Abs(Math.Max(max, Math.Abs(min)));
+
+            // fractional stepSize
+            if (!Utils.IsInteger(stepSize))
+            {
+                var fractions = Utils.GetDecimalPlaces(stepSize);
+                if (format.EndsWith("%"))
+                    format = $"{format.Substring(0, format.Length - 1)}{culture.NumberFormat.NumberDecimalSeparator}{new string('0', fractions)}%";
+                else
+                    format += $"{culture.NumberFormat.NumberDecimalSeparator}{new string('0', fractions)}";
+            }
+
             switch (dir)
             {
                 case Directions.NorthEastSouthEast:
@@ -3478,7 +3554,7 @@ namespace ag.WPF.Chart
             width -= 2 * Utils.AXIS_THICKNESS;
             var stepLength = 0.0;
             var stepSize = 0.0;
-            var maxMin = 0;
+            var maxMin = 0.0;
 
 
             if (Utils.StyleBars(chartStyle))
@@ -3499,7 +3575,18 @@ namespace ag.WPF.Chart
 
                 stepLength = stepL;
                 stepSize = stepS;
-                maxMin = (int)Math.Abs(Math.Max(max, Math.Abs(min)));
+                maxMin = Math.Abs(Math.Max(max, Math.Abs(min)));
+
+                // fractional stepSize
+                if (!Utils.IsInteger(stepSize))
+                {
+                    var fractions = Utils.GetDecimalPlaces(stepSize);
+                    if (format.EndsWith("%"))
+                        format = $"{format.Substring(0, format.Length - 1)}{culture.NumberFormat.NumberDecimalSeparator}{new string('0', fractions)}%";
+                    else
+                        format += $"{culture.NumberFormat.NumberDecimalSeparator}{new string('0', fractions)}";
+                }
+
                 if (chartStyle == ChartStyle.FullStackedBars)
                 {
                     linesCount = 10;
@@ -4702,6 +4789,16 @@ namespace ag.WPF.Chart
                     new Typeface(fontFamily, fontStyle, fontWeight, fontStretch), fontSize, Brushes.Black, VisualTreeHelper.GetDpi(Utils.Border).PixelsPerDip);
             var (max, min, realLinesCount, stepSize, _, _, _) = Utils.GetMeasures(chartStyle, series, linesCount, radius, fmtY.Height, centerPoint);
             linesCount = realLinesCount;
+
+            // fractional stepSize
+            if (!Utils.IsInteger(stepSize))
+            {
+                var fractions = Utils.GetDecimalPlaces(stepSize);
+                if (format.EndsWith("%"))
+                    format = $"{format.Substring(0, format.Length - 1)}{culture.NumberFormat.NumberDecimalSeparator}{new string('0', fractions)}%";
+                else
+                    format += $"{culture.NumberFormat.NumberDecimalSeparator}{new string('0', fractions)}";
+            }
 
             var stepY = radius / linesCount;
             var xY = centerPoint.X - 4;
