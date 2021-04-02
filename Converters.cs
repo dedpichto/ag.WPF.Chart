@@ -105,6 +105,150 @@ namespace ag.WPF.Chart
             return number % 5 == 0;
         }
 
+        internal static double GetUnitsForBars(Series[] series, ChartStyle chartStyle, Directions dir, double width, double height, double boundOffset, int linesCountX, double formatHeight, bool autoAdjust, double maxX)
+        {
+            var centerX = 0.0;
+            var radius = 0.0;
+
+            switch (dir)
+            {
+                case Directions.NorthEast:
+                case Directions.NorthWest:
+                case Directions.SouthEast:
+                    centerX = Utils.AXIS_THICKNESS;
+                    radius = width - Utils.AXIS_THICKNESS;
+                    break;
+                case Directions.NorthEastNorthWest:
+                    centerX = Utils.AXIS_THICKNESS;
+                    radius = (width - Utils.AXIS_THICKNESS) / 2;
+                    break;
+                case Directions.NorthEastSouthEast:
+                    centerX = Utils.AXIS_THICKNESS;
+                    radius = width - Utils.AXIS_THICKNESS;
+                    break;
+            }
+            if (!autoAdjust)
+                return radius / maxX;
+            var centerPoint = new Point(centerX, radius);
+            var (_, _, _, _, _, units, _) = Utils.GetMeasures(
+               chartStyle,
+               series,
+               linesCountX,
+               radius,
+               formatHeight,
+               centerPoint,
+               dir == Directions.NorthEastNorthWest);
+            return units;
+        }
+
+        internal static double GetUnitsForLines(Series[] series, ChartStyle chartStyle, Directions dir, double width, double height, double boundOffset, int linesCountY, double formatHeight, bool autoAdjust, double maxY)
+        {
+            var centerX = 0.0;
+            var radius = 0.0;
+
+            switch (dir)
+            {
+                case Directions.NorthEast:
+                case Directions.NorthWest:
+                case Directions.SouthEast:
+                    centerX = Utils.AXIS_THICKNESS + boundOffset;
+                    radius = height - Utils.AXIS_THICKNESS;
+                    break;
+                case Directions.NorthEastNorthWest:
+                    centerX = width / 2;
+                    radius = height - Utils.AXIS_THICKNESS;
+                    break;
+                case Directions.NorthEastSouthEast:
+                    centerX = Utils.AXIS_THICKNESS + boundOffset;
+                    radius = (height - Utils.AXIS_THICKNESS) / 2;
+                    break;
+            }
+            if (!autoAdjust)
+                return radius / maxY;
+            var centerPoint = new Point(centerX, radius);
+            var (_, _, _, _, _, units, _) = Utils.GetMeasures(
+               chartStyle,
+               series,
+               linesCountY,
+               radius,
+               formatHeight,
+               centerPoint,
+               dir == Directions.NorthEastSouthEast);
+            return units;
+        }
+
+        internal static double GetMaxForBars(Series[] series, ChartStyle chartStyle, Directions dir, double width, double height, double boundOffset, int linesCountX, double formatHeight, bool autoAdjust, double maxX)
+        {
+            var centerX = 0.0;
+            var radius = 0.0;
+
+            switch (dir)
+            {
+                case Directions.NorthEast:
+                case Directions.NorthWest:
+                case Directions.SouthEast:
+                    centerX = Utils.AXIS_THICKNESS;
+                    radius = width - Utils.AXIS_THICKNESS;
+                    break;
+                case Directions.NorthEastNorthWest:
+                    centerX = Utils.AXIS_THICKNESS;
+                    radius = (width - Utils.AXIS_THICKNESS) / 2;
+                    break;
+                case Directions.NorthEastSouthEast:
+                    centerX = Utils.AXIS_THICKNESS;
+                    radius = width - Utils.AXIS_THICKNESS;
+                    break;
+            }
+            if (!autoAdjust)
+                return maxX;
+            var centerPoint = new Point(centerX, radius);
+            var (max, _, _, _, _, _, _) = Utils.GetMeasures(
+               chartStyle,
+               series,
+               linesCountX,
+               radius,
+               formatHeight,
+               centerPoint,
+               dir == Directions.NorthEastNorthWest);
+            return max;
+        }
+
+        internal static double GetMaxForLines(Series[] series, ChartStyle chartStyle, Directions dir, double width, double height, double boundOffset, int linesCountY, double formatHeight, bool autoAdjust, double maxY)
+        {
+            var centerX = 0.0;
+            var radius = 0.0;
+
+            switch (dir)
+            {
+                case Directions.NorthEast:
+                case Directions.NorthWest:
+                case Directions.SouthEast:
+                    centerX = Utils.AXIS_THICKNESS + boundOffset;
+                    radius = height - Utils.AXIS_THICKNESS;
+                    break;
+                case Directions.NorthEastNorthWest:
+                    centerX = width / 2;
+                    radius = height - Utils.AXIS_THICKNESS;
+                    break;
+                case Directions.NorthEastSouthEast:
+                    centerX = Utils.AXIS_THICKNESS + boundOffset;
+                    radius = (height - Utils.AXIS_THICKNESS) / 2;
+                    break;
+            }
+            if (!autoAdjust)
+                return maxY;
+            var centerPoint = new Point(centerX, radius);
+            var (max, _, _, _, _, _, _) = Utils.GetMeasures(
+               chartStyle,
+               series,
+               linesCountY,
+               radius,
+               formatHeight,
+               centerPoint,
+               dir == Directions.NorthEastSouthEast);
+            return max;
+        }
+
         internal static List<(List<ChartValue> Values, int Index)> GetPaddedSeries(IEnumerable<Series> series)
         {
             var rawValues = series.Select(s => (s.Values.ToList(), s.Index)).ToList();
@@ -1228,8 +1372,7 @@ namespace ag.WPF.Chart
                     {
                         var units = getUnitsForLines(series, chartStyle, dir, width, height, boundOffset, linesCountY, fmt.Height, autoAdjust, maxYConv);
                         maxX = series.Max(s => s.Values.Count);
-                        maxY = autoAdjust ? Utils.GetMaxY(rawValues, chartStyle) : maxYConv;
-                        gm = drawBubbles(width, height, maxX, maxY, units, dir, series.FirstOrDefault(s => s.Index == index), offsetBoundary);
+                        gm = drawBubbles(width, height, maxX, units, dir, series.FirstOrDefault(s => s.Index == index), offsetBoundary);
                         break;
                     }
                 case ChartStyle.StackedLines:
@@ -1240,8 +1383,7 @@ namespace ag.WPF.Chart
                     {
                         var units = getUnitsForLines(series, chartStyle, dir, width, height, boundOffset, linesCountY, fmt.Height, autoAdjust, maxYConv);
                         maxX = series.Max(s => s.Values.Count);
-                        maxY = autoAdjust ? Utils.GetMaxY(rawValues, chartStyle) : maxYConv;
-                        gm = drawStackedLine(width, height, maxX, maxY, units, chartStyle, dir, series, index, rawValues, offsetBoundary);
+                        gm = drawStackedLine(width, height, maxX, units, chartStyle, dir, series, index, rawValues, offsetBoundary);
                         break;
                     }
                 case ChartStyle.FullStackedLines:
@@ -1249,48 +1391,44 @@ namespace ag.WPF.Chart
                 case ChartStyle.SmoothFullStackedLines:
                 case ChartStyle.SmoothFullStackedLinesWithMarkers:
                     maxX = series.Max(s => s.Values.Count);
-                    maxY = autoAdjust ? Utils.GetMaxY(rawValues, chartStyle) : maxYConv;
+                    maxY = 100.0;
                     gm = drawFullStackedLine(width, height, maxX, maxY, chartStyle, dir, series, index, rawValues, offsetBoundary);
                     break;
                 case ChartStyle.Columns:
                     {
                         var units = getUnitsForLines(series, chartStyle, dir, width, height, boundOffset, linesCountY, fmt.Height, autoAdjust, maxYConv);
-                        maxY = autoAdjust ? Utils.GetMaxY(rawValues, chartStyle) : maxYConv;
                         gm = drawColumns(width, height, units, dir, series, index);
                         break;
                     }
                 case ChartStyle.StackedColumns:
                     {
                         var units = getUnitsForLines(series, chartStyle, dir, width, height, boundOffset, linesCountY, fmt.Height, autoAdjust, maxYConv);
-                        maxY = autoAdjust ? Utils.GetMaxY(rawValues, chartStyle) : maxYConv;
                         gm = drawStackedColumns(width, height, units, dir, series, index, rawValues);
                         break;
                     }
                 case ChartStyle.FullStackedColumns:
-                    maxY = autoAdjust ? Utils.GetMaxY(rawValues, chartStyle) : maxYConv;
+                    maxY = 100.0;
                     gm = drawFullStackedColumns(width, height, maxY, dir, series, index, rawValues);
                     break;
                 case ChartStyle.Bars:
                     {
                         var units = getUnitsForBars(series, chartStyle, dir, width, height, boundOffset, linesCountX, fmt.Height, autoAdjust, maxXConv);
-                        maxY = autoAdjust ? Utils.GetMaxY(rawValues, chartStyle) : maxXConv;
                         gm = drawBars(width, height, units, dir, series, index);
                         break;
                     }
                 case ChartStyle.StackedBars:
                     {
                         var units = getUnitsForBars(series, chartStyle, dir, width, height, boundOffset, linesCountX, fmt.Height, autoAdjust, maxXConv);
-                        maxY = autoAdjust ? Utils.GetMaxY(rawValues, chartStyle) : maxXConv;
                         gm = drawStackedBars(width, height, units, dir, series, index, rawValues);
                         break;
                     }
                 case ChartStyle.FullStackedBars:
-                    maxY = autoAdjust ? Utils.GetMaxY(rawValues, chartStyle) : maxXConv;
+                    maxY = 100.0;
                     gm = drawFullStackedBars(width, height, maxY, dir, series, index, rawValues);
                     break;
                 case ChartStyle.FullStackedArea:
                     maxX = series.Max(s => s.Values.Count);
-                    maxY = autoAdjust ? Utils.GetMaxY(rawValues, chartStyle) : maxYConv;
+                    maxY = 100.0;
                     gm = drawFullStackedArea(width, height, maxX, maxY, dir, series, index, rawValues);
                     break;
             }
@@ -1888,7 +2026,7 @@ namespace ag.WPF.Chart
             return gm;
         }
 
-        private PathGeometry drawStackedLine(double width, double height, double maxX, double maxY, double units, ChartStyle style,
+        private PathGeometry drawStackedLine(double width, double height, double maxX, double units, ChartStyle style,
             Directions dir, Series[] series, int index, List<(List<ChartValue> Values, int Index)> tuples, bool offsetBoundary)
         {
             var tp = tuples.FirstOrDefault(t => t.Index == index);
@@ -2130,7 +2268,7 @@ namespace ag.WPF.Chart
             return gm;
         }
 
-        private PathGeometry drawBubbles(double width, double height, int maxX, double maxY, double units, Directions dir, Series currentSeries, bool offsetBoundary)
+        private PathGeometry drawBubbles(double width, double height, int maxX, double units, Directions dir, Series currentSeries, bool offsetBoundary)
         {
             double stepX;
             double centerX, centerY;
@@ -2928,9 +3066,8 @@ namespace ag.WPF.Chart
                 || !(values[6] is FontStyle fontStyle)
                 || !(values[7] is FontWeight fontWeight)
                 || !(values[8] is FontStretch fontStretch)
-                //|| !(values[9] is IEnumerable<string> customEnumerable)
                 || !(values[10] is bool autoAdjust)
-                || !(values[11] is double maxY)
+                || !(values[11] is double maxX)
                 || !(values[12] is ChartBoundary chartBoundary)
                 || !(values[13] is double width))
                 return 0;
@@ -2954,7 +3091,7 @@ namespace ag.WPF.Chart
                 : series[0].Values.Select(v => v.Value.V1);
 
             var dir = Utils.GetDirection(totalValues, chartStyle);
-            var max = autoAdjust ? Utils.GetMaxY(rawValues, chartStyle) : maxY;
+            var max = autoAdjust ? Utils.GetMaxY(rawValues, chartStyle) : maxX;
             var offsetBoundary = Utils.OffsetBoundary(chartBoundary, chartStyle);
             var boundOffset = Utils.BoundaryOffset(offsetBoundary, width, ticks);
 
@@ -3058,9 +3195,8 @@ namespace ag.WPF.Chart
                 || !(values[6] is FontStyle fontStyle)
                 || !(values[7] is FontWeight fontWeight)
                 || !(values[8] is FontStretch fontStretch)
-                //|| !(values[9] is IEnumerable<string> customEnumerable)
                 || !(values[10] is bool autoAdjust)
-                || !(values[11] is double maxX))
+                || !(values[11] is double maxY))
                 return 0;
             var width = 28.0;
 
@@ -3084,7 +3220,7 @@ namespace ag.WPF.Chart
                 : series[0].Values.Select(v => v.Value.V1);
 
             var dir = Utils.GetDirection(totalValues, chartStyle);
-            var max = autoAdjust ? Utils.GetMaxY(rawValues, chartStyle) : maxX;
+            var max = autoAdjust ? Utils.GetMaxY(rawValues, chartStyle) : maxY;
             var maxString = "";
             FormattedText fmt;
             switch (dir)
