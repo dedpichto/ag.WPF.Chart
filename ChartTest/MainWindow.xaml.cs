@@ -56,14 +56,14 @@ namespace ChartTest
 
             //chTest.ChartStyle = ChartStyle.Columns;
 
-            Series.Add(new Series("Series 1", values1));
-            Series.Add(new Series("Series 2", values2));
-            Series.Add(new Series("Series 3", values3));
-            Series.Add(new Series("Series 4", values4));
+            //Series.Add(new Series("Series 1", values1));
+            //Series.Add(new Series("Series 2", values2));
+            //Series.Add(new Series("Series 3", values3));
+            //Series.Add(new Series("Series 4", values4));
             Series.Add(new Series("Series 5", values5));
-            Series.Add(new Series("Series 6", values6));
-            Series.Add(new Series("Series 7", values7));
-            Series.Add(new Series("Series 8", values8));
+            //Series.Add(new Series("Series 6", values6));
+            //Series.Add(new Series("Series 7", values7));
+            //Series.Add(new Series("Series 8", values8));
 
 
             var customs = new List<string> { "one", "two" };//, "three", "four", "five", "six", "seven", "eight", "nine", "ten" };

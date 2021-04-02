@@ -343,7 +343,8 @@
                                                 <Binding Path="AxesFontWeight" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                                 <Binding Path="AxesFontStretch" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                                 <Binding Path="AutoAdjust" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
-                                                
+                                                <Binding Path="MaxX" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                                <Binding Path="MaxY" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                             </MultiBinding>
                                         </Path.Data>
                                     </Path>
@@ -361,7 +362,7 @@
                                                 <Binding Path="AxesFontWeight" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                                 <Binding Path="AxesFontStretch" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                                 <Binding Path="AutoAdjust" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
-                                                
+                                                <Binding Path="MaxY" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                             </MultiBinding>
                                         </Path.Data>
                                     </Path>
@@ -380,7 +381,7 @@
                                                 <Binding Path="AxesFontWeight" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                                 <Binding Path="AxesFontStretch" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                                 <Binding Path="AutoAdjust" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
-                                                
+                                                <Binding Path="MaxX" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                             </MultiBinding>
                                         </Path.Data>
                                     </Path>

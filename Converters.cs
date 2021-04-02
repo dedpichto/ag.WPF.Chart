@@ -131,23 +131,22 @@ namespace ag.WPF.Chart
             return (list.Max(), list.Min());
         }
 
-        internal static (double max, double min, int linesCount, double step, double stepLength, double units, ZeroPoint zeroPoint) GetMeasuresForPositive(double max, double min, int linesCount, double radius, double fontHeight, ZeroPoint centerPoint)
+        internal static (double max, double min, int linesCount, double step, double stepLength, double units, ZeroPoint zeroPoint) GetMeasuresForPositive(double diff, int linesCount, double radius, double fontHeight, ZeroPoint centerPoint)
         {
             var stepSize = 0.0;
             var stepLength = 0.0;
             var units = 0.0;
             // round max to next integer
-            max = Math.Ceiling(max);
-            var power = Math.Abs((int)max).ToString().Length - 1;
+            diff = Math.Ceiling(diff);
+            var power = Math.Abs((int)diff).ToString().Length - 1;
 
             var p = power >= 3 ? power - 1 : power;
             // do not increase max for integers that are equal to 10 power
-            if (max % Math.Pow(10, p) != 0)
-                max = Math.Sign(max) * roundInt((int)Math.Abs(max), (int)Math.Pow(10, power));
-            // store max and min difference
-            var diff = getDiff(max, min);
+            if (diff % Math.Pow(10, p) != 0)
+                diff = Math.Sign(diff) * roundInt((int)Math.Abs(diff), (int)Math.Pow(10, power));
+            // difference is alway max
             // get all available integer lines counts
-            var lines = calculatedSteps(power, max).Where(l => isInteger(l)).OrderBy(l => l).Distinct().ToArray();
+            var lines = calculatedSteps(power, diff).Where(l => isInteger(l)).OrderBy(l => l).Distinct().ToArray();
             // calculate real size for each step
             var sizes = lines.Select(s => radius / s).ToArray();
             // get the largest step with real size more/equal font height
@@ -167,8 +166,7 @@ namespace ag.WPF.Chart
                 stepSize = diff / linesCount;
                 while (!isInteger(stepSize))
                 {
-                    max = Math.Sign(max) * roundInt((int)Math.Abs(max), (int)Math.Pow(10, power));
-                    diff = getDiff(max, min);
+                    diff = Math.Sign(diff) * roundInt((int)Math.Abs(diff), (int)Math.Pow(10, power));
                     stepSize = diff / linesCount;
                 }
                 stepLength = radius / linesCount;
@@ -177,10 +175,10 @@ namespace ag.WPF.Chart
 
             // zero point Y-coordinate is stays the same and leve stays 0
 
-            return (max, min, linesCount, stepSize, stepLength, units, centerPoint);
+            return (diff, 0, linesCount, stepSize, stepLength, units, centerPoint);
         }
 
-        internal static (double max, double min, int linesCount, double stepSize, double stepLength, double units, ZeroPoint zeroPoint) GetMeasuresForNegative(double max, double min, int linesCount, double radius, double fontHeight, ZeroPoint zeroPoint)
+        internal static (double max, double min, int linesCount, double stepSize, double stepLength, double units, ZeroPoint zeroPoint) GetMeasuresForNegative(double min, int linesCount, double radius, double fontHeight, ZeroPoint zeroPoint)
         {
             var stepSize = 0.0;
             var stepLength = 0.0;
@@ -193,8 +191,8 @@ namespace ag.WPF.Chart
             // do not increase max for integers that are equal to 10 power
             if (min % Math.Pow(10, p) != 0)
                 min = Math.Sign(min) * roundInt((int)Math.Abs(min), (int)Math.Pow(10, power));
-            // store max and min difference
-            var diff = getDiff(max, min);
+            // difference is always equal absolute value of min
+            var diff = Math.Abs(min);
             // get all available integer lines counts
             var lines = calculatedSteps(power, Math.Abs(min)).Where(l => isInteger(l)).OrderBy(l => l).Distinct().ToArray();
             // calculate real size for each step
@@ -217,7 +215,7 @@ namespace ag.WPF.Chart
                 while (!isInteger(stepSize))
                 {
                     min = Math.Sign(min) * roundInt((int)Math.Abs(min), (int)Math.Pow(10, power));
-                    diff = getDiff(max, min);
+                    diff = Math.Abs(min);
                     stepSize = diff / linesCount;
                 }
                 units = Math.Abs(radius / diff);
@@ -227,7 +225,7 @@ namespace ag.WPF.Chart
             zeroPoint.Point.Y -= stepSize * linesCount * units;
             zeroPoint.Level = linesCount;
 
-            return (max, min, linesCount, stepSize, stepLength, units, zeroPoint);
+            return (0, min, linesCount, stepSize, stepLength, units, zeroPoint);
         }
 
         private static int getLineNumbersForComplexRadar(int power, double max, double radius, double fontHeight, double diff, double min)
@@ -531,9 +529,9 @@ namespace ag.WPF.Chart
             }
 
             if (min == 0)
-                return GetMeasuresForPositive(max, 0, linesCount, radius, fontHeight, new ZeroPoint { Point = centerPoint });
+                return GetMeasuresForPositive(max, linesCount, radius, fontHeight, new ZeroPoint { Point = centerPoint });
             else if (max == 0)
-                return GetMeasuresForNegative(0, min, linesCount, radius, fontHeight, new ZeroPoint { Point = centerPoint });
+                return GetMeasuresForNegative(min, linesCount, radius, fontHeight, new ZeroPoint { Point = centerPoint });
             else
             {
                 return GetMeasuresForComplex(chartStyle, max, min, linesCount, radius, fontHeight, new ZeroPoint { Point = centerPoint }, splitSides);
@@ -3181,7 +3179,11 @@ namespace ag.WPF.Chart
 
                             var fmt = new FormattedText(number, culture, FlowDirection.LeftToRight,
                                 new Typeface(fontFamily, fontStyle, fontWeight, fontStretch), fontSize, Brushes.Black, VisualTreeHelper.GetDpi(Utils.Border).PixelsPerDip)
-                            { TextAlignment = TextAlignment.Right };
+                            {
+                                TextAlignment = flowDir == FlowDirection.LeftToRight
+                                    ? dir == Directions.NorthWest ? TextAlignment.Left : TextAlignment.Right
+                                    : dir == Directions.NorthWest ? TextAlignment.Right : TextAlignment.Left
+                            };
 
                             var pt = new Point(0, y - (yStep + fmt.Height) / 2);
                             var ngm = fmt.BuildGeometry(pt);
@@ -3743,7 +3745,9 @@ namespace ag.WPF.Chart
                 || !(values[9] is FontStyle fontStyle)
                 || !(values[10] is FontWeight fontWeight)
                 || !(values[11] is FontStretch fontStretch)
-                || !(values[12] is bool autoAdjust))
+                || !(values[12] is bool autoAdjust)
+                || !(values[13] is double maxX)
+                || !(values[14] is double maxY))
                 return null;
 
             if (chartStyle.In(ChartStyle.Area, ChartStyle.StackedArea, ChartStyle.FullStackedArea, ChartStyle.Radar, ChartStyle.RadarWithMarkers, ChartStyle.RadarArea, ChartStyle.SmoothArea))
@@ -3813,14 +3817,16 @@ namespace ag.WPF.Chart
             var fmtY = new FormattedText("AAA", culture, FlowDirection.LeftToRight,
                     new Typeface(fontFamily, fontStyle, fontWeight, fontStretch), fontSize, Brushes.Black, VisualTreeHelper.GetDpi(Utils.Border).PixelsPerDip);
 
-            var (max, min, realLinesCount, stepSize, stepLength, units, zeroPoint) = Utils.GetMeasures(
-               chartStyle,
-               series,
-               Utils.StyleBars(chartStyle) ? linesCountX : linesCountY,
-               radius,
-               fmtY.Height,
-               centerPoint,
-               !Utils.StyleBars(chartStyle) ? dir == Directions.NorthEastSouthEast : dir == Directions.NorthEastNorthWest);
+            var (max, min, realLinesCount, stepSize, stepLength, units, zeroPoint) = autoAdjust
+                ? Utils.GetMeasures(
+                   chartStyle,
+                   series,
+                   Utils.StyleBars(chartStyle) ? linesCountX : linesCountY,
+                   radius,
+                   fmtY.Height,
+                   centerPoint,
+                   !Utils.StyleBars(chartStyle) ? dir == Directions.NorthEastSouthEast : dir == Directions.NorthEastNorthWest)
+                : (maxY, -maxY, linesCountY, maxY / linesCountY, radius / linesCountY, radius / maxY, default);
 
             if (!Utils.StyleBars(chartStyle))
             {
@@ -4070,7 +4076,8 @@ namespace ag.WPF.Chart
                 || !(values[8] is FontStyle fontStyle)
                 || !(values[9] is FontWeight fontWeight)
                 || !(values[10] is FontStretch fontStretch)
-                || !(values[11] is bool autoAdjust))
+                || !(values[11] is bool autoAdjust)
+                || !(values[12] is double maxX))
                 return null;
 
             if (chartStyle.In(ChartStyle.Area, ChartStyle.StackedArea, ChartStyle.FullStackedArea, ChartStyle.SmoothArea))
@@ -4123,14 +4130,16 @@ namespace ag.WPF.Chart
             var stepLength = 0.0;
             if (Utils.StyleBars(chartStyle))
             {
-                var (max, min, realLinesCount, stepSize, stepL, units, zeroPoint) = Utils.GetMeasures(
-                   chartStyle,
-                   series,
-                   linesCount,
-                   radius,
-                   fmtY.Height,
-                   centerPoint,
-                   dir == Directions.NorthEastNorthWest);
+                var (max, min, realLinesCount, stepSize, stepL, units, zeroPoint) = autoAdjust
+                    ? Utils.GetMeasures(
+                       chartStyle,
+                       series,
+                       linesCount,
+                       radius,
+                       fmtY.Height,
+                       centerPoint,
+                       dir == Directions.NorthEastNorthWest)
+                    : (maxX, -maxX, linesCount, maxX / linesCount, radius / linesCount, radius / maxX, default);
                 stepLength = stepL;
                 if (chartStyle == ChartStyle.FullStackedBars)
                 {
@@ -4293,7 +4302,8 @@ namespace ag.WPF.Chart
                 || !(values[7] is FontStyle fontStyle)
                 || !(values[8] is FontWeight fontWeight)
                 || !(values[9] is FontStretch fontStretch)
-                || !(values[10] is bool autoAdjust))
+                || !(values[10] is bool autoAdjust)
+                || !(values[11] is double maxY))
                 return null;
 
             if (!seriesEnumerable.Any())
@@ -4339,14 +4349,16 @@ namespace ag.WPF.Chart
             var fmtY = new FormattedText("AAA", culture, FlowDirection.LeftToRight,
                     new Typeface(fontFamily, fontStyle, fontWeight, fontStretch), fontSize, Brushes.Black, VisualTreeHelper.GetDpi(Utils.Border).PixelsPerDip);
 
-            var (max, min, realLinesCount, stepSize, stepLength, units, zeroPoint) = Utils.GetMeasures(
-               chartStyle,
-               series,
-               linesCount,
-               radius,
-               fmtY.Height,
-               centerPoint,
-               dir == Directions.NorthEastSouthEast);
+            var (max, min, realLinesCount, stepSize, stepLength, units, zeroPoint) = autoAdjust
+                ? Utils.GetMeasures(
+                   chartStyle,
+                   series,
+                   linesCount,
+                   radius,
+                   fmtY.Height,
+                   centerPoint,
+                   dir == Directions.NorthEastSouthEast)
+                : (maxY, -maxY, linesCount, maxY / linesCount, radius / linesCount, radius / maxY, default);
 
             if (Utils.StyleFullStacked(chartStyle))
                 realLinesCount = 10;
