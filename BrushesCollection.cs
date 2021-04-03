@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows.Media;
+using ag.WPF.Chart.Series;
 
 namespace ag.WPF.Chart
 {

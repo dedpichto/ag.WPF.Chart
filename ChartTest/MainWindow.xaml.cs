@@ -16,6 +16,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Microsoft.Win32;
 using ag.WPF.Chart;
+using ag.WPF.Chart.Series;
 
 namespace ChartTest
 {
@@ -38,11 +39,11 @@ namespace ChartTest
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             //FlowDirection = System.Windows.FlowDirection.RightToLeft;
-            //var values1 = new[] { new ChartValue(-40, "aaa"), new ChartValue(-10, "bbb"), new ChartValue(-63, "ccc"), new ChartValue(150, "ccc") };
-            //var values2 = new[] { new ChartValue( 20), new ChartValue( 50), new ChartValue( 0) , new ChartValue( 0)};
-            //var values3 = new[] { new ChartValue(-60, "aaa"), new ChartValue(-20, "bbb"), new ChartValue(27, "ccc") , new ChartValue(-45, "ccc")};
+            //var values1 = new[] { new PlainChartValue(-40, "aaa"), new PlainChartValue(-10, "bbb"), new PlainChartValue(-63, "ccc"), new PlainChartValue(150, "ccc") };
+            //var values2 = new[] { new PlainChartValue( 20), new PlainChartValue( 50), new PlainChartValue( 0) , new PlainChartValue( 0)};
+            //var values3 = new[] { new PlainChartValue(-60, "aaa"), new PlainChartValue(-20, "bbb"), new PlainChartValue(27, "ccc") , new PlainChartValue(-45, "ccc")};
 
-            //var values1 = new[] { new ChartValue(40, "Gray marble"), new ChartValue(35, "Blue marble"), new ChartValue(25, "Pink marble") };
+            //var values1 = new[] { new PlainChartValue(40, "Gray marble"), new PlainChartValue(35, "Blue marble"), new PlainChartValue(25, "Pink marble") };
             //var values2 = new double[] {20, 50};
             //var values3 = new double[] {-60, -20, -27, -45};
             var values1 = new double[] { 327, 20, 210, 27, 17, 37, 89, 56, -1324 };
@@ -150,7 +151,7 @@ namespace ChartTest
 
         private void CmdAdd_Click(object sender, RoutedEventArgs e)
         {
-            Series[0].Values.Add(new ag.WPF.Chart.Values.ChartValue(1723));
+            Series[0].Values.Add(new ag.WPF.Chart.Values.PlainChartValue(1723));
         }
     }
 }

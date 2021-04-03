@@ -33,6 +33,7 @@ using System.Windows.Shapes;
 using System.Windows.Xps.Packaging;
 using ag.WPF.Chart.Annotations;
 using ag.WPF.Chart.Values;
+using ag.WPF.Chart.Series;
 using Path = System.Windows.Shapes.Path;
 
 namespace ag.WPF.Chart

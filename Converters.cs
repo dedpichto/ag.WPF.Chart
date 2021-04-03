@@ -13,6 +13,7 @@
 // Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 using ag.WPF.Chart.Values;
+using ag.WPF.Chart.Series;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -257,7 +258,7 @@ namespace ag.WPF.Chart
             {
                 var diff = maxCount - rw.Item1.Count;
                 for (var i = 0; i < diff; i++)
-                    rw.Item1.Add(new ChartValue(0));
+                    rw.Item1.Add(new PlainChartValue(0));
             }
             return rawValues;
         }
@@ -718,8 +719,8 @@ namespace ag.WPF.Chart
                         var diff = maxCount - resultValues[i].Items.Count;
                         for (var j = 0; j < diff; j++)
                         {
-                            resultValues[i].Items.Add(new ChartValue(0));
-                            tempValues[i].Items.Add(new ChartValue(0));
+                            resultValues[i].Items.Add(new PlainChartValue(0));
+                            tempValues[i].Items.Add(new PlainChartValue(0));
                         }
                     }
                     for (var index = 1; index < resultValues.Length; index++)
@@ -728,7 +729,7 @@ namespace ag.WPF.Chart
                         for (var i = 0; i < resultValues[index].Items.Count; i++)
                         {
                             var v = (decimal)resultValues[index].Items[i].Value.PlainValue + temps.Sum(t => (decimal)t.Items[i].Value.PlainValue);
-                            resultValues[index].Items[i] = new ChartValue((double)v);
+                            resultValues[index].Items[i] = new PlainChartValue((double)v);
                         }
                     }
                     values = resultValues.SelectMany(a => a.Items).Select(it => it.Value.PlainValue);
@@ -4573,7 +4574,7 @@ namespace ag.WPF.Chart
             if (values == null
                 || !(values[0] is ChartValues chartValues)
                 || !(values[1] is string format)
-                || !(parameter is ChartValue chartValue))
+                || !(parameter is PlainChartValue chartValue))
                 return null;
             var sum = chartValues.Sum(p => Math.Abs(p.Value.PlainValue));
             if (format.EndsWith("%")) format = format.Substring(0, format.Length - 1);
