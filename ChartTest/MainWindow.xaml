@@ -43,7 +43,6 @@
                          ItemsSource="{Binding Series}"
                          ShowSecondaryXLines="True" 
                          ShowSecondaryYLines="True" 
-                         AxesValuesVisibility="Both" 
                          Caption="Sample chart" 
                          CustomWaterfallLegends="{Binding WaterfallLegends}"
                          XAxisCustomValues="{Binding CustomXTexts}"

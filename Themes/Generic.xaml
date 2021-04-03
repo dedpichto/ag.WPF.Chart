@@ -27,6 +27,8 @@
     <local:HorizontalPlaceholderHeightConverter x:Key="HorizontalPlaceholderHeightConverter"/>
     <local:RadarAxesValuesConverter x:Key="RadarAxesValuesConverter"/>
     <local:RadarLinesPathConverter x:Key="RadarLinesPathConverter"/>
+    <local:AxesXLinesConverter x:Key="AxesXLinesConverter"/>
+    <local:AxesYLinesConverter x:Key="AxesYLinesConverter"/>
 
     <Style TargetType="{x:Type local:Chart}">
         <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.WindowTextBrushKey}}"/>
@@ -115,7 +117,7 @@
                                     <MultiBinding Converter="{StaticResource VerticalValuesColumnConverter}">
                                         <Binding Path="ItemsSource" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                         <Binding Path="ChartStyle" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
-                                        
+
                                     </MultiBinding>
                                 </Grid.Column>
                                 <Border.Width>
@@ -131,7 +133,7 @@
                                         <Binding Path="YAxisCustomValues" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                         <Binding Path="AutoAdjust" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                         <Binding Path="MaxY" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
-                                        
+
                                     </MultiBinding>
                                 </Border.Width>
                             </Border>
@@ -140,14 +142,14 @@
                                     <MultiBinding Converter="{StaticResource VerticalValuesColumnConverter}">
                                         <Binding Path="ItemsSource" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                         <Binding Path="ChartStyle" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
-                                        
+
                                     </MultiBinding>
                                 </Grid.Column>
                                 <Path.HorizontalAlignment>
                                     <MultiBinding Converter="{StaticResource VerticalValuesAlignmentConverter}">
                                         <Binding Path="ItemsSource" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                         <Binding Path="ChartStyle" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
-                                        
+
                                     </MultiBinding>
                                 </Path.HorizontalAlignment>
                                 <Path.Data>
@@ -167,7 +169,7 @@
                                         <Binding Path="AutoAdjust" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                         <Binding Path="MaxY" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                         <Binding Path="FlowDirection" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
-                                        
+
                                     </MultiBinding>
                                 </Path.Data>
                             </Path>
@@ -176,7 +178,7 @@
                                     <MultiBinding Converter="{StaticResource HorizontalValuesRowConverter}">
                                         <Binding Path="ItemsSource" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                         <Binding Path="ChartStyle" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
-                                        
+
                                     </MultiBinding>
                                 </Grid.Row>
                                 <Border.Height>
@@ -192,7 +194,7 @@
                                         <Binding Path="XAxisCustomValues" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                         <Binding Path="AutoAdjust" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                         <Binding Path="MaxX" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
-                                        
+
                                     </MultiBinding>
                                 </Border.Height>
                             </Border>
@@ -201,14 +203,14 @@
                                     <MultiBinding Converter="{StaticResource HorizontalValuesRowConverter}">
                                         <Binding Path="ItemsSource" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                         <Binding Path="ChartStyle" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
-                                        
+
                                     </MultiBinding>
                                 </Grid.Row>
                                 <Path.VerticalAlignment>
                                     <MultiBinding Converter="{StaticResource HorizontalValuesAlignmentConverter}">
                                         <Binding Path="ItemsSource" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                         <Binding Path="ChartStyle" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
-                                        
+
                                     </MultiBinding>
                                 </Path.VerticalAlignment>
                                 <Path.Data>
@@ -228,7 +230,7 @@
                                         <Binding Path="MaxX" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                         <Binding Path="FlowDirection" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                         <Binding Path="ChartBoundary" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
-                                        
+
                                     </MultiBinding>
                                 </Path.Data>
                             </Path>
@@ -289,7 +291,7 @@
                                                 <Binding Path="SectionsY" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                                 <Binding Path="AxesValuesFormat" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                                 <Binding Path="AutoAdjust" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
-                                                
+
                                             </MultiBinding>
                                         </Path.Data>
                                     </Path>
@@ -308,18 +310,27 @@
                                                 <Binding Path="XAxisCustomValues" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                                 <Binding Path="SectionsY" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                                 <Binding Path="AutoAdjust" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
-                                                
+
                                             </MultiBinding>
                                         </Path.Data>
                                     </Path>
-                                    <Path x:Name="PART_PathAxesLines" Stroke="{TemplateBinding Foreground}" StrokeThickness="0.5">
+                                    <Path x:Name="PART_PathXAxesLines" Stroke="{TemplateBinding Foreground}" StrokeThickness="0.5">
                                         <Path.Data>
-                                            <MultiBinding Converter="{StaticResource AxesLinesConverter}">
+                                            <MultiBinding Converter="{StaticResource AxesXLinesConverter}">
                                                 <Binding ElementName="PART_Canvas" Path="ActualWidth"/>
                                                 <Binding ElementName="PART_Canvas" Path="ActualHeight"/>
                                                 <Binding Path="ItemsSource" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                                 <Binding Path="ChartStyle" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
-                                                
+                                            </MultiBinding>
+                                        </Path.Data>
+                                    </Path>
+                                    <Path x:Name="PART_PathYAxesLines" Stroke="{TemplateBinding Foreground}" StrokeThickness="0.5">
+                                        <Path.Data>
+                                            <MultiBinding Converter="{StaticResource AxesYLinesConverter}">
+                                                <Binding ElementName="PART_Canvas" Path="ActualWidth"/>
+                                                <Binding ElementName="PART_Canvas" Path="ActualHeight"/>
+                                                <Binding Path="ItemsSource" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                                <Binding Path="ChartStyle" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                             </MultiBinding>
                                         </Path.Data>
                                     </Path>
@@ -341,6 +352,7 @@
                                                 <Binding Path="AutoAdjust" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                                 <Binding Path="MaxX" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                                 <Binding Path="MaxY" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                                <Binding Path="AxesLinesVisibility" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                             </MultiBinding>
                                         </Path.Data>
                                     </Path>
@@ -491,6 +503,16 @@
                             <Setter Property="Visibility" TargetName="PART_VPlaceHolder" Value="Collapsed"/>
                             <Setter Property="Visibility" TargetName="PART_HPlaceHolder" Value="Collapsed"/>
                         </Trigger>
+                        <Trigger Property="AxesLinesVisibility" Value="Vertical">
+                            <Setter Property="Visibility" TargetName="PART_PathXAxesLines" Value="Collapsed"/>
+                        </Trigger>
+                        <Trigger Property="AxesLinesVisibility" Value="Horizontal">
+                            <Setter Property="Visibility" TargetName="PART_PathYAxesLines" Value="Collapsed"/>
+                        </Trigger>
+                        <Trigger Property="AxesLinesVisibility" Value="None">
+                            <Setter Property="Visibility" TargetName="PART_PathXAxesLines" Value="Collapsed"/>
+                            <Setter Property="Visibility" TargetName="PART_PathYAxesLines" Value="Collapsed"/>
+                        </Trigger>
                         <Trigger Property="IsEnabled" Value="false">
                             <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
                         </Trigger>
@@ -540,7 +562,8 @@
                             <Setter Property="Visibility" TargetName="PART_PathVertLines" Value="Collapsed"/>
                             <Setter Property="Visibility" TargetName="PART_PathHorzLines" Value="Collapsed"/>
                             <Setter Property="Visibility" TargetName="PART_PathTicks" Value="Collapsed"/>
-                            <Setter Property="Visibility" TargetName="PART_PathAxesLines" Value="Collapsed"/>
+                            <Setter Property="Visibility" TargetName="PART_PathXAxesLines" Value="Collapsed"/>
+                            <Setter Property="Visibility" TargetName="PART_PathYAxesLines" Value="Collapsed"/>
                             <Setter Property="Visibility" TargetName="PART_PathRadarValues" Value="Visible"/>
                             <Setter Property="Visibility" TargetName="PART_PathRadarLines" Value="Visible"/>
                         </Trigger>
@@ -557,7 +580,8 @@
                             <Setter Property="Visibility" TargetName="PART_PathVertLines" Value="Collapsed"/>
                             <Setter Property="Visibility" TargetName="PART_PathHorzLines" Value="Collapsed"/>
                             <Setter Property="Visibility" TargetName="PART_PathTicks" Value="Collapsed"/>
-                            <Setter Property="Visibility" TargetName="PART_PathAxesLines" Value="Collapsed"/>
+                            <Setter Property="Visibility" TargetName="PART_PathXAxesLines" Value="Collapsed"/>
+                            <Setter Property="Visibility" TargetName="PART_PathYAxesLines" Value="Collapsed"/>
                             <Setter Property="Visibility" TargetName="PART_PathRadarValues" Value="Visible"/>
                             <Setter Property="Visibility" TargetName="PART_PathRadarLines" Value="Visible"/>
                         </Trigger>
@@ -574,7 +598,8 @@
                             <Setter Property="Visibility" TargetName="PART_PathVertLines" Value="Collapsed"/>
                             <Setter Property="Visibility" TargetName="PART_PathHorzLines" Value="Collapsed"/>
                             <Setter Property="Visibility" TargetName="PART_PathTicks" Value="Collapsed"/>
-                            <Setter Property="Visibility" TargetName="PART_PathAxesLines" Value="Collapsed"/>
+                            <Setter Property="Visibility" TargetName="PART_PathXAxesLines" Value="Collapsed"/>
+                            <Setter Property="Visibility" TargetName="PART_PathYAxesLines" Value="Collapsed"/>
                             <Setter Property="Visibility" TargetName="PART_PathRadarValues" Value="Visible"/>
                             <Setter Property="Visibility" TargetName="PART_PathRadarLines" Value="Visible"/>
                         </Trigger>

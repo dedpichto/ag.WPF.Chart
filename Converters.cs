@@ -912,6 +912,120 @@ namespace ag.WPF.Chart
     /// <summary>
     /// Prepares geometry for drawing x- and y- axes lines
     /// </summary>
+    public class AxesXLinesConverter : IMultiValueConverter
+    {
+        /// <summary>Converts source values to a value for the binding target. The data binding engine calls this method when it propagates the values from source bindings to the binding target.</summary>
+        /// <returns>A converted value.If the method returns null, the valid null value is used.A return value of <see cref="T:System.Windows.DependencyProperty" />.<see cref="F:System.Windows.DependencyProperty.UnsetValue" /> indicates that the converter did not produce a value, and that the binding will use the <see cref="P:System.Windows.Data.BindingBase.FallbackValue" /> if it is available, or else will use the default value.A return value of <see cref="T:System.Windows.Data.Binding" />.<see cref="F:System.Windows.Data.Binding.DoNothing" /> indicates that the binding does not transfer the value or use the <see cref="P:System.Windows.Data.BindingBase.FallbackValue" /> or the default value.</returns>
+        /// <param name="values">The array of values that the source bindings in the <see cref="T:System.Windows.Data.MultiBinding" /> produces. The value <see cref="F:System.Windows.DependencyProperty.UnsetValue" /> indicates that the source binding has no value to provide for conversion.</param>
+        /// <param name="targetType">The type of the binding target property.</param>
+        /// <param name="parameter">The converter parameter to use.</param>
+        /// <param name="culture">The culture to use in the converter.</param>
+        public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (values == null
+                || !(values[0] is double width)
+                || !(values[1] is double height)
+                || !(values[2] is IEnumerable<ISeries> seriesEnumerable)
+                || !(values[3] is ChartStyle style))
+                return null;
+
+            var gm = new PathGeometry();
+            var totalValues = seriesEnumerable.SelectMany(s => s.Values.Select(v => v.Value.PlainValue)).ToArray();
+            var dir = Utils.GetDirection(totalValues, style);
+
+            switch (dir)
+            {
+                case Directions.NorthEast:
+                    gm.Figures.Add(new PathFigure(new Point(Utils.AXIS_THICKNESS, height - Utils.AXIS_THICKNESS), new[] { new LineSegment(new Point(width - Utils.AXIS_THICKNESS, height - Utils.AXIS_THICKNESS), true) }, false));
+                    break;
+                case Directions.NorthEastNorthWest:
+                    gm.Figures.Add(new PathFigure(new Point(Utils.AXIS_THICKNESS, height - Utils.AXIS_THICKNESS), new[] { new LineSegment(new Point(width - Utils.AXIS_THICKNESS, height - Utils.AXIS_THICKNESS), true) }, false));
+                    break;
+                case Directions.NorthEastSouthEast:
+                    gm.Figures.Add(new PathFigure(new Point(Utils.AXIS_THICKNESS, height / 2), new[] { new LineSegment(new Point(width - Utils.AXIS_THICKNESS, height / 2), true) }, false));
+                    break;
+                case Directions.SouthEast:
+                    gm.Figures.Add(new PathFigure(new Point(Utils.AXIS_THICKNESS, Utils.AXIS_THICKNESS), new[] { new LineSegment(new Point(width - Utils.AXIS_THICKNESS, Utils.AXIS_THICKNESS), true) }, false));
+                    break;
+                case Directions.NorthWest:
+                    gm.Figures.Add(new PathFigure(new Point(Utils.AXIS_THICKNESS, height - Utils.AXIS_THICKNESS), new[] { new LineSegment(new Point(width - Utils.AXIS_THICKNESS, height - Utils.AXIS_THICKNESS), true) }, false));
+                    break;
+            }
+            return gm;
+        }
+
+        /// <summary>Converts a binding target value to the source binding values.</summary>
+        /// <returns>An array of values that have been converted from the target value back to the source values.</returns>
+        /// <param name="value">The value that the binding target produces.</param>
+        /// <param name="targetTypes">The array of types to convert to. The array length indicates the number and types of values that are suggested for the method to return.</param>
+        /// <param name="parameter">The converter parameter to use.</param>
+        /// <param name="culture">The culture to use in the converter.</param>
+        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
+        {
+            return null;
+        }
+    }
+
+    /// <summary>
+    /// Prepares geometry for drawing x- and y- axes lines
+    /// </summary>
+    public class AxesYLinesConverter : IMultiValueConverter
+    {
+        /// <summary>Converts source values to a value for the binding target. The data binding engine calls this method when it propagates the values from source bindings to the binding target.</summary>
+        /// <returns>A converted value.If the method returns null, the valid null value is used.A return value of <see cref="T:System.Windows.DependencyProperty" />.<see cref="F:System.Windows.DependencyProperty.UnsetValue" /> indicates that the converter did not produce a value, and that the binding will use the <see cref="P:System.Windows.Data.BindingBase.FallbackValue" /> if it is available, or else will use the default value.A return value of <see cref="T:System.Windows.Data.Binding" />.<see cref="F:System.Windows.Data.Binding.DoNothing" /> indicates that the binding does not transfer the value or use the <see cref="P:System.Windows.Data.BindingBase.FallbackValue" /> or the default value.</returns>
+        /// <param name="values">The array of values that the source bindings in the <see cref="T:System.Windows.Data.MultiBinding" /> produces. The value <see cref="F:System.Windows.DependencyProperty.UnsetValue" /> indicates that the source binding has no value to provide for conversion.</param>
+        /// <param name="targetType">The type of the binding target property.</param>
+        /// <param name="parameter">The converter parameter to use.</param>
+        /// <param name="culture">The culture to use in the converter.</param>
+        public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (values == null
+                || !(values[0] is double width)
+                || !(values[1] is double height)
+                || !(values[2] is IEnumerable<ISeries> seriesEnumerable)
+                || !(values[3] is ChartStyle style))
+                return null;
+
+            var gm = new PathGeometry();
+            var totalValues = seriesEnumerable.SelectMany(s => s.Values.Select(v => v.Value.PlainValue)).ToArray();
+            var dir = Utils.GetDirection(totalValues, style);
+
+            switch (dir)
+            {
+                case Directions.NorthEast:
+                    gm.Figures.Add(new PathFigure(new Point(Utils.AXIS_THICKNESS, Utils.AXIS_THICKNESS), new[] { new LineSegment(new Point(Utils.AXIS_THICKNESS, height - Utils.AXIS_THICKNESS), true) }, false));
+                    break;
+                case Directions.NorthEastNorthWest:
+                    gm.Figures.Add(new PathFigure(new Point(width / 2, Utils.AXIS_THICKNESS), new[] { new LineSegment(new Point(width / 2, height - Utils.AXIS_THICKNESS), true) }, false));
+                    break;
+                case Directions.NorthEastSouthEast:
+                    gm.Figures.Add(new PathFigure(new Point(Utils.AXIS_THICKNESS, Utils.AXIS_THICKNESS), new[] { new LineSegment(new Point(Utils.AXIS_THICKNESS, height - Utils.AXIS_THICKNESS), true) }, false));
+                    break;
+                case Directions.SouthEast:
+                    gm.Figures.Add(new PathFigure(new Point(Utils.AXIS_THICKNESS, Utils.AXIS_THICKNESS), new[] { new LineSegment(new Point(Utils.AXIS_THICKNESS, height - Utils.AXIS_THICKNESS), true) }, false));
+                    break;
+                case Directions.NorthWest:
+                    gm.Figures.Add(new PathFigure(new Point(width - Utils.AXIS_THICKNESS, Utils.AXIS_THICKNESS), new[] { new LineSegment(new Point(width - Utils.AXIS_THICKNESS, height - Utils.AXIS_THICKNESS), true) }, false));
+                    break;
+            }
+            return gm;
+        }
+
+        /// <summary>Converts a binding target value to the source binding values.</summary>
+        /// <returns>An array of values that have been converted from the target value back to the source values.</returns>
+        /// <param name="value">The value that the binding target produces.</param>
+        /// <param name="targetTypes">The array of types to convert to. The array length indicates the number and types of values that are suggested for the method to return.</param>
+        /// <param name="parameter">The converter parameter to use.</param>
+        /// <param name="culture">The culture to use in the converter.</param>
+        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
+        {
+            return null;
+        }
+    }
+
+    /// <summary>
+    /// Prepares geometry for drawing x- and y- axes lines
+    /// </summary>
     public class AxesLinesConverter : IMultiValueConverter
     {
         /// <summary>Converts source values to a value for the binding target. The data binding engine calls this method when it propagates the values from source bindings to the binding target.</summary>
@@ -3733,7 +3847,8 @@ namespace ag.WPF.Chart
                 || !(values[11] is FontStretch fontStretch)
                 || !(values[12] is bool autoAdjust)
                 || !(values[13] is double maxX)
-                || !(values[14] is double maxY))
+                || !(values[14] is double maxY)
+                || !(values[15] is AxesVisibility axesVisibility))
                 return null;
 
             if (chartStyle.In(ChartStyle.Area, ChartStyle.StackedArea, ChartStyle.FullStackedArea, ChartStyle.Radar, ChartStyle.RadarWithMarkers, ChartStyle.RadarArea, ChartStyle.SmoothArea))
@@ -3841,41 +3956,47 @@ namespace ag.WPF.Chart
             {
                 case Directions.NorthEast:
                     {
-                        var x = Utils.AXIS_THICKNESS + boundOffset;
-                        if (!Utils.StyleBars(chartStyle))
+                        if (axesVisibility.In(AxesVisibility.Both, AxesVisibility.Horizontal))
                         {
-                            var (Step, Limit) = Utils.Limits(chartStyle, offsetBoundary, linesCountX, ticks, boundOffset, width);
-                            xStep = Step;
-                            limit = Limit;
-                        }
-                        else
-                        {
-                            xStep = chartStyle != ChartStyle.FullStackedBars ? stepLength : width / 10;
-                            limit = linesCountX;
-                        }
-                        for (var i = 0; i < limit; i++)
-                        {
-                            var start = new Point(x, height);
-                            var end = new Point(start.X, start.Y - size);
-                            gm.Figures.Add(new PathFigure(start, new[] { new LineSegment(end, true) }, false));
-                            x += xStep;
+                            var x = Utils.AXIS_THICKNESS + boundOffset;
+                            if (!Utils.StyleBars(chartStyle))
+                            {
+                                var (Step, Limit) = Utils.Limits(chartStyle, offsetBoundary, linesCountX, ticks, boundOffset, width);
+                                xStep = Step;
+                                limit = Limit;
+                            }
+                            else
+                            {
+                                xStep = chartStyle != ChartStyle.FullStackedBars ? stepLength : width / 10;
+                                limit = linesCountX;
+                            }
+                            for (var i = 0; i < limit; i++)
+                            {
+                                var start = new Point(x, height);
+                                var end = new Point(start.X, start.Y - size);
+                                gm.Figures.Add(new PathFigure(start, new[] { new LineSegment(end, true) }, false));
+                                x += xStep;
+                            }
                         }
 
-                        if (Utils.StyleBars(chartStyle))
-                            yStep = height / ticks;
-                        else
-                            yStep = (Utils.StyleFullStacked(chartStyle))
-                                ? height / 10
-                                : stepLength;
-
-                        limit = Utils.StyleBars(chartStyle) ? ticks : linesCountY;
-                        var y = Utils.AXIS_THICKNESS;
-                        for (var i = 1; i < limit; i++)
+                        if (axesVisibility.In(AxesVisibility.Both, AxesVisibility.Vertical))
                         {
-                            y += yStep;
-                            var start = new Point(Utils.AXIS_THICKNESS, y);
-                            var end = new Point(start.X + size, y);
-                            gm.Figures.Add(new PathFigure(start, new[] { new LineSegment(end, true) }, false));
+                            if (Utils.StyleBars(chartStyle))
+                                yStep = height / ticks;
+                            else
+                                yStep = (Utils.StyleFullStacked(chartStyle))
+                                    ? height / 10
+                                    : stepLength;
+
+                            limit = Utils.StyleBars(chartStyle) ? ticks : linesCountY;
+                            var y = Utils.AXIS_THICKNESS;
+                            for (var i = 1; i < limit; i++)
+                            {
+                                y += yStep;
+                                var start = new Point(Utils.AXIS_THICKNESS, y);
+                                var end = new Point(start.X + size, y);
+                                gm.Figures.Add(new PathFigure(start, new[] { new LineSegment(end, true) }, false));
+                            }
                         }
                         break;
                     }
@@ -3883,72 +4004,87 @@ namespace ag.WPF.Chart
                     {
                         if (!Utils.StyleBars(chartStyle))
                             return null;
-                        if (!Utils.StyleBars(chartStyle))
-                            xStep = width / 2 / linesCountX;
-                        else
-                            xStep = chartStyle != ChartStyle.FullStackedBars ? stepLength : width / 20;
-                        var x = Utils.AXIS_THICKNESS;
-                        for (var i = 1; i < linesCountX * 2; i++)
+
+                        if (axesVisibility.In(AxesVisibility.Both, AxesVisibility.Horizontal))
                         {
-                            x += xStep;
-                            if (i == linesCountX) continue;
-                            var start = new Point(x, height + size);
-                            var end = new Point(start.X, height - size);
-                            gm.Figures.Add(new PathFigure(start, new[] { new LineSegment(end, true) }, false));
+                            if (!Utils.StyleBars(chartStyle))
+                                xStep = width / 2 / linesCountX;
+                            else
+                                xStep = chartStyle != ChartStyle.FullStackedBars ? stepLength : width / 20;
+                            var x = Utils.AXIS_THICKNESS;
+                            for (var i = 1; i < linesCountX * 2; i++)
+                            {
+                                x += xStep;
+                                if (i == linesCountX) continue;
+                                var start = new Point(x, height + size);
+                                var end = new Point(start.X, height - size);
+                                gm.Figures.Add(new PathFigure(start, new[] { new LineSegment(end, true) }, false));
+                            }
                         }
-                        if (Utils.StyleBars(chartStyle))
-                            yStep = height / ticks;
-                        else
-                            yStep = (Utils.StyleFullStacked(chartStyle))
-                                ? height / 10
-                                : stepLength;
-                        var y = Utils.AXIS_THICKNESS;
-                        limit = Utils.StyleBars(chartStyle) ? ticks : linesCountY;
-                        for (var i = 1; i < limit; i++)
+
+                        if (axesVisibility.In(AxesVisibility.Both, AxesVisibility.Vertical))
                         {
-                            y += yStep;
-                            var start = new Point(width / 2 - size, y);
-                            var end = new Point(width / 2 + size, y);
-                            gm.Figures.Add(new PathFigure(start, new[] { new LineSegment(end, true) }, false));
+                            if (Utils.StyleBars(chartStyle))
+                                yStep = height / ticks;
+                            else
+                                yStep = (Utils.StyleFullStacked(chartStyle))
+                                    ? height / 10
+                                    : stepLength;
+                            var y = Utils.AXIS_THICKNESS;
+                            limit = Utils.StyleBars(chartStyle) ? ticks : linesCountY;
+                            for (var i = 1; i < limit; i++)
+                            {
+                                y += yStep;
+                                var start = new Point(width / 2 - size, y);
+                                var end = new Point(width / 2 + size, y);
+                                gm.Figures.Add(new PathFigure(start, new[] { new LineSegment(end, true) }, false));
+                            }
                         }
                         break;
                     }
                 case Directions.NorthEastSouthEast:
                     {
-                        var x = Utils.AXIS_THICKNESS + boundOffset;
-                        if (!Utils.StyleBars(chartStyle))
+                        if (axesVisibility.In(AxesVisibility.Both, AxesVisibility.Horizontal))
                         {
-                            var (Step, Limit) = Utils.Limits(chartStyle, offsetBoundary, linesCountX, ticks, boundOffset, width);
-                            xStep = Step;
-                            limit = Limit;
+                            var x = Utils.AXIS_THICKNESS + boundOffset;
+                            if (!Utils.StyleBars(chartStyle))
+                            {
+                                var (Step, Limit) = Utils.Limits(chartStyle, offsetBoundary, linesCountX, ticks, boundOffset, width);
+                                xStep = Step;
+                                limit = Limit;
+                            }
+                            else
+                            {
+                                xStep = chartStyle != ChartStyle.FullStackedBars ? stepLength : width / 10;
+                                limit = linesCountX;
+                            }
+                            for (var i = 0; i < limit; i++)
+                            {
+                                var start = new Point(x, height / 2 + size);
+                                var end = new Point(start.X, height / 2 - size);
+                                gm.Figures.Add(new PathFigure(start, new[] { new LineSegment(end, true) }, false));
+                                x += xStep;
+                            }
                         }
-                        else
+
+                        if (axesVisibility.In(AxesVisibility.Both, AxesVisibility.Vertical))
                         {
-                            xStep = chartStyle != ChartStyle.FullStackedBars ? stepLength : width / 10;
-                            limit = linesCountX;
-                        }
-                        for (var i = 0; i < limit; i++)
-                        {
-                            var start = new Point(x, height / 2 + size);
-                            var end = new Point(start.X, height / 2 - size);
-                            gm.Figures.Add(new PathFigure(start, new[] { new LineSegment(end, true) }, false));
-                            x += xStep;
-                        }
-                        if (Utils.StyleBars(chartStyle))
-                            yStep = height / 2 / ticks;
-                        else
-                            yStep = (Utils.StyleFullStacked(chartStyle))
-                                 ? height / 20
-                                 : stepLength;
-                        var y = Utils.AXIS_THICKNESS;
-                        limit = Utils.StyleBars(chartStyle) ? ticks * 2 : linesCountY * 2;
-                        for (var i = 1; i < limit; i++)
-                        {
-                            y += yStep;
-                            if (i == linesCountY) continue;
-                            var start = new Point(size, y);
-                            var end = new Point(-size, y);
-                            gm.Figures.Add(new PathFigure(start, new[] { new LineSegment(end, true) }, false));
+                            if (Utils.StyleBars(chartStyle))
+                                yStep = height / 2 / ticks;
+                            else
+                                yStep = (Utils.StyleFullStacked(chartStyle))
+                                     ? height / 20
+                                     : stepLength;
+                            var y = Utils.AXIS_THICKNESS;
+                            limit = Utils.StyleBars(chartStyle) ? ticks * 2 : linesCountY * 2;
+                            for (var i = 1; i < limit; i++)
+                            {
+                                y += yStep;
+                                if (i == linesCountY) continue;
+                                var start = new Point(size, y);
+                                var end = new Point(-size, y);
+                                gm.Figures.Add(new PathFigure(start, new[] { new LineSegment(end, true) }, false));
+                            }
                         }
                         break;
                     }
@@ -3956,68 +4092,83 @@ namespace ag.WPF.Chart
                     {
                         if (!Utils.StyleBars(chartStyle))
                             return null;
-                        if (!Utils.StyleBars(chartStyle))
-                            xStep = width / linesCountX;
-                        else
-                            xStep = chartStyle != ChartStyle.FullStackedBars ? stepLength : width / 10;
-                        var x = Utils.AXIS_THICKNESS;
-                        for (var i = 1; i < linesCountX; i++)
+
+                        if (axesVisibility.In(AxesVisibility.Both, AxesVisibility.Horizontal))
                         {
-                            x += xStep;
-                            var start = new Point(x, height - size);
-                            var end = new Point(start.X, height + size);
-                            gm.Figures.Add(new PathFigure(start, new[] { new LineSegment(end, true) }, false));
+                            if (!Utils.StyleBars(chartStyle))
+                                xStep = width / linesCountX;
+                            else
+                                xStep = chartStyle != ChartStyle.FullStackedBars ? stepLength : width / 10;
+                            var x = Utils.AXIS_THICKNESS;
+                            for (var i = 1; i < linesCountX; i++)
+                            {
+                                x += xStep;
+                                var start = new Point(x, height - size);
+                                var end = new Point(start.X, height + size);
+                                gm.Figures.Add(new PathFigure(start, new[] { new LineSegment(end, true) }, false));
+                            }
                         }
-                        if (Utils.StyleBars(chartStyle))
-                            yStep = height / ticks;
-                        else
-                            yStep = (Utils.StyleFullStacked(chartStyle))
-                                 ? height / 10
-                                 : stepLength;
-                        var y = Utils.AXIS_THICKNESS;
-                        limit = Utils.StyleBars(chartStyle) ? ticks : linesCountY;
-                        for (var i = 1; i < limit; i++)
+
+                        if (axesVisibility.In(AxesVisibility.Both, AxesVisibility.Vertical))
                         {
-                            y += yStep;
-                            var start = new Point(width - size, y);
-                            var end = new Point(width + size, y);
-                            gm.Figures.Add(new PathFigure(start, new[] { new LineSegment(end, true) }, false));
+                            if (Utils.StyleBars(chartStyle))
+                                yStep = height / ticks;
+                            else
+                                yStep = (Utils.StyleFullStacked(chartStyle))
+                                     ? height / 10
+                                     : stepLength;
+                            var y = Utils.AXIS_THICKNESS;
+                            limit = Utils.StyleBars(chartStyle) ? ticks : linesCountY;
+                            for (var i = 1; i < limit; i++)
+                            {
+                                y += yStep;
+                                var start = new Point(width - size, y);
+                                var end = new Point(width + size, y);
+                                gm.Figures.Add(new PathFigure(start, new[] { new LineSegment(end, true) }, false));
+                            }
                         }
                         break;
                     }
                 case Directions.SouthEast:
                     {
-                        var x = Utils.AXIS_THICKNESS + boundOffset;
-                        if (!Utils.StyleBars(chartStyle))
+                        if (axesVisibility.In(AxesVisibility.Both, AxesVisibility.Horizontal))
                         {
-                            var (Step, Limit) = Utils.Limits(chartStyle, offsetBoundary, linesCountX, ticks, boundOffset, width);
-                            xStep = Step;
-                            limit = Limit;
+                            var x = Utils.AXIS_THICKNESS + boundOffset;
+                            if (!Utils.StyleBars(chartStyle))
+                            {
+                                var (Step, Limit) = Utils.Limits(chartStyle, offsetBoundary, linesCountX, ticks, boundOffset, width);
+                                xStep = Step;
+                                limit = Limit;
+                            }
+                            else
+                            {
+                                xStep = stepLength;
+                                limit = linesCountX;
+                            }
+                            for (var i = 0; i < limit; i++)
+                            {
+                                var start = new Point(x, size);
+                                var end = new Point(start.X, -size);
+                                gm.Figures.Add(new PathFigure(start, new[] { new LineSegment(end, true) }, false));
+                                x += xStep;
+                            }
                         }
-                        else
+
+                        if (axesVisibility.In(AxesVisibility.Both, AxesVisibility.Vertical))
                         {
-                            xStep = stepLength;
-                            limit = linesCountX;
-                        }
-                        for (var i = 0; i < limit; i++)
-                        {
-                            var start = new Point(x, size);
-                            var end = new Point(start.X, -size);
-                            gm.Figures.Add(new PathFigure(start, new[] { new LineSegment(end, true) }, false));
-                            x += xStep;
-                        }
-                        if (chartStyle.In(ChartStyle.Bars, ChartStyle.StackedBars, ChartStyle.FullStackedBars))
-                            yStep = height / ticks;
-                        else
-                            yStep = stepLength;
-                        var y = Utils.AXIS_THICKNESS;
-                        limit = Utils.StyleBars(chartStyle) ? ticks : linesCountY;
-                        for (var i = 1; i < limit; i++)
-                        {
-                            y += yStep;
-                            var start = new Point(-size, y);
-                            var end = new Point(size, y);
-                            gm.Figures.Add(new PathFigure(start, new[] { new LineSegment(end, true) }, false));
+                            if (chartStyle.In(ChartStyle.Bars, ChartStyle.StackedBars, ChartStyle.FullStackedBars))
+                                yStep = height / ticks;
+                            else
+                                yStep = stepLength;
+                            var y = Utils.AXIS_THICKNESS;
+                            limit = Utils.StyleBars(chartStyle) ? ticks : linesCountY;
+                            for (var i = 1; i < limit; i++)
+                            {
+                                y += yStep;
+                                var start = new Point(-size, y);
+                                var end = new Point(size, y);
+                                gm.Figures.Add(new PathFigure(start, new[] { new LineSegment(end, true) }, false));
+                            }
                         }
                         break;
                     }
@@ -4478,7 +4629,7 @@ namespace ag.WPF.Chart
             var sum = chartValues.Sum(p => Math.Abs(p.Value.PlainValue));
             if (format.EndsWith("%")) format = format.Substring(0, format.Length - 1);
             var perc = Math.Abs(chartValue.Value.PlainValue) / sum * 100;
-            var sectorData = chartValue.CustomValue 
+            var sectorData = chartValue.CustomValue
                 ?? chartValue.Value.PlainValue + " (" + perc.ToString(format) + "%)";
             return sectorData;
         }
@@ -4770,7 +4921,7 @@ namespace ag.WPF.Chart
             if (format.EndsWith("%")) format = format.Substring(0, format.Length - 1);
             if (pts.Length == 1)
             {
-                var sectorData = pts[0].CustomValue 
+                var sectorData = pts[0].CustomValue
                     ?? pts[0].Value.PlainValue + " (" + 100.ToString(format) + "%)";
                 var ellipseGeometry = new EllipseGeometry(new Rect(new Point(0, 0), new Point(radius * 2, radius * 2)));
                 var combinedGeometry = new CombinedGeometry
@@ -4885,7 +5036,7 @@ namespace ag.WPF.Chart
                 //}
 
                 var perc = Math.Abs(pt.Value.PlainValue) / sum * 100;
-                var sectorData = pt.CustomValue 
+                var sectorData = pt.CustomValue
                     ?? pt.Value.PlainValue + " (" + perc.ToString(format) + "%)";
                 combinedGeometry.SetValue(Statics.SectorDataProperty, sectorData);
                 gmDrawing.Geometry = combinedGeometry;

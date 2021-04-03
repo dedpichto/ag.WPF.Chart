@@ -177,7 +177,7 @@ namespace ag.WPF.Chart
     /// <summary>
     /// Specifies visiblity of numeric/custom values drawn next to axes
     /// </summary>
-    public enum AxesValuesVisibility
+    public enum AxesVisibility
     {
         /// <summary>
         /// No values are visible
@@ -266,7 +266,8 @@ namespace ag.WPF.Chart
     [TemplatePart(Name = ElementPathXAxisValues, Type = typeof(Path))]
     [TemplatePart(Name = ElementPathRadarValues, Type = typeof(Path))]
     [TemplatePart(Name = ElementPathRadarLines, Type = typeof(Path))]
-    [TemplatePart(Name = ElementPathAxesLines, Type = typeof(Path))]
+    [TemplatePart(Name = ElementPathXAxesLines, Type = typeof(Path))]
+    [TemplatePart(Name = ElementPathYAxesLines, Type = typeof(Path))]
     [TemplatePart(Name = ElementPathTicks, Type = typeof(Path))]
     [TemplatePart(Name = ElementPathHorzLines, Type = typeof(Path))]
     [TemplatePart(Name = ElementPathVertLines, Type = typeof(Path))]
@@ -284,7 +285,8 @@ namespace ag.WPF.Chart
         private const string ElementPathXAxisValues = "PART_PathXAxisValues";
         private const string ElementPathRadarValues = "PART_PathRadarValues";
         private const string ElementPathRadarLines = "PART_PathRadarLines";
-        private const string ElementPathAxesLines = "PART_PathAxesLines";
+        private const string ElementPathXAxesLines = "PART_PathXAxesLines";
+        private const string ElementPathYAxesLines = "PART_PathYAxesLines";
         private const string ElementPathTicks = "PART_PathTicks";
         private const string ElementPathHorzLines = "PART_PathHorzLines";
         private const string ElementPathVertLines = "PART_PathVertLines";
@@ -300,7 +302,8 @@ namespace ag.WPF.Chart
         private Path _pathXAxisValues;
         private Path _pathRadarValues;
         private Path _pathRadarLines;
-        private Path _pathAxesLines;
+        private Path _pathXAxesLines;
+        private Path _pathYAxesLines;
         private Path _pathTicks;
         private Path _pathHorzLines;
         private Path _pathVertLines;
@@ -408,6 +411,10 @@ namespace ag.WPF.Chart
         /// The identifier of the <see cref="AxesValuesVisibility"/> dependency property.
         /// </summary>
         public static readonly DependencyProperty AxesValuesVisibilityProperty;
+        /// <summary>
+        /// The identifier of the <see cref="AxesLinesVisibility"/> dependency property.
+        /// </summary>
+        public static readonly DependencyProperty AxesLinesVisibilityProperty;
         /// <summary>
         /// The identifier of the <see cref="AxesValuesFormat"/> dependency property.
         /// </summary>
@@ -521,8 +528,10 @@ namespace ag.WPF.Chart
                 new FrameworkPropertyMetadata(true, OnShowLegendChanged));
             ChartStyleProperty = DependencyProperty.Register("ChartStyle", typeof(ChartStyle), typeof(Chart),
                 new FrameworkPropertyMetadata(ChartStyle.Lines, OnChartStyleChanged));
-            AxesValuesVisibilityProperty = DependencyProperty.Register("AxesValuesVisibility", typeof(AxesValuesVisibility), typeof(Chart),
-                new FrameworkPropertyMetadata(AxesValuesVisibility.None, OnAxesValuesVisibilityChanged));
+            AxesValuesVisibilityProperty = DependencyProperty.Register("AxesValuesVisibility", typeof(AxesVisibility), typeof(Chart),
+                new FrameworkPropertyMetadata(AxesVisibility.Both, OnAxesValuesVisibilityChanged));
+            AxesLinesVisibilityProperty = DependencyProperty.Register("AxesLinesVisibility", typeof(AxesVisibility), typeof(Chart),
+                new FrameworkPropertyMetadata(AxesVisibility.Both, OnAxesLinesVisibilityChanged));
             AxesValuesFormatProperty = DependencyProperty.Register("AxesValuesFormat", typeof(string), typeof(Chart),
                 new FrameworkPropertyMetadata("0", OnAxesValuesFormatChanged));
             XAxisCustomValuesProperty = DependencyProperty.Register("XAxisCustomValues", typeof(IEnumerable<string>), typeof(Chart),
@@ -581,7 +590,8 @@ namespace ag.WPF.Chart
             _pathXAxisValues = GetTemplateChild(ElementPathXAxisValues) as Path;
             _pathRadarValues = GetTemplateChild(ElementPathRadarValues) as Path;
             _pathRadarLines = GetTemplateChild(ElementPathRadarLines) as Path;
-            _pathAxesLines = GetTemplateChild(ElementPathAxesLines) as Path;
+            _pathXAxesLines = GetTemplateChild(ElementPathXAxesLines) as Path;
+            _pathYAxesLines = GetTemplateChild(ElementPathYAxesLines) as Path;
             _pathTicks = GetTemplateChild(ElementPathTicks) as Path;
             _pathHorzLines = GetTemplateChild(ElementPathHorzLines) as Path;
             _pathVertLines = GetTemplateChild(ElementPathVertLines) as Path;
@@ -1190,7 +1200,7 @@ namespace ag.WPF.Chart
                             tooltip.Content = s.Name;
                             break;
                         }
-                        tooltip.Content = s.Values[index].CustomValue 
+                        tooltip.Content = s.Values[index].CustomValue
                             ?? s.Name + " " + s.Values[index].Value.PlainValue.ToString(CultureInfo.InvariantCulture);
                     }
                     else
@@ -1210,7 +1220,7 @@ namespace ag.WPF.Chart
                             tooltip.Content = s.Name;
                             break;
                         }
-                        tooltip.Content = s.Values[index].CustomValue 
+                        tooltip.Content = s.Values[index].CustomValue
                             ?? s.Name + " " + s.Values[index].Value.PlainValue.ToString(CultureInfo.InvariantCulture);
                     }
                     else
@@ -1231,7 +1241,7 @@ namespace ag.WPF.Chart
                             tooltip.Content = s.Name;
                             break;
                         }
-                        tooltip.Content = s.Values[index].CustomValue 
+                        tooltip.Content = s.Values[index].CustomValue
                             ?? s.Name + " " + s.Values[index].Value.PlainValue.ToString(CultureInfo.InvariantCulture);
                     }
                     else
@@ -1306,7 +1316,10 @@ namespace ag.WPF.Chart
             binding = BindingOperations.GetMultiBindingExpression(_pathRadarLines, Path.DataProperty);
             if (binding != null)
                 binding.UpdateTarget();
-            binding = BindingOperations.GetMultiBindingExpression(_pathAxesLines, Path.DataProperty);
+            binding = BindingOperations.GetMultiBindingExpression(_pathXAxesLines, Path.DataProperty);
+            if (binding != null)
+                binding.UpdateTarget();
+            binding = BindingOperations.GetMultiBindingExpression(_pathYAxesLines, Path.DataProperty);
             if (binding != null)
                 binding.UpdateTarget();
             binding = BindingOperations.GetMultiBindingExpression(_pathTicks, Path.DataProperty);
@@ -1463,7 +1476,7 @@ namespace ag.WPF.Chart
         /// Gets or sets max numeric value for y-axis. The default value is 100.
         /// </summary>
         /// <remarks>This property will have no effect if <see cref="AutoAdjust"/> property is set to true.</remarks>
-        [Category("ChartAppearance"), Description("Gets or sets max numeric value for y-axis. The default value is 100")]
+        [Category("ChartMeasures"), Description("Gets or sets max numeric value for y-axis. The default value is 100")]
         public double MaxY
         {
             get { return (double)GetValue(MaxYProperty); }
@@ -1473,7 +1486,7 @@ namespace ag.WPF.Chart
         /// Gets or sets max numeric value for x-axis. The default value is 100.
         /// </summary>
         /// <remarks>This property will have no effect if <see cref="AutoAdjust"/> property is set to true.</remarks>
-        [Category("ChartAppearance"), Description("Gets or sets max numeric value for x-axis. The default value is 100")]
+        [Category("ChartMeasures"), Description("Gets or sets max numeric value for x-axis. The default value is 100")]
         public double MaxX
         {
             get { return (double)GetValue(MaxXProperty); }
@@ -1516,14 +1529,24 @@ namespace ag.WPF.Chart
             set { SetValue(YAxisCustomValuesProperty, value); }
         }
         /// <summary>
-        /// Gets or sets the visibility state of x- and y- axes numeric/custom values. Can be one of <see cref="AxesValuesVisibility"/> enumeration members.
+        /// Gets or sets the visibility state of x- and y- axes numeric/custom values. Can be one of <see cref="AxesVisibility"/> enumeration members.
         /// </summary>
         /// <remarks>This property will have no effect if <see cref="ChartStyle"/> property is set to <see cref="ChartStyle.SolidPie"/> or <see cref="ChartStyle.SlicedPie"/> or <see cref="ChartStyle.Doughnut"/>.</remarks>
         [Category("ChartAppearance"), Description("Gets or sets the visibility state of x- and y- axes numeric/custom values. Can be one of AxesValuesVisibility enumeration members")]
-        public AxesValuesVisibility AxesValuesVisibility
+        public AxesVisibility AxesValuesVisibility
         {
-            get { return (AxesValuesVisibility)GetValue(AxesValuesVisibilityProperty); }
+            get { return (AxesVisibility)GetValue(AxesValuesVisibilityProperty); }
             set { SetValue(AxesValuesVisibilityProperty, value); }
+        }
+        /// <summary>
+        /// Gets or sets the visibility state of x- and y- axes lines. Can be one of <see cref="AxesVisibility"/> enumeration members.
+        /// </summary>
+        /// <remarks>This property will have no effect if <see cref="ChartStyle"/> property is set to <see cref="ChartStyle.SolidPie"/> or <see cref="ChartStyle.SlicedPie"/> or <see cref="ChartStyle.Doughnut"/>.</remarks>
+        [Category("ChartAppearance"), Description("Gets or sets the visibility state of x- and y- axes lines. Can be one of AxesValuesVisibility enumeration members")]
+        public AxesVisibility AxesLinesVisibility
+        {
+            get { return (AxesVisibility)GetValue(AxesLinesVisibilityProperty); }
+            set { SetValue(AxesLinesVisibilityProperty, value); }
         }
         /// <summary>
         /// Gets or sets the chart style. Can be one of <see cref="ChartStyle"/> enumeration members.
@@ -1696,7 +1719,7 @@ namespace ag.WPF.Chart
         /// </summary>
         /// <remarks>This property will have no effect if <see cref="ChartStyle"/> property is set to one of the following: <see cref="ChartStyle.SolidPie"/>, <see cref="ChartStyle.SlicedPie"/>, <see cref="ChartStyle.Doughnut"/>, <see cref="ChartStyle.Radar"/>, <see cref="ChartStyle.RadarWithMarkers"/>, <see cref="ChartStyle.RadarArea"/>.</remarks>
         /// </remarks>
-        [Category("ChartAppearance"), Description("Gets or sets amount of sections on x-axis")]
+        [Category("ChartMeasures"), Description("Gets or sets amount of sections on x-axis")]
         public int SectionsX
         {
             get { return (int)GetValue(SectionsXProperty); }
@@ -1709,7 +1732,7 @@ namespace ag.WPF.Chart
         /// This property has no effect if <see cref="ChartStyle"/> is set to <see cref="ChartStyle.Bars"/>, <see cref="ChartStyle.StackedBars"/>, <see cref="ChartStyle.FullStackedBars"/>, 
         /// <see cref="ChartStyle.SolidPie"/> or <see cref="ChartStyle.SlicedPie"/> or <see cref="ChartStyle.Doughnut"/>
         /// </remarks>
-        [Category("ChartAppearance"), Description("Gets or sets amount of sections on y-axis")]
+        [Category("ChartMeasures"), Description("Gets or sets amount of sections on y-axis")]
         public int SectionsY
         {
             get { return (int)GetValue(SectionsYProperty); }
@@ -2078,18 +2101,37 @@ namespace ag.WPF.Chart
         private static void OnAxesValuesVisibilityChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
             if (!(sender is Chart ch)) return;
-            ch.OnAxesValuesVisibilityChanged((AxesValuesVisibility)e.OldValue, (AxesValuesVisibility)e.NewValue);
+            ch.OnAxesValuesVisibilityChanged((AxesVisibility)e.OldValue, (AxesVisibility)e.NewValue);
         }
         /// <summary>
         /// Invoked just before the <see cref="AxesValuesVisibilityChangedEvent"/> event is raised on control
         /// </summary>
         /// <param name="oldValue">Old value</param>
         /// <param name="newValue">New value</param>
-        protected void OnAxesValuesVisibilityChanged(AxesValuesVisibility oldValue, AxesValuesVisibility newValue)
+        protected void OnAxesValuesVisibilityChanged(AxesVisibility oldValue, AxesVisibility newValue)
         {
-            var e = new RoutedPropertyChangedEventArgs<AxesValuesVisibility>(oldValue, newValue)
+            var e = new RoutedPropertyChangedEventArgs<AxesVisibility>(oldValue, newValue)
             {
                 RoutedEvent = AxesValuesVisibilityChangedEvent
+            };
+            RaiseEvent(e);
+        }
+
+        private static void OnAxesLinesVisibilityChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
+        {
+            if (!(sender is Chart ch)) return;
+            ch.OnAxesLinesVisibilityChanged((AxesVisibility)e.OldValue, (AxesVisibility)e.NewValue);
+        }
+        /// <summary>
+        /// Invoked just before the <see cref="AxesLinesVisibilityChangedEvent"/> event is raised on control
+        /// </summary>
+        /// <param name="oldValue">Old value</param>
+        /// <param name="newValue">New value</param>
+        protected void OnAxesLinesVisibilityChanged(AxesVisibility oldValue, AxesVisibility newValue)
+        {
+            var e = new RoutedPropertyChangedEventArgs<AxesVisibility>(oldValue, newValue)
+            {
+                RoutedEvent = AxesLinesVisibilityChangedEvent
             };
             RaiseEvent(e);
         }
@@ -2786,7 +2828,7 @@ namespace ag.WPF.Chart
         /// <summary>
         /// Occurs when the <see cref="AxesValuesVisibility"/> property has been changed in some way
         /// </summary>
-        public event RoutedPropertyChangedEventHandler<AxesValuesVisibility> AxesValuesVisibilityChanged
+        public event RoutedPropertyChangedEventHandler<AxesVisibility> AxesValuesVisibilityChanged
         {
             add { AddHandler(AxesValuesVisibilityChangedEvent, value); }
             remove { RemoveHandler(AxesValuesVisibilityChangedEvent, value); }
@@ -2795,7 +2837,21 @@ namespace ag.WPF.Chart
         /// Identifies the <see cref="AxesValuesVisibilityChanged"/> routed event
         /// </summary>
         public static readonly RoutedEvent AxesValuesVisibilityChangedEvent = EventManager.RegisterRoutedEvent("AxesValuesVisibilityChanged",
-            RoutingStrategy.Bubble, typeof(RoutedPropertyChangedEventHandler<AxesValuesVisibility>), typeof(Chart));
+            RoutingStrategy.Bubble, typeof(RoutedPropertyChangedEventHandler<AxesVisibility>), typeof(Chart));
+
+        /// <summary>
+        /// Occurs when the <see cref="AxesLinesVisibility"/> property has been changed in some way
+        /// </summary>
+        public event RoutedPropertyChangedEventHandler<AxesVisibility> AxesLinesVisibilityChanged
+        {
+            add { AddHandler(AxesLinesVisibilityChangedEvent, value); }
+            remove { RemoveHandler(AxesLinesVisibilityChangedEvent, value); }
+        }
+        /// <summary>
+        /// Identifies the <see cref="AxesLinesVisibilityChanged"/> routed event
+        /// </summary>
+        public static readonly RoutedEvent AxesLinesVisibilityChangedEvent = EventManager.RegisterRoutedEvent("AxesLinesVisibilityChanged",
+            RoutingStrategy.Bubble, typeof(RoutedPropertyChangedEventHandler<AxesVisibility>), typeof(Chart));
 
         /// <summary>
         /// Occurs when the <see cref="ChartStyle"/> property has been changed in some way
