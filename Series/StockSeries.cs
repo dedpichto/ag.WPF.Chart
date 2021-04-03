@@ -264,7 +264,7 @@ namespace ag.WPF.Chart.Series
         }
 
         /// <summary>
-        /// Initializes a new instance of StockSeries object using specified name and sequence of PlainChartValue objects
+        /// Initializes a new instance of StockSeries object using specified name and sequence of StockChartValue objects
         /// </summary>
         /// <param name="name">Series name</param>
         /// <param name="values">Series values</param>
@@ -272,13 +272,13 @@ namespace ag.WPF.Chart.Series
         {
             foreach (var v in values)
             {
-                Values.Add(new StockChartValue((v.Value.VolumeValue, v.Value.OpenValue, v.Value.HighValue, v.Value.LowValue, v.Value.CloseValue), v.CustomValue));
+                Values.Add(v.Clone());
             }
             InitFields(name);
         }
 
         /// <summary>
-        /// Initializes a new instance of StockSeries object using specified brush, name and sequence of PlainChartValue objects
+        /// Initializes a new instance of StockSeries object using specified brush, name and sequence of StockChartValue objects
         /// </summary>
         /// <param name="mainBrush">Series background</param>
         /// <param name="name">Series name</param>
@@ -290,7 +290,7 @@ namespace ag.WPF.Chart.Series
         }
 
         /// <summary>
-        /// Initializes a new instance of StockSeries object using specified brush, name and sequence of PlainChartValue objects
+        /// Initializes a new instance of StockSeries object using specified brush, name and sequence of StockChartValue objects
         /// </summary>
         /// <param name="mainBrush">Series background</param>
         /// <param name="secondaryBrush">Series secondary background</param>

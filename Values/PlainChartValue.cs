@@ -30,6 +30,13 @@ namespace ag.WPF.Chart.Values
             : this(plainValue)
         {
             CustomValue = customValue;
+        }
+        #endregion
+
+        #region Abstraction metods overrides
+        public override IChartValue Clone()
+        {
+            return (PlainChartValue)MemberwiseClone();
         } 
         #endregion
     }

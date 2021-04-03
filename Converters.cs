@@ -1,18 +1,4 @@
-﻿// This program is free software; you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation; either version 2 of the License, or
-// (at your option) any later version.
-
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
-// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-
-using ag.WPF.Chart.Values;
+﻿using ag.WPF.Chart.Values;
 using ag.WPF.Chart.Series;
 using System;
 using System.Collections.Generic;
@@ -106,6 +92,29 @@ namespace ag.WPF.Chart
             return number % 5 == 0;
         }
 
+        private static (double max, double min) getMaxMinForWaterfall(double[] values)
+        {
+            var temp = 0.0;
+            var list = new List<double>();
+
+            for (var i = 0; i < values.Length; i++)
+            {
+                temp += values[i];
+                list.Add(temp);
+            }
+            return (list.Max(), list.Min());
+        }
+
+        private static int getMaxFractionPower(IEnumerable<double> numbers)
+        {
+            return numbers.Select(n => GetDecimalPlaces(n)).Max();
+        }
+
+        internal static int GetDecimalPlaces(double number)
+        {
+            return BitConverter.GetBytes(decimal.GetBits((decimal)number)[3])[2];
+        }
+
         internal static double GetUnitsForBars(ISeries[] series, ChartStyle chartStyle, Directions dir, double width, double height, double boundOffset, int linesCountX, double formatHeight, bool autoAdjust, double maxX)
         {
             var centerX = 0.0;
@@ -178,78 +187,6 @@ namespace ag.WPF.Chart
             return units;
         }
 
-        internal static double GetMaxForBars(ISeries[] series, ChartStyle chartStyle, Directions dir, double width, double height, double boundOffset, int linesCountX, double formatHeight, bool autoAdjust, double maxX)
-        {
-            var centerX = 0.0;
-            var radius = 0.0;
-
-            switch (dir)
-            {
-                case Directions.NorthEast:
-                case Directions.NorthWest:
-                case Directions.SouthEast:
-                    centerX = Utils.AXIS_THICKNESS;
-                    radius = width - Utils.AXIS_THICKNESS;
-                    break;
-                case Directions.NorthEastNorthWest:
-                    centerX = Utils.AXIS_THICKNESS;
-                    radius = (width - Utils.AXIS_THICKNESS) / 2;
-                    break;
-                case Directions.NorthEastSouthEast:
-                    centerX = Utils.AXIS_THICKNESS;
-                    radius = width - Utils.AXIS_THICKNESS;
-                    break;
-            }
-            if (!autoAdjust)
-                return maxX;
-            var centerPoint = new Point(centerX, radius);
-            var (max, _, _, _, _, _, _) = Utils.GetMeasures(
-               chartStyle,
-               series,
-               linesCountX,
-               radius,
-               formatHeight,
-               centerPoint,
-               dir == Directions.NorthEastNorthWest);
-            return max;
-        }
-
-        internal static double GetMaxForLines(ISeries[] series, ChartStyle chartStyle, Directions dir, double width, double height, double boundOffset, int linesCountY, double formatHeight, bool autoAdjust, double maxY)
-        {
-            var centerX = 0.0;
-            var radius = 0.0;
-
-            switch (dir)
-            {
-                case Directions.NorthEast:
-                case Directions.NorthWest:
-                case Directions.SouthEast:
-                    centerX = Utils.AXIS_THICKNESS + boundOffset;
-                    radius = height - Utils.AXIS_THICKNESS;
-                    break;
-                case Directions.NorthEastNorthWest:
-                    centerX = width / 2;
-                    radius = height - Utils.AXIS_THICKNESS;
-                    break;
-                case Directions.NorthEastSouthEast:
-                    centerX = Utils.AXIS_THICKNESS + boundOffset;
-                    radius = (height - Utils.AXIS_THICKNESS) / 2;
-                    break;
-            }
-            if (!autoAdjust)
-                return maxY;
-            var centerPoint = new Point(centerX, radius);
-            var (max, _, _, _, _, _, _) = Utils.GetMeasures(
-               chartStyle,
-               series,
-               linesCountY,
-               radius,
-               formatHeight,
-               centerPoint,
-               dir == Directions.NorthEastSouthEast);
-            return max;
-        }
-
         internal static List<(List<IChartValue> Values, int Index)> GetPaddedSeries(IEnumerable<ISeries> series)
         {
             var rawValues = series.Select(s => (s.Values.ToList(), s.Index)).ToList();
@@ -263,30 +200,7 @@ namespace ag.WPF.Chart
             return rawValues;
         }
 
-        internal static (double max, double min) GetMaxMinForWaterfall(double[] values)
-        {
-            var temp = 0.0;
-            var list = new List<double>();
-
-            for (var i = 0; i < values.Length; i++)
-            {
-                temp += values[i];
-                list.Add(temp);
-            }
-            return (list.Max(), list.Min());
-        }
-
-        internal static int GetDecimalPlaces(double number)
-        {
-            return BitConverter.GetBytes(decimal.GetBits((decimal)number)[3])[2];
-        }
-
-        private static int getMaxFractionPower(IEnumerable<double> numbers)
-        {
-            return numbers.Select(n => GetDecimalPlaces(n)).Max();
-        }
-
-        internal static (double max, double min, int linesCount, double step, double stepLength, double units, ZeroPoint zeroPoint) GetMeasuresForPositive(double diff, int linesCount, double radius, double fontHeight, int fractionPower, ZeroPoint centerPoint)
+        private static (double max, double min, int linesCount, double step, double stepLength, double units, ZeroPoint zeroPoint) getMeasuresForPositive(double diff, int linesCount, double radius, double fontHeight, int fractionPower, ZeroPoint centerPoint)
         {
             var stepSize = 0.0;
             var stepLength = 0.0;
@@ -347,7 +261,7 @@ namespace ag.WPF.Chart
             return (diff, 0, linesCount, stepSize, stepLength, units, centerPoint);
         }
 
-        internal static (double max, double min, int linesCount, double stepSize, double stepLength, double units, ZeroPoint zeroPoint) GetMeasuresForNegative(double min, int linesCount, double radius, double fontHeight, int fractionPower, ZeroPoint zeroPoint)
+        private static (double max, double min, int linesCount, double stepSize, double stepLength, double units, ZeroPoint zeroPoint) getMeasuresForNegative(double min, int linesCount, double radius, double fontHeight, int fractionPower, ZeroPoint zeroPoint)
         {
             var stepSize = 0.0;
             var stepLength = 0.0;
@@ -412,77 +326,7 @@ namespace ag.WPF.Chart
             return (0, min, linesCount, stepSize, stepLength, units, zeroPoint);
         }
 
-        private static int getLineNumbersForComplexRadar(int power, double max, double radius, double fontHeight, double diff, double min)
-        {
-            // get all available integer lines counts
-            var lines = calculatedSteps(power, max).Where(l => IsInteger(l)).OrderBy(l => l).Distinct().ToArray();
-            var sizes = lines.Select(s => radius / s).ToArray();
-            // get the largest step with real size more/equal font height
-            var items = sizes.Select((size, index) => new { size, index }).Where(a => a.size >= fontHeight + 4).OrderByDescending(a => a.index);
-            foreach (var a in items)
-            {
-                var itemLines = lines[a.index];
-                var sz = diff / itemLines;
-                var t = min;
-                while (t < 0)
-                {
-                    t += sz;
-                }
-                if (t == 0)
-                {
-                    return (int)itemLines;
-                }
-            }
-            return 0;
-        }
-
-        private static int getLineNumbersForCoplex(int power, double max, double radius, double fontHeight, double diff, double min)
-        {
-            var lines = calculatedSteps(power, max).Where(l => IsInteger(l)).OrderBy(l => l).Distinct().ToArray();
-            var sizes = lines.Select(s => radius / s).ToArray();
-            var splitItem = sizes.Select((size, index) => new { size, index }).LastOrDefault(a => a.size >= fontHeight + 4);
-            if (splitItem != null)
-            {
-                return (int)lines[splitItem.index];
-            }
-            return 0;
-        }
-
-        internal static int GetMaxValueLength(double max, double min, int fractionPower)
-        {
-            // round max to next integer
-            max = Math.Ceiling(max);
-            // round min to prevous integer
-            min = Math.Floor(min);
-
-            if (fractionPower > 0)
-            {
-                max *= Math.Pow(10, fractionPower);
-                min = -Math.Abs(min * Math.Pow(10, fractionPower));
-            }
-
-            var powerMax = Math.Abs((int)max).ToString().Length - 1;
-            var powerMin = Math.Abs((int)min).ToString().Length - 1;
-
-            // do not increase max for integers that are equal to 10 power
-            var p = powerMax >= 3 ? powerMax - 1 : powerMax;
-            if (max % Math.Pow(10, p) != 0)
-                max = Math.Sign(max) * roundInt((int)Math.Abs(max), (int)Math.Pow(10, powerMax));
-            // do not increase max for integers that are equal to 10 power
-            p = powerMin >= 3 ? powerMin - 1 : powerMin;
-            if (min % Math.Pow(10, p) != 0)
-                min = Math.Sign(min) * roundInt((int)Math.Abs(min), (int)Math.Pow(10, powerMin));
-
-            if (fractionPower > 0)
-            {
-                max /= Math.Pow(10, fractionPower);
-                min = -Math.Abs(min / Math.Pow(10, fractionPower));
-            }
-
-            return Math.Max(max.ToString().Length, min.ToString().Length);
-        }
-
-        internal static (double max, double min, int linesCount, double stepSize, double stepLength, double units, ZeroPoint zeroPoint) GetMeasuresForComplex(ChartStyle chartStyle, double max, double min, int linesCount, double radius, double fontHeight, int fractionPower, ZeroPoint zeroPoint, bool splitSides)
+        private static (double max, double min, int linesCount, double stepSize, double stepLength, double units, ZeroPoint zeroPoint) getMeasuresForComplex(ChartStyle chartStyle, double max, double min, int linesCount, double radius, double fontHeight, int fractionPower, ZeroPoint zeroPoint, bool splitSides)
         {
             int tempLines;
 
@@ -683,6 +527,97 @@ namespace ag.WPF.Chart
             return (max, min, linesCount, stepSize, stepLength, units, zeroPoint);
         }
 
+        private static int getLineNumbersForComplexRadar(int power, double max, double radius, double fontHeight, double diff, double min)
+        {
+            // get all available integer lines counts
+            var lines = calculatedSteps(power, max).Where(l => IsInteger(l)).OrderBy(l => l).Distinct().ToArray();
+            var sizes = lines.Select(s => radius / s).ToArray();
+            // get the largest step with real size more/equal font height
+            var items = sizes.Select((size, index) => new { size, index }).Where(a => a.size >= fontHeight + 4).OrderByDescending(a => a.index);
+            foreach (var a in items)
+            {
+                var itemLines = lines[a.index];
+                var sz = diff / itemLines;
+                var t = min;
+                while (t < 0)
+                {
+                    t += sz;
+                }
+                if (t == 0)
+                {
+                    return (int)itemLines;
+                }
+            }
+            return 0;
+        }
+
+        private static int getLineNumbersForCoplex(int power, double max, double radius, double fontHeight, double diff, double min)
+        {
+            var lines = calculatedSteps(power, max).Where(l => IsInteger(l)).OrderBy(l => l).Distinct().ToArray();
+            var sizes = lines.Select(s => radius / s).ToArray();
+            var splitItem = sizes.Select((size, index) => new { size, index }).LastOrDefault(a => a.size >= fontHeight + 4);
+            if (splitItem != null)
+            {
+                return (int)lines[splitItem.index];
+            }
+            return 0;
+        }
+
+        private static int roundInt(int number, int tense)
+        {
+            // smaller multiple
+            int a = number / tense * tense;
+            // larger multiple
+            int b = a + tense;
+            return b;
+        }
+
+        private static double getDiff(double max, double min)
+        {
+            if (max >= 0 && min >= 0)
+                return Math.Abs(max - min);
+            else if (max < 0 && min > 0)
+                return Math.Abs(max) + min;
+            else if (max > 0 && min < 0)
+                return max + Math.Abs(min);
+            else
+                return Math.Abs(max + min);
+        }
+
+        internal static int GetMaxValueLength(double max, double min, int fractionPower)
+        {
+            // round max to next integer
+            max = Math.Ceiling(max);
+            // round min to prevous integer
+            min = Math.Floor(min);
+
+            if (fractionPower > 0)
+            {
+                max *= Math.Pow(10, fractionPower);
+                min = -Math.Abs(min * Math.Pow(10, fractionPower));
+            }
+
+            var powerMax = Math.Abs((int)max).ToString().Length - 1;
+            var powerMin = Math.Abs((int)min).ToString().Length - 1;
+
+            // do not increase max for integers that are equal to 10 power
+            var p = powerMax >= 3 ? powerMax - 1 : powerMax;
+            if (max % Math.Pow(10, p) != 0)
+                max = Math.Sign(max) * roundInt((int)Math.Abs(max), (int)Math.Pow(10, powerMax));
+            // do not increase max for integers that are equal to 10 power
+            p = powerMin >= 3 ? powerMin - 1 : powerMin;
+            if (min % Math.Pow(10, p) != 0)
+                min = Math.Sign(min) * roundInt((int)Math.Abs(min), (int)Math.Pow(10, powerMin));
+
+            if (fractionPower > 0)
+            {
+                max /= Math.Pow(10, fractionPower);
+                min = -Math.Abs(min / Math.Pow(10, fractionPower));
+            }
+
+            return Math.Max(max.ToString().Length, min.ToString().Length);
+        }
+
         internal static (double max, double min, int linesCount, double stepSize, double stepLength, double units, ZeroPoint zeroPoint) GetMeasures(ChartStyle chartStyle, ISeries[] seriesArray, int linesCount, double radius, double fontHeight, Point centerPoint, bool splitSides = false)
         {
             var max = 0.0;
@@ -747,7 +682,7 @@ namespace ag.WPF.Chart
             }
             else if (chartStyle == ChartStyle.Waterfall)
             {
-                (max, min) = GetMaxMinForWaterfall(seriesArray[0].Values.Select(v => v.Value.PlainValue).ToArray());
+                (max, min) = getMaxMinForWaterfall(seriesArray[0].Values.Select(v => v.Value.PlainValue).ToArray());
                 if (max > 0 && min > 0)
                 {
                     minIsZero = true;
@@ -770,44 +705,19 @@ namespace ag.WPF.Chart
             }
 
             if (minIsZero)
-                return GetMeasuresForPositive(max, linesCount, radius, fontHeight, getMaxFractionPower(values), new ZeroPoint { Point = centerPoint });
+                return getMeasuresForPositive(max, linesCount, radius, fontHeight, getMaxFractionPower(values), new ZeroPoint { Point = centerPoint });
             else if (maxIsZero)
-                return GetMeasuresForNegative(min, linesCount, radius, fontHeight, getMaxFractionPower(values), new ZeroPoint { Point = centerPoint });
+                return getMeasuresForNegative(min, linesCount, radius, fontHeight, getMaxFractionPower(values), new ZeroPoint { Point = centerPoint });
             else
-                return GetMeasuresForComplex(chartStyle, max, min, linesCount, radius, fontHeight, getMaxFractionPower(values), new ZeroPoint { Point = centerPoint }, splitSides);
+                return getMeasuresForComplex(chartStyle, max, min, linesCount, radius, fontHeight, getMaxFractionPower(values), new ZeroPoint { Point = centerPoint }, splitSides);
         }
 
         internal static bool IsInteger(double step)
         {
-            return Math.Abs(step % 1) <= (double.Epsilon * 100);
+            return Math.Abs(step % 1) < double.Epsilon;
         }
 
-        private static int roundInt(int number, int tense)
-        {
-            // Smaller multiple
-            int a = number / tense * tense;
-
-            // Larger multiple
-            int b = a + tense;
-
-            // Return of closest of two
-            //return (number - a < b - number) ? a : b;
-            return b;
-        }
-
-        private static double getDiff(double max, double min)
-        {
-            if (max >= 0 && min >= 0)
-                return Math.Abs(max - min);
-            else if (max < 0 && min > 0)
-                return Math.Abs(max) + min;
-            else if (max > 0 && min < 0)
-                return max + Math.Abs(min);
-            else
-                return Math.Abs(max + min);
-        }
-
-        internal static (double Step, int Limit) Limits(ChartStyle style, bool offsetBoundary, int stopsX, int ticks,
+        internal static (double step, int limit) Limits(ChartStyle style, bool offsetBoundary, int stopsX, int ticks,
             double boundOffset, double width)
         {
             if (StyleColumns(style))
@@ -1313,7 +1223,6 @@ namespace ag.WPF.Chart
 
             var gm = new PathGeometry();
             int maxX;
-            double maxY;
 
             var totalValues = series.SelectMany(s => s.Values.Select(v => v.Value.PlainValue)).ToArray();
             var rawValues = Utils.GetPaddedSeries(series);
@@ -1380,8 +1289,7 @@ namespace ag.WPF.Chart
                 case ChartStyle.SmoothFullStackedLines:
                 case ChartStyle.SmoothFullStackedLinesWithMarkers:
                     maxX = series.Max(s => s.Values.Count);
-                    maxY = 100.0;
-                    gm = drawFullStackedLine(width, height, maxX, maxY, chartStyle, dir, series, index, rawValues, offsetBoundary);
+                    gm = drawFullStackedLine(width, height, maxX, chartStyle, dir, series, index, rawValues, offsetBoundary);
                     break;
                 case ChartStyle.Columns:
                     {
@@ -1396,8 +1304,7 @@ namespace ag.WPF.Chart
                         break;
                     }
                 case ChartStyle.FullStackedColumns:
-                    maxY = 100.0;
-                    gm = drawFullStackedColumns(width, height, maxY, dir, series, index, rawValues);
+                    gm = drawFullStackedColumns(width, height, dir, series, index, rawValues);
                     break;
                 case ChartStyle.Bars:
                     {
@@ -1412,13 +1319,11 @@ namespace ag.WPF.Chart
                         break;
                     }
                 case ChartStyle.FullStackedBars:
-                    maxY = 100.0;
-                    gm = drawFullStackedBars(width, height, maxY, dir, series, index, rawValues);
+                    gm = drawFullStackedBars(width, height, dir, series, index, rawValues);
                     break;
                 case ChartStyle.FullStackedArea:
                     maxX = series.Max(s => s.Values.Count);
-                    maxY = 100.0;
-                    gm = drawFullStackedArea(width, height, maxX, maxY, dir, series, index, rawValues);
+                    gm = drawFullStackedArea(width, height, maxX, dir, series, index, rawValues);
                     break;
             }
 
@@ -1589,7 +1494,7 @@ namespace ag.WPF.Chart
             return gm;
         }
 
-        private PathGeometry drawFullStackedBars(double width, double height, double maxLength, Directions dir, ISeries[] series, int index, List<(List<IChartValue> Values, int Index)> tuples)
+        private PathGeometry drawFullStackedBars(double width, double height, Directions dir, ISeries[] series, int index, List<(List<IChartValue> Values, int Index)> tuples)
         {
             var tp = tuples.FirstOrDefault(t => t.Index == index);
             if (tp == default) return null;
@@ -1606,23 +1511,23 @@ namespace ag.WPF.Chart
             {
                 case Directions.NorthEast:
                     startX = Utils.AXIS_THICKNESS;
-                    stepX = (width - 2 * Utils.AXIS_THICKNESS) * 100 / maxLength;
+                    stepX = (width - 2 * Utils.AXIS_THICKNESS);
                     break;
                 case Directions.NorthEastNorthWest:
                     startX = width / 2;
-                    stepX = (width - 2 * Utils.AXIS_THICKNESS) / 2 * 100 / maxLength;
+                    stepX = (width - 2 * Utils.AXIS_THICKNESS) / 2;
                     break;
                 case Directions.NorthEastSouthEast:
                     startX = Utils.AXIS_THICKNESS;
-                    stepX = (width - 2 * Utils.AXIS_THICKNESS) * 100 / maxLength;
+                    stepX = (width - 2 * Utils.AXIS_THICKNESS);
                     break;
                 case Directions.NorthWest:
                     startX = width - Utils.AXIS_THICKNESS;
-                    stepX = (width - 2 * Utils.AXIS_THICKNESS) * 100 / maxLength;
+                    stepX = (width - 2 * Utils.AXIS_THICKNESS);
                     break;
                 case Directions.SouthEast:
                     startX = Utils.AXIS_THICKNESS;
-                    stepX = (width - 2 * Utils.AXIS_THICKNESS) * 100 / maxLength;
+                    stepX = (width - 2 * Utils.AXIS_THICKNESS);
                     break;
             }
             currentSeries.RealRects.Clear();
@@ -1649,7 +1554,7 @@ namespace ag.WPF.Chart
             return gm;
         }
 
-        private PathGeometry drawFullStackedColumns(double width, double height, double maxLength, Directions dir, ISeries[] series, int index, List<(List<IChartValue> Values, int Index)> tuples)
+        private PathGeometry drawFullStackedColumns(double width, double height, Directions dir, ISeries[] series, int index, List<(List<IChartValue> Values, int Index)> tuples)
         {
             var tp = tuples.FirstOrDefault(t => t.Index == index);
             if (tp == default) return null;
@@ -1666,23 +1571,23 @@ namespace ag.WPF.Chart
             {
                 case Directions.NorthEast:
                     startY = height - Utils.AXIS_THICKNESS;
-                    stepY = (height - 2 * Utils.AXIS_THICKNESS) * 100 / maxLength;
+                    stepY = (height - 2 * Utils.AXIS_THICKNESS);
                     break;
                 case Directions.NorthEastNorthWest:
                     startY = height - Utils.AXIS_THICKNESS;
-                    stepY = (height - 2 * Utils.AXIS_THICKNESS) * 100 / maxLength;
+                    stepY = (height - 2 * Utils.AXIS_THICKNESS);
                     break;
                 case Directions.NorthWest:
                     startY = height - Utils.AXIS_THICKNESS;
-                    stepY = (height - 2 * Utils.AXIS_THICKNESS) * 100 / maxLength;
+                    stepY = (height - 2 * Utils.AXIS_THICKNESS);
                     break;
                 case Directions.NorthEastSouthEast:
                     startY = height / 2;
-                    stepY = (height - 2 * Utils.AXIS_THICKNESS) / 2 * 100 / maxLength;
+                    stepY = (height - 2 * Utils.AXIS_THICKNESS) / 2;
                     break;
                 case Directions.SouthEast:
                     startY = Utils.AXIS_THICKNESS;
-                    stepY = (height - 2 * Utils.AXIS_THICKNESS) * 100 / maxLength;
+                    stepY = (height - 2 * Utils.AXIS_THICKNESS);
                     break;
             }
 
@@ -1803,7 +1708,7 @@ namespace ag.WPF.Chart
             return gm;
         }
 
-        private PathGeometry drawFullStackedArea(double width, double height, double maxX, double maxY, Directions dir,
+        private PathGeometry drawFullStackedArea(double width, double height, double maxX, Directions dir,
             ISeries[] series, int index, List<(List<IChartValue> Values, int Index)> tuples)
         {
             var tp = tuples.FirstOrDefault(t => t.Index == index);
@@ -1813,7 +1718,6 @@ namespace ag.WPF.Chart
             double centerY;
             var gm = new PathGeometry();
 
-            var percent = maxY / 100;
             var currentSeries = series.FirstOrDefault(s => s.Index == index);
             if (currentSeries == null) return null;
 
@@ -1849,8 +1753,6 @@ namespace ag.WPF.Chart
             }
             currentSeries.RealRects.Clear();
             currentSeries.RealPoints.Clear();
-
-            stepY /= percent;
 
             var start = new Point();
             double x = 0, y;
@@ -1910,7 +1812,7 @@ namespace ag.WPF.Chart
             }
         }
 
-        private PathGeometry drawFullStackedLine(double width, double height, double maxX, double maxY, ChartStyle style,
+        private PathGeometry drawFullStackedLine(double width, double height, double maxX, ChartStyle style,
             Directions dir, ISeries[] series, int index, List<(List<IChartValue> Values, int Index)> tuples, bool offsetBoundary)
         {
             var tp = tuples.FirstOrDefault(t => t.Index == index);
@@ -1922,7 +1824,6 @@ namespace ag.WPF.Chart
 
             var boundOffset = Utils.BoundaryOffset(offsetBoundary, width, values.Count);
 
-            var percent = maxY / 100;
             var currentSeries = series.FirstOrDefault(s => s.Index == index);
             if (currentSeries == null) return null;
 
@@ -1958,8 +1859,6 @@ namespace ag.WPF.Chart
             }
             currentSeries.RealRects.Clear();
             currentSeries.RealPoints.Clear();
-
-            stepY /= percent;
 
             var start = new Point();
             for (var i = 0; i < values.Count; i++)
@@ -4574,7 +4473,7 @@ namespace ag.WPF.Chart
             if (values == null
                 || !(values[0] is ChartValues chartValues)
                 || !(values[1] is string format)
-                || !(parameter is PlainChartValue chartValue))
+                || !(parameter is IChartValue chartValue))
                 return null;
             var sum = chartValues.Sum(p => Math.Abs(p.Value.PlainValue));
             if (format.EndsWith("%")) format = format.Substring(0, format.Length - 1);

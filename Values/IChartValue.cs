@@ -10,5 +10,10 @@
         /// Gets or sets current numeric value
         /// </summary>
         (double PlainValue, double HighValue, double LowValue, double CloseValue, double VolumeValue, double OpenValue) Value { get; set; }
+        /// <summary>
+        /// Creates copy of current object
+        /// </summary>
+        /// <returns></returns>
+        IChartValue Clone();
     }
 }
