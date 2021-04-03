@@ -105,7 +105,7 @@ namespace ag.WPF.Chart
             return number % 5 == 0;
         }
 
-        internal static double GetUnitsForBars(Series[] series, ChartStyle chartStyle, Directions dir, double width, double height, double boundOffset, int linesCountX, double formatHeight, bool autoAdjust, double maxX)
+        internal static double GetUnitsForBars(ISeries[] series, ChartStyle chartStyle, Directions dir, double width, double height, double boundOffset, int linesCountX, double formatHeight, bool autoAdjust, double maxX)
         {
             var centerX = 0.0;
             var radius = 0.0;
@@ -141,7 +141,7 @@ namespace ag.WPF.Chart
             return units;
         }
 
-        internal static double GetUnitsForLines(Series[] series, ChartStyle chartStyle, Directions dir, double width, double height, double boundOffset, int linesCountY, double formatHeight, bool autoAdjust, double maxY)
+        internal static double GetUnitsForLines(ISeries[] series, ChartStyle chartStyle, Directions dir, double width, double height, double boundOffset, int linesCountY, double formatHeight, bool autoAdjust, double maxY)
         {
             var centerX = 0.0;
             var radius = 0.0;
@@ -177,7 +177,7 @@ namespace ag.WPF.Chart
             return units;
         }
 
-        internal static double GetMaxForBars(Series[] series, ChartStyle chartStyle, Directions dir, double width, double height, double boundOffset, int linesCountX, double formatHeight, bool autoAdjust, double maxX)
+        internal static double GetMaxForBars(ISeries[] series, ChartStyle chartStyle, Directions dir, double width, double height, double boundOffset, int linesCountX, double formatHeight, bool autoAdjust, double maxX)
         {
             var centerX = 0.0;
             var radius = 0.0;
@@ -213,7 +213,7 @@ namespace ag.WPF.Chart
             return max;
         }
 
-        internal static double GetMaxForLines(Series[] series, ChartStyle chartStyle, Directions dir, double width, double height, double boundOffset, int linesCountY, double formatHeight, bool autoAdjust, double maxY)
+        internal static double GetMaxForLines(ISeries[] series, ChartStyle chartStyle, Directions dir, double width, double height, double boundOffset, int linesCountY, double formatHeight, bool autoAdjust, double maxY)
         {
             var centerX = 0.0;
             var radius = 0.0;
@@ -249,7 +249,7 @@ namespace ag.WPF.Chart
             return max;
         }
 
-        internal static List<(List<ChartValue> Values, int Index)> GetPaddedSeries(IEnumerable<Series> series)
+        internal static List<(List<IChartValue> Values, int Index)> GetPaddedSeries(IEnumerable<ISeries> series)
         {
             var rawValues = series.Select(s => (s.Values.ToList(), s.Index)).ToList();
             var maxCount = rawValues.Max(rw => rw.Item1.Count);
@@ -682,14 +682,14 @@ namespace ag.WPF.Chart
             return (max, min, linesCount, stepSize, stepLength, units, zeroPoint);
         }
 
-        internal static (double max, double min, int linesCount, double stepSize, double stepLength, double units, ZeroPoint zeroPoint) GetMeasures(ChartStyle chartStyle, Series[] seriesArray, int linesCount, double radius, double fontHeight, Point centerPoint, bool splitSides = false)
+        internal static (double max, double min, int linesCount, double stepSize, double stepLength, double units, ZeroPoint zeroPoint) GetMeasures(ChartStyle chartStyle, ISeries[] seriesArray, int linesCount, double radius, double fontHeight, Point centerPoint, bool splitSides = false)
         {
             var max = 0.0;
             var min = 0.0;
             var minIsZero = false;
             var maxIsZero = false;
 
-            var values = seriesArray.SelectMany(s => s.Values.Select(v => v.Value.V1));
+            var values = seriesArray.SelectMany(s => s.Values.Select(v => v.Value.PlainValue));
             max = values.Max();
             min = values.Min();
 
@@ -727,11 +727,11 @@ namespace ag.WPF.Chart
                         var temps = tempValues.Where(rw => rw.Index < index);
                         for (var i = 0; i < resultValues[index].Items.Count; i++)
                         {
-                            var v = (decimal)resultValues[index].Items[i].Value.V1 + temps.Sum(t => (decimal)t.Items[i].Value.V1);
+                            var v = (decimal)resultValues[index].Items[i].Value.PlainValue + temps.Sum(t => (decimal)t.Items[i].Value.PlainValue);
                             resultValues[index].Items[i] = new ChartValue((double)v);
                         }
                     }
-                    values = resultValues.SelectMany(a => a.Items).Select(it => it.Value.V1);
+                    values = resultValues.SelectMany(a => a.Items).Select(it => it.Value.PlainValue);
                     max = values.Max();
                     min = values.Min();
                     if (values.All(v => v > 0))
@@ -746,7 +746,7 @@ namespace ag.WPF.Chart
             }
             else if (chartStyle == ChartStyle.Waterfall)
             {
-                (max, min) = GetMaxMinForWaterfall(seriesArray[0].Values.Select(v => v.Value.V1).ToArray());
+                (max, min) = GetMaxMinForWaterfall(seriesArray[0].Values.Select(v => v.Value.PlainValue).ToArray());
                 if (max > 0 && min > 0)
                 {
                     minIsZero = true;
@@ -884,18 +884,18 @@ namespace ag.WPF.Chart
                        ChartStyle.SmoothFullStackedLinesWithMarkers, ChartStyle.Bubbles);
         }
 
-        internal static int GetMaxValueLength(List<(List<ChartValue> Values, int Index)> tuples, ChartStyle style)
+        internal static int GetMaxValueLength(List<(List<IChartValue> Values, int Index)> tuples, ChartStyle style)
         {
             if (!tuples.Any()) return 0;
             var result = "100.0".Length;
-            var values = tuples.SelectMany(t => t.Values).Select(v => v.Value.V1);
+            var values = tuples.SelectMany(t => t.Values).Select(v => v.Value.PlainValue);
             switch (style)
             {
                 case ChartStyle.Waterfall:
                     var maxPlus = 0.0;
                     var maxMinus = 0.0;
                     var value = 0.0;
-                    foreach (var v in tuples[0].Values.Select(v => v.Value.V1))
+                    foreach (var v in tuples[0].Values.Select(v => v.Value.PlainValue))
                     {
                         value += v;
                         if (value > 0)
@@ -925,10 +925,10 @@ namespace ag.WPF.Chart
                         {
                             for (var i = 0; i < s.Values.Count; i++)
                             {
-                                if (s.Values[i].Value.V1 < 0)
-                                    minusArr[i] += s.Values[i].Value.V1;
+                                if (s.Values[i].Value.PlainValue < 0)
+                                    minusArr[i] += s.Values[i].Value.PlainValue;
                                 else
-                                    plusArr[i] += s.Values[i].Value.V1;
+                                    plusArr[i] += s.Values[i].Value.PlainValue;
                             }
                         }
                         result = GetMaxValueLength(plusArr.Max(), minusArr.Min(), getMaxFractionPower(values));
@@ -946,9 +946,9 @@ namespace ag.WPF.Chart
                         {
                             for (var i = 0; i < s.Values.Count; i++)
                             {
-                                arr1[i] += s.Values[i].Value.V1;
-                                if (Math.Abs(arr2[i]) < Math.Abs(s.Values[i].Value.V1))
-                                    arr2[i] = Math.Abs(s.Values[i].Value.V1);
+                                arr1[i] += s.Values[i].Value.PlainValue;
+                                if (Math.Abs(arr2[i]) < Math.Abs(s.Values[i].Value.PlainValue))
+                                    arr2[i] = Math.Abs(s.Values[i].Value.PlainValue);
                             }
                         }
                         result = GetMaxValueLength(arr2.Max(), arr1.Min(), getMaxFractionPower(values));
@@ -1014,12 +1014,12 @@ namespace ag.WPF.Chart
             if (values == null
                 || !(values[0] is double width)
                 || !(values[1] is double height)
-                || !(values[2] is IEnumerable<Series> seriesEnumerable)
+                || !(values[2] is IEnumerable<ISeries> seriesEnumerable)
                 || !(values[3] is ChartStyle style))
                 return null;
 
             var gm = new PathGeometry();
-            var totalValues = seriesEnumerable.SelectMany(s => s.Values.Select(v => v.Value.V1)).ToArray();
+            var totalValues = seriesEnumerable.SelectMany(s => s.Values.Select(v => v.Value.PlainValue)).ToArray();
             var dir = Utils.GetDirection(totalValues, style);
 
             switch (dir)
@@ -1116,7 +1116,7 @@ namespace ag.WPF.Chart
             if (values == null
                 || !(values[0] is double width)
                 || !(values[1] is double height)
-                || !(values[2] is IEnumerable<Series> seriesEnumerable)
+                || !(values[2] is IEnumerable<ISeries> seriesEnumerable)
                 || !seriesEnumerable.Any()
                 || !(values[3] is ChartStyle chartStyle)
                 || chartStyle != ChartStyle.Waterfall
@@ -1137,9 +1137,9 @@ namespace ag.WPF.Chart
 
             var series = seriesEnumerable.ToArray();
 
-            var totalValues = series[0].Values.Select(v => v.Value.V1).ToArray();
+            var totalValues = series[0].Values.Select(v => v.Value.PlainValue).ToArray();
 
-            var tuples = new List<(List<ChartValue> Values, int Index)> { (series[0].Values.ToList(), 0) };
+            var tuples = new List<(List<IChartValue> Values, int Index)> { (series[0].Values.ToList(), 0) };
             var dir = Utils.GetDirection(totalValues, ChartStyle.Waterfall);
 
             var maxPointsCount = series[0].Values.Count;
@@ -1199,7 +1199,7 @@ namespace ag.WPF.Chart
         private PathGeometry drawWaterfall(double width,
             double height,
             Directions dir,
-            Series currentSeries,
+            ISeries currentSeries,
             double stepLength,
             bool isPositive)
         {
@@ -1231,12 +1231,12 @@ namespace ag.WPF.Chart
             var y = startY;
             for (var i = 0; i < currentSeries.Values.Count; i++)
             {
-                var value = currentSeries.Values[i].Value.V1;
+                var value = currentSeries.Values[i].Value.PlainValue;
                 var x = i * segSize + segSize / 16;
                 Rect rect;
                 if (value >= 0)
                 {
-                    rect = new Rect(new Point(x, y), new Point(x + columnWidth, y - currentSeries.Values[i].Value.V1 * stepLength));
+                    rect = new Rect(new Point(x, y), new Point(x + columnWidth, y - currentSeries.Values[i].Value.PlainValue * stepLength));
                     y -= rect.Height;
                     if (isPositive)
                     {
@@ -1249,7 +1249,7 @@ namespace ag.WPF.Chart
                 }
                 else
                 {
-                    rect = new Rect(new Point(x, y), new Point(x + columnWidth, y + Math.Abs(currentSeries.Values[i].Value.V1) * stepLength));
+                    rect = new Rect(new Point(x, y), new Point(x + columnWidth, y + Math.Abs(currentSeries.Values[i].Value.PlainValue) * stepLength));
                     y += rect.Height;
                     if (!isPositive)
                     {
@@ -1288,7 +1288,7 @@ namespace ag.WPF.Chart
             if (values == null
                 || !(values[0] is double width)
                 || !(values[1] is double height)
-                || !(values[2] is IEnumerable<Series> seriesEnumerable)
+                || !(values[2] is IEnumerable<ISeries> seriesEnumerable)
                 || !(values[3] is ChartStyle chartStyle)
                 || chartStyle.In(ChartStyle.SolidPie, ChartStyle.SlicedPie, ChartStyle.Doughnut, ChartStyle.Waterfall)
                 || !(values[4] is int index)
@@ -1314,7 +1314,7 @@ namespace ag.WPF.Chart
             int maxX;
             double maxY;
 
-            var totalValues = series.SelectMany(s => s.Values.Select(v => v.Value.V1)).ToArray();
+            var totalValues = series.SelectMany(s => s.Values.Select(v => v.Value.PlainValue)).ToArray();
             var rawValues = Utils.GetPaddedSeries(series);
 
             var dir = Utils.GetDirection(totalValues, chartStyle);
@@ -1424,7 +1424,7 @@ namespace ag.WPF.Chart
             return gm;
         }
 
-        private double getUnitsForBars(Series[] series, ChartStyle chartStyle, Directions dir, double width, double height, double boundOffset, int linesCountX, double formatHeight, bool autoAdjust, double maxX)
+        private double getUnitsForBars(ISeries[] series, ChartStyle chartStyle, Directions dir, double width, double height, double boundOffset, int linesCountX, double formatHeight, bool autoAdjust, double maxX)
         {
             var centerX = 0.0;
             var radius = 0.0;
@@ -1460,7 +1460,7 @@ namespace ag.WPF.Chart
             return units;
         }
 
-        private double getUnitsForLines(Series[] series, ChartStyle chartStyle, Directions dir, double width, double height, double boundOffset, int linesCountY, double formatHeight, bool autoAdjust, double maxY)
+        private double getUnitsForLines(ISeries[] series, ChartStyle chartStyle, Directions dir, double width, double height, double boundOffset, int linesCountY, double formatHeight, bool autoAdjust, double maxY)
         {
             var centerX = 0.0;
             var radius = 0.0;
@@ -1496,7 +1496,7 @@ namespace ag.WPF.Chart
             return units;
         }
 
-        private PathGeometry drawBars(double width, double heigth, double units, Directions dir, Series[] series, int index)
+        private PathGeometry drawBars(double width, double heigth, double units, Directions dir, ISeries[] series, int index)
         {
             var gm = new PathGeometry();
             var segSize = heigth / series.Max(s => s.Values.Count);
@@ -1529,7 +1529,7 @@ namespace ag.WPF.Chart
             {
                 var x = startX;
                 var y = heigth - (i * segSize + COLUMN_BAR_OFFSET + index * barHeight);
-                var rect = new Rect(new Point(x, y), new Point(x + currentSeries.Values[i].Value.V1 * units, y - barHeight));
+                var rect = new Rect(new Point(x, y), new Point(x + currentSeries.Values[i].Value.PlainValue * units, y - barHeight));
                 var rg = new RectangleGeometry(rect);
                 currentSeries.RealRects.Add(rect);
                 gm.AddGeometry(rg);
@@ -1537,7 +1537,7 @@ namespace ag.WPF.Chart
             return gm;
         }
 
-        private PathGeometry drawStackedBars(double width, double height, double units, Directions dir, Series[] series, int index, List<(List<ChartValue> Values, int Index)> tuples)
+        private PathGeometry drawStackedBars(double width, double height, double units, Directions dir, ISeries[] series, int index, List<(List<IChartValue> Values, int Index)> tuples)
         {
             var tp = tuples.FirstOrDefault(t => t.Index == index);
             if (tp == default) return null;
@@ -1576,11 +1576,11 @@ namespace ag.WPF.Chart
                 {
                     var i1 = i;
                     var prevsTuples =
-                        tuples.Where(t => t.Index < index && Math.Sign(t.Values[i1].Value.V1) == Math.Sign(values[i1].Value.V1));
-                    x += prevsTuples.Sum(sr => sr.Values[i].Value.V1 * units);
+                        tuples.Where(t => t.Index < index && Math.Sign(t.Values[i1].Value.PlainValue) == Math.Sign(values[i1].Value.PlainValue));
+                    x += prevsTuples.Sum(sr => sr.Values[i].Value.PlainValue * units);
                 }
                 var y = height - (i * segSize + COLUMN_BAR_OFFSET);
-                var rect = new Rect(new Point(x, y), new Point(x + values[i].Value.V1 * units, y - barHeight));
+                var rect = new Rect(new Point(x, y), new Point(x + values[i].Value.PlainValue * units, y - barHeight));
                 var rg = new RectangleGeometry(rect);
                 currentSeries.RealRects.Add(rect);
                 gm.AddGeometry(rg);
@@ -1588,7 +1588,7 @@ namespace ag.WPF.Chart
             return gm;
         }
 
-        private PathGeometry drawFullStackedBars(double width, double height, double maxLength, Directions dir, Series[] series, int index, List<(List<ChartValue> Values, int Index)> tuples)
+        private PathGeometry drawFullStackedBars(double width, double height, double maxLength, Directions dir, ISeries[] series, int index, List<(List<IChartValue> Values, int Index)> tuples)
         {
             var tp = tuples.FirstOrDefault(t => t.Index == index);
             if (tp == default) return null;
@@ -1627,16 +1627,16 @@ namespace ag.WPF.Chart
             currentSeries.RealRects.Clear();
             for (var i = 0; i < values.Count; i++)
             {
-                var sign = Math.Sign(values[i].Value.V1);
+                var sign = Math.Sign(values[i].Value.PlainValue);
                 var y = height - (i * segSize + COLUMN_BAR_OFFSET);
                 var i1 = i;
-                var sumTotal = tuples.Sum(sr => Math.Abs(sr.Values[i1].Value.V1));
-                var percent = Math.Abs(values[i].Value.V1) / sumTotal * 100;
+                var sumTotal = tuples.Sum(sr => Math.Abs(sr.Values[i1].Value.PlainValue));
+                var percent = Math.Abs(values[i].Value.PlainValue) / sumTotal * 100;
                 var segWidth = sign * stepX / 100 * percent;
 
                 var prevs = tuples.Where(s => s.Index < index)
-                    .Where(s => Math.Sign(s.Values[i1].Value.V1) == sign);
-                var prevSum = prevs.Sum(pvs => Math.Abs(pvs.Values[i1].Value.V1));
+                    .Where(s => Math.Sign(s.Values[i1].Value.PlainValue) == sign);
+                var prevSum = prevs.Sum(pvs => Math.Abs(pvs.Values[i1].Value.PlainValue));
                 var prevPerc = prevSum / sumTotal * 100;
                 var prevWidth = stepX / 100 * prevPerc;
                 var x = startX + sign * prevWidth;
@@ -1648,7 +1648,7 @@ namespace ag.WPF.Chart
             return gm;
         }
 
-        private PathGeometry drawFullStackedColumns(double width, double height, double maxLength, Directions dir, Series[] series, int index, List<(List<ChartValue> Values, int Index)> tuples)
+        private PathGeometry drawFullStackedColumns(double width, double height, double maxLength, Directions dir, ISeries[] series, int index, List<(List<IChartValue> Values, int Index)> tuples)
         {
             var tp = tuples.FirstOrDefault(t => t.Index == index);
             if (tp == default) return null;
@@ -1688,15 +1688,15 @@ namespace ag.WPF.Chart
             currentSeries.RealRects.Clear();
             for (var i = 0; i < values.Count; i++)
             {
-                var sign = Math.Sign(values[i].Value.V1);
+                var sign = Math.Sign(values[i].Value.PlainValue);
                 var x = i * segSize + COLUMN_BAR_OFFSET;
                 var i1 = i;
-                var sumTotal = tuples.Sum(sr => Math.Abs(sr.Values[i1].Value.V1));
-                var percent = Math.Abs(values[i].Value.V1) / sumTotal * 100;
+                var sumTotal = tuples.Sum(sr => Math.Abs(sr.Values[i1].Value.PlainValue));
+                var percent = Math.Abs(values[i].Value.PlainValue) / sumTotal * 100;
                 var segHeight = sign * stepY / 100 * percent;
                 var prevs = tuples.Where(s => s.Index < index)
-                    .Where(s => Math.Sign(s.Values[i1].Value.V1) == sign);
-                var prevSum = prevs.Sum(pvs => Math.Abs(pvs.Values[i1].Value.V1));
+                    .Where(s => Math.Sign(s.Values[i1].Value.PlainValue) == sign);
+                var prevSum = prevs.Sum(pvs => Math.Abs(pvs.Values[i1].Value.PlainValue));
                 var prevPerc = prevSum / sumTotal * 100;
                 var prevHeight = stepY / 100 * prevPerc;
                 var y = startY - sign * prevHeight;
@@ -1708,7 +1708,7 @@ namespace ag.WPF.Chart
             return gm;
         }
 
-        private PathGeometry drawStackedColumns(double width, double height, double units, Directions dir, Series[] series, int index, List<(List<ChartValue> Values, int Index)> tuples)
+        private PathGeometry drawStackedColumns(double width, double height, double units, Directions dir, ISeries[] series, int index, List<(List<IChartValue> Values, int Index)> tuples)
         {
             var tp = tuples.FirstOrDefault(t => t.Index == index);
             if (tp == default) return null;
@@ -1749,10 +1749,10 @@ namespace ag.WPF.Chart
                     var i1 = i;
                     var prevs =
                         tuples.Where(
-                            s => s.Index < index && Math.Sign(s.Values[i1].Value.V1) == Math.Sign(values[i1].Value.V1));
-                    y -= prevs.Sum(sr => sr.Values[i].Value.V1 * units);
+                            s => s.Index < index && Math.Sign(s.Values[i1].Value.PlainValue) == Math.Sign(values[i1].Value.PlainValue));
+                    y -= prevs.Sum(sr => sr.Values[i].Value.PlainValue * units);
                 }
-                var rect = new Rect(new Point(x, y), new Point(x + columnWidth, y - values[i].Value.V1 * units));
+                var rect = new Rect(new Point(x, y), new Point(x + columnWidth, y - values[i].Value.PlainValue * units));
                 var rg = new RectangleGeometry(rect);
                 currentSeries.RealRects.Add(rect);
                 gm.AddGeometry(rg);
@@ -1760,7 +1760,7 @@ namespace ag.WPF.Chart
             return gm;
         }
 
-        private PathGeometry drawColumns(double width, double height, double units, Directions dir, Series[] series, int index)
+        private PathGeometry drawColumns(double width, double height, double units, Directions dir, ISeries[] series, int index)
         {
             var gm = new PathGeometry();
             var startY = Utils.AXIS_THICKNESS;
@@ -1794,7 +1794,7 @@ namespace ag.WPF.Chart
             {
                 var x = i * segSize + COLUMN_BAR_OFFSET + index * columnWidth;
                 var y = startY;
-                var rect = new Rect(new Point(x, y), new Point(x + columnWidth, y - currentSeries.Values[i].Value.V1 * units));
+                var rect = new Rect(new Point(x, y), new Point(x + columnWidth, y - currentSeries.Values[i].Value.PlainValue * units));
                 var rg = new RectangleGeometry(rect);
                 currentSeries.RealRects.Add(rect);
                 gm.AddGeometry(rg);
@@ -1803,7 +1803,7 @@ namespace ag.WPF.Chart
         }
 
         private PathGeometry drawFullStackedArea(double width, double height, double maxX, double maxY, Directions dir,
-            Series[] series, int index, List<(List<ChartValue> Values, int Index)> tuples)
+            ISeries[] series, int index, List<(List<IChartValue> Values, int Index)> tuples)
         {
             var tp = tuples.FirstOrDefault(t => t.Index == index);
             if (tp == default) return null;
@@ -1866,9 +1866,9 @@ namespace ag.WPF.Chart
                     if (prevSeries == null) return null;
                     y = prevSeries.RealPoints[i].Y;
                 }
-                var sum = tuples.Sum(s => Math.Abs(s.Values[i].Value.V1));
-                var sign = Math.Sign(values[i].Value.V1);
-                var perc = Math.Abs(values[i].Value.V1) / sum * 100;
+                var sum = tuples.Sum(s => Math.Abs(s.Values[i].Value.PlainValue));
+                var sign = Math.Sign(values[i].Value.PlainValue);
+                var perc = Math.Abs(values[i].Value.PlainValue) / sum * 100;
                 y -= sign * perc * stepY / 100;
                 x = stepX * i;
                 currentSeries.RealPoints.Add(new Point(x, y));
@@ -1910,7 +1910,7 @@ namespace ag.WPF.Chart
         }
 
         private PathGeometry drawFullStackedLine(double width, double height, double maxX, double maxY, ChartStyle style,
-            Directions dir, Series[] series, int index, List<(List<ChartValue> Values, int Index)> tuples, bool offsetBoundary)
+            Directions dir, ISeries[] series, int index, List<(List<IChartValue> Values, int Index)> tuples, bool offsetBoundary)
         {
             var tp = tuples.FirstOrDefault(t => t.Index == index);
             if (tp == default) return null;
@@ -1974,9 +1974,9 @@ namespace ag.WPF.Chart
                     if (prevSeries == null) return null;
                     y = prevSeries.RealPoints[i].Y;
                 }
-                var sum = tuples.Sum(s => Math.Abs(s.Values[i].Value.V1));
-                var sign = Math.Sign(values[i].Value.V1);
-                var perc = Math.Abs(values[i].Value.V1) / sum * 100;
+                var sum = tuples.Sum(s => Math.Abs(s.Values[i].Value.PlainValue));
+                var sign = Math.Sign(values[i].Value.PlainValue);
+                var perc = Math.Abs(values[i].Value.PlainValue) / sum * 100;
 
                 y -= sign * perc * stepY / 100;
                 var x = offsetBoundary ? boundOffset + stepX * i : stepX * i;
@@ -2015,7 +2015,7 @@ namespace ag.WPF.Chart
         }
 
         private PathGeometry drawStackedLine(double width, double height, double maxX, double units, ChartStyle style,
-            Directions dir, Series[] series, int index, List<(List<ChartValue> Values, int Index)> tuples, bool offsetBoundary)
+            Directions dir, ISeries[] series, int index, List<(List<IChartValue> Values, int Index)> tuples, bool offsetBoundary)
         {
             var tp = tuples.FirstOrDefault(t => t.Index == index);
             if (tp == default) return null;
@@ -2065,11 +2065,11 @@ namespace ag.WPF.Chart
             for (var i = 0; i < values.Count; i++)
             {
                 var x = centerX + i * stepX;
-                var y = centerY - values[i].Value.V1 * units;
+                var y = centerY - values[i].Value.PlainValue * units;
                 if (index > 0)
                 {
                     var prevs = tuples.Where(s => s.Index < index);
-                    var sum = prevs.Sum(sr => sr.Values[i].Value.V1);
+                    var sum = prevs.Sum(sr => sr.Values[i].Value.PlainValue);
                     y -= sum * units;
                 }
                 points.Add(new Point(x, y));
@@ -2110,11 +2110,11 @@ namespace ag.WPF.Chart
             return gm;
         }
 
-        private PathGeometry drawRadar(Series[] series, int index, List<(List<ChartValue> Values, int Index)> tuples, ChartStyle chartStyle, double units, double stepLength, double radius, int pointsCount, int linesCount, int zeroLevel, Point centerPoint)
+        private PathGeometry drawRadar(ISeries[] series, int index, List<(List<IChartValue> Values, int Index)> tuples, ChartStyle chartStyle, double units, double stepLength, double radius, int pointsCount, int linesCount, int zeroLevel, Point centerPoint)
         {
             var tp = tuples.FirstOrDefault(t => t.Index == index);
             if (tp == default) return null;
-            var values = tp.Values.Select(v => v.Value.V1).ToArray();
+            var values = tp.Values.Select(v => v.Value.PlainValue).ToArray();
             var currentSeries = series.FirstOrDefault(s => s.Index == index);
             if (currentSeries == null) return null;
 
@@ -2150,7 +2150,7 @@ namespace ag.WPF.Chart
             return gm;
         }
 
-        private PathGeometry drawLine(double width, double height, int maxX, double units, ChartStyle style, Directions dir, Series currentSeries, bool offsetBoundary)
+        private PathGeometry drawLine(double width, double height, int maxX, double units, ChartStyle style, Directions dir, ISeries currentSeries, bool offsetBoundary)
         {
             double stepX;
             double centerX, centerY;
@@ -2194,7 +2194,7 @@ namespace ag.WPF.Chart
             for (var i = 0; i < currentSeries.Values.Count; i++)
             {
                 var x = centerX + i * stepX;
-                var y = centerY - currentSeries.Values[i].Value.V1 * units;
+                var y = centerY - currentSeries.Values[i].Value.PlainValue * units;
 
                 points.Add(new Point(x, y));
                 if (!style.In(ChartStyle.LinesWithMarkers, ChartStyle.SmoothLinesWithMarkers)) continue;
@@ -2256,7 +2256,7 @@ namespace ag.WPF.Chart
             return gm;
         }
 
-        private PathGeometry drawBubbles(double width, double height, int maxX, double units, Directions dir, Series currentSeries, bool offsetBoundary)
+        private PathGeometry drawBubbles(double width, double height, int maxX, double units, Directions dir, ISeries currentSeries, bool offsetBoundary)
         {
             double stepX;
             double centerX, centerY;
@@ -2303,7 +2303,7 @@ namespace ag.WPF.Chart
             for (var i = 0; i < currentSeries.Values.Count; i++)
             {
                 var x = centerX + i * stepX;
-                var y = centerY - currentSeries.Values[i].Value.V1 * units;
+                var y = centerY - currentSeries.Values[i].Value.PlainValue * units;
 
                 var es = new EllipseGeometry(new Point(x, y), segSize, segSize);
                 gm.AddGeometry(es);
@@ -2589,11 +2589,11 @@ namespace ag.WPF.Chart
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
             if (values == null
-                || !(values[0] is IEnumerable<Series> seriesEnumerable)
+                || !(values[0] is IEnumerable<ISeries> seriesEnumerable)
                 || !(values[1] is ChartStyle chartStyle))
                 return HorizontalAlignment.Right;
 
-            var totalValues = seriesEnumerable.SelectMany(s => s.Values.Select(v => v.Value.V1)).ToArray();
+            var totalValues = seriesEnumerable.SelectMany(s => s.Values.Select(v => v.Value.PlainValue)).ToArray();
             var dir = Utils.GetDirection(totalValues, chartStyle);
             switch (dir)
             {
@@ -2635,11 +2635,11 @@ namespace ag.WPF.Chart
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
             if (values == null
-                || !(values[0] is IEnumerable<Series> seriesEnumerable)
+                || !(values[0] is IEnumerable<ISeries> seriesEnumerable)
                 || !(values[1] is ChartStyle chartStyle))
                 return 2;
 
-            var totalValues = seriesEnumerable.SelectMany(s => s.Values.Select(v => v.Value.V1)).ToArray();
+            var totalValues = seriesEnumerable.SelectMany(s => s.Values.Select(v => v.Value.PlainValue)).ToArray();
             var dir = Utils.GetDirection(totalValues, chartStyle);
             switch (dir)
             {
@@ -2681,11 +2681,11 @@ namespace ag.WPF.Chart
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
             if (values == null
-                || !(values[0] is IEnumerable<Series> seriesEnumerable)
+                || !(values[0] is IEnumerable<ISeries> seriesEnumerable)
                 || !(values[1] is ChartStyle chartStyle))
                 return VerticalAlignment.Top;
 
-            var totalValues = seriesEnumerable.SelectMany(s => s.Values.Select(v => v.Value.V1)).ToArray();
+            var totalValues = seriesEnumerable.SelectMany(s => s.Values.Select(v => v.Value.PlainValue)).ToArray();
             var dir = Utils.GetDirection(totalValues, chartStyle);
             switch (dir)
             {
@@ -2727,11 +2727,11 @@ namespace ag.WPF.Chart
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
             if (values == null
-                || !(values[0] is IEnumerable<Series> seriesEnumerable)
+                || !(values[0] is IEnumerable<ISeries> seriesEnumerable)
                 || !(values[1] is ChartStyle chartStyle))
                 return 5;
 
-            var totalValues = seriesEnumerable.SelectMany(s => s.Values.Select(v => v.Value.V1).ToArray());
+            var totalValues = seriesEnumerable.SelectMany(s => s.Values.Select(v => v.Value.PlainValue).ToArray());
             var dir = Utils.GetDirection(totalValues, chartStyle);
             switch (dir)
             {
@@ -2773,11 +2773,11 @@ namespace ag.WPF.Chart
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
             if (values == null
-                || !(values[0] is IEnumerable<Series> seriesEnumerable)
+                || !(values[0] is IEnumerable<ISeries> seriesEnumerable)
                 || !(values[1] is ChartStyle chartStyle))
                 return 2;
 
-            var totalValues = seriesEnumerable.SelectMany(s => s.Values.Select(v => v.Value.V1).ToArray());
+            var totalValues = seriesEnumerable.SelectMany(s => s.Values.Select(v => v.Value.PlainValue).ToArray());
             var dir = Utils.GetDirection(totalValues, chartStyle);
 
             return dir switch
@@ -2816,11 +2816,11 @@ namespace ag.WPF.Chart
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
             if (values == null
-                || !(values[0] is IEnumerable<Series> seriesEnumerable)
+                || !(values[0] is IEnumerable<ISeries> seriesEnumerable)
                 || !(values[1] is ChartStyle chartStyle))
                 return 5;
 
-            var totalValues = seriesEnumerable.SelectMany(s => s.Values.Select(v => v.Value.V1).ToArray());
+            var totalValues = seriesEnumerable.SelectMany(s => s.Values.Select(v => v.Value.PlainValue).ToArray());
             var dir = Utils.GetDirection(totalValues, chartStyle);
 
             return dir switch
@@ -2860,11 +2860,11 @@ namespace ag.WPF.Chart
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
             if (values == null
-                || !(values[0] is IEnumerable<Series> seriesEnumerable)
+                || !(values[0] is IEnumerable<ISeries> seriesEnumerable)
                 || !(values[1] is ChartStyle chartStyle))
                 return VerticalAlignment.Bottom;
 
-            var totalValues = seriesEnumerable.SelectMany(s => s.Values.Select(v => v.Value.V1).ToArray());
+            var totalValues = seriesEnumerable.SelectMany(s => s.Values.Select(v => v.Value.PlainValue).ToArray());
             var dir = Utils.GetDirection(totalValues, chartStyle);
 
             return dir switch
@@ -2903,11 +2903,11 @@ namespace ag.WPF.Chart
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
             if (values == null
-                || !(values[0] is IEnumerable<Series> seriesEnumerable)
+                || !(values[0] is IEnumerable<ISeries> seriesEnumerable)
                 || !(values[1] is ChartStyle chartStyle))
                 return HorizontalAlignment.Left;
 
-            var totalValues = seriesEnumerable.SelectMany(s => s.Values.Select(v => v.Value.V1).ToArray());
+            var totalValues = seriesEnumerable.SelectMany(s => s.Values.Select(v => v.Value.PlainValue).ToArray());
             var dir = Utils.GetDirection(totalValues, chartStyle);
 
             return dir switch
@@ -3045,7 +3045,7 @@ namespace ag.WPF.Chart
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
             if (values == null
-                || !(values[0] is IEnumerable<Series> seriesEnumerable)
+                || !(values[0] is IEnumerable<ISeries> seriesEnumerable)
                 || !(values[1] is ChartStyle chartStyle)
                 || !(values[2] is string format)
                 || !(values[3] is FontFamily fontFamily)
@@ -3065,11 +3065,11 @@ namespace ag.WPF.Chart
 
             var rawValues = chartStyle != ChartStyle.Waterfall
                 ? Utils.GetPaddedSeries(series)
-                : new List<(List<ChartValue> Values, int Index)> { (series[0].Values.ToList(), series[0].Index) };
+                : new List<(List<IChartValue> Values, int Index)> { (series[0].Values.ToList(), series[0].Index) };
 
             var totalValues = chartStyle != ChartStyle.Waterfall
-                ? series.SelectMany(s => s.Values.Select(v => v.Value.V1))
-                : series[0].Values.Select(v => v.Value.V1);
+                ? series.SelectMany(s => s.Values.Select(v => v.Value.PlainValue))
+                : series[0].Values.Select(v => v.Value.PlainValue);
 
             var dir = Utils.GetDirection(totalValues, chartStyle);
             var maxFromValues = autoAdjust ? Utils.GetMaxValueLength(rawValues, chartStyle) : maxX.ToString(culture).Length;
@@ -3110,7 +3110,7 @@ namespace ag.WPF.Chart
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
             if (values == null
-                || !(values[0] is IEnumerable<Series> seriesEnumerable)
+                || !(values[0] is IEnumerable<ISeries> seriesEnumerable)
                 || !(values[1] is ChartStyle chartStyle)
                 || !(values[2] is string format)
                 || !(values[3] is FontFamily fontFamily)
@@ -3134,11 +3134,11 @@ namespace ag.WPF.Chart
 
             var rawValues = chartStyle != ChartStyle.Waterfall
                 ? Utils.GetPaddedSeries(series)
-                : new List<(List<ChartValue> Values, int Index)> { (series[0].Values.ToList(), series[0].Index) };
+                : new List<(List<IChartValue> Values, int Index)> { (series[0].Values.ToList(), series[0].Index) };
 
             var totalValues = chartStyle != ChartStyle.Waterfall
-                ? series.SelectMany(s => s.Values.Select(v => v.Value.V1))
-                : series[0].Values.Select(v => v.Value.V1);
+                ? series.SelectMany(s => s.Values.Select(v => v.Value.PlainValue))
+                : series[0].Values.Select(v => v.Value.PlainValue);
 
             var dir = Utils.GetDirection(totalValues, chartStyle);
             var maxFromValues = autoAdjust ? Utils.GetMaxValueLength(rawValues, chartStyle) : maxY.ToString(culture).Length;
@@ -3195,7 +3195,7 @@ namespace ag.WPF.Chart
         {
             if (values == null
                 || !(values[0] is double height)
-                || !(values[1] is IEnumerable<Series> seriesEnumerable)
+                || !(values[1] is IEnumerable<ISeries> seriesEnumerable)
                 || !(values[2] is ChartStyle chartStyle)
                 || !(values[4] is string format)
                 || !(values[5] is FontFamily fontFamily)
@@ -3218,7 +3218,7 @@ namespace ag.WPF.Chart
 
             var ticks = rawValues.Max(rw => rw.Values.Count);
 
-            var totalValues = series.SelectMany(s => s.Values.Select(v => v.Value.V1));
+            var totalValues = series.SelectMany(s => s.Values.Select(v => v.Value.PlainValue));
 
             var dir = Utils.GetDirection(totalValues, chartStyle);
 
@@ -3276,7 +3276,7 @@ namespace ag.WPF.Chart
         {
             if (values == null
                 || !(values[0] is double height)
-                || !(values[1] is IEnumerable<Series> seriesEnumerable)
+                || !(values[1] is IEnumerable<ISeries> seriesEnumerable)
                 || !(values[2] is ChartStyle chartStyle)
                 || !(values[3] is int linesCountY)
                 || !(values[4] is string format)
@@ -3303,13 +3303,13 @@ namespace ag.WPF.Chart
 
             var rawValues = chartStyle != ChartStyle.Waterfall
                 ? Utils.GetPaddedSeries(series)
-                : new List<(List<ChartValue> Values, int Index)> { (series[0].Values.ToList(), series[0].Index) };
+                : new List<(List<IChartValue> Values, int Index)> { (series[0].Values.ToList(), series[0].Index) };
 
             var maxCount = rawValues.Max(rw => rw.Values.Count);
 
             var totalValues = chartStyle != ChartStyle.Waterfall
-                ? series.SelectMany(s => s.Values.Select(v => v.Value.V1))
-                : series[0].Values.Select(v => v.Value.V1);
+                ? series.SelectMany(s => s.Values.Select(v => v.Value.PlainValue))
+                : series[0].Values.Select(v => v.Value.PlainValue);
 
             var dir = Utils.GetDirection(totalValues, chartStyle);
 
@@ -3485,7 +3485,7 @@ namespace ag.WPF.Chart
         {
             if (values == null
                 || !(values[0] is double width)
-                || !(values[1] is IEnumerable<Series> seriesEnumerable)
+                || !(values[1] is IEnumerable<ISeries> seriesEnumerable)
                 || !(values[2] is ChartStyle chartStyle)
                 || !(values[3] is int linesCount)
                 || !(values[4] is string format)
@@ -3514,13 +3514,13 @@ namespace ag.WPF.Chart
 
             var rawValues = chartStyle != ChartStyle.Waterfall
                 ? Utils.GetPaddedSeries(series)
-                : new List<(List<ChartValue> Values, int Index)> { (series[0].Values.ToList(), series[0].Index) };
+                : new List<(List<IChartValue> Values, int Index)> { (series[0].Values.ToList(), series[0].Index) };
 
             var ticks = rawValues.Max(rw => rw.Values.Count);
 
             var totalValues = chartStyle != ChartStyle.Waterfall
-                ? series.SelectMany(s => s.Values.Select(v => v.Value.V1))
-                : series[0].Values.Select(v => v.Value.V1);
+                ? series.SelectMany(s => s.Values.Select(v => v.Value.PlainValue))
+                : series[0].Values.Select(v => v.Value.PlainValue);
 
             var dir = Utils.GetDirection(totalValues, chartStyle);
 
@@ -3823,7 +3823,7 @@ namespace ag.WPF.Chart
                 || !(values[1] is double height)
                 || !(values[2] is int linesCountX)
                 || !(values[3] is int linesCountY)
-                || !(values[4] is IEnumerable<Series> seriesEnumerable)
+                || !(values[4] is IEnumerable<ISeries> seriesEnumerable)
                 || !(values[5] is ChartStyle chartStyle)
                 || !(values[6] is ChartBoundary chartBoundary)
                 || !(values[7] is FontFamily fontFamily)
@@ -3847,7 +3847,7 @@ namespace ag.WPF.Chart
 
             var series = seriesEnumerable.ToArray();
             var offsetBoundary = Utils.OffsetBoundary(chartBoundary, chartStyle);
-            var totalValues = series.SelectMany(s => s.Values.Select(v => v.Value.V1).ToArray());
+            var totalValues = series.SelectMany(s => s.Values.Select(v => v.Value.PlainValue).ToArray());
             var dir = Utils.GetDirection(totalValues, chartStyle);
             var ticks = series.Select(s => s.Values.Count).Max();
 
@@ -4153,7 +4153,7 @@ namespace ag.WPF.Chart
             if (values == null
                 || !(values[0] is double width)
                 || !(values[1] is double height)
-                || !(values[2] is IEnumerable<Series> seriesEnumerable)
+                || !(values[2] is IEnumerable<ISeries> seriesEnumerable)
                 || !(values[3] is ChartStyle chartStyle)
                 || !(values[4] is int linesCount)
                 || !(values[5] is ChartBoundary chartBoundary)
@@ -4173,7 +4173,7 @@ namespace ag.WPF.Chart
 
             var series = seriesEnumerable.ToArray();
             var offsetBoundary = Utils.OffsetBoundary(chartBoundary, chartStyle);
-            var totalValues = series.SelectMany(s => s.Values.Select(v => v.Value.V1).ToArray());
+            var totalValues = series.SelectMany(s => s.Values.Select(v => v.Value.PlainValue).ToArray());
             var dir = Utils.GetDirection(totalValues, chartStyle);
             var ticks = series.Select(s => s.Values.Count).Max();
             double xStep;
@@ -4380,7 +4380,7 @@ namespace ag.WPF.Chart
             if (values == null
                 || !(values[0] is double width)
                 || !(values[1] is double height)
-                || !(values[2] is IEnumerable<Series> seriesEnumerable)
+                || !(values[2] is IEnumerable<ISeries> seriesEnumerable)
                 || !(values[3] is ChartStyle chartStyle)
                 || !(values[4] is int linesCount)
                 || !(values[5] is FontFamily fontFamily)
@@ -4398,8 +4398,8 @@ namespace ag.WPF.Chart
             var series = seriesEnumerable.ToArray();
 
             var totalValues = chartStyle != ChartStyle.Waterfall
-               ? series.SelectMany(s => s.Values.Select(v => v.Value.V1))
-               : series[0].Values.Select(v => v.Value.V1);
+               ? series.SelectMany(s => s.Values.Select(v => v.Value.PlainValue))
+               : series[0].Values.Select(v => v.Value.PlainValue);
 
             var dir = Utils.GetDirection(totalValues, chartStyle);
 
@@ -4575,12 +4575,12 @@ namespace ag.WPF.Chart
                 || !(values[1] is string format)
                 || !(parameter is ChartValue chartValue))
                 return null;
-            var sum = chartValues.Sum(p => Math.Abs(p.Value.V1));
+            var sum = chartValues.Sum(p => Math.Abs(p.Value.PlainValue));
             if (format.EndsWith("%")) format = format.Substring(0, format.Length - 1);
-            var perc = Math.Abs(chartValue.Value.V1) / sum * 100;
+            var perc = Math.Abs(chartValue.Value.PlainValue) / sum * 100;
             var sectorData = chartValue.CustomValue != null
                     ? chartValue.CustomValue + " (" + perc.ToString(format) + "%)"
-                    : chartValue.Value.V1 + " (" + perc.ToString(format) + "%)";
+                    : chartValue.Value.PlainValue + " (" + perc.ToString(format) + "%)";
             return sectorData;
         }
 
@@ -4603,7 +4603,7 @@ namespace ag.WPF.Chart
             if (values == null
                 || !(values[0] is double width)
                 || !(values[1] is double height)
-                || !(values[2] is IEnumerable<Series> seriesEnumerable)
+                || !(values[2] is IEnumerable<ISeries> seriesEnumerable)
                 || !seriesEnumerable.Any()
                 || !(values[3] is ChartStyle chartStyle)
                 || !Utils.StyleRadar(chartStyle)
@@ -4684,7 +4684,7 @@ namespace ag.WPF.Chart
             if (values == null
                 || !(values[0] is double width)
                 || !(values[1] is double height)
-                || !(values[2] is IEnumerable<Series> seriesEnumerable)
+                || !(values[2] is IEnumerable<ISeries> seriesEnumerable)
                 || !seriesEnumerable.Any()
                 || !(values[3] is ChartStyle chartStyle)
                 || !Utils.StyleRadar(chartStyle)
@@ -4846,7 +4846,7 @@ namespace ag.WPF.Chart
             if (values == null
                 || !(values[0] is double width)
                 || !(values[1] is double height)
-                || !(values[2] is IEnumerable<Series> seriesEnumerable)
+                || !(values[2] is IEnumerable<ISeries> seriesEnumerable)
                 || !seriesEnumerable.Any()
                 || !(values[3] is bool isEnabled)
                 || !(values[4] is Brush disabledBrush)
@@ -4860,7 +4860,7 @@ namespace ag.WPF.Chart
             var radius = width > height ? (height - 2 * Utils.AXIS_THICKNESS) / 2 : (width - 2 * Utils.AXIS_THICKNESS) / 2;
             var series = seriesEnumerable.First();
             var pts = series.Values.ToArray();
-            var sum = pts.Sum(p => Math.Abs(p.Value.V1));
+            var sum = pts.Sum(p => Math.Abs(p.Value.PlainValue));
             var currentDegrees = 90.0;
             var startPoint = new Point(radius, radius);
             var xBeg = radius;
@@ -4873,7 +4873,7 @@ namespace ag.WPF.Chart
             {
                 var sectorData = pts[0].CustomValue != null
                     ? pts[0].CustomValue + " (" + 100.ToString(format) + "%)"
-                    : pts[0].Value.V1 + " (" + 100.ToString(format) + "%)";
+                    : pts[0].Value.PlainValue + " (" + 100.ToString(format) + "%)";
                 var ellipseGeometry = new EllipseGeometry(new Rect(new Point(0, 0), new Point(radius * 2, radius * 2)));
                 var combinedGeometry = new CombinedGeometry
                 {
@@ -4883,7 +4883,7 @@ namespace ag.WPF.Chart
                 if (chartStyle == ChartStyle.Doughnut)
                     combinedGeometry.Geometry2 = new EllipseGeometry(startPoint, radius / 2, radius / 2);
 
-                combinedGeometry.SetValue(Series.SectorDataProperty, sectorData);
+                combinedGeometry.SetValue(Statics.SectorDataProperty, sectorData);
 
                 var gmDrawing = new GeometryDrawing
                 {
@@ -4898,7 +4898,7 @@ namespace ag.WPF.Chart
             var lines = new List<LineGeometry>();
             foreach (var pt in pts)
             {
-                var addition = Math.Abs(pt.Value.V1) / sum * 360.0;
+                var addition = Math.Abs(pt.Value.PlainValue) / sum * 360.0;
                 if (currentDegrees <= 90.0 && currentDegrees > 0)
                 {
                     if (currentDegrees - addition >= 0)
@@ -4986,11 +4986,11 @@ namespace ag.WPF.Chart
                 //    combinedGeometry.Geometry2 = rectGeometry;
                 //}
 
-                var perc = Math.Abs(pt.Value.V1) / sum * 100;
+                var perc = Math.Abs(pt.Value.PlainValue) / sum * 100;
                 var sectorData = pt.CustomValue != null
                     ? pt.CustomValue + " (" + perc.ToString(format) + "%)"
-                    : pt.Value.V1 + " (" + perc.ToString(format) + "%)";
-                combinedGeometry.SetValue(Series.SectorDataProperty, sectorData);
+                    : pt.Value.PlainValue + " (" + perc.ToString(format) + "%)";
+                combinedGeometry.SetValue(Statics.SectorDataProperty, sectorData);
                 gmDrawing.Geometry = combinedGeometry;
                 dGroup.Children.Add(gmDrawing);
 

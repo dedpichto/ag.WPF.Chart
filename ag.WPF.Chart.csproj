@@ -56,10 +56,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BrushesCollection.cs" />
+    <Compile Include="ISeries.cs" />
+    <Compile Include="Statics.cs" />
     <Compile Include="Values\ChartValues.cs" />
     <Compile Include="Legend.cs" />
     <Compile Include="Properties\Annotations.cs" />
-    <Compile Include="Series.cs" />
+    <Compile Include="PlainSeries.cs" />
+    <Compile Include="Values\IChartValue.cs" />
     <Page Include="Themes\Generic.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

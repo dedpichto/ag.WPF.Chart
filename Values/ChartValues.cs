@@ -11,7 +11,7 @@ namespace ag.WPF.Chart.Values
     /// <summary>
     /// Represents collection of <see cref="ChartValue"/>
     /// </summary>
-    public class ChartValues : ObservableCollection<ChartValue>
+    public class ChartValues : ObservableCollection<IChartValue>
     {
         internal Path Path { get; set; }
     }
@@ -19,12 +19,12 @@ namespace ag.WPF.Chart.Values
     /// <summary>
     /// Represents single chart value
     /// </summary>
-    public class ChartValue
+    public class ChartValue : IChartValue
     {
         /// <summary>
         /// Gets or sets current numeric value
         /// </summary>
-        public (double V1, double V2, double V3, double V4, double V5) Value { get; set; }
+        public (double PlainValue, double HighValue, double LowValue, double CloseValue, double VolumeValue, double OpenValue) Value { get; set; }
         /// <summary>
         /// Gets or sets custom value (usually string) associated with current value. This custom value will be displayed as chart point tooltip
         /// </summary>
@@ -32,34 +32,64 @@ namespace ag.WPF.Chart.Values
         /// <summary>
         /// Initializes a new instance of ChartValue object
         /// </summary>
-        /// <param name="V1">Current value</param>
-        public ChartValue(double V1)
+        /// <param name="plainValue">Current value</param>
+        public ChartValue(double plainValue)
         {
-            Value = (V1, 0, 0, 0, 0);
-        }
-        public ChartValue(double V1, double V2)
-        {
-            Value = (V1, V2, 0, 0, 0);
-        }
-        public ChartValue(double V1, double V2, double V3)
-        {
-            Value = (V1, V2, V3, 0, 0);
-        }
-        public ChartValue(double V1, double V2, double V3, double V4)
-        {
-            Value = (V1, V2, V3, V4, 0);
-        }
-        public ChartValue(double V1, double V2, double V3, double V4, double V5)
-        {
-            Value = (V1, V2, V3, V4, V5);
+            Value = (plainValue, 0, 0, 0, 0, 0);
         }
         /// <summary>
         /// Initializes a new instance of ChartValue object
         /// </summary>
-        /// <param name="value">Current value</param>
+        /// <param name="highValue">HighValue</param>
+        /// <param name="lowValue">LowValue</param>
+        /// <param name="closeValue">CloseValue</param>
+        public ChartValue(double highValue, double lowValue, double closeValue)
+        {
+            Value = (0, highValue, lowValue, closeValue, 0, 0);
+        }
+        /// <summary>
+        /// Initializes a new instance of ChartValue object
+        /// </summary>
+        /// <param name="volumeValue">VolumeValue</param>
+        /// <param name="highValue">HighValue</param>
+        /// <param name="lowValue">LowValue</param>
+        /// <param name="closeValue">CloseValue</param>
+        public ChartValue(double volumeValue, double highValue, double lowValue, double closeValue)
+        {
+            Value = (0, highValue, lowValue, closeValue, volumeValue, 0);
+        }
+        /// <summary>
+        /// Initializes a new instance of ChartValue object
+        /// </summary>
+        /// <param name="volumeValue">VolumeValue</param>
+        /// <param name="openValue">OpenValue</param>
+        /// <param name="highValue">HighValue</param>
+        /// <param name="lowValue">LowValue</param>
+        /// <param name="closeValue">CloseValue</param>
+        public ChartValue(double volumeValue, double openValue, double highValue, double lowValue, double closeValue)
+        {
+            Value = (0, highValue, lowValue, closeValue, volumeValue, openValue);
+        }
+        /// <summary>
+        /// Initializes a new instance of ChartValue object
+        /// </summary>
+        /// <param name="plainValue">PlainValue</param>
+        /// <param name="volumeValue">VolumeValue</param>
+        /// <param name="openValue">OpenValue</param>
+        /// <param name="highValue">HighValue</param>
+        /// <param name="lowValue">LowValue</param>
+        /// <param name="closeValue">CloseValue</param>
+        public ChartValue(double plainValue, double volumeValue, double openValue, double highValue, double lowValue, double closeValue)
+        {
+            Value = (plainValue, highValue, lowValue, closeValue, volumeValue, openValue);
+        }
+        /// <summary>
+        /// Initializes a new instance of ChartValue object
+        /// </summary>
+        /// <param name="plainValue">Current value</param>
         /// <param name="customValue">Current custom value</param>
-        public ChartValue(double value, object customValue)
-            : this(value)
+        public ChartValue(double plainValue, object customValue)
+            : this(plainValue)
         {
             CustomValue = customValue;
         }
@@ -68,8 +98,8 @@ namespace ag.WPF.Chart.Values
         /// </summary>
         /// <param name="values">Current values</param>
         /// <param name="customValue">Current custom value</param>
-        public ChartValue((double V1, double V2) values, object customValue)
-            : this(values.V1, values.V2)
+        public ChartValue((double HighValue, double LowValue, double CloseValue) values, object customValue)
+            : this(values.HighValue, values.LowValue, values.CloseValue)
         {
             CustomValue = customValue;
         }
@@ -78,8 +108,8 @@ namespace ag.WPF.Chart.Values
         /// </summary>
         /// <param name="values">Current values</param>
         /// <param name="customValue">Current custom value</param>
-        public ChartValue((double V1, double V2, double V3) values, object customValue)
-            : this(values.V1, values.V2, values.V3)
+        public ChartValue((double VolumeValue, double HighValue, double LowValue, double CloseValue) values, object customValue)
+            : this(values.VolumeValue, values.HighValue, values.LowValue, values.CloseValue)
         {
             CustomValue = customValue;
         }
@@ -88,8 +118,8 @@ namespace ag.WPF.Chart.Values
         /// </summary>
         /// <param name="values">Current values</param>
         /// <param name="customValue">Current custom value</param>
-        public ChartValue((double V1, double V2, double V3, double V4) values, object customValue)
-            : this(values.V1, values.V2, values.V3, values.V4)
+        public ChartValue((double VolumeValue, double OpenValue, double HighValue, double LowValue, double CloseValue) values, object customValue)
+            : this(values.VolumeValue, values.OpenValue, values.HighValue, values.LowValue, values.CloseValue)
         {
             CustomValue = customValue;
         }
@@ -98,8 +128,8 @@ namespace ag.WPF.Chart.Values
         /// </summary>
         /// <param name="values">Current values</param>
         /// <param name="customValue">Current custom value</param>
-        public ChartValue((double V1, double V2, double V3, double V4, double V5) values, object customValue)
-            : this(values.V1, values.V2, values.V3, values.V4, values.V5)
+        public ChartValue((double PlainValue, double VolumeValue, double OpenValue, double HighValue, double LowValue, double CloseValue) values, object customValue)
+            : this(values.PlainValue, values.VolumeValue, values.OpenValue, values.HighValue, values.LowValue, values.CloseValue)
         {
             CustomValue = customValue;
         }

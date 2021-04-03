@@ -21,7 +21,7 @@ namespace ag.WPF.Chart
 {
     
     /// <summary>
-    /// Represents <see cref="Series"/> legend
+    /// Represents <see cref="ISeries"/> legend
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never), Browsable(false)]
     public class Legend : Control

@@ -30,7 +30,7 @@ namespace ChartTest
         }
 
         public List<string> WaterfallLegends { get; } = new List<string> { "Подъем", "Спуск", "Хрен знает что" };
-        public ObservableCollection<Series> Series { get; } = new ObservableCollection<Series>();
+        public ObservableCollection<ISeries> Series { get; } = new ObservableCollection<ISeries>();
         public List<string> CustomXTexts { get; } = new List<string>(new string[] { "Canada", "Russia", "USA" });
         public List<string> CustomYTexts { get; } = new List<string>(new string[] { "Oil", "Gas", "Electricity" });
         //public Series S1 { get; } = new Series("Series 1", new double[] { -40, -20, -60 });
@@ -58,16 +58,16 @@ namespace ChartTest
 
             //chTest.ChartStyle = ChartStyle.Columns;
 
-            Series.Add(new Series("Series 1", values1));
-            Series.Add(new Series("Series 2", values2));
-            Series.Add(new Series("Series 3", values3));
-            Series.Add(new Series("Series 4", values4));
-            Series.Add(new Series("Series 5", values5));
-            Series.Add(new Series("Series 6", values6));
-            Series.Add(new Series("Series 7", values7));
-            Series.Add(new Series("Series 8", values8));
-            Series.Add(new Series("Series 9", values9));
-            Series.Add(new Series("Series 10", values10));
+            Series.Add(new PlainSeries("Series 1", values1));
+            Series.Add(new PlainSeries("Series 2", values2));
+            Series.Add(new PlainSeries("Series 3", values3));
+            Series.Add(new PlainSeries("Series 4", values4));
+            Series.Add(new PlainSeries("Series 5", values5));
+            Series.Add(new PlainSeries("Series 6", values6));
+            Series.Add(new PlainSeries("Series 7", values7));
+            Series.Add(new PlainSeries("Series 8", values8));
+            Series.Add(new PlainSeries("Series 9", values9));
+            Series.Add(new PlainSeries("Series 10", values10));
 
 
             var customs = new List<string> { "one", "two" };//, "three", "four", "five", "six", "seven", "eight", "nine", "ten" };

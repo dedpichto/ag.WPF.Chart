@@ -559,7 +559,7 @@ namespace ag.WPF.Chart
             ChartBoundaryProperty = DependencyProperty.Register("ChartBoundary", typeof(ChartBoundary), typeof(Chart),
                 new FrameworkPropertyMetadata(ChartBoundary.WithOffset, OnChartBoundaryChanged));
             CustomWaterfallLegendsProperty = DependencyProperty.RegisterAttached("CustomWaterfallLegends", typeof(IEnumerable<string>), typeof(Chart), new FrameworkPropertyMetadata(new[] { "Increase", "Decrease" }));
-            ItemsSourceProperty = DependencyProperty.Register("ItemsSource", typeof(IEnumerable<Series>), typeof(Chart), new PropertyMetadata(null, (u, e) =>
+            ItemsSourceProperty = DependencyProperty.Register("ItemsSource", typeof(IEnumerable<ISeries>), typeof(Chart), new PropertyMetadata(null, (u, e) =>
                  {
                      if (u is Chart chart)
                      {
@@ -571,7 +571,7 @@ namespace ag.WPF.Chart
                          {
                              newValueNotifyCollectionChanged.CollectionChanged += chart.ItemsSource_CollectionChanged;
                          }
-                         chart.OnItemsSourceChanged((IEnumerable<Series>)e.OldValue, (IEnumerable<Series>)e.NewValue);
+                         chart.OnItemsSourceChanged((IEnumerable<ISeries>)e.OldValue, (IEnumerable<ISeries>)e.NewValue);
                      }
                  }));
         }
@@ -621,23 +621,23 @@ namespace ag.WPF.Chart
             {
                 case NotifyCollectionChangedAction.Add:
                     {
-                        if (!(e.NewItems[0] is Series series)) break;
+                        if (!(e.NewItems[0] is ISeries series)) break;
 
                         series.Index = e.NewStartingIndex;
                         series.PropertyChanged += Series_PropertyChanged;
 
                         if (series.MainBrush == null)
                         {
-                            series.MainBrush = series.Index < Series.PredefinedPieBrushes.Length
-                                ? Series.PredefinedPieBrushes[series.Index]
-                                : Series.PredefinedPieBrushes[series.Index % Series.PredefinedPieBrushes.Length];
+                            series.MainBrush = series.Index < Statics.PredefinedPieBrushes.Length
+                                ? Statics.PredefinedPieBrushes[series.Index]
+                                : Statics.PredefinedPieBrushes[series.Index % Statics.PredefinedPieBrushes.Length];
                         }
 
                         if (series.SecondaryBrush == null)
                         {
-                            series.SecondaryBrush = series.Index + 1 < Series.PredefinedPieBrushes.Length
-                                ? Series.PredefinedPieBrushes[series.Index + 1]
-                                : Series.PredefinedPieBrushes[(series.Index + 1) % Series.PredefinedPieBrushes.Length];
+                            series.SecondaryBrush = series.Index + 1 < Statics.PredefinedPieBrushes.Length
+                                ? Statics.PredefinedPieBrushes[series.Index + 1]
+                                : Statics.PredefinedPieBrushes[(series.Index + 1) % Statics.PredefinedPieBrushes.Length];
                         }
 
                         #region Main series path
@@ -1065,7 +1065,7 @@ namespace ag.WPF.Chart
                     }
                 case NotifyCollectionChangedAction.Remove:
                     {
-                        if (!(e.OldItems[0] is Series series)) break;
+                        if (!(e.OldItems[0] is ISeries series)) break;
 
                         series.PropertyChanged -= Series_PropertyChanged;
                         //s.Values.CollectionChanged -= Values_CollectionChanged;
@@ -1114,9 +1114,9 @@ namespace ag.WPF.Chart
                 {
                     foreach (var gd in dwg.Children.OfType<GeometryDrawing>())
                     {
-                        if (!(gd.Geometry is PathGeometry geometry)) continue;
+                        if (!(gd.Geometry is Geometry geometry)) continue;
                         if (!geometry.FillContains(position)) continue;
-                        var data = (string)geometry.GetValue(Series.SectorDataProperty);
+                        var data = (string)geometry.GetValue(Statics.SectorDataProperty);
                         if (!Equals(tooltip.Content, data))
                         {
                             tooltip.Content = data;
@@ -1139,7 +1139,7 @@ namespace ag.WPF.Chart
             switch (e.PropertyName)
             {
                 case "Values":
-                    if (sender is Series series)
+                    if (sender is ISeries series)
                     {
                         foreach (var sr in ItemsSource.Where(s => s.Index != series.Index))
                         {
@@ -1181,7 +1181,7 @@ namespace ag.WPF.Chart
         private void Path_MouseMove(object sender, MouseEventArgs e)
         {
             if (!(sender is Path path)) return;
-            if (!(path.Tag is Series s)) return;
+            if (!(path.Tag is ISeries s)) return;
             if (!(path.ToolTip is ToolTip tooltip)) return;
             Rect rc;
             switch (ChartStyle)
@@ -1204,8 +1204,8 @@ namespace ag.WPF.Chart
                             break;
                         }
                         tooltip.Content = s.Values[index].CustomValue != null
-                            ? s.Values[index].CustomValue + " " + s.Values[index].Value.V1
-                            : s.Name + " " + s.Values[index].Value.V1.ToString(CultureInfo.InvariantCulture);
+                            ? s.Values[index].CustomValue + " " + s.Values[index].Value.PlainValue
+                            : s.Name + " " + s.Values[index].Value.PlainValue.ToString(CultureInfo.InvariantCulture);
                     }
                     else
                     {
@@ -1225,8 +1225,8 @@ namespace ag.WPF.Chart
                             break;
                         }
                         tooltip.Content = s.Values[index].CustomValue != null
-                            ? s.Values[index].CustomValue + " " + s.Values[index].Value.V1
-                            : s.Name + " " + s.Values[index].Value.V1.ToString(CultureInfo.InvariantCulture);
+                            ? s.Values[index].CustomValue + " " + s.Values[index].Value.PlainValue
+                            : s.Name + " " + s.Values[index].Value.PlainValue.ToString(CultureInfo.InvariantCulture);
                     }
                     else
                     {
@@ -1247,8 +1247,8 @@ namespace ag.WPF.Chart
                             break;
                         }
                         tooltip.Content = s.Values[index].CustomValue != null
-                            ? s.Values[index].CustomValue + " " + s.Values[index].Value.V1
-                            : s.Name + " " + s.Values[index].Value.V1.ToString(CultureInfo.InvariantCulture);
+                            ? s.Values[index].CustomValue + " " + s.Values[index].Value.PlainValue
+                            : s.Name + " " + s.Values[index].Value.PlainValue.ToString(CultureInfo.InvariantCulture);
                     }
                     else
                     {
@@ -1264,7 +1264,7 @@ namespace ag.WPF.Chart
         private void Path_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             if (!(sender is Path path)) return;
-            if (!(path.Tag is Series s)) return;
+            if (!(path.Tag is ISeries s)) return;
             if (!ChartStyle.In(ChartStyle.LinesWithMarkers, ChartStyle.StackedLinesWithMarkers,
                 ChartStyle.FullStackedLinesWithMarkers, ChartStyle.SmoothLinesWithMarkers,
                 ChartStyle.SmoothStackedLinesWithMarkers, ChartStyle.SmoothFullStackedLinesWithMarkers,
@@ -1336,7 +1336,7 @@ namespace ag.WPF.Chart
                 binding.UpdateTarget();
         }
 
-        private void rebuildPieLegends(ChartValues values, Series series)
+        private void rebuildPieLegends(ChartValues values, ISeries series)
         {
             if (series.Index > 0) return;
             PieLegendsCollection.Clear();
@@ -1386,9 +1386,9 @@ namespace ag.WPF.Chart
         /// Gets/sets the collection of <see cref="Series"/> objects associated with chart control.
         /// </summary>
         [Category("ChartAppearance"), Description("Gets or sets the collection of Series objects associated with chart control")]
-        public IEnumerable<Series> ItemsSource
+        public IEnumerable<ISeries> ItemsSource
         {
-            get { return (IEnumerable<Series>)GetValue(ItemsSourceProperty); }
+            get { return (IEnumerable<ISeries>)GetValue(ItemsSourceProperty); }
             set { SetValue(ItemsSourceProperty, value); }
         }
         /// <summary>
@@ -1854,9 +1854,9 @@ namespace ag.WPF.Chart
         /// </summary>
         /// <param name="oldValue">Old value</param>
         /// <param name="newValue">New value</param>
-        protected void OnItemsSourceChanged(IEnumerable<Series> oldValue, IEnumerable<Series> newValue)
+        protected void OnItemsSourceChanged(IEnumerable<ISeries> oldValue, IEnumerable<ISeries> newValue)
         {
-            var e = new RoutedPropertyChangedEventArgs<IEnumerable<Series>>(oldValue, newValue)
+            var e = new RoutedPropertyChangedEventArgs<IEnumerable<ISeries>>(oldValue, newValue)
             {
                 RoutedEvent = ItemsSourceChangedEvent
             };
@@ -2577,7 +2577,7 @@ namespace ag.WPF.Chart
         /// <summary>
         /// Occurs when the <see cref="ItemsSource"/> property has been changed in some way
         /// </summary>
-        public event RoutedPropertyChangedEventHandler<IEnumerable<Series>> ItemsSourceChanged
+        public event RoutedPropertyChangedEventHandler<IEnumerable<ISeries>> ItemsSourceChanged
         {
             add { AddHandler(ItemsSourceChangedEvent, value); }
             remove { RemoveHandler(ItemsSourceChangedEvent, value); }
@@ -2586,7 +2586,7 @@ namespace ag.WPF.Chart
         /// Identifies the <see cref="ItemsSourceChanged"/> routed event
         /// </summary>
         public static readonly RoutedEvent ItemsSourceChangedEvent = EventManager.RegisterRoutedEvent("ItemsSourceChanged",
-            RoutingStrategy.Bubble, typeof(RoutedPropertyChangedEventHandler<ObservableCollection<Series>>), typeof(Chart));
+            RoutingStrategy.Bubble, typeof(RoutedPropertyChangedEventHandler<ObservableCollection<ISeries>>), typeof(Chart));
 
         /// <summary>
         /// Occurs when the <see cref="ChartBoundary"/> property has been changed in some way
@@ -3108,7 +3108,7 @@ namespace ag.WPF.Chart
             EventManager.RegisterRoutedEvent("ChartPointLeftButtonDoubleClick", RoutingStrategy.Bubble,
                 typeof(RoutedEventHandler), typeof(Chart));
 
-        private void RaiseMarkerLeftButtonDoubleClickEvent(ChartValue point, Series series)
+        private void RaiseMarkerLeftButtonDoubleClickEvent(IChartValue point, ISeries series)
         {
             var e = new ChartPointLeftButtonDoubleClickEventArgs(ChartPointLeftButtonDoubleClickEvent, point, series);
             RaiseEvent(e);
@@ -3139,18 +3139,18 @@ namespace ag.WPF.Chart
         /// <summary>
         /// Gets current <see cref="ChartValue"/>
         /// </summary>
-        public ChartValue Value { get; private set; }
+        public IChartValue Value { get; private set; }
         /// <summary>
         /// Gets current <see cref="Series"/>
         /// </summary>
-        public Series Series { get; private set; }
+        public ISeries Series { get; private set; }
         /// <summary>
         /// Initialzes a new instance of ChartPointLeftButtonDoubleClickEventArgs
         /// </summary>
         /// <param name="baseEvent">Base routed event</param>
         /// <param name="value">Current <see cref="ChartValue"/></param>
         /// <param name="series">Current <see cref="Series"/></param>
-        public ChartPointLeftButtonDoubleClickEventArgs(RoutedEvent baseEvent, ChartValue value, Series series)
+        public ChartPointLeftButtonDoubleClickEventArgs(RoutedEvent baseEvent, IChartValue value, ISeries series)
             : base(baseEvent)
         {
             Value = value;

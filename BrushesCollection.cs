@@ -11,8 +11,8 @@ namespace ag.WPF.Chart
         internal event EventHandler<BrushChangedEventArgs> BrushChanged;
 
         private readonly Brush[] _Brushes;
-        private readonly Series _Series;
-        internal BrushesCollection(int capacity, Series series)
+        private readonly ISeries _Series;
+        internal BrushesCollection(int capacity, ISeries series)
         {
             _Brushes = new Brush[capacity];
             _Series = series;
@@ -47,10 +47,10 @@ namespace ag.WPF.Chart
 
     internal class BrushChangedEventArgs : EventArgs
     {
-        internal Series Series { get; private set; }
+        internal ISeries Series { get; private set; }
         internal int Index { get; private set; }
 
-        internal BrushChangedEventArgs(Series series, int index)
+        internal BrushChangedEventArgs(ISeries series, int index)
         {
             Series = series;
             Index = index;

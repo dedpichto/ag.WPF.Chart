@@ -33,24 +33,8 @@ namespace ag.WPF.Chart
     /// <summary>
     /// Represents single chart series
     /// </summary>
-    public class Series : DependencyObject, INotifyPropertyChanged
+    public class PlainSeries : DependencyObject, INotifyPropertyChanged, ISeries
     {
-        internal static readonly DependencyProperty SectorDataProperty = DependencyProperty.RegisterAttached("SectorData",
-            typeof(string), typeof(Series), new FrameworkPropertyMetadata("", null));
-
-        internal static readonly Brush[] PredefinedPieBrushes =
-        {
-            new SolidColorBrush(Color.FromArgb(255, 91, 155, 213)),
-            new SolidColorBrush(Color.FromArgb(255, 237, 125, 49)),
-            new SolidColorBrush(Color.FromArgb(255, 165, 165, 165)),
-            new SolidColorBrush(Color.FromArgb(255, 255, 192, 0)),
-            new SolidColorBrush(Color.FromArgb(255, 68, 114, 196)),
-            new SolidColorBrush(Color.FromArgb(255, 112, 173, 71)),
-            new SolidColorBrush(Color.FromArgb(255, 37, 94, 145)),
-            new SolidColorBrush(Color.FromArgb(255, 158, 72, 14)),
-            new SolidColorBrush(Color.FromArgb(255, 99, 99, 99)),
-            new SolidColorBrush(Color.FromArgb(255, 153, 115, 0))
-        };
         private Brush _mainBrush;
         private Brush _secondaryBrush;
         private string _name;
@@ -59,16 +43,6 @@ namespace ag.WPF.Chart
         private readonly List<Rect> _realRects = new List<Rect>();
         private readonly List<Point> _realPoints = new List<Point>();
         private BrushesCollection _pieBrushes;
-
-        internal static string GetSectorData(DependencyObject obj)
-        {
-            return (string)obj.GetValue(SectorDataProperty);
-        }
-
-        internal static void SetSectorData(DependencyObject obj, string value)
-        {
-            obj.SetValue(SectorDataProperty, value);
-        }
 
         /// <summary>
         /// Gets the collection of <see cref="ChartValue"/> objects associated with current series
@@ -139,16 +113,16 @@ namespace ag.WPF.Chart
             get { return _pieBrushes; }
         }
 
-        internal List<Rect> RealRects
+        public List<Rect> RealRects
         {
             get { return _realRects; }
         }
 
-        internal Path Path { get; private set; }
-        internal Path PositivePath { get; private set; }
-        internal Path NegativePath { get; private set; }
+        public Path Path { get; private set; }
+        public Path PositivePath { get; private set; }
+        public Path NegativePath { get; private set; }
 
-        internal List<Point> RealPoints
+        public List<Point> RealPoints
         {
             get { return _realPoints; }
         }
@@ -158,11 +132,11 @@ namespace ag.WPF.Chart
         /// </summary>
         /// <param name="name">Series name</param>
         /// <param name="values">Series values</param>
-        public Series(string name, IEnumerable<double> values)
+        public PlainSeries(string name, IEnumerable<double> values)
         {
             foreach (var v in values)
             {
-                _values.Add(new ChartValue((v,0,0,0,0), null));
+                _values.Add(new ChartValue((v, 0, 0, 0, 0, 0), null));
             }
 
             initFields(name);
@@ -174,7 +148,7 @@ namespace ag.WPF.Chart
         /// <param name="mainBrush">Series background</param>
         /// <param name="name">Series name</param>
         /// <param name="values">Series values</param>
-        public Series(Brush mainBrush, string name, IEnumerable<ChartValue> values)
+        public PlainSeries(Brush mainBrush, string name, IEnumerable<IChartValue> values)
             : this(name, values)
         {
             MainBrush = mainBrush;
@@ -186,7 +160,7 @@ namespace ag.WPF.Chart
         /// <param name="mainBrush">Series background</param>
         /// <param name="name">Series name</param>
         /// <param name="values">Series values</param>
-        public Series(Brush mainBrush, string name, IEnumerable<double> values)
+        public PlainSeries(Brush mainBrush, string name, IEnumerable<double> values)
             : this(name, values)
         {
             MainBrush = mainBrush;
@@ -199,7 +173,7 @@ namespace ag.WPF.Chart
         /// <param name="secondaryBrush">Series secondary background</param>
         /// <param name="name">Series name</param>
         /// <param name="values">Series values</param>
-        public Series(Brush mainBrush, Brush secondaryBrush, string name, IEnumerable<double> values)
+        public PlainSeries(Brush mainBrush, Brush secondaryBrush, string name, IEnumerable<double> values)
             : this(name, values)
         {
             MainBrush = mainBrush;
@@ -211,11 +185,11 @@ namespace ag.WPF.Chart
         /// </summary>
         /// <param name="name">Series name</param>
         /// <param name="values">Series values</param>
-        public Series(string name, IEnumerable<ChartValue> values)
+        public PlainSeries(string name, IEnumerable<IChartValue> values)
         {
             foreach (var v in values)
             {
-                _values.Add(new ChartValue((v.Value.V1, v.Value.V2, v.Value.V3, v.Value.V4, v.Value.V5), v.CustomValue));
+                _values.Add(new ChartValue((v.Value.PlainValue, v.Value.VolumeValue, v.Value.OpenValue, v.Value.HighValue, v.Value.LowValue, v.Value.CloseValue), v.CustomValue));
             }
 
             initFields(name);
@@ -228,7 +202,7 @@ namespace ag.WPF.Chart
         /// <param name="secondaryBrush">Series secondary background</param>
         /// <param name="name">Series name</param>
         /// <param name="values">Series values</param>
-        public Series(Brush mainBrush, Brush secondaryBrush, string name, IEnumerable<ChartValue> values)
+        public PlainSeries(Brush mainBrush, Brush secondaryBrush, string name, IEnumerable<IChartValue> values)
             : this(name, values)
         {
             MainBrush = mainBrush;
@@ -247,8 +221,8 @@ namespace ag.WPF.Chart
         private void initFields(string name)
         {
             _values.CollectionChanged += Values_CollectionChanged;
-            _pieBrushes = new BrushesCollection(PredefinedPieBrushes.Length, this);
-            var brushes = PredefinedPieBrushes.OfType<SolidColorBrush>().ToArray();
+            _pieBrushes = new BrushesCollection(Statics.PredefinedPieBrushes.Length, this);
+            var brushes = Statics.PredefinedPieBrushes.OfType<SolidColorBrush>().ToArray();
             for (var i = 0; i < _pieBrushes.Length(); i++)
                 _pieBrushes[i] = new SolidColorBrush(brushes[i].Color);
             Name = name;
