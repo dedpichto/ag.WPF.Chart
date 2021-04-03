@@ -3,9 +3,9 @@
     public interface IChartValue
     {
         /// <summary>
-        /// Gets or sets custom value (usually string) associated with current value. This custom value will be displayed as chart point tooltip
+        /// Gets or sets custom value to be displayed as chart point tooltip
         /// </summary>
-        object CustomValue { get; set; }
+        string CustomValue { get; set; }
         /// <summary>
         /// Gets or sets current numeric value
         /// </summary>

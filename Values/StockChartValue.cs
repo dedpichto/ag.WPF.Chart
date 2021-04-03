@@ -50,7 +50,7 @@ namespace ag.WPF.Chart.Values
         /// </summary>
         /// <param name="values">Current values</param>
         /// <param name="customValue">Current custom value</param>
-        public StockChartValue((double highValue, double lowValue, double closeValue) values, object customValue)
+        public StockChartValue((double highValue, double lowValue, double closeValue) values, string customValue)
             : this(values.highValue, values.lowValue, values.closeValue)
         {
             CustomValue = customValue;
@@ -61,7 +61,7 @@ namespace ag.WPF.Chart.Values
         /// </summary>
         /// <param name="values">Current values</param>
         /// <param name="customValue">Current custom value</param>
-        public StockChartValue((double volumeValue, double highValue, double lowValue, double closeValue) values, object customValue)
+        public StockChartValue((double volumeValue, double highValue, double lowValue, double closeValue) values, string customValue)
             : this(values.volumeValue, values.highValue, values.lowValue, values.closeValue)
         {
             CustomValue = customValue;
@@ -72,7 +72,7 @@ namespace ag.WPF.Chart.Values
         /// </summary>
         /// <param name="values">Current values</param>
         /// <param name="customValue">Current custom value</param>
-        public StockChartValue((double volumeValue, double openValue, double highValue, double lowValue, double closeValue) values, object customValue)
+        public StockChartValue((double volumeValue, double openValue, double highValue, double lowValue, double closeValue) values, string customValue)
             : this(values.volumeValue, values.openValue, values.highValue, values.lowValue, values.closeValue)
         {
             CustomValue = customValue;

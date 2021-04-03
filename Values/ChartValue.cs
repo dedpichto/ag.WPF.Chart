@@ -12,7 +12,7 @@ namespace ag.WPF.Chart.Values
         /// <inheritdoc />
         public (double PlainValue, double HighValue, double LowValue, double CloseValue, double VolumeValue, double OpenValue) Value { get; set; }
         /// <inheritdoc />
-        public object CustomValue { get; set; }
+        public string CustomValue { get; set; }
         /// <inheritdoc />
         public abstract IChartValue Clone();
         #endregion

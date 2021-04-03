@@ -1190,9 +1190,8 @@ namespace ag.WPF.Chart
                             tooltip.Content = s.Name;
                             break;
                         }
-                        tooltip.Content = s.Values[index].CustomValue != null
-                            ? s.Values[index].CustomValue + " " + s.Values[index].Value.PlainValue
-                            : s.Name + " " + s.Values[index].Value.PlainValue.ToString(CultureInfo.InvariantCulture);
+                        tooltip.Content = s.Values[index].CustomValue 
+                            ?? s.Name + " " + s.Values[index].Value.PlainValue.ToString(CultureInfo.InvariantCulture);
                     }
                     else
                     {
@@ -1211,9 +1210,8 @@ namespace ag.WPF.Chart
                             tooltip.Content = s.Name;
                             break;
                         }
-                        tooltip.Content = s.Values[index].CustomValue != null
-                            ? s.Values[index].CustomValue + " " + s.Values[index].Value.PlainValue
-                            : s.Name + " " + s.Values[index].Value.PlainValue.ToString(CultureInfo.InvariantCulture);
+                        tooltip.Content = s.Values[index].CustomValue 
+                            ?? s.Name + " " + s.Values[index].Value.PlainValue.ToString(CultureInfo.InvariantCulture);
                     }
                     else
                     {
@@ -1233,9 +1231,8 @@ namespace ag.WPF.Chart
                             tooltip.Content = s.Name;
                             break;
                         }
-                        tooltip.Content = s.Values[index].CustomValue != null
-                            ? s.Values[index].CustomValue + " " + s.Values[index].Value.PlainValue
-                            : s.Name + " " + s.Values[index].Value.PlainValue.ToString(CultureInfo.InvariantCulture);
+                        tooltip.Content = s.Values[index].CustomValue 
+                            ?? s.Name + " " + s.Values[index].Value.PlainValue.ToString(CultureInfo.InvariantCulture);
                     }
                     else
                     {

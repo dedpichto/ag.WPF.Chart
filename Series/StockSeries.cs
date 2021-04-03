@@ -37,7 +37,7 @@ namespace ag.WPF.Chart.Series
         /// </summary>
         /// <param name="name">Series name</param>
         /// <param name="values">Series values</param>
-        public StockSeries(string name, IEnumerable<(double highValue, double lowValue, double closeValue, object customValue)> values)
+        public StockSeries(string name, IEnumerable<(double highValue, double lowValue, double closeValue, string customValue)> values)
         {
             foreach (var (highValue, lowValue, closeValue, customValue) in values)
             {
@@ -67,7 +67,7 @@ namespace ag.WPF.Chart.Series
         /// </summary>
         /// <param name="name">Series name</param>
         /// <param name="values">Series values</param>
-        public StockSeries(string name, IEnumerable<(double volumeValue, double highValue, double lowValue, double closeValue, object customValue)> values)
+        public StockSeries(string name, IEnumerable<(double volumeValue, double highValue, double lowValue, double closeValue, string customValue)> values)
         {
             foreach (var (volumeValue, highValue, lowValue, closeValue, customValue) in values)
             {
@@ -97,7 +97,7 @@ namespace ag.WPF.Chart.Series
         /// </summary>
         /// <param name="name">Series name</param>
         /// <param name="values">Series values</param>
-        public StockSeries(string name, IEnumerable<(double volumeValue, double openValue, double highValue, double lowValue, double closeValue, object customValue)> values)
+        public StockSeries(string name, IEnumerable<(double volumeValue, double openValue, double highValue, double lowValue, double closeValue, string customValue)> values)
         {
             foreach (var (volumeValue, openValue, highValue, lowValue, closeValue, customValue) in values)
             {
@@ -125,7 +125,7 @@ namespace ag.WPF.Chart.Series
         /// <param name="mainBrush">Series background</param>
         /// <param name="name">Series name</param>
         /// <param name="values">Series values</param>
-        public StockSeries(Brush mainBrush, string name, IEnumerable<(double highValue, double lowValue, double closeValue, object customValue)> values)
+        public StockSeries(Brush mainBrush, string name, IEnumerable<(double highValue, double lowValue, double closeValue, string customValue)> values)
             : this(name, values)
         {
             MainBrush = mainBrush;
@@ -152,7 +152,7 @@ namespace ag.WPF.Chart.Series
         /// <param name="secondaryBrush">Series secondary background</param>
         /// <param name="name">Series name</param>
         /// <param name="values">Series values</param>
-        public StockSeries(Brush mainBrush, Brush secondaryBrush, string name, IEnumerable<(double highValue, double lowValue, double closeValue, object customValue)> values)
+        public StockSeries(Brush mainBrush, Brush secondaryBrush, string name, IEnumerable<(double highValue, double lowValue, double closeValue, string customValue)> values)
             : this(name, values)
         {
             MainBrush = mainBrush;
@@ -177,7 +177,7 @@ namespace ag.WPF.Chart.Series
         /// <param name="mainBrush">Series background</param>
         /// <param name="name">Series name</param>
         /// <param name="values">Series values</param>
-        public StockSeries(Brush mainBrush, string name, IEnumerable<(double volumeValue, double highValue, double lowValue, double closeValue, object customValue)> values)
+        public StockSeries(Brush mainBrush, string name, IEnumerable<(double volumeValue, double highValue, double lowValue, double closeValue, string customValue)> values)
             : this(name, values)
         {
             MainBrush = mainBrush;
@@ -204,7 +204,7 @@ namespace ag.WPF.Chart.Series
         /// <param name="secondaryBrush">Series secondary background</param>
         /// <param name="name">Series name</param>
         /// <param name="values">Series values</param>
-        public StockSeries(Brush mainBrush, Brush secondaryBrush, string name, IEnumerable<(double volumeValue, double highValue, double lowValue, double closeValue, object customValue)> values)
+        public StockSeries(Brush mainBrush, Brush secondaryBrush, string name, IEnumerable<(double volumeValue, double highValue, double lowValue, double closeValue, string customValue)> values)
             : this(name, values)
         {
             MainBrush = mainBrush;
@@ -229,7 +229,7 @@ namespace ag.WPF.Chart.Series
         /// <param name="mainBrush">Series background</param>
         /// <param name="name">Series name</param>
         /// <param name="values">Series values</param>
-        public StockSeries(Brush mainBrush, string name, IEnumerable<(double volumeValue, double openValue, double highValue, double lowValue, double closeValue, object customValue)> values)
+        public StockSeries(Brush mainBrush, string name, IEnumerable<(double volumeValue, double openValue, double highValue, double lowValue, double closeValue, string customValue)> values)
             : this(name, values)
         {
             MainBrush = mainBrush;
@@ -256,7 +256,7 @@ namespace ag.WPF.Chart.Series
         /// <param name="secondaryBrush">Series secondary background</param>
         /// <param name="name">Series name</param>
         /// <param name="values">Series values</param>
-        public StockSeries(Brush mainBrush, Brush secondaryBrush, string name, IEnumerable<(double volumeValue, double openValue, double highValue, double lowValue, double closeValue, object customValue)> values)
+        public StockSeries(Brush mainBrush, Brush secondaryBrush, string name, IEnumerable<(double volumeValue, double openValue, double highValue, double lowValue, double closeValue, string customValue)> values)
             : this(name, values)
         {
             MainBrush = mainBrush;

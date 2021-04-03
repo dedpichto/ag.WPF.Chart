@@ -26,7 +26,7 @@ namespace ag.WPF.Chart.Values
         /// </summary>
         /// <param name="plainValue">Current value</param>
         /// <param name="customValue">Current custom value</param>
-        public PlainChartValue(double plainValue, object customValue)
+        public PlainChartValue(double plainValue, string customValue)
             : this(plainValue)
         {
             CustomValue = customValue;
