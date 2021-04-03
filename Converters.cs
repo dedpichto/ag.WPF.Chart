@@ -447,6 +447,40 @@ namespace ag.WPF.Chart
             return 0;
         }
 
+        internal static int GetMaxValueLength(double max, double min, int fractionPower)
+        {
+            // round max to next integer
+            max = Math.Ceiling(max);
+            // round min to prevous integer
+            min = Math.Floor(min);
+
+            if (fractionPower > 0)
+            {
+                max *= Math.Pow(10, fractionPower);
+                min = -Math.Abs(min * Math.Pow(10, fractionPower));
+            }
+
+            var powerMax = Math.Abs((int)max).ToString().Length - 1;
+            var powerMin = Math.Abs((int)min).ToString().Length - 1;
+
+            // do not increase max for integers that are equal to 10 power
+            var p = powerMax >= 3 ? powerMax - 1 : powerMax;
+            if (max % Math.Pow(10, p) != 0)
+                max = Math.Sign(max) * roundInt((int)Math.Abs(max), (int)Math.Pow(10, powerMax));
+            // do not increase max for integers that are equal to 10 power
+            p = powerMin >= 3 ? powerMin - 1 : powerMin;
+            if (min % Math.Pow(10, p) != 0)
+                min = Math.Sign(min) * roundInt((int)Math.Abs(min), (int)Math.Pow(10, powerMin));
+
+            if (fractionPower > 0)
+            {
+                max /= Math.Pow(10, fractionPower);
+                min = -Math.Abs(min / Math.Pow(10, fractionPower));
+            }
+
+            return Math.Max(max.ToString().Length, min.ToString().Length);
+        }
+
         internal static (double max, double min, int linesCount, double stepSize, double stepLength, double units, ZeroPoint zeroPoint) GetMeasuresForComplex(ChartStyle chartStyle, double max, double min, int linesCount, double radius, double fontHeight, int fractionPower, ZeroPoint zeroPoint, bool splitSides)
         {
             int tempLines;
@@ -850,10 +884,11 @@ namespace ag.WPF.Chart
                        ChartStyle.SmoothFullStackedLinesWithMarkers, ChartStyle.Bubbles);
         }
 
-        internal static double GetMaxY(List<(List<ChartValue> Values, int Index)> tuples, ChartStyle style)
+        internal static int GetMaxValueLength(List<(List<ChartValue> Values, int Index)> tuples, ChartStyle style)
         {
-            if (!tuples.Any()) return 0.0;
-            var result = 0.0;
+            if (!tuples.Any()) return 0;
+            var result = "100.0".Length;
+            var values = tuples.SelectMany(t => t.Values).Select(v => v.Value.V1);
             switch (style)
             {
                 case ChartStyle.Waterfall:
@@ -868,7 +903,7 @@ namespace ag.WPF.Chart
                         if (value < 0)
                             maxMinus = Math.Min(maxMinus, value);
                     }
-                    result = Math.Max(maxPlus, Math.Abs(maxMinus));
+                    result = GetMaxValueLength(maxPlus, maxMinus, getMaxFractionPower(values));// Math.Max(maxPlus, Math.Abs(maxMinus));
                     break;
                 case ChartStyle.Lines:
                 case ChartStyle.LinesWithMarkers:
@@ -879,7 +914,7 @@ namespace ag.WPF.Chart
                 case ChartStyle.Area:
                 case ChartStyle.SmoothArea:
                 case ChartStyle.Bubbles:
-                    result = (from s in tuples from v in s.Values select Math.Abs(v.Value.V1)).Concat(new[] { result }).Max();
+                    result = GetMaxValueLength(values.Max(), values.Min(), getMaxFractionPower(values));
                     break;
                 case ChartStyle.StackedColumns:
                 case ChartStyle.StackedBars:
@@ -896,7 +931,7 @@ namespace ag.WPF.Chart
                                     plusArr[i] += s.Values[i].Value.V1;
                             }
                         }
-                        result = Math.Max(Math.Abs(minusArr.Min()), plusArr.Max());
+                        result = GetMaxValueLength(plusArr.Max(), minusArr.Min(), getMaxFractionPower(values));
                         break;
                     }
                 case ChartStyle.StackedArea:
@@ -916,57 +951,10 @@ namespace ag.WPF.Chart
                                     arr2[i] = Math.Abs(s.Values[i].Value.V1);
                             }
                         }
-                        result = Math.Max(arr2.Max(), arr1.Max(d => Math.Abs(d)));
+                        result = GetMaxValueLength(arr2.Max(), arr1.Min(), getMaxFractionPower(values));
                         break;
                     }
-                case ChartStyle.FullStackedColumns:
-                case ChartStyle.FullStackedBars:
-                    {
-                        var arr = new double[tuples.Max(s => s.Values.Count)];
-                        foreach (var s in tuples)
-                        {
-                            for (var i = 0; i < s.Values.Count; i++)
-                            {
-                                var i1 = i;
-                                var sumTotal =
-                                    tuples.Where(sr => sr.Values.Count > i1).Sum(sr => Math.Abs(sr.Values[i1].Value.V1));
-                                var percent = Math.Abs(s.Values[i].Value.V1) / sumTotal * 100;
-                                if (arr[i] < percent)
-                                    arr[i] = percent;
-                            }
-                        }
-                        result = arr.Max();
-                        break;
-                    }
-                case ChartStyle.FullStackedArea:
-                case ChartStyle.FullStackedLines:
-                case ChartStyle.FullStackedLinesWithMarkers:
-                case ChartStyle.SmoothFullStackedLines:
-                case ChartStyle.SmoothFullStackedLinesWithMarkers:
-                    {
-                        return 100;
-                        //var arr = new double[tuples.Max(s => s.Item1.Count)];
-                        //for (var i = 0; i < arr.Length; i++)
-                        //{
-                        //    var sum = tuples.Where(sr => sr.Item1.Count > i).Sum(sr => Math.Abs(sr.Item1[i].Value));
-                        //    foreach (var s in tuples)
-                        //    {
-                        //        var percent = Math.Abs(s.Item1[i].Value) / sum * 100;
-                        //        if (arr[i] < percent)
-                        //            arr[i] = percent;
-                        //    }
-                        //}
-                        //result = arr.Max();
-                        //break;
-                    }
             }
-            var upper = (int)Math.Ceiling(result);
-            if (result > 10)
-            {
-                while (upper % 10 != 0)
-                    upper++;
-            }
-            result = upper;
             return result;
         }
 
@@ -3059,105 +3047,41 @@ namespace ag.WPF.Chart
             if (values == null
                 || !(values[0] is IEnumerable<Series> seriesEnumerable)
                 || !(values[1] is ChartStyle chartStyle)
-                || !(values[2] is int stopsX)
-                || !(values[3] is string format)
-                || !(values[4] is FontFamily fontFamily)
-                || !(values[5] is double fontSize)
-                || !(values[6] is FontStyle fontStyle)
-                || !(values[7] is FontWeight fontWeight)
-                || !(values[8] is FontStretch fontStretch)
-                || !(values[10] is bool autoAdjust)
-                || !(values[11] is double maxX)
-                || !(values[12] is ChartBoundary chartBoundary)
-                || !(values[13] is double width))
+                || !(values[2] is string format)
+                || !(values[3] is FontFamily fontFamily)
+                || !(values[4] is double fontSize)
+                || !(values[5] is FontStyle fontStyle)
+                || !(values[6] is FontWeight fontWeight)
+                || !(values[7] is FontStretch fontStretch)
+                || !(values[9] is bool autoAdjust)
+                || !(values[10] is double maxX))
                 return 0;
 
             var height = 8.0;
             var series = seriesEnumerable.ToArray();
-            var customValues = values[9] is IEnumerable<string> customEnumerable ? customEnumerable.ToArray() : new string[] { };
+            var customValues = values[8] is IEnumerable<string> customEnumerable ? customEnumerable.ToArray() : new string[] { };
 
             if (!series.Any()) return height;
-
-            width -= 2 * Utils.AXIS_THICKNESS;
 
             var rawValues = chartStyle != ChartStyle.Waterfall
                 ? Utils.GetPaddedSeries(series)
                 : new List<(List<ChartValue> Values, int Index)> { (series[0].Values.ToList(), series[0].Index) };
-
-            var ticks = rawValues.Max(rw => rw.Values.Count);
 
             var totalValues = chartStyle != ChartStyle.Waterfall
                 ? series.SelectMany(s => s.Values.Select(v => v.Value.V1))
                 : series[0].Values.Select(v => v.Value.V1);
 
             var dir = Utils.GetDirection(totalValues, chartStyle);
-            var max = autoAdjust ? Utils.GetMaxY(rawValues, chartStyle) : maxX;
-            var offsetBoundary = Utils.OffsetBoundary(chartBoundary, chartStyle);
-            var boundOffset = Utils.BoundaryOffset(offsetBoundary, width, ticks);
+            var maxFromValues = autoAdjust ? Utils.GetMaxValueLength(rawValues, chartStyle) : maxX.ToString(culture).Length;
+            var maxFromCustom = customValues.Any() ? customValues.Max(v => v.Length) : 0;
+            var maxString = new string('W', Math.Max(maxFromValues, maxFromCustom));
 
-            var maxString = "";
-            FormattedText fmt;
-            switch (dir)
+            var fmt = new FormattedText(maxString, culture, FlowDirection.LeftToRight,
+                            new Typeface(fontFamily, fontStyle, fontWeight, fontStretch), fontSize, Brushes.Black, VisualTreeHelper.GetDpi(Utils.Border).PixelsPerDip)
             {
-                //DONE
-                case Directions.NorthEastNorthWest:
-                    for (int i = 0, index = 0; i <= stopsX * 2; i++)
-                    {
-                        if (i == stopsX) continue;
-                        var num = (i - stopsX) * max / stopsX;
-                        var number = customValues.Length > index
-                            ? customValues[index++]
-                            : format.EndsWith("%") ? num.ToString(format.Substring(0, format.Length - 1)) + "%" : num.ToString(format);
-                        if (chartStyle == ChartStyle.FullStackedBars)
-                            number += "%";
-                        if (maxString.Length < number.Length) maxString = number;
-                    }
-                    fmt = new FormattedText(maxString, culture, FlowDirection.LeftToRight,
-                        new Typeface(fontFamily, fontStyle, fontWeight, fontStretch), fontSize, Brushes.Black, VisualTreeHelper.GetDpi(Utils.Border).PixelsPerDip)
-                    {
-                        TextAlignment = TextAlignment.Right
-                    };
-                    height = fmt.Width;
-                    break;
-                //DONE
-                case Directions.NorthEast:
-                case Directions.NorthEastSouthEast:
-                case Directions.SouthEast:
-                    {
-                        var (Step, Limit) = Utils.Limits(chartStyle, offsetBoundary, stopsX, ticks, boundOffset, width);
-                        var limit = Limit;
-                        for (var i = 0; i < limit; i++)
-                        {
-                            var num = i;
-                            var number = customValues.Length > i
-                                ? customValues[i]
-                                : format.EndsWith("%") ? num.ToString(format.Substring(0, format.Length - 1)) + "%" : num.ToString(format);
-                            if (chartStyle == ChartStyle.FullStackedBars)
-                                number += "%";
-                            if (maxString.Length < number.Length) maxString = number;
-                        }
-                        fmt = new FormattedText(maxString, culture, FlowDirection.LeftToRight,
-                            new Typeface(fontFamily, fontStyle, fontWeight, fontStretch), fontSize, Brushes.Black, VisualTreeHelper.GetDpi(Utils.Border).PixelsPerDip);
-                        height = fmt.Width;
-                        break;
-                    }
-                //DONE
-                case Directions.NorthWest:
-                    for (int i = 0, index = 0; i < stopsX; i++)
-                    {
-                        var num = (i - stopsX) * max / stopsX;
-                        var number = customValues.Length > index
-                            ? customValues[index++]
-                            : format.EndsWith("%") ? num.ToString(format.Substring(0, format.Length - 1)) + "%" : num.ToString(format);
-                        if (chartStyle == ChartStyle.FullStackedBars)
-                            number += "%";
-                        if (maxString.Length < number.Length) maxString = number;
-                    }
-                    fmt = new FormattedText(maxString, culture, FlowDirection.LeftToRight,
-                            new Typeface(fontFamily, fontStyle, fontWeight, fontStretch), fontSize, Brushes.Black, VisualTreeHelper.GetDpi(Utils.Border).PixelsPerDip);
-                    height = fmt.Width;
-                    break;
-            }
+                TextAlignment = TextAlignment.Right
+            };
+            height = fmt.Width;
             return height;
         }
         /// <summary>Converts a binding target value to the source binding values.</summary>
@@ -3188,20 +3112,19 @@ namespace ag.WPF.Chart
             if (values == null
                 || !(values[0] is IEnumerable<Series> seriesEnumerable)
                 || !(values[1] is ChartStyle chartStyle)
-                || !(values[2] is int stops)
-                || !(values[3] is string format)
-                || !(values[4] is FontFamily fontFamily)
-                || !(values[5] is double fontSize)
-                || !(values[6] is FontStyle fontStyle)
-                || !(values[7] is FontWeight fontWeight)
-                || !(values[8] is FontStretch fontStretch)
-                || !(values[10] is bool autoAdjust)
-                || !(values[11] is double maxY))
+                || !(values[2] is string format)
+                || !(values[3] is FontFamily fontFamily)
+                || !(values[4] is double fontSize)
+                || !(values[5] is FontStyle fontStyle)
+                || !(values[6] is FontWeight fontWeight)
+                || !(values[7] is FontStretch fontStretch)
+                || !(values[9] is bool autoAdjust)
+                || !(values[10] is double maxY))
                 return 0;
             var width = 28.0;
 
             var series = seriesEnumerable.ToArray();
-            var customValues = values[9] is IEnumerable<string> customEnumerable ? customEnumerable.ToArray() : new string[] { };
+            var customValues = values[8] is IEnumerable<string> customEnumerable ? customEnumerable.ToArray() : new string[] { };
 
             if (!series.Any()) return width;
 
@@ -3213,76 +3136,21 @@ namespace ag.WPF.Chart
                 ? Utils.GetPaddedSeries(series)
                 : new List<(List<ChartValue> Values, int Index)> { (series[0].Values.ToList(), series[0].Index) };
 
-            var maxCount = rawValues.Max(rw => rw.Values.Count);
-
             var totalValues = chartStyle != ChartStyle.Waterfall
                 ? series.SelectMany(s => s.Values.Select(v => v.Value.V1))
                 : series[0].Values.Select(v => v.Value.V1);
 
             var dir = Utils.GetDirection(totalValues, chartStyle);
-            var max = autoAdjust ? Utils.GetMaxY(rawValues, chartStyle) : maxY;
-            var maxString = "";
-            FormattedText fmt;
-            switch (dir)
-            {
-                case Directions.NorthEastSouthEast:
-                    for (int i = 0, index = 0; i <= stops * 2; i++)
-                    {
-                        if (i == stops) continue;
-                        var num = (stops - i) * max / stops;
-                        var number = customValues.Length > index
-                            ? customValues[index++]
-                            : format.EndsWith("%") ? num.ToString(format.Substring(0, format.Length - 1)) + "%" : num.ToString(format);
-                        if (Utils.StyleFullStacked(chartStyle))
-                            number += "%";
-                        if (maxString.Length < number.Length) maxString = number;
+            var maxFromValues = autoAdjust ? Utils.GetMaxValueLength(rawValues, chartStyle) : maxY.ToString(culture).Length;
+            var maxFromCustom = customValues.Any() ? customValues.Max(v => v.Length) : 0;
+            var maxString = new string('W', Math.Max(maxFromValues, maxFromCustom));
 
-                    }
-                    fmt = new FormattedText(maxString, culture, FlowDirection.LeftToRight,
+            var fmt = new FormattedText(maxString, culture, FlowDirection.LeftToRight,
                             new Typeface(fontFamily, fontStyle, fontWeight, fontStretch), fontSize, Brushes.Black, VisualTreeHelper.GetDpi(Utils.Border).PixelsPerDip)
-                    {
-                        TextAlignment = TextAlignment.Right
-                    };
-                    width = fmt.Width;
-                    break;
-                case Directions.SouthEast:
-                    for (int i = 1, index = 0; i <= stops; i++)
-                    {
-                        var num = -i * max / stops;
-                        var number = customValues.Length > index
-                            ? customValues[index++]
-                            : format.EndsWith("%") ? num.ToString(format.Substring(0, format.Length - 1)) + "%" : num.ToString(format);
-                        if (Utils.StyleFullStacked(chartStyle))
-                            number += "%";
-                        if (maxString.Length < number.Length) maxString = number;
-                    }
-                    fmt = new FormattedText(maxString, culture, FlowDirection.LeftToRight,
-                            new Typeface(fontFamily, fontStyle, fontWeight, fontStretch), fontSize, Brushes.Black, VisualTreeHelper.GetDpi(Utils.Border).PixelsPerDip)
-                    {
-                        TextAlignment = TextAlignment.Right
-                    };
-                    width = fmt.Width;
-                    break;
-                case Directions.NorthEast:
-                case Directions.NorthEastNorthWest:
-                case Directions.NorthWest:
-                    for (int i = 0, index = 0; i < stops; i++)
-                    {
-                        var num = (stops - i) * max / stops;
-                        var number = customValues.Length > index
-                            ? customValues[index++]
-                            : format.EndsWith("%") ? num.ToString(format.Substring(0, format.Length - 1)) + "%" : num.ToString(format);
-                        if (Utils.StyleFullStacked(chartStyle))
-                            number += "%";
-                        if (maxString.Length < number.Length) maxString = number;
-                    }
-                    fmt = new FormattedText(maxString, culture, FlowDirection.LeftToRight,
-                            new Typeface(fontFamily, fontStyle, fontWeight, fontStretch), fontSize, Brushes.Black, VisualTreeHelper.GetDpi(Utils.Border).PixelsPerDip);
-                    if (dir.In(Directions.NorthEast, Directions.NorthEastNorthWest))
-                        fmt.TextAlignment = TextAlignment.Right;
-                    width = fmt.Width;
-                    break;
-            }
+            {
+                TextAlignment = TextAlignment.Right
+            };
+            width = fmt.Width;
             //add some extra space
             return width + 4;
         }
