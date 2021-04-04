@@ -320,14 +320,6 @@ namespace ag.WPF.Chart
         /// </summary>
         public static readonly DependencyProperty SectionsYProperty;
         /// <summary>
-        /// The identifier of the <see cref="ShowSecondaryXLines"/> dependency property.
-        /// </summary>
-        public static readonly DependencyProperty ShowSecondaryXLinesProperty;
-        /// <summary>
-        /// The identifier of the <see cref="ShowSecondaryYLines"/> dependency property.
-        /// </summary>
-        public static readonly DependencyProperty ShowSecondaryYLinesProperty;
-        /// <summary>
         /// The identifier of the <see cref="AxesFontFamily"/> dependency property.
         /// </summary>
         public static readonly DependencyProperty AxesFontFamilyProperty;
@@ -416,17 +408,21 @@ namespace ag.WPF.Chart
         /// </summary>
         public static readonly DependencyProperty AxesLinesVisibilityProperty;
         /// <summary>
+        /// The identifier of the <see cref="SecondaryLinesVisibility"/> dependency property.
+        /// </summary>
+        public static readonly DependencyProperty SecondaryLinesVisibilityProperty;
+        /// <summary>
         /// The identifier of the <see cref="AxesValuesFormat"/> dependency property.
         /// </summary>
         public static readonly DependencyProperty AxesValuesFormatProperty;
         /// <summary>
-        /// The identifier of the <see cref="XAxisCustomValues"/> dependency property.
+        /// The identifier of the <see cref="CustomXAxisValues"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty XAxisCustomValuesProperty;
+        public static readonly DependencyProperty CustomXAxisValuesProperty;
         /// <summary>
-        /// The identifier of the <see cref="YAxisCustomValues"/> dependency property.
+        /// The identifier of the <see cref="CustomYAxisValues"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty YAxisCustomValuesProperty;
+        public static readonly DependencyProperty CustomYAxisValuesProperty;
         /// <summary>
         /// The identifier of the <see cref="ChartOpacity"/> dependency property.
         /// </summary>
@@ -484,10 +480,6 @@ namespace ag.WPF.Chart
                 new FrameworkPropertyMetadata(10, OnSectionsYChanged, CoerceSectionsY));
             ChartOpacityProperty = DependencyProperty.Register("ChartOpacity", typeof(double), typeof(Chart),
                 new FrameworkPropertyMetadata(1.0, OnChartOpacityChanged, CoerceChartOpacity));
-            ShowSecondaryXLinesProperty = DependencyProperty.Register("ShowSecondaryXLines", typeof(bool), typeof(Chart),
-                new FrameworkPropertyMetadata(false, OnShowSecondaryXLinesChanged));
-            ShowSecondaryYLinesProperty = DependencyProperty.Register("ShowSecondaryYLines", typeof(bool), typeof(Chart),
-                new FrameworkPropertyMetadata(false, OnShowSecondaryYLinesChanged));
             CaptionProperty = DependencyProperty.Register("Caption", typeof(string), typeof(Chart),
                 new FrameworkPropertyMetadata("", OnCaptionChanged));
             XAxisTextProperty = DependencyProperty.Register("XAxisText", typeof(string), typeof(Chart),
@@ -532,12 +524,14 @@ namespace ag.WPF.Chart
                 new FrameworkPropertyMetadata(AxesVisibility.Both, OnAxesValuesVisibilityChanged));
             AxesLinesVisibilityProperty = DependencyProperty.Register("AxesLinesVisibility", typeof(AxesVisibility), typeof(Chart),
                 new FrameworkPropertyMetadata(AxesVisibility.Both, OnAxesLinesVisibilityChanged));
+            SecondaryLinesVisibilityProperty = DependencyProperty.Register("SecondaryLinesVisibility", typeof(AxesVisibility), typeof(Chart),
+                new FrameworkPropertyMetadata(AxesVisibility.Both, OnSecondaryLinesVisibilityChanged));
             AxesValuesFormatProperty = DependencyProperty.Register("AxesValuesFormat", typeof(string), typeof(Chart),
                 new FrameworkPropertyMetadata("0", OnAxesValuesFormatChanged));
-            XAxisCustomValuesProperty = DependencyProperty.Register("XAxisCustomValues", typeof(IEnumerable<string>), typeof(Chart),
-                new FrameworkPropertyMetadata(null, OnXAxisCustomValuesChanged));
-            YAxisCustomValuesProperty = DependencyProperty.Register("YAxisCustomValues", typeof(IEnumerable<string>), typeof(Chart),
-                new FrameworkPropertyMetadata(null, OnYAxisCustomValuesChanged));
+            CustomXAxisValuesProperty = DependencyProperty.Register("CustomXAxisValues", typeof(IEnumerable<string>), typeof(Chart),
+                new FrameworkPropertyMetadata(null, OnCustomXAxisValuesChanged));
+            CustomYAxisValuesProperty = DependencyProperty.Register("CustomYAxisValues", typeof(IEnumerable<string>), typeof(Chart),
+                new FrameworkPropertyMetadata(null, OnCustomYAxisValuesChanged));
             DisabledBrushProperty = DependencyProperty.Register("DisabledBrush", typeof(Brush), typeof(Chart),
                 new FrameworkPropertyMetadata(null));
             MaxXProperty = DependencyProperty.Register("MaxX", typeof(double), typeof(Chart),
@@ -689,7 +683,7 @@ namespace ag.WPF.Chart
                         {
                             Source = this
                         });
-                        ptsBinding.Bindings.Add(new Binding("XAxisCustomValues")
+                        ptsBinding.Bindings.Add(new Binding("CustomXAxisValues")
                         {
                             Source = this
                         });
@@ -754,7 +748,7 @@ namespace ag.WPF.Chart
                         {
                             Source = this
                         });
-                        positiveWaterfallBinding.Bindings.Add(new Binding("XAxisCustomValues")
+                        positiveWaterfallBinding.Bindings.Add(new Binding("CustomXAxisValues")
                         {
                             Source = this
                         });
@@ -820,7 +814,7 @@ namespace ag.WPF.Chart
                         {
                             Source = this
                         });
-                        negativeWaterfallBinding.Bindings.Add(new Binding("XAxisCustomValues")
+                        negativeWaterfallBinding.Bindings.Add(new Binding("CustomXAxisValues")
                         {
                             Source = this
                         });
@@ -1504,6 +1498,7 @@ namespace ag.WPF.Chart
         /// <summary>
         /// Gets or sets the brush used for drawing the chart when control is disabled.
         /// </summary>
+        [EditorBrowsable(EditorBrowsableState.Never), Browsable(false)]
         [Category("ChartAppearance"), Description("Gets or sets the brush used for drawing the chart when control is disabled")]
         public Brush DisabledBrush
         {
@@ -1514,19 +1509,19 @@ namespace ag.WPF.Chart
         /// Gets or sets the sequence of strings to be drawn next to x-axis instead of numeric values.
         /// </summary>
         [Category("ChartAppearance"), Description("Gets or sets the sequence of strings to be drawn next to x-axis instead of numeric values")]
-        public IEnumerable<string> XAxisCustomValues
+        public IEnumerable<string> CustomXAxisValues
         {
-            get { return (IEnumerable<string>)GetValue(XAxisCustomValuesProperty); }
-            set { SetValue(XAxisCustomValuesProperty, value); }
+            get { return (IEnumerable<string>)GetValue(CustomXAxisValuesProperty); }
+            set { SetValue(CustomXAxisValuesProperty, value); }
         }
         /// <summary>
         /// Gets or sets the sequence of strings to be drawn next to y-axis instead of numeric values.
         /// </summary>
         [Category("ChartAppearance"), Description("Gets or sets the sequence of strings to be drawn next to y-axis instead of numeric values")]
-        public IEnumerable<string> YAxisCustomValues
+        public IEnumerable<string> CustomYAxisValues
         {
-            get { return (IEnumerable<string>)GetValue(YAxisCustomValuesProperty); }
-            set { SetValue(YAxisCustomValuesProperty, value); }
+            get { return (IEnumerable<string>)GetValue(CustomYAxisValuesProperty); }
+            set { SetValue(CustomYAxisValuesProperty, value); }
         }
         /// <summary>
         /// Gets or sets the visibility state of x- and y- axes numeric/custom values. Can be one of <see cref="AxesVisibility"/> enumeration members.
@@ -1547,6 +1542,16 @@ namespace ag.WPF.Chart
         {
             get { return (AxesVisibility)GetValue(AxesLinesVisibilityProperty); }
             set { SetValue(AxesLinesVisibilityProperty, value); }
+        }
+        /// <summary>
+        /// Gets or sets the visibility state of secondary horizontal and vertical lines. Can be one of <see cref="AxesVisibility"/> enumeration members.
+        /// </summary>
+        /// <remarks>This property will have no effect if <see cref="ChartStyle"/> property is set to <see cref="ChartStyle.SolidPie"/> or <see cref="ChartStyle.SlicedPie"/> or <see cref="ChartStyle.Doughnut"/>.</remarks>
+        [Category("ChartAppearance"), Description("Gets or sets the visibility state of secondary horizontal and vertical lines. Can be one of AxesValuesVisibility enumeration members")]
+        public AxesVisibility SecondaryLinesVisibility
+        {
+            get { return (AxesVisibility)GetValue(SecondaryLinesVisibilityProperty); }
+            set { SetValue(SecondaryLinesVisibilityProperty, value); }
         }
         /// <summary>
         /// Gets or sets the chart style. Can be one of <see cref="ChartStyle"/> enumeration members.
@@ -1693,26 +1698,6 @@ namespace ag.WPF.Chart
         {
             get { return (string)GetValue(CaptionProperty); }
             set { SetValue(CaptionProperty, value); }
-        }
-        /// <summary>
-        /// Specifies whether secondary Y-axis dotted lines should be drawn on chart.
-        /// </summary>
-        /// <remarks>This property will have no effect if <see cref="ChartStyle"/> property is set to one of the following: <see cref="ChartStyle.SolidPie"/>, <see cref="ChartStyle.SlicedPie"/>, <see cref="ChartStyle.Doughnut"/>, <see cref="ChartStyle.Radar"/>, <see cref="ChartStyle.RadarWithMarkers"/>, <see cref="ChartStyle.RadarArea"/>.</remarks>
-        [Category("ChartAppearance"), Description("Specifies whether secondary Y-axis dotted lines should be drawn on chart")]
-        public bool ShowSecondaryYLines
-        {
-            get { return (bool)GetValue(ShowSecondaryYLinesProperty); }
-            set { SetValue(ShowSecondaryYLinesProperty, value); }
-        }
-        /// <summary>
-        /// Specifies whether secondary X-axis dotted lines should be drawn on chart.
-        /// </summary>
-        /// <remarks>This property will have no effect if <see cref="ChartStyle"/> property is set to one of the following: <see cref="ChartStyle.SolidPie"/>, <see cref="ChartStyle.SlicedPie"/>, <see cref="ChartStyle.Doughnut"/>, <see cref="ChartStyle.Radar"/>, <see cref="ChartStyle.RadarWithMarkers"/>, <see cref="ChartStyle.RadarArea"/>.</remarks>
-        [Category("ChartAppearance"), Description("Specifies whether secondary X-axis dotted lines should be drawn on chart")]
-        public bool ShowSecondaryXLines
-        {
-            get { return (bool)GetValue(ShowSecondaryXLinesProperty); }
-            set { SetValue(ShowSecondaryXLinesProperty, value); }
         }
         /// <summary>
         /// Gets or sets amount of sections on x-axis.
@@ -2041,40 +2026,40 @@ namespace ag.WPF.Chart
             RaiseEvent(e);
         }
 
-        private static void OnXAxisCustomValuesChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
+        private static void OnCustomXAxisValuesChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
             if (!(sender is Chart ch)) return;
-            ch.OnXAxisCustomValuesChanged((IEnumerable<string>)e.OldValue, (IEnumerable<string>)e.NewValue);
+            ch.OnCustomXAxisValuesChanged((IEnumerable<string>)e.OldValue, (IEnumerable<string>)e.NewValue);
         }
         /// <summary>
-        /// Invoked just before the <see cref="XAxisCustomValuesChangedEvent"/> event is raised on control
+        /// Invoked just before the <see cref="CustomXAxisValuesChangedEvent"/> event is raised on control
         /// </summary>
         /// <param name="oldValue">Old value</param>
         /// <param name="newValue">New value</param>
-        protected void OnXAxisCustomValuesChanged(IEnumerable<string> oldValue, IEnumerable<string> newValue)
+        protected void OnCustomXAxisValuesChanged(IEnumerable<string> oldValue, IEnumerable<string> newValue)
         {
             var e = new RoutedPropertyChangedEventArgs<IEnumerable<string>>(oldValue, newValue)
             {
-                RoutedEvent = XAxisCustomValuesChangedEvent
+                RoutedEvent = CustomXAxisValuesChangedEvent
             };
             RaiseEvent(e);
         }
 
-        private static void OnYAxisCustomValuesChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
+        private static void OnCustomYAxisValuesChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
             if (!(sender is Chart ch)) return;
-            ch.OnYAxisCustomValuesChanged((IEnumerable<string>)e.OldValue, (IEnumerable<string>)e.NewValue);
+            ch.OnCustomYAxisValuesChanged((IEnumerable<string>)e.OldValue, (IEnumerable<string>)e.NewValue);
         }
         /// <summary>
-        /// Invoked just before the <see cref="YAxisCustomValuesChangedEvent"/> event is raised on control
+        /// Invoked just before the <see cref="CustomYAxisValuesChangedEvent"/> event is raised on control
         /// </summary>
         /// <param name="oldValue">Old value</param>
         /// <param name="newValue">New value</param>
-        protected void OnYAxisCustomValuesChanged(IEnumerable<string> oldValue, IEnumerable<string> newValue)
+        protected void OnCustomYAxisValuesChanged(IEnumerable<string> oldValue, IEnumerable<string> newValue)
         {
             var e = new RoutedPropertyChangedEventArgs<IEnumerable<string>>(oldValue, newValue)
             {
-                RoutedEvent = YAxisCustomValuesChangedEvent
+                RoutedEvent = CustomYAxisValuesChangedEvent
             };
             RaiseEvent(e);
         }
@@ -2132,6 +2117,25 @@ namespace ag.WPF.Chart
             var e = new RoutedPropertyChangedEventArgs<AxesVisibility>(oldValue, newValue)
             {
                 RoutedEvent = AxesLinesVisibilityChangedEvent
+            };
+            RaiseEvent(e);
+        }
+
+        private static void OnSecondaryLinesVisibilityChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
+        {
+            if (!(sender is Chart ch)) return;
+            ch.OnSecondaryLinesVisibilityChanged((AxesVisibility)e.OldValue, (AxesVisibility)e.NewValue);
+        }
+        /// <summary>
+        /// Invoked just before the <see cref="SecondaryLinesVisibilityChangedEvent"/> event is raised on control
+        /// </summary>
+        /// <param name="oldValue">Old value</param>
+        /// <param name="newValue">New value</param>
+        protected void OnSecondaryLinesVisibilityChanged(AxesVisibility oldValue, AxesVisibility newValue)
+        {
+            var e = new RoutedPropertyChangedEventArgs<AxesVisibility>(oldValue, newValue)
+            {
+                RoutedEvent = SecondaryLinesVisibilityChangedEvent
             };
             RaiseEvent(e);
         }
@@ -2436,44 +2440,6 @@ namespace ag.WPF.Chart
             var e = new RoutedPropertyChangedEventArgs<string>(oldValue, newValue)
             {
                 RoutedEvent = CaptionChangedEvent
-            };
-            RaiseEvent(e);
-        }
-
-        private static void OnShowSecondaryYLinesChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
-        {
-            if (!(sender is Chart ch)) return;
-            ch.OnShowSecondaryYLinesChanged((bool)e.OldValue, (bool)e.NewValue);
-        }
-        /// <summary>
-        /// Invoked just before the <see cref="ShowSecondaryYLinesChangedEvent"/> event is raised on control
-        /// </summary>
-        /// <param name="oldValue">Old value</param>
-        /// <param name="newValue">New value</param>
-        protected void OnShowSecondaryYLinesChanged(bool oldValue, bool newValue)
-        {
-            var e = new RoutedPropertyChangedEventArgs<bool>(oldValue, newValue)
-            {
-                RoutedEvent = ShowSecondaryYLinesChangedEvent
-            };
-            RaiseEvent(e);
-        }
-
-        private static void OnShowSecondaryXLinesChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
-        {
-            if (!(sender is Chart ch)) return;
-            ch.OnShowSecondaryXLinesChanged((bool)e.OldValue, (bool)e.NewValue);
-        }
-        /// <summary>
-        /// Invoked just before the <see cref="ShowSecondaryXLinesChangedEvent"/> event is raised on control
-        /// </summary>
-        /// <param name="oldValue">Old value</param>
-        /// <param name="newValue">New value</param>
-        protected void OnShowSecondaryXLinesChanged(bool oldValue, bool newValue)
-        {
-            var e = new RoutedPropertyChangedEventArgs<bool>(oldValue, newValue)
-            {
-                RoutedEvent = ShowSecondaryXLinesChangedEvent
             };
             RaiseEvent(e);
         }
@@ -2784,31 +2750,31 @@ namespace ag.WPF.Chart
             RoutingStrategy.Bubble, typeof(RoutedPropertyChangedEventHandler<LegendSize>), typeof(Chart));
 
         /// <summary>
-        /// Occurs when the <see cref="YAxisCustomValues"/> property has been changed in some way
+        /// Occurs when the <see cref="CustomYAxisValues"/> property has been changed in some way
         /// </summary>
-        public event RoutedPropertyChangedEventHandler<IEnumerable<string>> YAxisCustomValuesChanged
+        public event RoutedPropertyChangedEventHandler<IEnumerable<string>> CustomYAxisValuesChanged
         {
-            add { AddHandler(YAxisCustomValuesChangedEvent, value); }
-            remove { RemoveHandler(YAxisCustomValuesChangedEvent, value); }
+            add { AddHandler(CustomYAxisValuesChangedEvent, value); }
+            remove { RemoveHandler(CustomYAxisValuesChangedEvent, value); }
         }
         /// <summary>
-        /// Identifies the <see cref="YAxisCustomValuesChanged"/> routed event
+        /// Identifies the <see cref="CustomYAxisValuesChanged"/> routed event
         /// </summary>
-        public static readonly RoutedEvent YAxisCustomValuesChangedEvent = EventManager.RegisterRoutedEvent("YAxisCustomValuesChanged",
+        public static readonly RoutedEvent CustomYAxisValuesChangedEvent = EventManager.RegisterRoutedEvent("CustomYAxisValuesChanged",
             RoutingStrategy.Bubble, typeof(RoutedPropertyChangedEventHandler<IEnumerable<string>>), typeof(Chart));
 
         /// <summary>
-        /// Occurs when the <see cref="XAxisCustomValues"/> property has been changed in some way
+        /// Occurs when the <see cref="CustomXAxisValues"/> property has been changed in some way
         /// </summary>
-        public event RoutedPropertyChangedEventHandler<IEnumerable<string>> XAxisCustomValuesChanged
+        public event RoutedPropertyChangedEventHandler<IEnumerable<string>> CustomXAxisValuesChanged
         {
-            add { AddHandler(XAxisCustomValuesChangedEvent, value); }
-            remove { RemoveHandler(XAxisCustomValuesChangedEvent, value); }
+            add { AddHandler(CustomXAxisValuesChangedEvent, value); }
+            remove { RemoveHandler(CustomXAxisValuesChangedEvent, value); }
         }
         /// <summary>
-        /// Identifies the <see cref="XAxisCustomValuesChanged"/> routed event
+        /// Identifies the <see cref="CustomXAxisValuesChanged"/> routed event
         /// </summary>
-        public static readonly RoutedEvent XAxisCustomValuesChangedEvent = EventManager.RegisterRoutedEvent("XAxisCustomValuesChanged",
+        public static readonly RoutedEvent CustomXAxisValuesChangedEvent = EventManager.RegisterRoutedEvent("CustomXAxisValuesChanged",
             RoutingStrategy.Bubble, typeof(RoutedPropertyChangedEventHandler<IEnumerable<string>>), typeof(Chart));
 
         /// <summary>
@@ -2851,6 +2817,20 @@ namespace ag.WPF.Chart
         /// Identifies the <see cref="AxesLinesVisibilityChanged"/> routed event
         /// </summary>
         public static readonly RoutedEvent AxesLinesVisibilityChangedEvent = EventManager.RegisterRoutedEvent("AxesLinesVisibilityChanged",
+            RoutingStrategy.Bubble, typeof(RoutedPropertyChangedEventHandler<AxesVisibility>), typeof(Chart));
+
+        /// <summary>
+        /// Occurs when the <see cref="SecondaryLinesVisibility"/> property has been changed in some way
+        /// </summary>
+        public event RoutedPropertyChangedEventHandler<AxesVisibility> SecondaryLinesVisibilityChanged
+        {
+            add { AddHandler(SecondaryLinesVisibilityChangedEvent, value); }
+            remove { RemoveHandler(SecondaryLinesVisibilityChangedEvent, value); }
+        }
+        /// <summary>
+        /// Identifies the <see cref="SecondaryLinesVisibilityChanged"/> routed event
+        /// </summary>
+        public static readonly RoutedEvent SecondaryLinesVisibilityChangedEvent = EventManager.RegisterRoutedEvent("SecondaryLinesVisibilityChanged",
             RoutingStrategy.Bubble, typeof(RoutedPropertyChangedEventHandler<AxesVisibility>), typeof(Chart));
 
         /// <summary>
@@ -3034,34 +3014,6 @@ namespace ag.WPF.Chart
         /// </summary>
         public static readonly RoutedEvent CaptionChangedEvent = EventManager.RegisterRoutedEvent("CaptionChanged",
             RoutingStrategy.Bubble, typeof(RoutedPropertyChangedEventHandler<string>), typeof(Chart));
-
-        /// <summary>
-        /// Occurs when the <see cref="ShowSecondaryYLines"/> property has been changed in some way
-        /// </summary>
-        public event RoutedPropertyChangedEventHandler<bool> ShowSecondaryYLinesChanged
-        {
-            add { AddHandler(ShowSecondaryYLinesChangedEvent, value); }
-            remove { RemoveHandler(ShowSecondaryYLinesChangedEvent, value); }
-        }
-        /// <summary>
-        /// Identifies the <see cref="ShowSecondaryYLinesChanged"/> routed event
-        /// </summary>
-        public static readonly RoutedEvent ShowSecondaryYLinesChangedEvent = EventManager.RegisterRoutedEvent("ShowSecondaryYLinesChanged",
-            RoutingStrategy.Bubble, typeof(RoutedPropertyChangedEventHandler<bool>), typeof(Chart));
-
-        /// <summary>
-        /// Occurs when the <see cref="ShowSecondaryXLines"/> property has been changed in some way
-        /// </summary>
-        public event RoutedPropertyChangedEventHandler<bool> ShowSecondaryXLinesChanged
-        {
-            add { AddHandler(ShowSecondaryXLinesChangedEvent, value); }
-            remove { RemoveHandler(ShowSecondaryXLinesChangedEvent, value); }
-        }
-        /// <summary>
-        /// Identifies the <see cref="ShowSecondaryXLinesChanged"/> routed event
-        /// </summary>
-        public static readonly RoutedEvent ShowSecondaryXLinesChangedEvent = EventManager.RegisterRoutedEvent("ShowSecondaryXLinesChanged",
-            RoutingStrategy.Bubble, typeof(RoutedPropertyChangedEventHandler<bool>), typeof(Chart));
 
         /// <summary>
         /// Occurs when the <see cref="MaxY"/> property has been changed in some way

@@ -6,6 +6,6 @@
         WindowState="Maximized"
         Loaded="Window_Loaded">
     <Grid>
-        <chart:Chart x:Name="chOlympic" Margin="20" AxesValuesVisibility="Both" Caption="Olympic medals" ChartStyle="Columns" AutoAdjust="False" MaxY="250" SectionsY="10" ShowSecondaryYLines="True" ShowSecondaryXLines="True" YAxisText="Medals" XAxisText="Countries"/>
+        <chart:Chart x:Name="chOlympic" Margin="20" AxesValuesVisibility="Both" Caption="Olympic medals" ChartStyle="Columns" AutoAdjust="False" MaxY="250" SectionsY="10" YAxisText="Medals" XAxisText="Countries"/>
     </Grid>
 </Window>

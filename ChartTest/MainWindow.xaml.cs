@@ -75,7 +75,7 @@ namespace ChartTest
 
             //var customs = new List<string> { "1896 Athens", "1900 Paris", "1904 St. Luis" };//,"aaa","bbb","ccc","ddd","eee","fff","ggg", "iiikkk" };
 
-            //chTest.XAxisCustomValues = customs;
+            //chTest.CustomXAxisValues = customs;
             //chTest.ChartStyle = ChartStyle.Bars;
             ////chTest.AutoAdjust = false;
             var points4 = new List<double>();

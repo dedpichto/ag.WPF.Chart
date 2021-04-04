@@ -49,8 +49,8 @@ namespace ChartTest
             {
                 40, 33, 38, 37, 29, 16, 28, 14, 9, 13, 15, 15, 5, 14, 18, 32, 18, 20, 25, 40, 41, 16, 19, 40, 0, 110, 11,34,42
             };
-            //chOlympic.XAxisCustomValuesBetweenTicks = true;
-            chOlympic.XAxisCustomValues = cities.ToList();
+            //chOlympic.CustomXAxisValuesBetweenTicks = true;
+            chOlympic.CustomXAxisValues = cities.ToList();
             //chOlympic.SeriesCollection.Add(new Series("USA", usa));
             //chOlympic.SeriesCollection.Add(new Series("Great Britain", gbr));
             //chOlympic.SeriesCollection.Add(new Series("France", frn));

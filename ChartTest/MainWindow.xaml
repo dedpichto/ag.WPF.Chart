@@ -41,11 +41,9 @@
             </Border>
             <chart:Chart x:Name="chTest" Grid.Column="1" BorderThickness="1" Margin="4" 
                          ItemsSource="{Binding Series}"
-                         ShowSecondaryXLines="True" 
-                         ShowSecondaryYLines="True" 
                          Caption="Sample chart" 
                          CustomWaterfallLegends="{Binding WaterfallLegends}"
-                         XAxisCustomValues="{Binding CustomXTexts}"
+                         CustomXAxisValues="{Binding CustomXTexts}"
                          ChartStyle="SmoothStackedLines"
                          SectionsY="5"
                          ChartPointLeftButtonDoubleClick="Chart_MarkerLeftButtonDoubleClick">

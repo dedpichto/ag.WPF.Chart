@@ -4,6 +4,6 @@
         xmlns:chart="clr-namespace:ag.WPF.Chart;assembly=ag.WPF.Chart"
         Title="Window1" Height="300" Width="300" Loaded="Window_Loaded">
     <Grid x:Name="grd">
-        <chart:Chart x:Name="chrt" Margin="24" SectionsX="10" AutoAdjust="False" AxesValuesFormat="0%" ChartStyle="Lines"  AxesValuesVisibility="Vertical" ShowSecondaryXLines="True" ShowSecondaryYLines="True"/>
+        <chart:Chart x:Name="chrt" Margin="24" SectionsX="10" AutoAdjust="False" AxesValuesFormat="0%" ChartStyle="Lines"  AxesValuesVisibility="Vertical"/>
     </Grid>
 </Window>
