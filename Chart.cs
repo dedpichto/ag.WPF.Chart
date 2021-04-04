@@ -148,7 +148,11 @@ namespace ag.WPF.Chart
         /// <summary>
         /// Style represented by radar areas
         /// </summary>
-        RadarArea
+        RadarArea,
+        /// <summary>
+        /// Style represented by funnel
+        /// </summary>
+        Funnel
     }
 
     /// <summary>

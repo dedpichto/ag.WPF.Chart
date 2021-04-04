@@ -892,6 +892,10 @@ namespace ag.WPF.Chart
                     return Directions.SouthEast;
                 return Directions.NorthEast;
             }
+            else if (style == ChartStyle.Funnel)
+            {
+                return Directions.NorthEast;
+            }
             if (totalValues.All(v => v >= 0))
                 return Directions.NorthEast;
             if (totalValues.All(v => v < 0))
@@ -1354,6 +1358,10 @@ namespace ag.WPF.Chart
             var boundOffset = Utils.BoundaryOffset(offsetBoundary, width, maxPointsCount);
             switch (chartStyle)
             {
+                case ChartStyle.Funnel:
+                    if (index > 0) return null;
+                    gm = drawFunnel(series[0], width, height);
+                    break;
                 case ChartStyle.Radar:
                 case ChartStyle.RadarWithMarkers:
                 case ChartStyle.RadarArea:
@@ -1441,6 +1449,32 @@ namespace ag.WPF.Chart
                     break;
             }
 
+            return gm;
+        }
+
+        private PathGeometry drawFunnel(ISeries currentSeries, double width, double heigth)
+        {
+            var gm = new PathGeometry();
+            var drawingWidth = width - Utils.AXIS_THICKNESS - COLUMN_BAR_OFFSET * 2;
+            heigth -= Utils.AXIS_THICKNESS;
+
+            var maxWidth = currentSeries.Values.Where(v => v.Value.PlainValue > 0).Max(v => v.Value.PlainValue);
+            var units = maxWidth != 0 ? drawingWidth / maxWidth : 0;
+
+            var barHeight = heigth / currentSeries.Values.Count - COLUMN_BAR_OFFSET * 2;
+            currentSeries.RealRects.Clear();
+            for (int i = 0, j = 1; i < currentSeries.Values.Count; i++, j += 2)
+            {
+                if (currentSeries.Values[i].Value.PlainValue <= 0)
+                    continue;
+                var rectWidth = currentSeries.Values[i].Value.PlainValue * units;
+                var x = COLUMN_BAR_OFFSET + (width - rectWidth) / 2;
+                var y = j * COLUMN_BAR_OFFSET + i * barHeight;
+                var rect = new Rect(x, y, rectWidth, barHeight);
+                var rg = new RectangleGeometry(rect);
+                currentSeries.RealRects.Add(rect);
+                gm.AddGeometry(rg);
+            }
             return gm;
         }
 
@@ -2130,7 +2164,7 @@ namespace ag.WPF.Chart
             var currentSeries = series.FirstOrDefault(s => s.Index == index);
             if (currentSeries == null) return null;
             var maxLength = series.Max(s => s.Values.Count);
-            var values = currentSeries.Values.Select(v=>v.Value.PlainValue).ToArray();
+            var values = currentSeries.Values.Select(v => v.Value.PlainValue).ToArray();
 
             var gm = new PathGeometry();
             currentSeries.RealRects.Clear();
@@ -3032,6 +3066,7 @@ namespace ag.WPF.Chart
                 case ChartStyle.Waterfall:
                 case ChartStyle.RadarArea:
                 case ChartStyle.SmoothArea:
+                case ChartStyle.Funnel:
                     return null;
             }
             return isEnabled ? enabledBrush : disabledBrush;
@@ -3064,6 +3099,7 @@ namespace ag.WPF.Chart
             if (values == null
                 || !(values[0] is IEnumerable<ISeries> seriesEnumerable)
                 || !(values[1] is ChartStyle chartStyle)
+                || chartStyle == ChartStyle.Funnel
                 || !(values[2] is string format)
                 || !(values[3] is FontFamily fontFamily)
                 || !(values[4] is double fontSize)
@@ -3158,7 +3194,11 @@ namespace ag.WPF.Chart
                 : series[0].Values.Select(v => v.Value.PlainValue);
 
             var dir = Utils.GetDirection(totalValues, chartStyle);
-            var maxFromValues = autoAdjust ? Utils.GetMaxValueLength(rawValues, chartStyle) : maxY.ToString(culture).Length;
+            var maxFromValues = chartStyle != ChartStyle.Funnel
+                ? autoAdjust
+                    ? Utils.GetMaxValueLength(rawValues, chartStyle)
+                    : maxY.ToString(culture).Length
+                : series[0].Values.Count.ToString(culture).Length;
             var maxFromCustom = customValues.Any() ? customValues.Max(v => v.Length) : 0;
             var maxString = new string('W', Math.Max(maxFromValues, maxFromCustom));
 
@@ -3203,9 +3243,67 @@ namespace ag.WPF.Chart
 
             if (chartStyle.In(ChartStyle.SlicedPie, ChartStyle.SolidPie, ChartStyle.Doughnut, ChartStyle.Radar, ChartStyle.RadarWithMarkers, ChartStyle.RadarArea))
                 return null;
+            else if (chartStyle == ChartStyle.Funnel)
+                return drawVerticalValuesForFunnel(values, culture);
             else if (Utils.StyleBars(chartStyle))
                 return drawVerticalValuesForBars(values, culture);
             return drawVerticalValues(values, culture);
+        }
+
+        private PathGeometry drawVerticalValuesForFunnel(object[] values, CultureInfo culture)
+        {
+            if (values == null
+                || !(values[0] is double height)
+                || !(values[1] is IEnumerable<ISeries> seriesEnumerable)
+                || !(values[5] is FontFamily fontFamily)
+                || !(values[6] is double fontSize)
+                || !(values[7] is FontStyle fontStyle)
+                || !(values[8] is FontWeight fontWeight)
+                || !(values[9] is FontStretch fontStretch)
+                || !(values[14] is FlowDirection flowDir))
+                return null;
+
+            var gm = new PathGeometry();
+
+            if (!seriesEnumerable.Any()) return null;
+
+            var series = seriesEnumerable.ToArray();
+
+            var ticks = series[0].Values.Count;
+
+            height -= Utils.AXIS_THICKNESS;
+
+            var yStep = height / ticks;
+
+            var y = height - Utils.AXIS_THICKNESS;
+
+            for (int i = ticks; i > 0; i--)
+            {
+                var fmt = new FormattedText(i.ToString(culture), culture, FlowDirection.LeftToRight,
+                    new Typeface(fontFamily, fontStyle, fontWeight, fontStretch), fontSize, Brushes.Black, VisualTreeHelper.GetDpi(Utils.Border).PixelsPerDip)
+                {
+                    TextAlignment = flowDir == FlowDirection.LeftToRight
+                        ? TextAlignment.Right
+                        : TextAlignment.Left
+                };
+
+                var pt = new Point(0, y - (yStep + fmt.Height) / 2);
+                var ngm = fmt.BuildGeometry(pt);
+
+                //var trgr = new TransformGroup();
+                //trgr.Children.Add(flowDir == FlowDirection.LeftToRight
+                //    ? new RotateTransform(45, pt.X+fmt.Width/2, pt.Y+ fmt.Height/2)
+                //    : new RotateTransform(-45, pt.X + fmt.Width, pt.Y+ fmt.Height/2));
+                //if (flowDir == FlowDirection.RightToLeft)
+                //    trgr.Children.Add(new ScaleTransform { ScaleX = -1 });
+                //ngm.Transform = trgr;
+                if (flowDir == FlowDirection.RightToLeft)
+                    ngm.Transform = new ScaleTransform { ScaleX = -1 };
+                gm.AddGeometry(ngm);
+                y -= yStep;
+            }
+
+            return gm;
         }
 
         private PathGeometry drawVerticalValuesForBars(object[] values, CultureInfo culture)
@@ -3504,6 +3602,7 @@ namespace ag.WPF.Chart
                 || !(values[0] is double width)
                 || !(values[1] is IEnumerable<ISeries> seriesEnumerable)
                 || !(values[2] is ChartStyle chartStyle)
+                || chartStyle == ChartStyle.Funnel
                 || !(values[3] is int linesCount)
                 || !(values[4] is string format)
                 || !(values[5] is FontFamily fontFamily)
@@ -3921,16 +4020,18 @@ namespace ag.WPF.Chart
             var fmtY = new FormattedText("AAA", culture, FlowDirection.LeftToRight,
                     new Typeface(fontFamily, fontStyle, fontWeight, fontStretch), fontSize, Brushes.Black, VisualTreeHelper.GetDpi(Utils.Border).PixelsPerDip);
 
-            var (max, min, realLinesCount, stepSize, stepLength, units, zeroPoint) = autoAdjust
-                ? Utils.GetMeasures(
-                   chartStyle,
-                   series,
-                   Utils.StyleBars(chartStyle) ? linesCountX : linesCountY,
-                   radius,
-                   fmtY.Height,
-                   centerPoint,
-                   !Utils.StyleBars(chartStyle) ? dir == Directions.NorthEastSouthEast : dir == Directions.NorthEastNorthWest)
-                : (maxY, -maxY, linesCountY, maxY / linesCountY, radius / linesCountY, radius / maxY, default);
+            var (max, min, realLinesCount, stepSize, stepLength, units, zeroPoint) = chartStyle != ChartStyle.Funnel
+                ? autoAdjust
+                    ? Utils.GetMeasures(
+                       chartStyle,
+                       series,
+                       Utils.StyleBars(chartStyle) ? linesCountX : linesCountY,
+                       radius,
+                       fmtY.Height,
+                       centerPoint,
+                       !Utils.StyleBars(chartStyle) ? dir == Directions.NorthEastSouthEast : dir == Directions.NorthEastNorthWest)
+                    : (maxY, -maxY, linesCountY, maxY / linesCountY, radius / linesCountY, radius / maxY, default)
+                : (series[0].Values.Count, -maxY, series[0].Values.Count, maxY / series[0].Values.Count, radius / series[0].Values.Count, radius / series[0].Values.Count, default);
 
             if (!Utils.StyleBars(chartStyle))
             {
@@ -3947,9 +4048,6 @@ namespace ag.WPF.Chart
                     linesCountX = realLinesCount;
             }
 
-            //width -= 2 * Utils.AXIS_THICKNESS;
-            //height -= 2 * Utils.AXIS_THICKNESS;
-
             var boundOffset = Utils.BoundaryOffset(offsetBoundary, width, ticks);
 
             var gm = new PathGeometry();
@@ -3959,7 +4057,7 @@ namespace ag.WPF.Chart
             {
                 case Directions.NorthEast:
                     {
-                        if (axesVisibility.In(AxesVisibility.Both, AxesVisibility.Horizontal))
+                        if (axesVisibility.In(AxesVisibility.Both, AxesVisibility.Horizontal) && chartStyle != ChartStyle.Funnel)
                         {
                             var x = Utils.AXIS_THICKNESS + boundOffset;
                             if (!Utils.StyleBars(chartStyle))
@@ -4209,6 +4307,7 @@ namespace ag.WPF.Chart
                 || !(values[1] is double height)
                 || !(values[2] is IEnumerable<ISeries> seriesEnumerable)
                 || !(values[3] is ChartStyle chartStyle)
+                || chartStyle == ChartStyle.Funnel
                 || !(values[4] is int linesCount)
                 || !(values[5] is ChartBoundary chartBoundary)
                 || !(values[6] is FontFamily fontFamily)
@@ -4436,6 +4535,7 @@ namespace ag.WPF.Chart
                 || !(values[1] is double height)
                 || !(values[2] is IEnumerable<ISeries> seriesEnumerable)
                 || !(values[3] is ChartStyle chartStyle)
+                || chartStyle == ChartStyle.Funnel
                 || !(values[4] is int linesCount)
                 || !(values[5] is FontFamily fontFamily)
                 || !(values[6] is double fontSize)
