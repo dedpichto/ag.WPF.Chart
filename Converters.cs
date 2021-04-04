@@ -1365,7 +1365,7 @@ namespace ag.WPF.Chart
                         else
                             radius -= (2 * fmt.Width + 8);
                         var (max, min, realLinesCount, stepSize, stepLength, units, zeroPoint) = Utils.GetMeasures(chartStyle, series, linesCountY, radius, fmt.Height, centerPoint);
-                        gm = drawRadar(series, index, rawValues, chartStyle, units, stepLength, radius, maxPointsCount, realLinesCount, zeroPoint.Level, centerPoint);
+                        gm = drawRadar(series, index, chartStyle, units, stepLength, radius, maxPointsCount, realLinesCount, zeroPoint.Level, centerPoint);
                         break;
                     }
                 case ChartStyle.Lines:
@@ -2124,13 +2124,13 @@ namespace ag.WPF.Chart
             return gm;
         }
 
-        private PathGeometry drawRadar(ISeries[] series, int index, List<(List<IChartValue> Values, int Index)> tuples, ChartStyle chartStyle, double units, double stepLength, double radius, int pointsCount, int linesCount, int zeroLevel, Point centerPoint)
+        private PathGeometry drawRadar(ISeries[] series, int index, ChartStyle chartStyle, double units, double stepLength, double radius, int pointsCount, int linesCount, int zeroLevel, Point centerPoint)
         {
-            var tp = tuples.FirstOrDefault(t => t.Index == index);
-            if (tp == default) return null;
-            var values = tp.Values.Select(v => v.Value.PlainValue).ToArray();
+            //var values = tp.Values.Select(v => v.Value.PlainValue).ToArray();
             var currentSeries = series.FirstOrDefault(s => s.Index == index);
             if (currentSeries == null) return null;
+            var maxLength = series.Max(s => s.Values.Count);
+            var values = currentSeries.Values.Select(v=>v.Value.PlainValue).ToArray();
 
             var gm = new PathGeometry();
             currentSeries.RealRects.Clear();
@@ -2160,7 +2160,10 @@ namespace ag.WPF.Chart
             {
                 segments.Add(new LineSegment(points[i], true));
             }
-            gm.Figures.Add(new PathFigure(points[0], segments, true));
+            if (currentSeries.Values.Count == maxLength)
+                gm.Figures.Add(new PathFigure(points[0], segments, true));
+            else
+                gm.Figures.Add(new PathFigure(points[0], segments, false));
             return gm;
         }
 

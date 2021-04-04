@@ -44,7 +44,7 @@
                          Caption="Sample chart" 
                          CustomWaterfallLegends="{Binding WaterfallLegends}"
                          CustomXAxisValues="{Binding CustomXTexts}"
-                         ChartStyle="SmoothStackedLines"
+                         ChartStyle="RadarWithMarkers"
                          SectionsY="5"
                          ChartPointLeftButtonDoubleClick="Chart_MarkerLeftButtonDoubleClick">
             </chart:Chart>
