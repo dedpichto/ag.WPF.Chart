@@ -3069,7 +3069,7 @@ namespace ag.WPF.Chart
                 || !(values[7] is FontStretch fontStretch)
                 || !(values[9] is bool autoAdjust)
                 || !(values[10] is double maxX))
-                return 0;
+                return 0.0;
 
             var height = 8.0;
             var series = seriesEnumerable.ToArray();
@@ -3134,7 +3134,7 @@ namespace ag.WPF.Chart
                 || !(values[7] is FontStretch fontStretch)
                 || !(values[9] is bool autoAdjust)
                 || !(values[10] is double maxY))
-                return 0;
+                return 0.0;
             var width = 28.0;
 
             var series = seriesEnumerable.ToArray();
@@ -4558,7 +4558,7 @@ namespace ag.WPF.Chart
             if (values == null
                 || !(values[0] is double width)
                 || !(values[1] is double height))
-                return 0;
+                return 0.0;
             var cw = width > height ? height : width;
             return (height - cw) / 2;
         }
@@ -4591,7 +4591,7 @@ namespace ag.WPF.Chart
             if (values == null
                 || !(values[0] is double width)
                 || !(values[1] is double height))
-                return 0;
+                return 0.0;
             var cw = width > height ? height : width;
             return (width - cw) / 2;
         }

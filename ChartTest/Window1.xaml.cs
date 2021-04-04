@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ag.WPF.Chart.Series;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
@@ -31,10 +32,12 @@ namespace ChartTest
         private readonly PerformanceCounter cpuCounter = new PerformanceCounter("Processor", "% Processor Time", "_Total");
         private readonly Timer _Timer = new Timer(1000);
 
+        public ObservableCollection<ISeries> Series { get; } = new ObservableCollection<ISeries>();
+
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             //chrt.SeriesCollection.Add(new ag.WPF.Chart.Series("CPU usage", new double[100]));
-
+            Series.Add(new PlainSeries("Series 1", new double[60]));
             _Timer.Elapsed += _Timer_Elapsed;
             _Timer.Start();
         }
@@ -49,6 +52,9 @@ namespace ChartTest
             else
             {
                 var next = cpuCounter.NextValue();
+                //if (Series[0].Values.Count == chrt.MaxX)
+                    Series[0].Values.RemoveAt(Series[0].Values.Count - 1);
+                Series[0].Values.Insert(0,new ag.WPF.Chart.Values.PlainChartValue(next));
                 var values = new double[100];
                 values[0] = next;
                 //for (var i = 0; i < chrt.SeriesCollection[0].Values.Count-1; i++)
