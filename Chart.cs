@@ -400,6 +400,10 @@ namespace ag.WPF.Chart
         /// </summary>
         public static readonly DependencyProperty ShowLegendProperty;
         /// <summary>
+        /// The identifier of the <see cref="ShowValuesOnBarsAndColumns"/> dependency property.
+        /// </summary>
+        public static readonly DependencyProperty ShowValuesOnBarsAndColumnsProperty;
+        /// <summary>
         /// The identifier of the <see cref="ChartStyle"/> dependency property.
         /// </summary>
         public static readonly DependencyProperty ChartStyleProperty;
@@ -522,6 +526,8 @@ namespace ag.WPF.Chart
                 new FrameworkPropertyMetadata(LegendAlignment.Bottom, OnLegendAlignmentChanged));
             ShowLegendProperty = DependencyProperty.Register("ShowLegend", typeof(bool), typeof(Chart),
                 new FrameworkPropertyMetadata(true, OnShowLegendChanged));
+            ShowValuesOnBarsAndColumnsProperty = DependencyProperty.Register("ShowValuesOnBarsAndColumns", typeof(bool), typeof(Chart),
+                new FrameworkPropertyMetadata(true, OnShowValuesOnBarsAndColumnsChanged));
             ChartStyleProperty = DependencyProperty.Register("ChartStyle", typeof(ChartStyle), typeof(Chart),
                 new FrameworkPropertyMetadata(ChartStyle.Lines, OnChartStyleChanged));
             AxesValuesVisibilityProperty = DependencyProperty.Register("AxesValuesVisibility", typeof(AxesVisibility), typeof(Chart),
@@ -699,6 +705,10 @@ namespace ag.WPF.Chart
                         {
                             Source = this
                         });
+                        ptsBinding.Bindings.Add(new Binding("ShowValuesOnBarsAndColumns")
+                        {
+                            Source = this
+                        });
 
                         ptsBinding.NotifyOnSourceUpdated = true;
                         series.Path.SetBinding(Path.DataProperty, ptsBinding);
@@ -761,6 +771,10 @@ namespace ag.WPF.Chart
                             Source = this
                         });
                         positiveWaterfallBinding.Bindings.Add(new Binding("SectionsX")
+                        {
+                            Source = this
+                        });
+                        positiveWaterfallBinding.Bindings.Add(new Binding("ShowValuesOnBarsAndColumns")
                         {
                             Source = this
                         });
@@ -827,6 +841,10 @@ namespace ag.WPF.Chart
                             Source = this
                         });
                         negativeWaterfallBinding.Bindings.Add(new Binding("SectionsX")
+                        {
+                            Source = this
+                        });
+                        negativeWaterfallBinding.Bindings.Add(new Binding("ShowValuesOnBarsAndColumns")
                         {
                             Source = this
                         });
@@ -1189,6 +1207,7 @@ namespace ag.WPF.Chart
                 case ChartStyle.SmoothFullStackedLinesWithMarkers:
                 case ChartStyle.Bubbles:
                 case ChartStyle.RadarWithMarkers:
+                case ChartStyle.Funnel:
                     rc = s.RealRects.FirstOrDefault(r => r.Contains(e.GetPosition(_canvas)));
                     if (rc != default)
                     {
@@ -1198,8 +1217,9 @@ namespace ag.WPF.Chart
                             tooltip.Content = s.Name;
                             break;
                         }
-                        tooltip.Content = s.Values[index].CustomValue
-                            ?? s.Name + " " + s.Values[index].Value.PlainValue.ToString(CultureInfo.InvariantCulture);
+                        tooltip.Content = !string.IsNullOrEmpty(s.Values[index].CustomValue)
+                            ? s.Values[index].CustomValue
+                            : s.Name + " " + s.Values[index].Value.PlainValue.ToString(CultureInfo.InvariantCulture);
                     }
                     else
                     {
@@ -1218,8 +1238,9 @@ namespace ag.WPF.Chart
                             tooltip.Content = s.Name;
                             break;
                         }
-                        tooltip.Content = s.Values[index].CustomValue
-                            ?? s.Name + " " + s.Values[index].Value.PlainValue.ToString(CultureInfo.InvariantCulture);
+                        tooltip.Content = !string.IsNullOrEmpty(s.Values[index].CustomValue)
+                            ? s.Values[index].CustomValue
+                            : s.Name + " " + s.Values[index].Value.PlainValue.ToString(CultureInfo.InvariantCulture);
                     }
                     else
                     {
@@ -1239,8 +1260,9 @@ namespace ag.WPF.Chart
                             tooltip.Content = s.Name;
                             break;
                         }
-                        tooltip.Content = s.Values[index].CustomValue
-                            ?? s.Name + " " + s.Values[index].Value.PlainValue.ToString(CultureInfo.InvariantCulture);
+                        tooltip.Content = !string.IsNullOrEmpty(s.Values[index].CustomValue)
+                            ? s.Values[index].CustomValue
+                            : s.Name + " " + s.Values[index].Value.PlainValue.ToString(CultureInfo.InvariantCulture);
                     }
                     else
                     {
@@ -1565,6 +1587,15 @@ namespace ag.WPF.Chart
         {
             get { return (ChartStyle)GetValue(ChartStyleProperty); }
             set { SetValue(ChartStyleProperty, value); }
+        }
+        /// <summary>
+        /// Specifies whether values should be drawn on bars and columns.
+        /// </summary>
+        [Category("ChartAppearance"), Description("Specifies whether values should be drawn on bars and columns")]
+        public bool ShowValuesOnBarsAndColumns
+        {
+            get { return (bool)GetValue(ShowValuesOnBarsAndColumnsProperty); }
+            set { SetValue(ShowValuesOnBarsAndColumnsProperty, value); }
         }
         /// <summary>
         /// Specifies whether chart legend should be shown.
@@ -2178,6 +2209,25 @@ namespace ag.WPF.Chart
             var e = new RoutedPropertyChangedEventArgs<bool>(oldValue, newValue)
             {
                 RoutedEvent = ShowLegendChangedEvent
+            };
+            RaiseEvent(e);
+        }
+
+        private static void OnShowValuesOnBarsAndColumnsChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
+        {
+            if (!(sender is Chart ch)) return;
+            ch.OnShowValuesOnBarsAndColumnsChanged((bool)e.OldValue, (bool)e.NewValue);
+        }
+        /// <summary>
+        /// Invoked just before the <see cref="ShowValuesOnBarsAndColumnsChangedEvent"/> event is raised on control
+        /// </summary>
+        /// <param name="oldValue">Old value</param>
+        /// <param name="newValue">New value</param>
+        protected void OnShowValuesOnBarsAndColumnsChanged(bool oldValue, bool newValue)
+        {
+            var e = new RoutedPropertyChangedEventArgs<bool>(oldValue, newValue)
+            {
+                RoutedEvent = ShowValuesOnBarsAndColumnsChangedEvent
             };
             RaiseEvent(e);
         }
@@ -2877,6 +2927,20 @@ namespace ag.WPF.Chart
         /// Identifies the <see cref="ShowLegendChanged"/> routed event
         /// </summary>
         public static readonly RoutedEvent ShowLegendChangedEvent = EventManager.RegisterRoutedEvent("ShowLegendChanged",
+            RoutingStrategy.Bubble, typeof(RoutedPropertyChangedEventHandler<bool>), typeof(Chart));
+
+        /// <summary>
+        /// Occurs when the <see cref="ShowValuesOnBarsAndColumns"/> property has been changed in some way
+        /// </summary>
+        public event RoutedPropertyChangedEventHandler<bool> ShowValuesOnBarsAndColumnsChanged
+        {
+            add { AddHandler(ShowValuesOnBarsAndColumnsChangedEvent, value); }
+            remove { RemoveHandler(ShowValuesOnBarsAndColumnsChangedEvent, value); }
+        }
+        /// <summary>
+        /// Identifies the <see cref="ShowValuesOnBarsAndColumnsChanged"/> routed event
+        /// </summary>
+        public static readonly RoutedEvent ShowValuesOnBarsAndColumnsChangedEvent = EventManager.RegisterRoutedEvent("ShowValuesOnBarsAndColumnsChanged",
             RoutingStrategy.Bubble, typeof(RoutedPropertyChangedEventHandler<bool>), typeof(Chart));
 
         /// <summary>

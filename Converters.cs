@@ -1161,7 +1161,8 @@ namespace ag.WPF.Chart
                 || !(values[12] is FontStretch fontStretch)
                 || !(values[14] is int linesCountY)
                 || !(values[15] is int linesCountX)
-                || !(parameter is bool isPositive))
+                || !(parameter is bool isPositive)
+                || !(values[16] is bool showValues))
                 return null;
 
             var series = seriesEnumerable.ToArray();
@@ -1331,7 +1332,8 @@ namespace ag.WPF.Chart
                 || !(values[12] is FontWeight fontWeight)
                 || !(values[13] is FontStretch fontStretch)
                 || !(values[15] is int linesCountY)
-                || !(values[16] is int linesCountX))
+                || !(values[16] is int linesCountX)
+                || !(values[17] is bool showValues))
                 return null;
 
             var series = seriesEnumerable.ToArray();
@@ -1360,8 +1362,8 @@ namespace ag.WPF.Chart
             {
                 case ChartStyle.Funnel:
                     if (index > 0) return null;
-                    gm = drawFunnel(series[0], width, height);
-                    break;
+                    return drawFunnel(series[0], width, height, showValues, fontFamily, fontStyle, fontWeight, fontStretch, fontSize, culture);
+                //break;
                 case ChartStyle.Radar:
                 case ChartStyle.RadarWithMarkers:
                 case ChartStyle.RadarArea:
@@ -1452,16 +1454,20 @@ namespace ag.WPF.Chart
             return gm;
         }
 
-        private PathGeometry drawFunnel(ISeries currentSeries, double width, double heigth)
+        private CombinedGeometry drawFunnel(ISeries currentSeries, double width, double heigth, bool showValues,
+           FontFamily fontFamily, FontStyle fontStyle, FontWeight fontWeight, FontStretch fontStretch, double fontSize, CultureInfo culture)
         {
+            const double FUNNEL_OFFSET = 2.0;
+            var cgm = new CombinedGeometry { GeometryCombineMode = GeometryCombineMode.Exclude };
             var gm = new PathGeometry();
+            var gmValues = new PathGeometry();
             var drawingWidth = width - Utils.AXIS_THICKNESS - COLUMN_BAR_OFFSET * 2;
             heigth -= Utils.AXIS_THICKNESS;
 
             var maxWidth = currentSeries.Values.Where(v => v.Value.PlainValue > 0).Max(v => v.Value.PlainValue);
             var units = maxWidth != 0 ? drawingWidth / maxWidth : 0;
 
-            var barHeight = heigth / currentSeries.Values.Count - COLUMN_BAR_OFFSET * 2;
+            var barHeight = heigth / currentSeries.Values.Count - FUNNEL_OFFSET * 2;
             currentSeries.RealRects.Clear();
             for (int i = 0, j = 1; i < currentSeries.Values.Count; i++, j += 2)
             {
@@ -1469,13 +1475,21 @@ namespace ag.WPF.Chart
                     continue;
                 var rectWidth = currentSeries.Values[i].Value.PlainValue * units;
                 var x = COLUMN_BAR_OFFSET + (width - rectWidth) / 2;
-                var y = j * COLUMN_BAR_OFFSET + i * barHeight;
+                var y = j * FUNNEL_OFFSET + i * barHeight;
                 var rect = new Rect(x, y, rectWidth, barHeight);
                 var rg = new RectangleGeometry(rect);
                 currentSeries.RealRects.Add(rect);
                 gm.AddGeometry(rg);
+                if (!showValues) continue;
+                var number = !string.IsNullOrEmpty(currentSeries.Values[i].CustomValue) ? currentSeries.Values[i].CustomValue : currentSeries.Values[i].Value.PlainValue.ToString(culture);
+                var fmt = new FormattedText(number, culture, FlowDirection.LeftToRight,
+                    new Typeface(fontFamily, fontStyle, fontWeight, fontStretch), fontSize, Brushes.Transparent, VisualTreeHelper.GetDpi(Utils.Border).PixelsPerDip);
+                if (fmt.Width > rectWidth || fmt.Height > barHeight) continue;
+                gmValues.AddGeometry(fmt.BuildGeometry(new Point(x + (rectWidth - fmt.Width) / 2, y + (barHeight - fmt.Height) / 2)));
             }
-            return gm;
+            cgm.Geometry1 = gm;
+            cgm.Geometry2 = gmValues;
+            return cgm;
         }
 
         private double getUnitsForBars(ISeries[] series, ChartStyle chartStyle, Directions dir, double width, double height, double boundOffset, int linesCountX, double formatHeight, bool autoAdjust, double maxX)
