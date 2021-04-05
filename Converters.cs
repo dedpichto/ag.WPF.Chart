@@ -1426,8 +1426,8 @@ namespace ag.WPF.Chart
                 case ChartStyle.StackedColumns:
                     {
                         var units = getUnitsForLines(series, chartStyle, dir, width, height, boundOffset, linesCountY, fmt.Height, autoAdjust, maxYConv);
-                        gm = drawStackedColumns(width, height, units, dir, series, index, rawValues);
-                        break;
+                        return drawStackedColumns(width, height, units, dir, series, index, rawValues, showValues, fontFamily, fontStyle, fontWeight, fontStretch, fontSize, culture, flowDirection);
+                        //break;
                     }
                 case ChartStyle.FullStackedColumns:
                     gm = drawFullStackedColumns(width, height, dir, series, index, rawValues);
@@ -1783,12 +1783,22 @@ namespace ag.WPF.Chart
             return gm;
         }
 
-        private PathGeometry drawStackedColumns(double width, double height, double units, Directions dir, ISeries[] series, int index, List<(List<IChartValue> Values, int Index)> tuples)
+        private CombinedGeometry drawStackedColumns(double width, double height, double units, Directions dir, ISeries[] series, int index, List<(List<IChartValue> Values, int Index)> tuples, bool showValues,
+           FontFamily fontFamily, FontStyle fontStyle, FontWeight fontWeight, FontStretch fontStretch, double fontSize,
+           CultureInfo culture, FlowDirection flowDirection)
         {
+            var gm = new PathGeometry();
+            var gmValues = new PathGeometry();
+            var cgm = new CombinedGeometry
+            {
+                GeometryCombineMode = GeometryCombineMode.Exclude,
+                Geometry1 = gm,
+                Geometry2 = gmValues
+            };
+
             var tp = tuples.FirstOrDefault(t => t.Index == index);
             if (tp == default) return null;
             var values = tp.Values;
-            var gm = new PathGeometry();
             var segSize = width / values.Count;
             var columnWidth = segSize - COLUMN_BAR_OFFSET * 2;
             var startY = Utils.AXIS_THICKNESS;
@@ -1831,8 +1841,23 @@ namespace ag.WPF.Chart
                 var rg = new RectangleGeometry(rect);
                 currentSeries.RealRects.Add(rect);
                 gm.AddGeometry(rg);
+                // add values
+                if (currentSeries.Values.Count <= i) continue;
+                if (!showValues) continue;
+                var number = !string.IsNullOrEmpty(currentSeries.Values[i].CustomValue) ? currentSeries.Values[i].CustomValue : currentSeries.Values[i].Value.PlainValue.ToString(culture);
+                var fmt = new FormattedText(number, culture, FlowDirection.LeftToRight,
+                    new Typeface(fontFamily, fontStyle, fontWeight, fontStretch), fontSize, Brushes.Transparent, VisualTreeHelper.GetDpi(Utils.Border).PixelsPerDip);
+                if (fmt.Width > rect.Width || fmt.Height > rect.Height) continue;
+                var pt = new Point(x + (rect.Width - fmt.Width) / 2,
+                    rect.Bottom <= startY
+                        ? rect.Top + (rect.Height - fmt.Height) / 2
+                        : rect.Bottom - (rect.Height + fmt.Height) / 2);
+                var ngm = fmt.BuildGeometry(pt);
+                if (flowDirection == FlowDirection.RightToLeft)
+                    ngm.Transform = new ScaleTransform { ScaleX = -1, CenterX = pt.X + fmt.Width / 2, CenterY = pt.Y + fmt.Height / 2 };
+                gmValues.AddGeometry(ngm);
             }
-            return gm;
+            return cgm;
         }
 
         private CombinedGeometry drawColumns(double width, double height, double units, Directions dir, ISeries[] series, int index, bool showValues,
