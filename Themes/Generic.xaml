@@ -520,6 +520,9 @@
                         <Trigger Property="IsEnabled" Value="false">
                             <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
                         </Trigger>
+                        <Trigger Property="ChartStyle" Value="Funnel">
+                            <Setter Property="Visibility" TargetName="LegendField" Value="Collapsed"/>
+                        </Trigger>
                         <Trigger Property="ChartStyle" Value="SolidPie">
                             <Setter Property="Visibility" TargetName="TextYAxis" Value="Collapsed"/>
                             <Setter Property="Visibility" TargetName="TextXAxis" Value="Collapsed"/>
