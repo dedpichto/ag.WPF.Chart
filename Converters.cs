@@ -1162,7 +1162,8 @@ namespace ag.WPF.Chart
                 || !(values[14] is int linesCountY)
                 || !(values[15] is int linesCountX)
                 || !(parameter is bool isPositive)
-                || !(values[16] is bool showValues))
+                || !(values[16] is bool showValues)
+                || !(values[17] is FlowDirection flowDirection))
                 return null;
 
             var series = seriesEnumerable.ToArray();
@@ -1333,7 +1334,8 @@ namespace ag.WPF.Chart
                 || !(values[13] is FontStretch fontStretch)
                 || !(values[15] is int linesCountY)
                 || !(values[16] is int linesCountX)
-                || !(values[17] is bool showValues))
+                || !(values[17] is bool showValues)
+                || !(values[18] is FlowDirection flowDirection))
                 return null;
 
             var series = seriesEnumerable.ToArray();
@@ -1362,7 +1364,7 @@ namespace ag.WPF.Chart
             {
                 case ChartStyle.Funnel:
                     if (index > 0) return null;
-                    return drawFunnel(series[0], width, height, showValues, fontFamily, fontStyle, fontWeight, fontStretch, fontSize, culture);
+                    return drawFunnel(series[0], width, height, showValues, fontFamily, fontStyle, fontWeight, fontStretch, fontSize, culture, flowDirection);
                 //break;
                 case ChartStyle.Radar:
                 case ChartStyle.RadarWithMarkers:
@@ -1455,7 +1457,8 @@ namespace ag.WPF.Chart
         }
 
         private CombinedGeometry drawFunnel(ISeries currentSeries, double width, double heigth, bool showValues,
-           FontFamily fontFamily, FontStyle fontStyle, FontWeight fontWeight, FontStretch fontStretch, double fontSize, CultureInfo culture)
+           FontFamily fontFamily, FontStyle fontStyle, FontWeight fontWeight, FontStretch fontStretch, double fontSize,
+           CultureInfo culture, FlowDirection flowDirection)
         {
             const double FUNNEL_OFFSET = 2.0;
             var cgm = new CombinedGeometry { GeometryCombineMode = GeometryCombineMode.Exclude };
@@ -1485,7 +1488,11 @@ namespace ag.WPF.Chart
                 var fmt = new FormattedText(number, culture, FlowDirection.LeftToRight,
                     new Typeface(fontFamily, fontStyle, fontWeight, fontStretch), fontSize, Brushes.Transparent, VisualTreeHelper.GetDpi(Utils.Border).PixelsPerDip);
                 if (fmt.Width > rectWidth || fmt.Height > barHeight) continue;
-                gmValues.AddGeometry(fmt.BuildGeometry(new Point(x + (rectWidth - fmt.Width) / 2, y + (barHeight - fmt.Height) / 2)));
+                var pt = new Point(x + (rectWidth - fmt.Width) / 2, y + (barHeight - fmt.Height) / 2);
+                var ngm = fmt.BuildGeometry(pt);
+                if (flowDirection == FlowDirection.RightToLeft)
+                    ngm.Transform = new ScaleTransform { ScaleX = -1, CenterX = pt.X + fmt.Width / 2, CenterY = pt.Y + fmt.Height / 2 };
+                gmValues.AddGeometry(ngm);
             }
             cgm.Geometry1 = gm;
             cgm.Geometry2 = gmValues;

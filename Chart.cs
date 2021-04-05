@@ -709,6 +709,10 @@ namespace ag.WPF.Chart
                         {
                             Source = this
                         });
+                        ptsBinding.Bindings.Add(new Binding("FlowDirection")
+                        {
+                            Source = this
+                        });
 
                         ptsBinding.NotifyOnSourceUpdated = true;
                         series.Path.SetBinding(Path.DataProperty, ptsBinding);
@@ -778,7 +782,10 @@ namespace ag.WPF.Chart
                         {
                             Source = this
                         });
-
+                        positiveWaterfallBinding.Bindings.Add(new Binding("FlowDirection")
+                        {
+                            Source = this
+                        });
                         positiveWaterfallBinding.ConverterParameter = true;
                         positiveWaterfallBinding.NotifyOnSourceUpdated = true;
                         series.PositivePath.SetBinding(Path.DataProperty, positiveWaterfallBinding);
@@ -848,7 +855,10 @@ namespace ag.WPF.Chart
                         {
                             Source = this
                         });
-
+                        negativeWaterfallBinding.Bindings.Add(new Binding("FlowDirection")
+                        {
+                            Source = this
+                        });
                         negativeWaterfallBinding.ConverterParameter = false;
                         negativeWaterfallBinding.NotifyOnSourceUpdated = true;
                         series.NegativePath.SetBinding(Path.DataProperty, negativeWaterfallBinding);
