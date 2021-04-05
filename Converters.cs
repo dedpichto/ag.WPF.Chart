@@ -1435,18 +1435,18 @@ namespace ag.WPF.Chart
                 case ChartStyle.Bars:
                     {
                         var units = getUnitsForBars(series, chartStyle, dir, width, height, boundOffset, linesCountX, fmt.Height, autoAdjust, maxXConv);
-                        gm = drawBars(width, height, units, dir, series, index);
-                        break;
+                        return drawBars(width, height, units, dir, series, index, showValues, fontFamily, fontStyle, fontWeight, fontStretch, fontSize, culture, flowDirection);
+                        //break;
                     }
                 case ChartStyle.StackedBars:
                     {
                         var units = getUnitsForBars(series, chartStyle, dir, width, height, boundOffset, linesCountX, fmt.Height, autoAdjust, maxXConv);
-                        gm = drawStackedBars(width, height, units, dir, series, index, rawValues);
-                        break;
+                        return drawStackedBars(width, height, units, dir, series, index, rawValues, showValues, fontFamily, fontStyle, fontWeight, fontStretch, fontSize, culture, flowDirection);
+                        //break;
                     }
                 case ChartStyle.FullStackedBars:
-                    gm = drawFullStackedBars(width, height, dir, series, index, rawValues);
-                    break;
+                    return drawFullStackedBars(width, height, dir, series, index, rawValues, showValues, fontFamily, fontStyle, fontWeight, fontStretch, fontSize, culture, flowDirection);
+                    //break;
                 case ChartStyle.FullStackedArea:
                     maxX = series.Max(s => s.Values.Count);
                     gm = drawFullStackedArea(width, height, maxX, dir, series, index, rawValues);
@@ -1572,9 +1572,18 @@ namespace ag.WPF.Chart
             return units;
         }
 
-        private PathGeometry drawBars(double width, double heigth, double units, Directions dir, ISeries[] series, int index)
+        private CombinedGeometry drawBars(double width, double heigth, double units, Directions dir, ISeries[] series, int index, bool showValues,
+           FontFamily fontFamily, FontStyle fontStyle, FontWeight fontWeight, FontStretch fontStretch, double fontSize,
+           CultureInfo culture, FlowDirection flowDirection)
         {
             var gm = new PathGeometry();
+            var gmValues = new PathGeometry();
+            var cgm = new CombinedGeometry
+            {
+                GeometryCombineMode = GeometryCombineMode.Exclude,
+                Geometry1 = gm,
+                Geometry2 = gmValues
+            };
             var segSize = heigth / series.Max(s => s.Values.Count);
             var barHeight = (segSize - COLUMN_BAR_OFFSET * 2) / series.Length;
             var startX = 0.0;
@@ -1603,22 +1612,41 @@ namespace ag.WPF.Chart
 
             for (var i = 0; i < currentSeries.Values.Count; i++)
             {
-                var x = startX;
                 var y = heigth - (i * segSize + COLUMN_BAR_OFFSET + index * barHeight);
-                var rect = new Rect(new Point(x, y), new Point(x + currentSeries.Values[i].Value.PlainValue * units, y - barHeight));
+                var rect = new Rect(new Point(startX, y), new Point(startX + currentSeries.Values[i].Value.PlainValue * units, y - barHeight));
                 var rg = new RectangleGeometry(rect);
                 currentSeries.RealRects.Add(rect);
                 gm.AddGeometry(rg);
+                // add values
+                if (!showValues) continue;
+                var number = !string.IsNullOrEmpty(currentSeries.Values[i].CustomValue) ? currentSeries.Values[i].CustomValue : currentSeries.Values[i].Value.PlainValue.ToString(culture);
+                var fmt = new FormattedText(number, culture, FlowDirection.LeftToRight,
+                    new Typeface(fontFamily, fontStyle, fontWeight, fontStretch), fontSize, Brushes.Transparent, VisualTreeHelper.GetDpi(Utils.Border).PixelsPerDip);
+                if (fmt.Width > rect.Width || fmt.Height > rect.Height) continue;
+                var pt = new Point(rect.Left + (rect.Width - fmt.Width) / 2, rect.Top + (rect.Height - fmt.Height) / 2);
+                var ngm = fmt.BuildGeometry(pt);
+                if (flowDirection == FlowDirection.RightToLeft)
+                    ngm.Transform = new ScaleTransform { ScaleX = -1, CenterX = pt.X + fmt.Width / 2, CenterY = pt.Y + fmt.Height / 2 };
+                gmValues.AddGeometry(ngm);
             }
-            return gm;
+            return cgm;
         }
 
-        private PathGeometry drawStackedBars(double width, double height, double units, Directions dir, ISeries[] series, int index, List<(List<IChartValue> Values, int Index)> tuples)
+        private CombinedGeometry drawStackedBars(double width, double height, double units, Directions dir, ISeries[] series, int index, List<(List<IChartValue> Values, int Index)> tuples, bool showValues,
+           FontFamily fontFamily, FontStyle fontStyle, FontWeight fontWeight, FontStretch fontStretch, double fontSize,
+           CultureInfo culture, FlowDirection flowDirection)
         {
+            var gm = new PathGeometry();
+            var gmValues = new PathGeometry();
+            var cgm = new CombinedGeometry
+            {
+                GeometryCombineMode = GeometryCombineMode.Exclude,
+                Geometry1 = gm,
+                Geometry2 = gmValues
+            };
             var tp = tuples.FirstOrDefault(t => t.Index == index);
             if (tp == default) return null;
             var values = tp.Values;
-            var gm = new PathGeometry();
             var segSize = height / values.Count;
             var barHeight = segSize - COLUMN_BAR_OFFSET * 2;
             var startX = 0.0;
@@ -1660,16 +1688,37 @@ namespace ag.WPF.Chart
                 var rg = new RectangleGeometry(rect);
                 currentSeries.RealRects.Add(rect);
                 gm.AddGeometry(rg);
+                // add values
+                if (currentSeries.Values.Count <= i) continue;
+                if (!showValues) continue;
+                var number = !string.IsNullOrEmpty(currentSeries.Values[i].CustomValue) ? currentSeries.Values[i].CustomValue : currentSeries.Values[i].Value.PlainValue.ToString(culture);
+                var fmt = new FormattedText(number, culture, FlowDirection.LeftToRight,
+                    new Typeface(fontFamily, fontStyle, fontWeight, fontStretch), fontSize, Brushes.Transparent, VisualTreeHelper.GetDpi(Utils.Border).PixelsPerDip);
+                if (fmt.Width > rect.Width || fmt.Height > rect.Height) continue;
+                var pt = new Point(rect.Left + (rect.Width - fmt.Width) / 2, rect.Top + (rect.Height - fmt.Height) / 2);
+                var ngm = fmt.BuildGeometry(pt);
+                if (flowDirection == FlowDirection.RightToLeft)
+                    ngm.Transform = new ScaleTransform { ScaleX = -1, CenterX = pt.X + fmt.Width / 2, CenterY = pt.Y + fmt.Height / 2 };
+                gmValues.AddGeometry(ngm);
             }
-            return gm;
+            return cgm;
         }
 
-        private PathGeometry drawFullStackedBars(double width, double height, Directions dir, ISeries[] series, int index, List<(List<IChartValue> Values, int Index)> tuples)
+        private CombinedGeometry drawFullStackedBars(double width, double height, Directions dir, ISeries[] series, int index, List<(List<IChartValue> Values, int Index)> tuples, bool showValues,
+           FontFamily fontFamily, FontStyle fontStyle, FontWeight fontWeight, FontStretch fontStretch, double fontSize,
+           CultureInfo culture, FlowDirection flowDirection)
         {
+            var gm = new PathGeometry();
+            var gmValues = new PathGeometry();
+            var cgm = new CombinedGeometry
+            {
+                GeometryCombineMode = GeometryCombineMode.Exclude,
+                Geometry1 = gm,
+                Geometry2 = gmValues
+            };
             var tp = tuples.FirstOrDefault(t => t.Index == index);
             if (tp == default) return null;
             var values = tp.Values;
-            var gm = new PathGeometry();
             var segSize = height / values.Count;
             var barHeight = segSize - COLUMN_BAR_OFFSET * 2;
             var startX = Utils.AXIS_THICKNESS;
@@ -1720,8 +1769,20 @@ namespace ag.WPF.Chart
                 var rg = new RectangleGeometry(rect);
                 currentSeries.RealRects.Add(rect);
                 gm.AddGeometry(rg);
+                // add values
+                if (currentSeries.Values.Count <= i) continue;
+                if (!showValues) continue;
+                var number = !string.IsNullOrEmpty(currentSeries.Values[i].CustomValue) ? currentSeries.Values[i].CustomValue : currentSeries.Values[i].Value.PlainValue.ToString(culture);
+                var fmt = new FormattedText(number, culture, FlowDirection.LeftToRight,
+                    new Typeface(fontFamily, fontStyle, fontWeight, fontStretch), fontSize, Brushes.Transparent, VisualTreeHelper.GetDpi(Utils.Border).PixelsPerDip);
+                if (fmt.Width > rect.Width || fmt.Height > rect.Height) continue;
+                var pt = new Point(rect.Left + (rect.Width - fmt.Width) / 2, rect.Top + (rect.Height - fmt.Height) / 2);
+                var ngm = fmt.BuildGeometry(pt);
+                if (flowDirection == FlowDirection.RightToLeft)
+                    ngm.Transform = new ScaleTransform { ScaleX = -1, CenterX = pt.X + fmt.Width / 2, CenterY = pt.Y + fmt.Height / 2 };
+                gmValues.AddGeometry(ngm);
             }
-            return gm;
+            return cgm;
         }
 
         private CombinedGeometry drawFullStackedColumns(double width, double height, Directions dir, ISeries[] series, int index, List<(List<IChartValue> Values, int Index)> tuples, bool showValues,
@@ -1932,10 +1993,7 @@ namespace ag.WPF.Chart
                 var fmt = new FormattedText(number, culture, FlowDirection.LeftToRight,
                     new Typeface(fontFamily, fontStyle, fontWeight, fontStretch), fontSize, Brushes.Transparent, VisualTreeHelper.GetDpi(Utils.Border).PixelsPerDip);
                 if (fmt.Width > rect.Width || fmt.Height > rect.Height) continue;
-                var pt = new Point(x + (rect.Width - fmt.Width) / 2, 
-                    rect.Bottom <= startY
-                        ? rect.Top + (rect.Height - fmt.Height) / 2 
-                        : rect.Bottom - (rect.Height + fmt.Height) / 2);
+                var pt = new Point(x + (rect.Width - fmt.Width) / 2, rect.Top + (rect.Height - fmt.Height) / 2);
                 var ngm = fmt.BuildGeometry(pt);
                 if (flowDirection == FlowDirection.RightToLeft)
                     ngm.Transform = new ScaleTransform { ScaleX = -1, CenterX = pt.X + fmt.Width / 2, CenterY = pt.Y + fmt.Height / 2 };
