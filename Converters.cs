@@ -1878,8 +1878,7 @@ namespace ag.WPF.Chart
             for (var i = 0; i < currentSeries.Values.Count; i++)
             {
                 var x = i * segSize + COLUMN_BAR_OFFSET + index * columnWidth;
-                var y = startY;
-                var rect = new Rect(new Point(x, y), new Point(x + columnWidth, y - currentSeries.Values[i].Value.PlainValue * units));
+                var rect = new Rect(new Point(x, startY), new Point(x + columnWidth, startY - currentSeries.Values[i].Value.PlainValue * units));
                 var rg = new RectangleGeometry(rect);
                 currentSeries.RealRects.Add(rect);
                 gm.AddGeometry(rg);
@@ -1890,9 +1889,9 @@ namespace ag.WPF.Chart
                     new Typeface(fontFamily, fontStyle, fontWeight, fontStretch), fontSize, Brushes.Transparent, VisualTreeHelper.GetDpi(Utils.Border).PixelsPerDip);
                 if (fmt.Width > rect.Width || fmt.Height > rect.Height) continue;
                 var pt = new Point(x + (rect.Width - fmt.Width) / 2, 
-                    rect.Bottom <= y 
+                    rect.Bottom <= startY
                         ? rect.Top + (rect.Height - fmt.Height) / 2 
-                        : rect.Bottom - (rect.Height - fmt.Height) / 2);
+                        : rect.Bottom - (rect.Height + fmt.Height) / 2);
                 var ngm = fmt.BuildGeometry(pt);
                 if (flowDirection == FlowDirection.RightToLeft)
                     ngm.Transform = new ScaleTransform { ScaleX = -1, CenterX = pt.X + fmt.Width / 2, CenterY = pt.Y + fmt.Height / 2 };
