@@ -1212,7 +1212,7 @@ namespace ag.WPF.Chart
                    dir == Directions.NorthEastSouthEast)
                 : (maxYConv, -maxYConv, linesCountY, maxYConv / linesCountY, radius / linesCountY, radius / maxYConv, default);
 
-            return drawWaterfall(width, height, dir, series[0], units, isPositive);
+            return drawWaterfall(width, height, dir, series[0], units, isPositive, showValues, fontFamily, fontStyle, fontWeight, fontStretch, fontSize, culture, flowDirection);
         }
 
         /// <summary>Converts a binding target value to the source binding values.</summary>
@@ -1227,14 +1227,18 @@ namespace ag.WPF.Chart
         }
 
 
-        private PathGeometry drawWaterfall(double width,
-            double height,
-            Directions dir,
-            ISeries currentSeries,
-            double stepLength,
-            bool isPositive)
+        private CombinedGeometry drawWaterfall(double width, double height, Directions dir, ISeries currentSeries, double stepLength, bool isPositive, bool showValues,
+           FontFamily fontFamily, FontStyle fontStyle, FontWeight fontWeight, FontStretch fontStretch, double fontSize,
+           CultureInfo culture, FlowDirection flowDirection)
         {
             var gm = new PathGeometry();
+            var gmValues = new PathGeometry();
+            var cgm = new CombinedGeometry
+            {
+                GeometryCombineMode = GeometryCombineMode.Exclude,
+                Geometry1 = gm,
+                Geometry2 = gmValues
+            };
             var segSize = width / currentSeries.Values.Count;
             var columnWidth = segSize - segSize / 8;
             var startY = Utils.AXIS_THICKNESS;
@@ -1294,9 +1298,22 @@ namespace ag.WPF.Chart
 
                 currentSeries.RealRects.Add(rect);
 
+                // add values
+                if (currentSeries.Values.Count <= i) continue;
+                if (!showValues) continue;
+                var number = !string.IsNullOrEmpty(currentSeries.Values[i].CustomValue) ? currentSeries.Values[i].CustomValue : currentSeries.Values[i].Value.PlainValue.ToString(culture);
+                var fmt = new FormattedText(number, culture, FlowDirection.LeftToRight,
+                    new Typeface(fontFamily, fontStyle, fontWeight, fontStretch), fontSize, Brushes.Transparent, VisualTreeHelper.GetDpi(Utils.Border).PixelsPerDip);
+                if (fmt.Width > rect.Width || fmt.Height > rect.Height) continue;
+                var pt = new Point(x + (rect.Width - fmt.Width) / 2, rect.Top + (rect.Height - fmt.Height) / 2);
+                var ngm = fmt.BuildGeometry(pt);
+                if (flowDirection == FlowDirection.RightToLeft)
+                    ngm.Transform = new ScaleTransform { ScaleX = -1, CenterX = pt.X + fmt.Width / 2, CenterY = pt.Y + fmt.Height / 2 };
+                gmValues.AddGeometry(ngm);
+
             }
 
-            return gm;
+            return cgm;
         }
     }
 
@@ -1431,7 +1448,7 @@ namespace ag.WPF.Chart
                     }
                 case ChartStyle.FullStackedColumns:
                     return drawFullStackedColumns(width, height, dir, series, index, rawValues, showValues, fontFamily, fontStyle, fontWeight, fontStretch, fontSize, culture, flowDirection);
-                    //break;
+                //break;
                 case ChartStyle.Bars:
                     {
                         var units = getUnitsForBars(series, chartStyle, dir, width, height, boundOffset, linesCountX, fmt.Height, autoAdjust, maxXConv);
@@ -1446,7 +1463,7 @@ namespace ag.WPF.Chart
                     }
                 case ChartStyle.FullStackedBars:
                     return drawFullStackedBars(width, height, dir, series, index, rawValues, showValues, fontFamily, fontStyle, fontWeight, fontStretch, fontSize, culture, flowDirection);
-                    //break;
+                //break;
                 case ChartStyle.FullStackedArea:
                     maxX = series.Max(s => s.Values.Count);
                     gm = drawFullStackedArea(width, height, maxX, dir, series, index, rawValues);
