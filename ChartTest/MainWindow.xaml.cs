@@ -59,8 +59,8 @@ namespace ChartTest
 
             //chTest.ChartStyle = ChartStyle.Columns;
 
-            Series.Add(new PlainSeries("Series 1", values1));
-            Series.Add(new PlainSeries("Series 2", values2));
+            //Series.Add(new PlainSeries("Series 1", values1));
+            //Series.Add(new PlainSeries("Series 2", values2));
             Series.Add(new PlainSeries("Series 3", values3));
             Series.Add(new PlainSeries("Series 4", values4));
             Series.Add(new PlainSeries("Series 5", values5));

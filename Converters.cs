@@ -682,7 +682,8 @@ namespace ag.WPF.Chart
             }
             else if (chartStyle == ChartStyle.Waterfall)
             {
-                (max, min) = getMaxMinForWaterfall(seriesArray[0].Values.Select(v => v.Value.PlainValue).ToArray());
+                values = seriesArray[0].Values.Select(v => v.Value.PlainValue);
+                (max, min) = getMaxMinForWaterfall(values.ToArray());
                 if (max > 0 && min > 0)
                 {
                     minIsZero = true;
