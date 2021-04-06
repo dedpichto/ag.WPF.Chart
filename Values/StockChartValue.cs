@@ -44,39 +44,6 @@ namespace ag.WPF.Chart.Values
         {
             Value = (0, highValue, lowValue, closeValue, volumeValue, openValue);
         }
-
-        /// <summary>
-        /// Initializes a new instance of StockChartValue object
-        /// </summary>
-        /// <param name="values">Current values</param>
-        /// <param name="customValue">Current custom value</param>
-        public StockChartValue((double highValue, double lowValue, double closeValue) values, string customValue)
-            : this(values.highValue, values.lowValue, values.closeValue)
-        {
-            CustomValue = customValue;
-        }
-
-        /// <summary>
-        /// Initializes a new instance of StockChartValue object
-        /// </summary>
-        /// <param name="values">Current values</param>
-        /// <param name="customValue">Current custom value</param>
-        public StockChartValue((double volumeValue, double highValue, double lowValue, double closeValue) values, string customValue)
-            : this(values.volumeValue, values.highValue, values.lowValue, values.closeValue)
-        {
-            CustomValue = customValue;
-        }
-
-        /// <summary>
-        /// Initializes a new instance of StockChartValue object
-        /// </summary>
-        /// <param name="values">Current values</param>
-        /// <param name="customValue">Current custom value</param>
-        public StockChartValue((double volumeValue, double openValue, double highValue, double lowValue, double closeValue) values, string customValue)
-            : this(values.volumeValue, values.openValue, values.highValue, values.lowValue, values.closeValue)
-        {
-            CustomValue = customValue;
-        }
         #endregion
 
         #region Abstraction metods overrides

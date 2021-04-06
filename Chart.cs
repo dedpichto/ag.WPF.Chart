@@ -1218,45 +1218,9 @@ namespace ag.WPF.Chart
                 case ChartStyle.Bubbles:
                 case ChartStyle.RadarWithMarkers:
                 case ChartStyle.Funnel:
-                    rc = s.RealRects.FirstOrDefault(r => r.Contains(e.GetPosition(_canvas)));
-                    if (rc != default)
-                    {
-                        var index = s.RealRects.IndexOf(rc);
-                        if (s.Values.Count <= index)
-                        {
-                            tooltip.Content = s.Name;
-                            break;
-                        }
-                        tooltip.Content = !string.IsNullOrEmpty(s.Values[index].CustomValue)
-                            ? s.Values[index].CustomValue
-                            : s.Name + " " + s.Values[index].Value.PlainValue.ToString(CultureInfo.InvariantCulture);
-                    }
-                    else
-                    {
-                        tooltip.Content = s.Name;
-                    }
-                    break;
                 case ChartStyle.Bars:
                 case ChartStyle.StackedBars:
                 case ChartStyle.FullStackedBars:
-                    rc = s.RealRects.FirstOrDefault(r => r.Contains(e.GetPosition(_canvas)));
-                    if (rc != default)
-                    {
-                        var index = s.RealRects.IndexOf(rc);
-                        if (s.Values.Count <= index)
-                        {
-                            tooltip.Content = s.Name;
-                            break;
-                        }
-                        tooltip.Content = !string.IsNullOrEmpty(s.Values[index].CustomValue)
-                            ? s.Values[index].CustomValue
-                            : s.Name + " " + s.Values[index].Value.PlainValue.ToString(CultureInfo.InvariantCulture);
-                    }
-                    else
-                    {
-                        tooltip.Content = s.Name;
-                    }
-                    break;
                 case ChartStyle.Columns:
                 case ChartStyle.StackedColumns:
                 case ChartStyle.FullStackedColumns:
@@ -1270,9 +1234,10 @@ namespace ag.WPF.Chart
                             tooltip.Content = s.Name;
                             break;
                         }
-                        tooltip.Content = !string.IsNullOrEmpty(s.Values[index].CustomValue)
-                            ? s.Values[index].CustomValue
-                            : s.Name + " " + s.Values[index].Value.PlainValue.ToString(CultureInfo.InvariantCulture);
+                        var content = $"{s.Name}\n{s.Values[index].Value.PlainValue.ToString(CultureInfo.InvariantCulture)}";
+                        if (!string.IsNullOrEmpty(s.Values[index].CustomValue))
+                            content += $"\n{s.Values[index].CustomValue}";
+                        tooltip.Content = content;
                     }
                     else
                     {

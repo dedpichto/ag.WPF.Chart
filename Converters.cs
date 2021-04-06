@@ -4896,8 +4896,9 @@ namespace ag.WPF.Chart
             var sum = chartValues.Sum(p => Math.Abs(p.Value.PlainValue));
             if (format.EndsWith("%")) format = format.Substring(0, format.Length - 1);
             var perc = Math.Abs(chartValue.Value.PlainValue) / sum * 100;
-            var sectorData = chartValue.CustomValue
-                ?? chartValue.Value.PlainValue + " (" + perc.ToString(format) + "%)";
+            var sectorData = $"{chartValue.Value.PlainValue} ({perc.ToString(format)}%)";
+            if (!string.IsNullOrEmpty(chartValue.CustomValue))
+                sectorData += $" {chartValue.CustomValue}";
             return sectorData;
         }
 
@@ -5188,8 +5189,9 @@ namespace ag.WPF.Chart
             if (format.EndsWith("%")) format = format.Substring(0, format.Length - 1);
             if (pts.Length == 1)
             {
-                var sectorData = pts[0].CustomValue
-                    ?? pts[0].Value.PlainValue + " (" + 100.ToString(format) + "%)";
+                var sectorData = $"{pts[0].Value.PlainValue} ({100.ToString(format)}%)";
+                if (!string.IsNullOrEmpty(pts[0].CustomValue))
+                    sectorData += $"\n{pts[0].CustomValue}";
                 var ellipseGeometry = new EllipseGeometry(new Rect(new Point(0, 0), new Point(radius * 2, radius * 2)));
                 var combinedGeometry = new CombinedGeometry
                 {
@@ -5303,8 +5305,9 @@ namespace ag.WPF.Chart
                 //}
 
                 var perc = Math.Abs(pt.Value.PlainValue) / sum * 100;
-                var sectorData = pt.CustomValue
-                    ?? pt.Value.PlainValue + " (" + perc.ToString(format) + "%)";
+                var sectorData = $"{pt.Value.PlainValue} ({perc.ToString(format)}%)";
+                if (!string.IsNullOrEmpty(pt.CustomValue))
+                    sectorData += $"\n{pt.CustomValue}";
                 combinedGeometry.SetValue(Statics.SectorDataProperty, sectorData);
                 gmDrawing.Geometry = combinedGeometry;
                 dGroup.Children.Add(gmDrawing);

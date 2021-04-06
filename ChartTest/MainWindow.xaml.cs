@@ -17,6 +17,7 @@ using System.Windows.Shapes;
 using Microsoft.Win32;
 using ag.WPF.Chart;
 using ag.WPF.Chart.Series;
+using ag.WPF.Chart.Values;
 
 namespace ChartTest
 {
@@ -39,14 +40,14 @@ namespace ChartTest
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             //FlowDirection = System.Windows.FlowDirection.RightToLeft;
-            //var values1 = new[] { new PlainChartValue(-40, "aaa"), new PlainChartValue(-10, "bbb"), new PlainChartValue(-63, "ccc"), new PlainChartValue(150, "ccc") };
+            var values1 = new[] { new PlainChartValue(-40, "aaa"), new PlainChartValue(-10, "bbb"), new PlainChartValue(-63, "ccc"), new PlainChartValue(150, "ccc") };
             //var values2 = new[] { new PlainChartValue( 20), new PlainChartValue( 50), new PlainChartValue( 0) , new PlainChartValue( 0)};
             //var values3 = new[] { new PlainChartValue(-60, "aaa"), new PlainChartValue(-20, "bbb"), new PlainChartValue(27, "ccc") , new PlainChartValue(-45, "ccc")};
 
             //var values1 = new[] { new PlainChartValue(40, "Gray marble"), new PlainChartValue(35, "Blue marble"), new PlainChartValue(25, "Pink marble") };
             //var values2 = new double[] {20, 50};
             //var values3 = new double[] {-60, -20, -27, -45};
-            var values1 = new double[] { 327, 20, 210, 27, 17, 37, 89, 56, -1324 };
+            //var values1 = new double[] { 327, 20, 210, 27, 17, 37, 89, 56, -1324 };
             var values2 = new double[] { 30, 115, 175, 593, 37.5};
             var values3 = new double[] { 60, -128.3, 37 };
             var values4 = new double[] { 1, 8.3, 72, 90, 130, -23, -12, -13, -14, -121 };
@@ -59,7 +60,7 @@ namespace ChartTest
 
             //chTest.ChartStyle = ChartStyle.Columns;
 
-            //Series.Add(new PlainSeries("Series 1", values1));
+            Series.Add(new PlainSeries("Series 1", values1));
             //Series.Add(new PlainSeries("Series 2", values2));
             Series.Add(new PlainSeries("Series 3", values3));
             Series.Add(new PlainSeries("Series 4", values4));
