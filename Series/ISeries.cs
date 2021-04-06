@@ -10,7 +10,7 @@ namespace ag.WPF.Chart.Series
     /// <summary>
     /// Represents single chart series
     /// </summary>
-    public interface ISeries: INotifyPropertyChanged
+    public interface ISeries : INotifyPropertyChanged
     {
         /// <summary>
         /// Gets or sets series index
@@ -28,6 +28,7 @@ namespace ag.WPF.Chart.Series
         /// Gets or sets series seconday background
         /// </summary>
         Brush SecondaryBrush { get; set; }
+
         /// <summary>
         /// Gets array of 10 brushes used for drawing chart sectors when <see cref="ChartStyle"/> property of control is set to <see cref="ChartStyle.SolidPie"/> or <see cref="ChartStyle.SlicedPie"/> or <see cref="ag.WPF.Chart.ChartStyle.Doughnut"/>
         /// </summary>
@@ -42,15 +43,15 @@ namespace ag.WPF.Chart.Series
         /// <summary>
         /// Gets series drawing path
         /// </summary>
-        Path Path { get;  }
+        Path Path { get; }
         /// <summary>
         /// Gets drawing path for <see cref="ChartStyle.Waterfall"/> positive values
         /// </summary>
-        Path PositivePath { get;  }
+        Path PositivePath { get; }
         /// <summary>
         /// Gets drawing path for <see cref="ChartStyle.Waterfall"/> negative values
         /// </summary>
-        Path NegativePath { get;  }
+        Path NegativePath { get; }
         /// <summary>
         /// Gets real coordinates of series rectangles
         /// </summary>

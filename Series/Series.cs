@@ -17,7 +17,7 @@ using System.Windows.Shapes;
 
 namespace ag.WPF.Chart.Series
 {
-    public abstract class Series : ISeries
+    public abstract class Series : DependencyObject, ISeries
     {
         #region Private fields
         private Brush _mainBrush;
@@ -76,6 +76,7 @@ namespace ag.WPF.Chart.Series
                 OnPropertyChanged();
             }
         }
+
         /// <inheritdoc />
         public BrushesCollection PieBrushes { get; private set; }
         /// <inheritdoc />
@@ -106,10 +107,10 @@ namespace ag.WPF.Chart.Series
         internal void InitFields(string name)
         {
             _values.CollectionChanged += values_CollectionChanged;
-            PieBrushes = new BrushesCollection(Statics.PredefinedPieBrushes.Length, this);
-            var brushes = Statics.PredefinedPieBrushes.OfType<SolidColorBrush>().ToArray();
+            PieBrushes = new BrushesCollection(Statics.PredefinedMainBrushes.Length, this);
+
             for (var i = 0; i < PieBrushes.Length(); i++)
-                PieBrushes[i] = new SolidColorBrush(brushes[i].Color);
+                PieBrushes[i] = Statics.PredefinedMainBrushes[i].Brush;
             Name = name;
             Path = new Path
             {
@@ -142,7 +143,7 @@ namespace ag.WPF.Chart.Series
                 ToolTip = new ToolTip { Placement = PlacementMode.Mouse }
             };
             _values.Path = Path;
-        } 
+        }
         #endregion
 
         #region INotifyPropertyChanged members

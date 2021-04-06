@@ -629,16 +629,48 @@ namespace ag.WPF.Chart
 
                         if (series.MainBrush == null)
                         {
-                            series.MainBrush = series.Index < Statics.PredefinedPieBrushes.Length
-                                ? Statics.PredefinedPieBrushes[series.Index]
-                                : Statics.PredefinedPieBrushes[series.Index % Statics.PredefinedPieBrushes.Length];
+                            for (var j = 0; ; j++)
+                            {
+                                var found = false;
+                                for (var i = 0; i < Statics.PredefinedMainBrushes.Length; i++)
+                                {
+                                    if (Statics.PredefinedMainBrushes[i].Counter == j)
+                                    {
+                                        series.MainBrush = Statics.PredefinedMainBrushes[i].Brush;
+                                        Statics.PredefinedMainBrushes[i].Counter++;
+                                        found = true;
+                                        break;
+                                    }
+                                }
+                                if (found) break;
+                            }
+                        }
+                        else
+                        {
+                            ((Series.Series)series).SetValue(Statics.HasCustomMainBrushProperty, true);
                         }
 
                         if (series.SecondaryBrush == null)
                         {
-                            series.SecondaryBrush = series.Index + 1 < Statics.PredefinedPieBrushes.Length
-                                ? Statics.PredefinedPieBrushes[series.Index + 1]
-                                : Statics.PredefinedPieBrushes[(series.Index + 1) % Statics.PredefinedPieBrushes.Length];
+                            for (var j = 0; ; j++)
+                            {
+                                var found = false;
+                                for (var i = 0; i < Statics.PredefinedSecondaryBrushes.Length; i++)
+                                {
+                                    if (Statics.PredefinedSecondaryBrushes[i].Counter == j)
+                                    {
+                                        series.SecondaryBrush = Statics.PredefinedSecondaryBrushes[i].Brush;
+                                        Statics.PredefinedSecondaryBrushes[i].Counter++;
+                                        found = true;
+                                        break;
+                                    }
+                                }
+                                if (found) break;
+                            }
+                        }
+                        else
+                        {
+                            ((Series.Series)series).SetValue(Statics.HasCustomSecondaryBrushProperty, true);
                         }
 
                         #region Main series path
@@ -1119,6 +1151,28 @@ namespace ag.WPF.Chart
                             rebuildPieLegends(sr.Values, sr);
                         }
 
+                        series.PropertyChanged -= Series_PropertyChanged;
+                        if (!(bool)((Series.Series)series).GetValue(Statics.HasCustomMainBrushProperty))
+                        {
+                            for (var i = 0; i < Statics.PredefinedMainBrushes.Length; i++)
+                            {
+                                if (series.MainBrush.Equals(Statics.PredefinedMainBrushes[i].Brush))
+                                {
+                                    Statics.PredefinedMainBrushes[i].Counter--;
+                                }
+                            }
+                        }
+                        if (!(bool)((Series.Series)series).GetValue(Statics.HasCustomSecondaryBrushProperty))
+                        {
+                            for (var i = 0; i < Statics.PredefinedSecondaryBrushes.Length; i++)
+                            {
+                                if (series.SecondaryBrush.Equals(Statics.PredefinedSecondaryBrushes[i].Brush))
+                                {
+                                    Statics.PredefinedSecondaryBrushes[i].Counter--;
+                                }
+                            }
+                        }
+
                         updateBindings();
 
                         break;
@@ -1326,7 +1380,7 @@ namespace ag.WPF.Chart
             binding = BindingOperations.GetMultiBindingExpression(_pathVertLines, Path.DataProperty);
             if (binding != null)
                 binding.UpdateTarget();
-            foreach(var series in ItemsSource)
+            foreach (var series in ItemsSource)
             {
                 if (ChartStyle != ChartStyle.Waterfall)
                 {
