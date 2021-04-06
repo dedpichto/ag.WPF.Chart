@@ -25,7 +25,7 @@ namespace ag.WPF.Chart
         }
 
         internal static Brush[] PredefinedPieBrushes { get; } =
-{
+        {
             new SolidColorBrush(Color.FromArgb(255, 91, 155, 213)),
             new SolidColorBrush(Color.FromArgb(255, 237, 125, 49)),
             new SolidColorBrush(Color.FromArgb(255, 165, 165, 165)),
