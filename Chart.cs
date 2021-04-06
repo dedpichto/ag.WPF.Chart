@@ -1326,6 +1326,24 @@ namespace ag.WPF.Chart
             binding = BindingOperations.GetMultiBindingExpression(_pathVertLines, Path.DataProperty);
             if (binding != null)
                 binding.UpdateTarget();
+            foreach(var series in ItemsSource)
+            {
+                if (ChartStyle != ChartStyle.Waterfall)
+                {
+                    binding = BindingOperations.GetMultiBindingExpression(series.Path, Path.DataProperty);
+                    if (binding != null)
+                        binding.UpdateTarget();
+                }
+                else
+                {
+                    binding = BindingOperations.GetMultiBindingExpression(series.PositivePath, Path.DataProperty);
+                    if (binding != null)
+                        binding.UpdateTarget();
+                    binding = BindingOperations.GetMultiBindingExpression(series.NegativePath, Path.DataProperty);
+                    if (binding != null)
+                        binding.UpdateTarget();
+                }
+            }
         }
 
         private void rebuildPieLegends(ChartValues values, ISeries series)
