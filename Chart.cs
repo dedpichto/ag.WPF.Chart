@@ -482,84 +482,84 @@ namespace ag.WPF.Chart
         {
             DefaultStyleKeyProperty.OverrideMetadata(typeof(Chart), new FrameworkPropertyMetadata(typeof(Chart)));
 
-            SectionsXProperty = DependencyProperty.Register("SectionsX", typeof(int), typeof(Chart),
+            SectionsXProperty = DependencyProperty.Register(nameof(SectionsX), typeof(int), typeof(Chart),
                 new FrameworkPropertyMetadata(10, OnSectionsXChanged, CoerceSectionsX));
-            SectionsYProperty = DependencyProperty.Register("SectionsY", typeof(int), typeof(Chart),
+            SectionsYProperty = DependencyProperty.Register(nameof(SectionsY), typeof(int), typeof(Chart),
                 new FrameworkPropertyMetadata(10, OnSectionsYChanged, CoerceSectionsY));
-            ChartOpacityProperty = DependencyProperty.Register("ChartOpacity", typeof(double), typeof(Chart),
+            ChartOpacityProperty = DependencyProperty.Register(nameof(ChartOpacity), typeof(double), typeof(Chart),
                 new FrameworkPropertyMetadata(1.0, OnChartOpacityChanged, CoerceChartOpacity));
-            CaptionProperty = DependencyProperty.Register("Caption", typeof(string), typeof(Chart),
+            CaptionProperty = DependencyProperty.Register(nameof(Caption), typeof(string), typeof(Chart),
                 new FrameworkPropertyMetadata("", OnCaptionChanged));
-            XAxisTextProperty = DependencyProperty.Register("XAxisText", typeof(string), typeof(Chart),
+            XAxisTextProperty = DependencyProperty.Register(nameof(XAxisText), typeof(string), typeof(Chart),
                 new FrameworkPropertyMetadata("x-Axis", OnXAxisTextChanged));
-            YAxisTextProperty = DependencyProperty.Register("YAxisText", typeof(string), typeof(Chart),
+            YAxisTextProperty = DependencyProperty.Register(nameof(YAxisText), typeof(string), typeof(Chart),
                 new FrameworkPropertyMetadata("y-Axis", OnYAxisTextChanged));
-            AxesFontFamilyProperty = DependencyProperty.Register("AxesFontFamily", typeof(FontFamily), typeof(Chart),
+            AxesFontFamilyProperty = DependencyProperty.Register(nameof(AxesFontFamily), typeof(FontFamily), typeof(Chart),
                 new FrameworkPropertyMetadata(SystemFonts.StatusFontFamily, OnAxesFontFamilyChanged));
-            AxesFontWeightProperty = DependencyProperty.Register("AxesFontWeight", typeof(FontWeight), typeof(Chart),
+            AxesFontWeightProperty = DependencyProperty.Register(nameof(AxesFontWeight), typeof(FontWeight), typeof(Chart),
                 new FrameworkPropertyMetadata(SystemFonts.StatusFontWeight, OnAxesFontWeightChanged));
-            AxesFontSizeProperty = DependencyProperty.Register("AxesFontSize", typeof(double), typeof(Chart),
+            AxesFontSizeProperty = DependencyProperty.Register(nameof(AxesFontSize), typeof(double), typeof(Chart),
                 new FrameworkPropertyMetadata(SystemFonts.StatusFontSize, OnAxesFontSizeChanged));
-            AxesFontStyleProperty = DependencyProperty.Register("AxesFontStyle", typeof(FontStyle), typeof(Chart),
+            AxesFontStyleProperty = DependencyProperty.Register(nameof(AxesFontStyle), typeof(FontStyle), typeof(Chart),
                 new FrameworkPropertyMetadata(SystemFonts.StatusFontStyle, OnAxesFontStyleChanged));
-            AxesFontStretchProperty = DependencyProperty.Register("AxesFontStretch", typeof(FontStretch), typeof(Chart),
+            AxesFontStretchProperty = DependencyProperty.Register(nameof(AxesFontStretch), typeof(FontStretch), typeof(Chart),
                 new FrameworkPropertyMetadata(FontStretches.Normal, OnAxesFontStretchChanged));
-            CaptionFontFamilyProperty = DependencyProperty.Register("CaptionFontFamily", typeof(FontFamily), typeof(Chart),
+            CaptionFontFamilyProperty = DependencyProperty.Register(nameof(CaptionFontFamily), typeof(FontFamily), typeof(Chart),
                 new FrameworkPropertyMetadata(SystemFonts.CaptionFontFamily, OnCaptionFontFamilyChanged));
-            LegendFontFamilyProperty = DependencyProperty.Register("LegendFontFamily", typeof(FontFamily), typeof(Chart),
+            LegendFontFamilyProperty = DependencyProperty.Register(nameof(LegendFontFamily), typeof(FontFamily), typeof(Chart),
                 new FrameworkPropertyMetadata(SystemFonts.StatusFontFamily, OnLegendFontFamilyChanged));
-            CaptionFontWeightProperty = DependencyProperty.Register("CaptionFontWeight", typeof(FontWeight), typeof(Chart),
+            CaptionFontWeightProperty = DependencyProperty.Register(nameof(CaptionFontWeight), typeof(FontWeight), typeof(Chart),
                 new FrameworkPropertyMetadata(SystemFonts.CaptionFontWeight, OnCaptionFontWeightChanged));
-            LegendFontWeightProperty = DependencyProperty.Register("LegendFontWeight", typeof(FontWeight), typeof(Chart),
+            LegendFontWeightProperty = DependencyProperty.Register(nameof(LegendFontWeight), typeof(FontWeight), typeof(Chart),
                 new FrameworkPropertyMetadata(SystemFonts.StatusFontWeight, OnLegendFontWeightChanged));
-            CaptionFontStyleProperty = DependencyProperty.Register("CaptionFontStyle", typeof(FontStyle), typeof(Chart),
+            CaptionFontStyleProperty = DependencyProperty.Register(nameof(CaptionFontStyle), typeof(FontStyle), typeof(Chart),
                 new FrameworkPropertyMetadata(SystemFonts.CaptionFontStyle, OnCaptionFontStyleChanged));
-            LegendFontStyleProperty = DependencyProperty.Register("LegendFontStyle", typeof(FontStyle), typeof(Chart),
+            LegendFontStyleProperty = DependencyProperty.Register(nameof(LegendFontStyle), typeof(FontStyle), typeof(Chart),
                 new FrameworkPropertyMetadata(SystemFonts.StatusFontStyle, OnLegendFontStyleChanged));
-            CaptionFontSizeProperty = DependencyProperty.Register("CaptionFontSize", typeof(double), typeof(Chart),
+            CaptionFontSizeProperty = DependencyProperty.Register(nameof(CaptionFontSize), typeof(double), typeof(Chart),
                 new FrameworkPropertyMetadata(SystemFonts.CaptionFontSize, OnCaptionFontSizeChanged));
-            CaptionFontStretchProperty = DependencyProperty.Register("CaptionFontStretch", typeof(FontStretch), typeof(Chart),
+            CaptionFontStretchProperty = DependencyProperty.Register(nameof(CaptionFontStretch), typeof(FontStretch), typeof(Chart),
                 new FrameworkPropertyMetadata(FontStretches.Normal, OnCaptionFontStretchChanged));
-            LegendFontSizeProperty = DependencyProperty.Register("LegendFontSize", typeof(double), typeof(Chart),
+            LegendFontSizeProperty = DependencyProperty.Register(nameof(LegendFontSize), typeof(double), typeof(Chart),
                 new FrameworkPropertyMetadata(SystemFonts.StatusFontSize, OnLegendFontSizeChanged));
-            LegendAlignmentProperty = DependencyProperty.Register("LegendAlignment", typeof(LegendAlignment), typeof(Chart),
+            LegendAlignmentProperty = DependencyProperty.Register(nameof(LegendAlignment), typeof(LegendAlignment), typeof(Chart),
                 new FrameworkPropertyMetadata(LegendAlignment.Bottom, OnLegendAlignmentChanged));
-            ShowLegendProperty = DependencyProperty.Register("ShowLegend", typeof(bool), typeof(Chart),
+            ShowLegendProperty = DependencyProperty.Register(nameof(ShowLegend), typeof(bool), typeof(Chart),
                 new FrameworkPropertyMetadata(true, OnShowLegendChanged));
-            ShowValuesOnBarsAndColumnsProperty = DependencyProperty.Register("ShowValuesOnBarsAndColumns", typeof(bool), typeof(Chart),
+            ShowValuesOnBarsAndColumnsProperty = DependencyProperty.Register(nameof(ShowValuesOnBarsAndColumns), typeof(bool), typeof(Chart),
                 new FrameworkPropertyMetadata(true, OnShowValuesOnBarsAndColumnsChanged));
-            ChartStyleProperty = DependencyProperty.Register("ChartStyle", typeof(ChartStyle), typeof(Chart),
+            ChartStyleProperty = DependencyProperty.Register(nameof(ChartStyle), typeof(ChartStyle), typeof(Chart),
                 new FrameworkPropertyMetadata(ChartStyle.Lines, OnChartStyleChanged));
-            AxesValuesVisibilityProperty = DependencyProperty.Register("AxesValuesVisibility", typeof(AxesVisibility), typeof(Chart),
+            AxesValuesVisibilityProperty = DependencyProperty.Register(nameof(AxesValuesVisibility), typeof(AxesVisibility), typeof(Chart),
                 new FrameworkPropertyMetadata(AxesVisibility.Both, OnAxesValuesVisibilityChanged));
-            AxesLinesVisibilityProperty = DependencyProperty.Register("AxesLinesVisibility", typeof(AxesVisibility), typeof(Chart),
+            AxesLinesVisibilityProperty = DependencyProperty.Register(nameof(AxesLinesVisibility), typeof(AxesVisibility), typeof(Chart),
                 new FrameworkPropertyMetadata(AxesVisibility.Both, OnAxesLinesVisibilityChanged));
-            SecondaryLinesVisibilityProperty = DependencyProperty.Register("SecondaryLinesVisibility", typeof(AxesVisibility), typeof(Chart),
+            SecondaryLinesVisibilityProperty = DependencyProperty.Register(nameof(SecondaryLinesVisibility), typeof(AxesVisibility), typeof(Chart),
                 new FrameworkPropertyMetadata(AxesVisibility.Both, OnSecondaryLinesVisibilityChanged));
-            AxesValuesFormatProperty = DependencyProperty.Register("AxesValuesFormat", typeof(string), typeof(Chart),
+            AxesValuesFormatProperty = DependencyProperty.Register(nameof(AxesValuesFormat), typeof(string), typeof(Chart),
                 new FrameworkPropertyMetadata("0", OnAxesValuesFormatChanged));
-            CustomXAxisValuesProperty = DependencyProperty.Register("CustomXAxisValues", typeof(IEnumerable<string>), typeof(Chart),
+            CustomXAxisValuesProperty = DependencyProperty.Register(nameof(CustomXAxisValues), typeof(IEnumerable<string>), typeof(Chart),
                 new FrameworkPropertyMetadata(null, OnCustomXAxisValuesChanged));
-            CustomYAxisValuesProperty = DependencyProperty.Register("CustomYAxisValues", typeof(IEnumerable<string>), typeof(Chart),
+            CustomYAxisValuesProperty = DependencyProperty.Register(nameof(CustomYAxisValues), typeof(IEnumerable<string>), typeof(Chart),
                 new FrameworkPropertyMetadata(null, OnCustomYAxisValuesChanged));
-            DisabledBrushProperty = DependencyProperty.Register("DisabledBrush", typeof(Brush), typeof(Chart),
+            DisabledBrushProperty = DependencyProperty.Register(nameof(DisabledBrush), typeof(Brush), typeof(Chart),
                 new FrameworkPropertyMetadata(null));
-            MaxXProperty = DependencyProperty.Register("MaxX", typeof(double), typeof(Chart),
+            MaxXProperty = DependencyProperty.Register(nameof(MaxX), typeof(double), typeof(Chart),
                 new FrameworkPropertyMetadata(100.0, OnMaxXChanged, CoerceMaxX));
-            MaxYProperty = DependencyProperty.Register("MaxY", typeof(double), typeof(Chart),
+            MaxYProperty = DependencyProperty.Register(nameof(MaxY), typeof(double), typeof(Chart),
                 new FrameworkPropertyMetadata(100.0, OnMaxYChanged, CoerceMaxY));
-            AutoAdjustProperty = DependencyProperty.Register("AutoAdjust", typeof(bool), typeof(Chart),
+            AutoAdjustProperty = DependencyProperty.Register(nameof(AutoAdjust), typeof(bool), typeof(Chart),
                 new FrameworkPropertyMetadata(true, OnAutoAdjustChanged));
-            LegendSizeProperty = DependencyProperty.Register("LegendSize", typeof(LegendSize), typeof(Chart),
+            LegendSizeProperty = DependencyProperty.Register(nameof(LegendSize), typeof(LegendSize), typeof(Chart),
                 new FrameworkPropertyMetadata(LegendSize.ExtraSmall, OnLegendSizeChanged));
-            LegendShapeProperty = DependencyProperty.Register("LegendShape", typeof(LegendShape), typeof(Chart),
+            LegendShapeProperty = DependencyProperty.Register(nameof(LegendShape), typeof(LegendShape), typeof(Chart),
                 new FrameworkPropertyMetadata(LegendShape.Rectangle, OnLegendShapeChanged));
-            ShowTicksProperty = DependencyProperty.Register("ShowTicks",
+            ShowTicksProperty = DependencyProperty.Register(nameof(ShowTicks),
                 typeof(bool), typeof(Chart), new FrameworkPropertyMetadata(true, OnShowTicksChanged));
-            ChartBoundaryProperty = DependencyProperty.Register("ChartBoundary", typeof(ChartBoundary), typeof(Chart),
+            ChartBoundaryProperty = DependencyProperty.Register(nameof(ChartBoundary), typeof(ChartBoundary), typeof(Chart),
                 new FrameworkPropertyMetadata(ChartBoundary.WithOffset, OnChartBoundaryChanged));
-            CustomWaterfallLegendsProperty = DependencyProperty.RegisterAttached("CustomWaterfallLegends", typeof(IEnumerable<string>), typeof(Chart), new FrameworkPropertyMetadata(new[] { "Increase", "Decrease" }));
-            ItemsSourceProperty = DependencyProperty.Register("ItemsSource", typeof(IEnumerable<ISeries>), typeof(Chart), new PropertyMetadata(null, (u, e) =>
+            CustomWaterfallLegendsProperty = DependencyProperty.RegisterAttached(nameof(CustomWaterfallLegends), typeof(IEnumerable<string>), typeof(Chart), new FrameworkPropertyMetadata(new[] { "Increase", "Decrease" }));
+            ItemsSourceProperty = DependencyProperty.Register(nameof(ItemsSource), typeof(IEnumerable<ISeries>), typeof(Chart), new PropertyMetadata(null, (u, e) =>
                  {
                      if (u is Chart chart)
                      {
