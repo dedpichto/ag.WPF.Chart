@@ -629,20 +629,15 @@ namespace ag.WPF.Chart
 
                         if (series.MainBrush == null)
                         {
-                            for (var j = 0; ; j++)
+                            var min = Statics.PredefinedMainBrushes.Min(b => b.Counter);
+                            for (var i = 0; i < Statics.PredefinedMainBrushes.Length; i++)
                             {
-                                var found = false;
-                                for (var i = 0; i < Statics.PredefinedMainBrushes.Length; i++)
+                                if (Statics.PredefinedMainBrushes[i].Counter == min)
                                 {
-                                    if (Statics.PredefinedMainBrushes[i].Counter == j)
-                                    {
-                                        series.MainBrush = Statics.PredefinedMainBrushes[i].Brush;
-                                        Statics.PredefinedMainBrushes[i].Counter++;
-                                        found = true;
-                                        break;
-                                    }
+                                    series.MainBrush = Statics.PredefinedMainBrushes[i].Brush;
+                                    Statics.PredefinedMainBrushes[i].Counter++;
+                                    break;
                                 }
-                                if (found) break;
                             }
                         }
                         else
@@ -652,20 +647,15 @@ namespace ag.WPF.Chart
 
                         if (series.SecondaryBrush == null)
                         {
-                            for (var j = 0; ; j++)
+                            var min = Statics.PredefinedSecondaryBrushes.Min(b => b.Counter);
+                            for (var i = 0; i < Statics.PredefinedSecondaryBrushes.Length; i++)
                             {
-                                var found = false;
-                                for (var i = 0; i < Statics.PredefinedSecondaryBrushes.Length; i++)
+                                if (Statics.PredefinedSecondaryBrushes[i].Counter == min)
                                 {
-                                    if (Statics.PredefinedSecondaryBrushes[i].Counter == j)
-                                    {
-                                        series.SecondaryBrush = Statics.PredefinedSecondaryBrushes[i].Brush;
-                                        Statics.PredefinedSecondaryBrushes[i].Counter++;
-                                        found = true;
-                                        break;
-                                    }
+                                    series.SecondaryBrush = Statics.PredefinedSecondaryBrushes[i].Brush;
+                                    Statics.PredefinedSecondaryBrushes[i].Counter++;
+                                    break;
                                 }
-                                if (found) break;
                             }
                         }
                         else
@@ -1132,17 +1122,17 @@ namespace ag.WPF.Chart
                         if (index > -1)
                             _canvas.Children.RemoveAt(index);
 
-                        LegendsCollection.RemoveAt(e.OldStartingIndex);
+                        //LegendsCollection.RemoveAt(e.OldStartingIndex);
                         for (var i = LegendsCollection.Count - 1; i >= 0; i--)
                         {
-                            if (((Legend)LegendsCollection[i]).Index == e.OldStartingIndex)
+                            if (((Legend)LegendsCollection[i]).Index == series.Index)
                                 LegendsCollection.RemoveAt(i);
                         }
-                        foreach (Legend lg in LegendsCollection.Where(l => ((Legend)l).Index > e.OldStartingIndex))
+                        foreach (Legend lg in LegendsCollection.Where(l => ((Legend)l).Index > series.Index).ToArray())
                         {
                             lg.Index--;
                         }
-                        foreach (var sr in ItemsSource.Where(sc => sc.Index > e.OldStartingIndex))
+                        foreach (var sr in ItemsSource.Where(sc => sc.Index > series.Index).ToArray())
                         {
                             sr.Index--;
                             var b = BindingOperations.GetMultiBindingExpression(sr.Path, Path.DataProperty);
@@ -1151,7 +1141,7 @@ namespace ag.WPF.Chart
                             rebuildPieLegends(sr.Values, sr);
                         }
 
-                        series.PropertyChanged -= Series_PropertyChanged;
+                        //series.PropertyChanged -= Series_PropertyChanged;
                         if (!(bool)((Series.Series)series).GetValue(Statics.HasCustomMainBrushProperty))
                         {
                             for (var i = 0; i < Statics.PredefinedMainBrushes.Length; i++)

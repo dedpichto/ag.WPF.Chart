@@ -1267,6 +1267,7 @@ namespace ag.WPF.Chart
             var y = startY;
             for (var i = 0; i < currentSeries.Values.Count; i++)
             {
+                //var drawValue = false;
                 var value = currentSeries.Values[i].Value.PlainValue;
                 var x = i * segSize + segSize / 16;
                 Rect rect;
@@ -1277,11 +1278,12 @@ namespace ag.WPF.Chart
                     if (isPositive)
                     {
                         gm.AddGeometry(new RectangleGeometry(rect));
+                        //drawValue = true;
                     }
-                    else
-                    {
-                        gm.AddGeometry(new RectangleGeometry(new Rect(new Point(x, y), new Point(x + columnWidth, y))));
-                    }
+                    //else
+                    //{
+                    //    gm.AddGeometry(new RectangleGeometry(new Rect(new Point(x, y), new Point(x + columnWidth, y))));
+                    //}
                 }
                 else
                 {
@@ -1290,16 +1292,18 @@ namespace ag.WPF.Chart
                     if (!isPositive)
                     {
                         gm.AddGeometry(new RectangleGeometry(rect));
+                        //drawValue = true;
                     }
-                    else
-                    {
-                        gm.AddGeometry(new RectangleGeometry(new Rect(new Point(x, y), new Point(x + columnWidth, y))));
-                    }
+                    //else
+                    //{
+                    //    gm.AddGeometry(new RectangleGeometry(new Rect(new Point(x, y), new Point(x + columnWidth, y))));
+                    //}
                 }
 
                 currentSeries.RealRects.Add(rect);
 
                 // add values
+                //if (!drawValue) continue;
                 if (currentSeries.Values.Count <= i) continue;
                 if (!showValues) continue;
                 var number = !string.IsNullOrEmpty(currentSeries.Values[i].CustomValue) ? currentSeries.Values[i].CustomValue : currentSeries.Values[i].Value.PlainValue.ToString(culture);
@@ -1478,6 +1482,8 @@ namespace ag.WPF.Chart
            FontFamily fontFamily, FontStyle fontStyle, FontWeight fontWeight, FontStretch fontStretch, double fontSize,
            CultureInfo culture, FlowDirection flowDirection)
         {
+            if (currentSeries.Values.All(v => v.Value.PlainValue <= 0))
+                return null;
             const double FUNNEL_OFFSET = 2.0;
             var cgm = new CombinedGeometry { GeometryCombineMode = GeometryCombineMode.Exclude };
             var gm = new PathGeometry();
