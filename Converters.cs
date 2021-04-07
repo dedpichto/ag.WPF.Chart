@@ -584,7 +584,7 @@ namespace ag.WPF.Chart
                 return Math.Abs(max + min);
         }
 
-        internal static int GetMaxValueLength(double max, double min, int fractionPower)
+        private static int getMaxValueLength(double max, double min, int fractionPower)
         {
             // round max to next integer
             max = Math.Ceiling(max);
@@ -807,7 +807,8 @@ namespace ag.WPF.Chart
                     var maxPlus = 0.0;
                     var maxMinus = 0.0;
                     var value = 0.0;
-                    foreach (var v in tuples[0].Values.Select(v => v.Value.PlainValue))
+                    values = tuples[0].Values.Select(v => v.Value.PlainValue);
+                    foreach (var v in values)
                     {
                         value += v;
                         if (value > 0)
@@ -815,7 +816,7 @@ namespace ag.WPF.Chart
                         if (value < 0)
                             maxMinus = Math.Min(maxMinus, value);
                     }
-                    result = GetMaxValueLength(maxPlus, maxMinus, getMaxFractionPower(values));// Math.Max(maxPlus, Math.Abs(maxMinus));
+                    result = getMaxValueLength(maxPlus, maxMinus, getMaxFractionPower(values));// Math.Max(maxPlus, Math.Abs(maxMinus));
                     break;
                 case ChartStyle.Lines:
                 case ChartStyle.LinesWithMarkers:
@@ -826,7 +827,7 @@ namespace ag.WPF.Chart
                 case ChartStyle.Area:
                 case ChartStyle.SmoothArea:
                 case ChartStyle.Bubbles:
-                    result = GetMaxValueLength(values.Max(), values.Min(), getMaxFractionPower(values));
+                    result = getMaxValueLength(values.Max(), values.Min(), getMaxFractionPower(values));
                     break;
                 case ChartStyle.StackedColumns:
                 case ChartStyle.StackedBars:
@@ -843,7 +844,7 @@ namespace ag.WPF.Chart
                                     plusArr[i] += s.Values[i].Value.PlainValue;
                             }
                         }
-                        result = GetMaxValueLength(plusArr.Max(), minusArr.Min(), getMaxFractionPower(values));
+                        result = getMaxValueLength(plusArr.Max(), minusArr.Min(), getMaxFractionPower(values));
                         break;
                     }
                 case ChartStyle.StackedArea:
@@ -863,7 +864,7 @@ namespace ag.WPF.Chart
                                     arr2[i] = Math.Abs(s.Values[i].Value.PlainValue);
                             }
                         }
-                        result = GetMaxValueLength(arr2.Max(), arr1.Min(), getMaxFractionPower(values));
+                        result = getMaxValueLength(arr2.Max(), arr1.Min(), getMaxFractionPower(values));
                         break;
                     }
             }
