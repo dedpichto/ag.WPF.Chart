@@ -4,7 +4,6 @@
     xmlns:sys="clr-namespace:System;assembly=mscorlib"
     xmlns:local="clr-namespace:ag.WPF.Chart">
 
-    <local:AxesLinesConverter x:Key="AxesLinesConverter"/>
     <local:AxisYGridRowConverter x:Key="AxYRowConverter"/>
     <local:AxisXGridColumnConverter x:Key="AxisXGridColumnConverter"/>
     <local:AxisYTextAlignmentConverter x:Key="AxisYTextAlignmentConverter"/>

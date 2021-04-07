@@ -30,129 +30,133 @@ namespace ag.WPF.Chart
     public enum ChartStyle
     {
         /// <summary>
-        /// Style represented by straight lines
+        /// The style represented by straight lines
         /// </summary>
         Lines,
         /// <summary>
-        /// Style represented by straight stacked lines
+        /// The style represented by straight stacked lines
         /// </summary>
         StackedLines,
         /// <summary>
-        /// Style represented by straight 100% stacked lines
+        /// The style represented by straight 100% stacked lines
         /// </summary>
         FullStackedLines,
         /// <summary>
-        /// Style represented by smooth lines
+        /// The style represented by smooth lines
         /// </summary>
         SmoothLines,
         /// <summary>
-        /// Style represented by smooth stacked lines
+        /// The style represented by smooth stacked lines
         /// </summary>
         SmoothStackedLines,
         /// <summary>
-        /// Style represented by smooth 100% stacked lines
+        /// The style represented by smooth 100% stacked lines
         /// </summary>
         SmoothFullStackedLines,
         /// <summary>
-        /// Style represented by straight lines with markers at control ponts
+        /// The style represented by straight lines with markers at control ponts
         /// </summary>
         LinesWithMarkers,
         /// <summary>
-        /// Style represented by straight stacked lines with markers at control ponts
+        /// The style represented by straight stacked lines with markers at control ponts
         /// </summary>
         StackedLinesWithMarkers,
         /// <summary>
-        /// Style represented by straight 100% stacked lines with markers at control ponts
+        /// The style represented by straight 100% stacked lines with markers at control ponts
         /// </summary>
         FullStackedLinesWithMarkers,
         /// <summary>
-        /// Style represented by smooth lines with markers at control ponts
+        /// The style represented by smooth lines with markers at control ponts
         /// </summary>
         SmoothLinesWithMarkers,
         /// <summary>
-        /// Style represented by smooth stacked lines with markers at control ponts
+        /// The style represented by smooth stacked lines with markers at control ponts
         /// </summary>
         SmoothStackedLinesWithMarkers,
         /// <summary>
-        /// Style represented by smooth 100% stacked lines with markers at control ponts
+        /// The style represented by smooth 100% stacked lines with markers at control ponts
         /// </summary>
         SmoothFullStackedLinesWithMarkers,
         /// <summary>
-        /// Style represented by columns
+        /// The style represented by columns
         /// </summary>
         Columns,
         /// <summary>
-        /// Style represented by stacked columns
+        /// The style represented by stacked columns
         /// </summary>
         StackedColumns,
         /// <summary>
-        /// Style represented by 100% stacked columns
+        /// The style represented by 100% stacked columns
         /// </summary>
         FullStackedColumns,
         /// <summary>
-        /// Style represented by bars
+        /// The style represented by bars
         /// </summary>
         Bars,
         /// <summary>
-        /// Style represented by stacked bars
+        /// The style represented by stacked bars
         /// </summary>
         StackedBars,
         /// <summary>
-        /// Style represented by 100% stacked bars
+        /// The style represented by 100% stacked bars
         /// </summary>
         FullStackedBars,
         /// <summary>
-        /// Style represented by areas
+        /// The style represented by areas
         /// </summary>
         Area,
         /// <summary>
-        /// Style represented by stacked areas
+        /// The style represented by stacked areas
         /// </summary>
         StackedArea,
         /// <summary>
-        /// Style represented by 100% stacked areas
+        /// The style represented by 100% stacked areas
         /// </summary>
         FullStackedArea,
         /// <summary>
-        /// Style represented by smooth areas
+        /// The style represented by smooth areas
         /// </summary>
         SmoothArea,
         /// <summary>
-        /// Style represented by bubbles
+        /// The style represented by bubbles
         /// </summary>
         Bubbles,
         /// <summary>
-        /// Style represented by solid sectors
+        /// The style represented by solid sectors
         /// </summary>
         SolidPie,
         /// <summary>
-        /// Style represented by sectors divided with thin lines
+        /// The style represented by sectors divided with thin lines
         /// </summary>
         SlicedPie,
         /// <summary>
-        /// Style represented by solid arcs
+        /// The style represented by solid arcs
         /// </summary>
         Doughnut,
         /// <summary>
-        /// Style represented by cumulated effect of positive and negative values
+        /// The style represented by cumulated effect of positive and negative values
         /// </summary>
         Waterfall,
         /// <summary>
-        /// Style represented by radar
+        /// The style represented by radar
         /// </summary>
         Radar,
         /// <summary>
-        /// Style represented by radar with markers
+        /// The style represented by radar with markers
         /// </summary>
         RadarWithMarkers,
         /// <summary>
-        /// Style represented by radar areas
+        /// The style represented by radar areas
         /// </summary>
         RadarArea,
         /// <summary>
-        /// Style represented by funnel
+        /// The style represented by funnel
         /// </summary>
-        Funnel
+        Funnel,
+        /// <summary>
+        /// The finantial style represented by high, low, and close prices
+        /// </summary>
+        HighLowClose
     }
 
     /// <summary>
