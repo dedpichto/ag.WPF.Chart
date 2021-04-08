@@ -1292,6 +1292,60 @@ namespace ag.WPF.Chart
                         tooltip.Content = s.Name;
                     }
                     break;
+                case ChartStyle.HighLowClose:
+                    rc = s.RealRects.FirstOrDefault(r => r.Contains(e.GetPosition(_canvas)));
+                    if (rc != default)
+                    {
+                        var index = s.RealRects.IndexOf(rc);
+                        if (s.Values.Count <= index)
+                        {
+                            tooltip.Content = s.Name;
+                            break;
+                        }
+                        var content = $"{s.Name}\n{s.Values[index].Value.CloseValue.ToString(CultureInfo.InvariantCulture)}";
+                        if (!string.IsNullOrEmpty(s.Values[index].CustomValue))
+                            content += $"\n{s.Values[index].CustomValue}";
+                        tooltip.Content = content;
+                    }
+                    else
+                    {
+                        rc = s.RealStockHighRects.FirstOrDefault(r => r.Contains(e.GetPosition(_canvas)));
+                        if (rc != default)
+                        {
+                            var index = s.RealStockHighRects.IndexOf(rc);
+                            if (s.Values.Count <= index)
+                            {
+                                tooltip.Content = s.Name;
+                                break;
+                            }
+                            var content = $"{s.Name}\n{s.Values[index].Value.HighValue.ToString(CultureInfo.InvariantCulture)}";
+                            if (!string.IsNullOrEmpty(s.Values[index].CustomValue))
+                                content += $"\n{s.Values[index].CustomValue}";
+                            tooltip.Content = content;
+                        }
+                        else
+                        {
+                            rc = s.RealStockLowRects.FirstOrDefault(r => r.Contains(e.GetPosition(_canvas)));
+                            if (rc != default)
+                            {
+                                var index = s.RealStockLowRects.IndexOf(rc);
+                                if (s.Values.Count <= index)
+                                {
+                                    tooltip.Content = s.Name;
+                                    break;
+                                }
+                                var content = $"{s.Name}\n{s.Values[index].Value.LowValue.ToString(CultureInfo.InvariantCulture)}";
+                                if (!string.IsNullOrEmpty(s.Values[index].CustomValue))
+                                    content += $"\n{s.Values[index].CustomValue}";
+                                tooltip.Content = content;
+                            }
+                            else
+                            {
+                                tooltip.Content = s.Name;
+                            }
+                        }
+                    }
+                    break;
                 default:
                     tooltip.Content = s.Name;
                     break;

@@ -82,6 +82,10 @@ namespace ag.WPF.Chart.Series
         /// <inheritdoc />
         public List<Rect> RealRects { get; } = new List<Rect>();
         /// <inheritdoc />
+        public List<Rect> RealStockHighRects { get; } = new List<Rect>();
+        /// <inheritdoc />
+        public List<Rect> RealStockLowRects { get; } = new List<Rect>();
+        /// <inheritdoc />
         public Path Path { get; private set; }
         /// <inheritdoc />
         public Path PositivePath { get; private set; }

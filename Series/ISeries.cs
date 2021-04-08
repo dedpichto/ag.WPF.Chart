@@ -60,5 +60,13 @@ namespace ag.WPF.Chart.Series
         /// Gets real coordinates of series points
         /// </summary>
         List<Point> RealPoints { get; }
+        /// <summary>
+        /// Gets real coordinates of stock series high value rectangles
+        /// </summary>
+        List<Rect> RealStockHighRects { get; }
+        /// <summary>
+        /// Gets real coordinates of stock series low value rectangles
+        /// </summary>
+        List<Rect> RealStockLowRects { get; }
     }
 }
