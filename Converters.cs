@@ -1446,14 +1446,20 @@ namespace ag.WPF.Chart
                     {
                         var units = getUnitsForLines(seriesArray, chartStyle, dir, width, height, boundOffset, linesCountY, fmt.Height, autoAdjust, maxYConv);
                         maxX = seriesArray.Max(s => s.Values.Count);
-                        gm = drawLine(width, height, maxX, units, chartStyle, dir, seriesArray.FirstOrDefault(s => s.Index == index), offsetBoundary);
+                        var currentSeries = seriesArray.FirstOrDefault(s => s.Index == index);
+                        if (currentSeries == null)
+                            return null;
+                        gm = drawLine(width, height, maxX, units, chartStyle, dir,currentSeries , offsetBoundary);
                         break;
                     }
                 case ChartStyle.Bubbles:
                     {
                         var units = getUnitsForLines(seriesArray, chartStyle, dir, width, height, boundOffset, linesCountY, fmt.Height, autoAdjust, maxYConv);
                         maxX = seriesArray.Max(s => s.Values.Count);
-                        gm = drawBubbles(width, height, maxX, units, dir, seriesArray.FirstOrDefault(s => s.Index == index), offsetBoundary);
+                        var currentSeries = seriesArray.FirstOrDefault(s => s.Index == index);
+                        if (currentSeries == null)
+                            return null;
+                        gm = drawBubbles(width, height, maxX, units, dir, currentSeries, offsetBoundary);
                         break;
                     }
                 case ChartStyle.StackedLines:
@@ -2014,10 +2020,10 @@ namespace ag.WPF.Chart
 
             var startY = Utils.AXIS_THICKNESS;
             var currentSeries = series.FirstOrDefault(s => s.Index == index);
+            if (currentSeries == null) return null;
+
             var segSize = width / series.Max(s => s.Values.Count);
             var columnWidth = (segSize - COLUMN_BAR_OFFSET * 2) / series.Length;
-
-            if (currentSeries == null) return null;
 
             switch (dir)
             {
@@ -2169,10 +2175,11 @@ namespace ag.WPF.Chart
         {
             var rect = new Rect(new Point(x - RECT_SIZE, y - RECT_SIZE), new Point(x + RECT_SIZE, y + RECT_SIZE));
             realRects.Add(rect);
-            for (var r = RECT_SIZE; r > 0; r--)
-            {
-                gm.AddGeometry(new EllipseGeometry(new Rect(new Point(x - r, y - r), new Point(x + r, y + r))));
-            }
+            gm.AddGeometry(new EllipseGeometry(rect));
+            //for (var r = RECT_SIZE; r > 0; r--)
+            //{
+            //    gm.AddGeometry(new EllipseGeometry(new Rect(new Point(x - r, y - r), new Point(x + r, y + r))));
+            //}
         }
 
         private void drawTriangle(double x, double y, PathGeometry gm, bool up, List<Rect> realRects)
@@ -3421,7 +3428,7 @@ namespace ag.WPF.Chart
                 case ChartStyle.FullStackedLinesWithMarkers:
                 case ChartStyle.Radar:
                 case ChartStyle.RadarWithMarkers:
-                case ChartStyle.HighLowClose:
+                //case ChartStyle.HighLowClose:
                     return null;
             }
             return isEnabled ? enabledBrush : disabledBrush;

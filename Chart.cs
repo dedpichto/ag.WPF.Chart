@@ -1125,6 +1125,12 @@ namespace ag.WPF.Chart
                         var index = _canvas.Children.IndexOf(series.Path);
                         if (index > -1)
                             _canvas.Children.RemoveAt(index);
+                        index = _canvas.Children.IndexOf(series.PositivePath);
+                        if (index > -1)
+                            _canvas.Children.RemoveAt(index);
+                        index = _canvas.Children.IndexOf(series.NegativePath);
+                        if (index > -1)
+                            _canvas.Children.RemoveAt(index);
 
                         //LegendsCollection.RemoveAt(e.OldStartingIndex);
                         for (var i = LegendsCollection.Count - 1; i >= 0; i--)
