@@ -3645,7 +3645,7 @@ namespace ag.WPF.Chart
                 var totalValues = seriesEnumerable.SelectMany(s => s.Values.Select(v => (v.Value.HighValue, v.Value.LowValue)));
                 dir = Utils.GetDirectionFinancial(totalValues, chartStyle);
                 var rawValues = Utils.GetPaddedSeriesFinancial(seriesArray);
-                maxFromValues = autoAdjust ? Utils.GetMaxValueLengthFinancial(rawValues, chartStyle) : seriesArray[0].Values.Count.ToString(culture).Length;
+                maxFromValues = autoAdjust ? Utils.GetMaxValueLengthFinancial(rawValues, chartStyle) : maxY.ToString(culture).Length;
             }
             var maxFromCustom = customValues.Any() ? customValues.Max(v => v.Length) : 0;
             var maxString = new string('W', Math.Max(maxFromValues, maxFromCustom));
