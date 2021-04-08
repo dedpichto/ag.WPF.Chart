@@ -1107,16 +1107,20 @@ namespace ag.WPF.Chart
                 || !(parameter is bool isMain))
                 return Visibility.Collapsed;
 
-            if (chartStyle != ChartStyle.Waterfall)
-                return isMain
-                    ? Visibility.Visible
-                    : Visibility.Collapsed;
-            else
+            if (chartStyle.In(ChartStyle.Waterfall))
                 return isMain
                     ? Visibility.Collapsed
                     : index == 0
                         ? Visibility.Visible
                         : Visibility.Collapsed;
+            else if (chartStyle.In(ChartStyle.HighLowClose))
+                return index == 0 && isMain
+                        ? Visibility.Visible
+                        : Visibility.Collapsed;
+            else
+                return isMain
+                    ? Visibility.Visible
+                    : Visibility.Collapsed;
         }
 
         /// <summary>Converts a binding target value to the source binding values.</summary>
@@ -1449,7 +1453,7 @@ namespace ag.WPF.Chart
                         var currentSeries = seriesArray.FirstOrDefault(s => s.Index == index);
                         if (currentSeries == null)
                             return null;
-                        gm = drawLine(width, height, maxX, units, chartStyle, dir,currentSeries , offsetBoundary);
+                        gm = drawLine(width, height, maxX, units, chartStyle, dir, currentSeries, offsetBoundary);
                         break;
                     }
                 case ChartStyle.Bubbles:
@@ -2487,8 +2491,8 @@ namespace ag.WPF.Chart
 
                 gm.AddGeometry(line);
                 drawCircle(x, y3, gm, currentSeries.RealRects);
-                drawTriangle(x, y1, gm, true,currentSeries.RealStockHighRects);
-                drawTriangle(x, y2, gm, false,currentSeries.RealStockLowRects);
+                drawTriangle(x, y1, gm, true, currentSeries.RealStockHighRects);
+                drawTriangle(x, y2, gm, false, currentSeries.RealStockLowRects);
             }
             //var poly = new PolyLineSegment(highPoints, true);
             //gm.Figures.Add(new PathFigure(highPoints[0], new[] { poly }, false));
@@ -3428,7 +3432,7 @@ namespace ag.WPF.Chart
                 case ChartStyle.FullStackedLinesWithMarkers:
                 case ChartStyle.Radar:
                 case ChartStyle.RadarWithMarkers:
-                //case ChartStyle.HighLowClose:
+                    //case ChartStyle.HighLowClose:
                     return null;
             }
             return isEnabled ? enabledBrush : disabledBrush;
