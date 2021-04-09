@@ -45,13 +45,17 @@ namespace ag.WPF.Chart.Series
         /// </summary>
         Path Path { get; }
         /// <summary>
-        /// Gets drawing path for <see cref="ChartStyle.Waterfall"/> positive values
+        /// Gets drawing path for various positive values
         /// </summary>
         Path PositivePath { get; }
         /// <summary>
-        /// Gets drawing path for <see cref="ChartStyle.Waterfall"/> negative values
+        /// Gets drawing path for various negative values
         /// </summary>
         Path NegativePath { get; }
+        /// <summary>
+        /// Gets drawing path for various stock charts
+        /// </summary>
+        Path StockPath { get; }
         /// <summary>
         /// Gets real coordinates of series rectangles
         /// </summary>

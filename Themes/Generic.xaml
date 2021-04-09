@@ -28,7 +28,8 @@
     <local:RadarLinesPathConverter x:Key="RadarLinesPathConverter"/>
     <local:AxesXLinesConverter x:Key="AxesXLinesConverter"/>
     <local:AxesYLinesConverter x:Key="AxesYLinesConverter"/>
-
+    <local:LegendPieVisibilityConverter x:Key="LegendPieVisibilityConverter"/>
+    
     <Style TargetType="{x:Type local:Chart}">
         <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.WindowTextBrushKey}}"/>
         <Setter Property="Background" Value="{DynamicResource {x:Static SystemColors.WindowBrushKey}}"/>
@@ -614,21 +615,21 @@
                                 <Condition Property="ShowLegend" Value="true"/>
                                 <Condition Property="ChartStyle" Value="SolidPie"/>
                             </MultiTrigger.Conditions>
-                            <Setter Property="Visibility" TargetName="PieLegendField" Value="Visible"/>
+                            <Setter Property="Visibility" TargetName="PieLegendField" Value="{Binding ItemsSource, RelativeSource={RelativeSource Mode=TemplatedParent}, Converter={StaticResource LegendPieVisibilityConverter}}"/>
                         </MultiTrigger>
                         <MultiTrigger>
                             <MultiTrigger.Conditions>
                                 <Condition Property="ShowLegend" Value="true"/>
                                 <Condition Property="ChartStyle" Value="SlicedPie"/>
                             </MultiTrigger.Conditions>
-                            <Setter Property="Visibility" TargetName="PieLegendField" Value="Visible"/>
+                            <Setter Property="Visibility" TargetName="PieLegendField" Value="{Binding ItemsSource, RelativeSource={RelativeSource Mode=TemplatedParent}, Converter={StaticResource LegendPieVisibilityConverter}}"/>
                         </MultiTrigger>
                         <MultiTrigger>
                             <MultiTrigger.Conditions>
                                 <Condition Property="ShowLegend" Value="true"/>
                                 <Condition Property="ChartStyle" Value="Doughnut"/>
                             </MultiTrigger.Conditions>
-                            <Setter Property="Visibility" TargetName="PieLegendField" Value="Visible"/>
+                            <Setter Property="Visibility" TargetName="PieLegendField" Value="{Binding ItemsSource, RelativeSource={RelativeSource Mode=TemplatedParent}, Converter={StaticResource LegendPieVisibilityConverter}}"/>
                         </MultiTrigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>

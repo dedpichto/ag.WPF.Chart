@@ -92,6 +92,8 @@ namespace ag.WPF.Chart.Series
         /// <inheritdoc />
         public Path NegativePath { get; private set; }
         /// <inheritdoc />
+        public Path StockPath { get; private set; }
+        /// <inheritdoc />
         public List<Point> RealPoints { get; } = new List<Point>();
 
         #endregion
@@ -129,20 +131,30 @@ namespace ag.WPF.Chart.Series
             PositivePath = new Path
             {
                 StrokeThickness = 2,
-                StrokeLineJoin = PenLineJoin.Round,
-                StrokeEndLineCap = PenLineCap.Round,
-                StrokeStartLineCap = PenLineCap.Round,
-                StrokeDashCap = PenLineCap.Round,
+                StrokeLineJoin = PenLineJoin.Miter,
+                StrokeEndLineCap = PenLineCap.Flat,
+                StrokeStartLineCap = PenLineCap.Flat,
+                StrokeDashCap = PenLineCap.Flat,
                 Tag = this,
                 ToolTip = new ToolTip { Placement = PlacementMode.Mouse }
             };
             NegativePath = new Path
             {
                 StrokeThickness = 2,
-                StrokeLineJoin = PenLineJoin.Round,
-                StrokeEndLineCap = PenLineCap.Round,
-                StrokeStartLineCap = PenLineCap.Round,
-                StrokeDashCap = PenLineCap.Round,
+                StrokeLineJoin = PenLineJoin.Miter,
+                StrokeEndLineCap = PenLineCap.Flat,
+                StrokeStartLineCap = PenLineCap.Flat,
+                StrokeDashCap = PenLineCap.Flat,
+                Tag = this,
+                ToolTip = new ToolTip { Placement = PlacementMode.Mouse }
+            };
+            StockPath = new Path
+            {
+                StrokeThickness = 2,
+                StrokeLineJoin = PenLineJoin.Miter,
+                StrokeEndLineCap = PenLineCap.Flat,
+                StrokeStartLineCap = PenLineCap.Flat,
+                StrokeDashCap = PenLineCap.Flat,
                 Tag = this,
                 ToolTip = new ToolTip { Placement = PlacementMode.Mouse }
             };
