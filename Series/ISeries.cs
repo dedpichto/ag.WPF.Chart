@@ -29,13 +29,13 @@ namespace ag.WPF.Chart.Series
         /// </summary>
         Brush SecondaryBrush { get; set; }
 
-        /// <summary>
-        /// Gets array of 10 brushes used for drawing chart sectors when <see cref="ChartStyle"/> property of control is set to <see cref="ChartStyle.SolidPie"/> or <see cref="ChartStyle.SlicedPie"/> or <see cref="ag.WPF.Chart.ChartStyle.Doughnut"/>
-        /// </summary>
-        /// <remarks>
-        /// Each series has its own copy of brushes array. By default all brushes are set to solid brushes equals with colors from Office 2013 chart color scheme, but you can replace them with your own brushes.
-        /// </remarks>
-        BrushesCollection PieBrushes { get; }
+        ///// <summary>
+        ///// Gets array of 10 brushes used for drawing chart sectors when <see cref="ChartStyle"/> property of control is set to <see cref="ChartStyle.SolidPie"/> or <see cref="ChartStyle.SlicedPie"/> or <see cref="ag.WPF.Chart.ChartStyle.Doughnut"/>
+        ///// </summary>
+        ///// <remarks>
+        ///// Each series has its own copy of brushes array. By default all brushes are set to solid brushes equals with colors from Office 2013 chart color scheme, but you can replace them with your own brushes.
+        ///// </remarks>
+        //BrushesCollection PieBrushes { get; }
         /// <summary>
         /// Gets the collection of <see cref="IChartValue"/> objects associated with current series
         /// </summary>

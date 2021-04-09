@@ -5601,8 +5601,8 @@ namespace ag.WPF.Chart
 
                 var gmDrawing = new GeometryDrawing
                 {
-                    Brush = isEnabled ? series.PieBrushes[brushIndex] : disabledBrush,
-                    Pen = new Pen(isEnabled ? series.PieBrushes[brushIndex] : disabledBrush, 1),
+                    Brush = isEnabled ? Statics.PredefinedMainBrushes[brushIndex].Brush : disabledBrush,
+                    Pen = new Pen(isEnabled ? Statics.PredefinedMainBrushes[brushIndex].Brush : disabledBrush, 1),
                     Geometry = combinedGeometry
                 };
                 dGroup.Children.Add(gmDrawing);
@@ -5633,11 +5633,11 @@ namespace ag.WPF.Chart
                     currentDegrees -= addition;
                 }
 
-                if (brushIndex == series.PieBrushes.Length()) brushIndex = 0;
+                if (brushIndex == Statics.PredefinedMainBrushes.Length) brushIndex = 0;
                 var gmDrawing = new GeometryDrawing
                 {
-                    Brush = isEnabled ? series.PieBrushes[brushIndex] : disabledBrush,
-                    Pen = new Pen(isEnabled ? series.PieBrushes[brushIndex] : disabledBrush, 1)
+                    Brush = isEnabled ? Statics.PredefinedMainBrushes[brushIndex].Brush : disabledBrush,
+                    Pen = new Pen(isEnabled ? Statics.PredefinedMainBrushes[brushIndex].Brush : disabledBrush, 1)
                 };
                 brushIndex++;
 

@@ -77,8 +77,8 @@ namespace ag.WPF.Chart.Series
             }
         }
 
-        /// <inheritdoc />
-        public BrushesCollection PieBrushes { get; private set; }
+        ///// <inheritdoc />
+        //public BrushesCollection PieBrushes { get; private set; }
         /// <inheritdoc />
         public List<Rect> RealRects { get; } = new List<Rect>();
         /// <inheritdoc />
@@ -111,10 +111,10 @@ namespace ag.WPF.Chart.Series
         internal void InitFields(string name)
         {
             _values.CollectionChanged += values_CollectionChanged;
-            PieBrushes = new BrushesCollection(Statics.PredefinedMainBrushes.Length, this);
+            //PieBrushes = new BrushesCollection(Statics.PredefinedMainBrushes.Length, this);
 
-            for (var i = 0; i < PieBrushes.Length(); i++)
-                PieBrushes[i] = Statics.PredefinedMainBrushes[i].Brush;
+            //for (var i = 0; i < PieBrushes.Length(); i++)
+            //    PieBrushes[i] = Statics.PredefinedMainBrushes[i].Brush;
             Name = name;
             Path = new Path
             {

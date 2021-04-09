@@ -987,7 +987,7 @@ namespace ag.WPF.Chart
                         #region Common events
                         series.Path.MouseLeftButtonDown += Path_MouseLeftButtonDown;
                         series.Path.MouseMove += Path_MouseMove;
-                        series.PieBrushes.BrushChanged += PieBrushes_BrushChanged;
+                        //series.PieBrushes.BrushChanged += PieBrushes_BrushChanged;
 
                         series.PositivePath.MouseLeftButtonDown += Path_MouseLeftButtonDown;
                         series.PositivePath.MouseMove += Path_MouseMove;
@@ -1120,7 +1120,7 @@ namespace ag.WPF.Chart
                         //s.Values.CollectionChanged -= Values_CollectionChanged;
                         series.Path.MouseLeftButtonDown -= Path_MouseLeftButtonDown;
                         series.Path.MouseMove -= Path_MouseMove;
-                        series.PieBrushes.BrushChanged -= PieBrushes_BrushChanged;
+                        //series.PieBrushes.BrushChanged -= PieBrushes_BrushChanged;
 
                         var index = _canvas.Children.IndexOf(series.Path);
                         if (index > -1)
@@ -1233,27 +1233,27 @@ namespace ag.WPF.Chart
             OnPropertyChanged("ItemsSource");
         }
 
-        private void PieBrushes_BrushChanged(object sender, BrushChangedEventArgs e)
-        {
-            if (e.Series == null || e.Index >= e.Series.PieBrushes.Length()) return;
-            var legend = PieLegendsCollection[e.Index];
-            BindingOperations.ClearBinding(legend, Legend.LegendBackgroundProperty);
-            var legendBackgroundBinding = new MultiBinding
-            {
-                Converter = new PieLegendBrushConverter(),
-                ConverterParameter = e.Series.PieBrushes[e.Index]
-            };
-            legendBackgroundBinding.Bindings.Add(new Binding("IsEnabled")
-            {
-                Source = this
-            });
-            legendBackgroundBinding.Bindings.Add(new Binding("DisabledBrush")
-            {
-                Source = this
-            });
-            legendBackgroundBinding.NotifyOnSourceUpdated = true;
-            legend.SetBinding(Legend.LegendBackgroundProperty, legendBackgroundBinding);
-        }
+        //private void PieBrushes_BrushChanged(object sender, BrushChangedEventArgs e)
+        //{
+        //    if (e.Series == null || e.Index >= e.Series.PieBrushes.Length()) return;
+        //    var legend = PieLegendsCollection[e.Index];
+        //    BindingOperations.ClearBinding(legend, Legend.LegendBackgroundProperty);
+        //    var legendBackgroundBinding = new MultiBinding
+        //    {
+        //        Converter = new PieLegendBrushConverter(),
+        //        ConverterParameter = e.Series.PieBrushes[e.Index]
+        //    };
+        //    legendBackgroundBinding.Bindings.Add(new Binding("IsEnabled")
+        //    {
+        //        Source = this
+        //    });
+        //    legendBackgroundBinding.Bindings.Add(new Binding("DisabledBrush")
+        //    {
+        //        Source = this
+        //    });
+        //    legendBackgroundBinding.NotifyOnSourceUpdated = true;
+        //    legend.SetBinding(Legend.LegendBackgroundProperty, legendBackgroundBinding);
+        //}
 
         private void Path_MouseMove(object sender, MouseEventArgs e)
         {
@@ -1461,13 +1461,13 @@ namespace ag.WPF.Chart
             for (int i = 0, brushIndex = 0; i < values.Count; i++)
             {
                 var v = values[i];
-                if (brushIndex == series.PieBrushes.Length()) brushIndex = 0;
+                if (brushIndex == Statics.PredefinedMainBrushes.Length) brushIndex = 0;
                 var legend = new Legend();
 
                 var legendBackgroundBinding = new MultiBinding
                 {
                     Converter = new PieLegendBrushConverter(),
-                    ConverterParameter = series.PieBrushes[brushIndex++]
+                    ConverterParameter = Statics.PredefinedMainBrushes[brushIndex++].Brush
                 };
                 legendBackgroundBinding.Bindings.Add(new Binding("IsEnabled")
                 {
