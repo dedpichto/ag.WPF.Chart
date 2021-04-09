@@ -85,26 +85,31 @@ namespace ag.WPF.Chart.Series
         public List<Rect> RealStockHighRects { get; } = new List<Rect>();
         /// <inheritdoc />
         public List<Rect> RealStockLowRects { get; } = new List<Rect>();
-        /// <inheritdoc />
-        public Path Path { get; private set; }
-        /// <inheritdoc />
-        public Path PositivePath { get; private set; }
-        /// <inheritdoc />
-        public Path NegativePath { get; private set; }
-        /// <inheritdoc />
-        public Path StockPath { get; private set; }
+        ///// <inheritdoc />
+        //public Path Path { get; private set; }
+        ///// <inheritdoc />
+        //public Path PositivePath { get; private set; }
+        ///// <inheritdoc />
+        //public Path NegativePath { get; private set; }
+        ///// <inheritdoc />
+        //public Path StockPath { get; private set; }
         /// <inheritdoc />
         public List<Point> RealPoints { get; } = new List<Point>();
-
+        /// <inheritdoc />
+        public Path[] Paths { get; } = new Path[9];
         #endregion
 
         #region Event handlers
         private void values_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             if (!(sender is ChartValues chartValues)) return;
-            var multiBindiing = BindingOperations.GetMultiBindingExpression(chartValues.Path, Path.DataProperty);
-            if (multiBindiing != null)
-                multiBindiing.UpdateTarget();
+            foreach (var p in Paths)
+            {
+                if (p == null) continue;
+                var binding = BindingOperations.GetMultiBindingExpression(p, Path.DataProperty);
+                if (binding != null)
+                    binding.UpdateTarget();
+            }
             OnPropertyChanged("Values");
         }
         #endregion
@@ -118,7 +123,7 @@ namespace ag.WPF.Chart.Series
             //for (var i = 0; i < PieBrushes.Length(); i++)
             //    PieBrushes[i] = Statics.PredefinedMainBrushes[i].Brush;
             Name = name;
-            Path = new Path
+            Paths[0] = new Path
             {
                 StrokeThickness = 2,
                 StrokeLineJoin = PenLineJoin.Round,
@@ -128,37 +133,70 @@ namespace ag.WPF.Chart.Series
                 Tag = this,
                 ToolTip = new ToolTip { Placement = PlacementMode.Mouse }
             };
-            PositivePath = new Path
+            Paths[1] = new Path
             {
                 StrokeThickness = 2,
-                StrokeLineJoin = PenLineJoin.Miter,
-                StrokeEndLineCap = PenLineCap.Flat,
-                StrokeStartLineCap = PenLineCap.Flat,
-                StrokeDashCap = PenLineCap.Flat,
+                StrokeLineJoin = PenLineJoin.Round,
+                StrokeEndLineCap = PenLineCap.Round,
+                StrokeStartLineCap = PenLineCap.Round,
+                StrokeDashCap = PenLineCap.Round,
                 Tag = this,
                 ToolTip = new ToolTip { Placement = PlacementMode.Mouse }
             };
-            NegativePath = new Path
+            if (this is StockSeries)
             {
-                StrokeThickness = 2,
-                StrokeLineJoin = PenLineJoin.Miter,
-                StrokeEndLineCap = PenLineCap.Flat,
-                StrokeStartLineCap = PenLineCap.Flat,
-                StrokeDashCap = PenLineCap.Flat,
-                Tag = this,
-                ToolTip = new ToolTip { Placement = PlacementMode.Mouse }
-            };
-            StockPath = new Path
-            {
-                StrokeThickness = 2,
-                StrokeLineJoin = PenLineJoin.Miter,
-                StrokeEndLineCap = PenLineCap.Flat,
-                StrokeStartLineCap = PenLineCap.Flat,
-                StrokeDashCap = PenLineCap.Flat,
-                Tag = this,
-                ToolTip = new ToolTip { Placement = PlacementMode.Mouse }
-            };
-            _values.Path = Path;
+                Paths[2] = new Path
+                {
+                    StrokeThickness = 2,
+                    StrokeLineJoin = PenLineJoin.Miter,
+                    StrokeEndLineCap = PenLineCap.Flat,
+                    StrokeStartLineCap = PenLineCap.Flat,
+                    StrokeDashCap = PenLineCap.Flat,
+                    Tag = this,
+                    ToolTip = new ToolTip { Placement = PlacementMode.Mouse }
+                };
+            }
+            //Path = new Path
+            //{
+            //    StrokeThickness = 2,
+            //    StrokeLineJoin = PenLineJoin.Round,
+            //    StrokeEndLineCap = PenLineCap.Round,
+            //    StrokeStartLineCap = PenLineCap.Round,
+            //    StrokeDashCap = PenLineCap.Round,
+            //    Tag = this,
+            //    ToolTip = new ToolTip { Placement = PlacementMode.Mouse }
+            //};
+            //PositivePath = new Path
+            //{
+            //    StrokeThickness = 2,
+            //    StrokeLineJoin = PenLineJoin.Miter,
+            //    StrokeEndLineCap = PenLineCap.Flat,
+            //    StrokeStartLineCap = PenLineCap.Flat,
+            //    StrokeDashCap = PenLineCap.Flat,
+            //    Tag = this,
+            //    ToolTip = new ToolTip { Placement = PlacementMode.Mouse }
+            //};
+            //NegativePath = new Path
+            //{
+            //    StrokeThickness = 2,
+            //    StrokeLineJoin = PenLineJoin.Miter,
+            //    StrokeEndLineCap = PenLineCap.Flat,
+            //    StrokeStartLineCap = PenLineCap.Flat,
+            //    StrokeDashCap = PenLineCap.Flat,
+            //    Tag = this,
+            //    ToolTip = new ToolTip { Placement = PlacementMode.Mouse }
+            //};
+            //StockPath = new Path
+            //{
+            //    StrokeThickness = 2,
+            //    StrokeLineJoin = PenLineJoin.Miter,
+            //    StrokeEndLineCap = PenLineCap.Flat,
+            //    StrokeStartLineCap = PenLineCap.Flat,
+            //    StrokeDashCap = PenLineCap.Flat,
+            //    Tag = this,
+            //    ToolTip = new ToolTip { Placement = PlacementMode.Mouse }
+            //};
+            //_values.Path = Path;
         }
         #endregion
 

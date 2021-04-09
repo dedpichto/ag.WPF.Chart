@@ -40,22 +40,22 @@ namespace ag.WPF.Chart.Series
         /// Gets the collection of <see cref="IChartValue"/> objects associated with current series
         /// </summary>
         ChartValues Values { get; }
-        /// <summary>
-        /// Gets series drawing path
-        /// </summary>
-        Path Path { get; }
-        /// <summary>
-        /// Gets drawing path for various positive values
-        /// </summary>
-        Path PositivePath { get; }
-        /// <summary>
-        /// Gets drawing path for various negative values
-        /// </summary>
-        Path NegativePath { get; }
-        /// <summary>
-        /// Gets drawing path for various stock charts
-        /// </summary>
-        Path StockPath { get; }
+        ///// <summary>
+        ///// Gets series drawing path
+        ///// </summary>
+        //Path Path { get; }
+        ///// <summary>
+        ///// Gets drawing path for various positive values
+        ///// </summary>
+        //Path PositivePath { get; }
+        ///// <summary>
+        ///// Gets drawing path for various negative values
+        ///// </summary>
+        //Path NegativePath { get; }
+        ///// <summary>
+        ///// Gets drawing path for various stock charts
+        ///// </summary>
+        //Path StockPath { get; }
         /// <summary>
         /// Gets real coordinates of series rectangles
         /// </summary>
@@ -72,5 +72,9 @@ namespace ag.WPF.Chart.Series
         /// Gets real coordinates of stock series low value rectangles
         /// </summary>
         List<Rect> RealStockLowRects { get; }
+        /// <summary>
+        /// Gets array of series drawing paths
+        /// </summary>
+        Path[] Paths { get; }
     }
 }

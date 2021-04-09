@@ -13,6 +13,6 @@ namespace ag.WPF.Chart.Values
     /// </summary>
     public class ChartValues : ObservableCollection<IChartValue>
     {
-        internal Path Path { get; set; }
+        //internal Path Path { get; set; }
     }
 }
