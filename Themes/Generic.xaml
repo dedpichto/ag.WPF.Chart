@@ -33,7 +33,6 @@
     <Style TargetType="{x:Type local:Chart}">
         <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.WindowTextBrushKey}}"/>
         <Setter Property="Background" Value="{DynamicResource {x:Static SystemColors.WindowBrushKey}}"/>
-        <Setter Property="DisabledBrush" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type local:Chart}">
@@ -262,8 +261,6 @@
                                                     <Binding Path="ActualWidth" ElementName="PART_Canvas"/>
                                                     <Binding Path="ActualHeight" ElementName="PART_Canvas"/>
                                                     <Binding Path="ItemsSource" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
-                                                    <Binding Path="IsEnabled" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
-                                                    <Binding Path="DisabledBrush" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                                     <Binding Path="Background" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                                     <Binding Path="ChartStyle" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                                     <Binding Path="AxesValuesFormat" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>

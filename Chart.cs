@@ -447,10 +447,6 @@ namespace ag.WPF.Chart
         /// </summary>
         public static readonly DependencyProperty ChartOpacityProperty;
         /// <summary>
-        /// The identifier of the <see cref="DisabledBrush"/> dependency property.
-        /// </summary>
-        public static readonly DependencyProperty DisabledBrushProperty;
-        /// <summary>
         /// The identifier of the <see cref="MaxX"/> dependency property.
         /// </summary>
         public static readonly DependencyProperty MaxXProperty;
@@ -553,8 +549,6 @@ namespace ag.WPF.Chart
                 new FrameworkPropertyMetadata(null, OnCustomXAxisValuesChanged));
             CustomYAxisValuesProperty = DependencyProperty.Register(nameof(CustomYAxisValues), typeof(IEnumerable<string>), typeof(Chart),
                 new FrameworkPropertyMetadata(null, OnCustomYAxisValuesChanged));
-            DisabledBrushProperty = DependencyProperty.Register(nameof(DisabledBrush), typeof(Brush), typeof(Chart),
-                new FrameworkPropertyMetadata(null));
             MaxXProperty = DependencyProperty.Register(nameof(MaxX), typeof(double), typeof(Chart),
                 new FrameworkPropertyMetadata(100.0, OnMaxXChanged, CoerceMaxX));
             MaxYProperty = DependencyProperty.Register(nameof(MaxY), typeof(double), typeof(Chart),
@@ -761,14 +755,6 @@ namespace ag.WPF.Chart
                         {
                             Source = series
                         });
-                        strkBinding.Bindings.Add(new Binding("DisabledBrush")
-                        {
-                            Source = this
-                        });
-                        strkBinding.Bindings.Add(new Binding("IsEnabled")
-                        {
-                            Source = this
-                        });
                         strkBinding.NotifyOnSourceUpdated = true;
                         series.Paths[0].SetBinding(Shape.StrokeProperty, strkBinding);
                         #endregion
@@ -782,14 +768,6 @@ namespace ag.WPF.Chart
                         fillBinding.Bindings.Add(new Binding("MainBrush")
                         {
                             Source = series
-                        });
-                        fillBinding.Bindings.Add(new Binding("DisabledBrush")
-                        {
-                            Source = this
-                        });
-                        fillBinding.Bindings.Add(new Binding("IsEnabled")
-                        {
-                            Source = this
                         });
                         fillBinding.NotifyOnSourceUpdated = true;
                         series.Paths[0].SetBinding(Shape.FillProperty, fillBinding);
@@ -882,14 +860,6 @@ namespace ag.WPF.Chart
                         {
                             Source = series
                         });
-                        negativeStrokeBinding.Bindings.Add(new Binding("DisabledBrush")
-                        {
-                            Source = this
-                        });
-                        negativeStrokeBinding.Bindings.Add(new Binding("IsEnabled")
-                        {
-                            Source = this
-                        });
                         negativeStrokeBinding.NotifyOnSourceUpdated = true;
                         series.Paths[1].SetBinding(Shape.StrokeProperty, negativeStrokeBinding);
                         #endregion
@@ -903,14 +873,6 @@ namespace ag.WPF.Chart
                         fillNegativeBinding.Bindings.Add(new Binding("SecondaryBrush")
                         {
                             Source = series
-                        });
-                        fillNegativeBinding.Bindings.Add(new Binding("DisabledBrush")
-                        {
-                            Source = this
-                        });
-                        fillNegativeBinding.Bindings.Add(new Binding("IsEnabled")
-                        {
-                            Source = this
                         });
                         fillNegativeBinding.NotifyOnSourceUpdated = true;
                         series.Paths[1].SetBinding(Shape.FillProperty, fillNegativeBinding);
@@ -1005,14 +967,6 @@ namespace ag.WPF.Chart
                             {
                                 Source = this
                             });
-                            fillStockBinding.Bindings.Add(new Binding("DisabledBrush")
-                            {
-                                Source = this
-                            });
-                            fillStockBinding.Bindings.Add(new Binding("IsEnabled")
-                            {
-                                Source = this
-                            });
                             fillStockBinding.NotifyOnSourceUpdated = true;
                             series.Paths[2].SetBinding(Shape.FillProperty, fillStockBinding);
                             #endregion
@@ -1024,14 +978,6 @@ namespace ag.WPF.Chart
                                 Source = this
                             });
                             strokeStockBinding.Bindings.Add(new Binding("Foreground")
-                            {
-                                Source = this
-                            });
-                            strokeStockBinding.Bindings.Add(new Binding("DisabledBrush")
-                            {
-                                Source = this
-                            });
-                            strokeStockBinding.Bindings.Add(new Binding("IsEnabled")
                             {
                                 Source = this
                             });
@@ -1071,21 +1017,7 @@ namespace ag.WPF.Chart
                         #region Main legend
                         var legend = new Legend() { Index = series.Index };
 
-                        var legendBackgroundBinding = new MultiBinding { Converter = new PathBrushConverter() };
-                        legendBackgroundBinding.Bindings.Add(new Binding("IsEnabled")
-                        {
-                            Source = this
-                        });
-                        legendBackgroundBinding.Bindings.Add(new Binding("MainBrush")
-                        {
-                            Source = series
-                        });
-                        legendBackgroundBinding.Bindings.Add(new Binding("DisabledBrush")
-                        {
-                            Source = this
-                        });
-                        legendBackgroundBinding.NotifyOnSourceUpdated = true;
-                        legend.SetBinding(Legend.LegendBackgroundProperty, legendBackgroundBinding);
+                        legend.Background = series.MainBrush;
 
                         var legendVisibilityBinding = new MultiBinding { Converter = new LegendVisibilityConverter() };
                         legendVisibilityBinding.Bindings.Add(new Binding("ChartStyle")
@@ -1106,21 +1038,7 @@ namespace ag.WPF.Chart
 
                         #region Positive waterfall legend
                         legend = new Legend() { Index = series.Index };
-                        legendBackgroundBinding = new MultiBinding { Converter = new PathBrushConverter() };
-                        legendBackgroundBinding.Bindings.Add(new Binding("IsEnabled")
-                        {
-                            Source = this
-                        });
-                        legendBackgroundBinding.Bindings.Add(new Binding("MainBrush")
-                        {
-                            Source = series
-                        });
-                        legendBackgroundBinding.Bindings.Add(new Binding("DisabledBrush")
-                        {
-                            Source = this
-                        });
-                        legendBackgroundBinding.NotifyOnSourceUpdated = true;
-                        legend.SetBinding(Legend.LegendBackgroundProperty, legendBackgroundBinding);
+                        legend.Background = series.MainBrush;
 
                         legendVisibilityBinding = new MultiBinding { Converter = new LegendWaterfallVisibilityConverter() };
                         legendVisibilityBinding.Bindings.Add(new Binding("ChartStyle")
@@ -1144,21 +1062,7 @@ namespace ag.WPF.Chart
 
                         #region Negative waterfall legend
                         legend = new Legend() { Index = series.Index };
-                        legendBackgroundBinding = new MultiBinding { Converter = new PathBrushConverter() };
-                        legendBackgroundBinding.Bindings.Add(new Binding("IsEnabled")
-                        {
-                            Source = this
-                        });
-                        legendBackgroundBinding.Bindings.Add(new Binding("SecondaryBrush")
-                        {
-                            Source = series
-                        });
-                        legendBackgroundBinding.Bindings.Add(new Binding("DisabledBrush")
-                        {
-                            Source = this
-                        });
-                        legendBackgroundBinding.NotifyOnSourceUpdated = true;
-                        legend.SetBinding(Legend.LegendBackgroundProperty, legendBackgroundBinding);
+                        legend.Background = series.SecondaryBrush;
 
                         legendVisibilityBinding = new MultiBinding { Converter = new LegendWaterfallVisibilityConverter() };
                         legendVisibilityBinding.Bindings.Add(new Binding("ChartStyle")
@@ -1183,21 +1087,7 @@ namespace ag.WPF.Chart
 
                         #region Stock legend
                         legend = new Legend() { Index = series.Index };
-                        legendBackgroundBinding = new MultiBinding { Converter = new PathBrushConverter() };
-                        legendBackgroundBinding.Bindings.Add(new Binding("IsEnabled")
-                        {
-                            Source = this
-                        });
-                        legendBackgroundBinding.Bindings.Add(new Binding("Foreground")
-                        {
-                            Source = this
-                        });
-                        legendBackgroundBinding.Bindings.Add(new Binding("DisabledBrush")
-                        {
-                            Source = this
-                        });
-                        legendBackgroundBinding.NotifyOnSourceUpdated = true;
-                        legend.SetBinding(Legend.LegendBackgroundProperty, legendBackgroundBinding);
+                        legend.Background = Foreground;
 
                         legendVisibilityBinding = new MultiBinding { Converter = new LegendStockVisibilityConverter() };
                         legendVisibilityBinding.Bindings.Add(new Binding("ChartStyle")
@@ -1222,21 +1112,7 @@ namespace ag.WPF.Chart
 
                         #region Up stock legend
                         legend = new Legend() { Index = series.Index };
-                        legendBackgroundBinding = new MultiBinding { Converter = new PathBrushConverter() };
-                        legendBackgroundBinding.Bindings.Add(new Binding("IsEnabled")
-                        {
-                            Source = this
-                        });
-                        legendBackgroundBinding.Bindings.Add(new Binding("MainBrush")
-                        {
-                            Source = series
-                        });
-                        legendBackgroundBinding.Bindings.Add(new Binding("DisabledBrush")
-                        {
-                            Source = this
-                        });
-                        legendBackgroundBinding.NotifyOnSourceUpdated = true;
-                        legend.SetBinding(Legend.LegendBackgroundProperty, legendBackgroundBinding);
+                        legend.Background = series.MainBrush;
 
                         legendVisibilityBinding = new MultiBinding { Converter = new LegendStockVisibilityConverter() };
                         legendVisibilityBinding.Bindings.Add(new Binding("ChartStyle")
@@ -1260,21 +1136,7 @@ namespace ag.WPF.Chart
 
                         #region Stock down legend
                         legend = new Legend() { Index = series.Index };
-                        legendBackgroundBinding = new MultiBinding { Converter = new PathBrushConverter() };
-                        legendBackgroundBinding.Bindings.Add(new Binding("IsEnabled")
-                        {
-                            Source = this
-                        });
-                        legendBackgroundBinding.Bindings.Add(new Binding("SecondaryBrush")
-                        {
-                            Source = series
-                        });
-                        legendBackgroundBinding.Bindings.Add(new Binding("DisabledBrush")
-                        {
-                            Source = this
-                        });
-                        legendBackgroundBinding.NotifyOnSourceUpdated = true;
-                        legend.SetBinding(Legend.LegendBackgroundProperty, legendBackgroundBinding);
+                        legend.Background = series.SecondaryBrush;
 
                         legendVisibilityBinding = new MultiBinding { Converter = new LegendStockVisibilityConverter() };
                         legendVisibilityBinding.Bindings.Add(new Binding("ChartStyle")
@@ -1457,28 +1319,6 @@ namespace ag.WPF.Chart
             }
             OnPropertyChanged("ItemsSource");
         }
-
-        //private void PieBrushes_BrushChanged(object sender, BrushChangedEventArgs e)
-        //{
-        //    if (e.Series == null || e.Index >= e.Series.PieBrushes.Length()) return;
-        //    var legend = PieLegendsCollection[e.Index];
-        //    BindingOperations.ClearBinding(legend, Legend.LegendBackgroundProperty);
-        //    var legendBackgroundBinding = new MultiBinding
-        //    {
-        //        Converter = new PieLegendBrushConverter(),
-        //        ConverterParameter = e.Series.PieBrushes[e.Index]
-        //    };
-        //    legendBackgroundBinding.Bindings.Add(new Binding("IsEnabled")
-        //    {
-        //        Source = this
-        //    });
-        //    legendBackgroundBinding.Bindings.Add(new Binding("DisabledBrush")
-        //    {
-        //        Source = this
-        //    });
-        //    legendBackgroundBinding.NotifyOnSourceUpdated = true;
-        //    legend.SetBinding(Legend.LegendBackgroundProperty, legendBackgroundBinding);
-        //}
 
         private void Path_MouseMove(object sender, MouseEventArgs e)
         {
@@ -1696,21 +1536,7 @@ namespace ag.WPF.Chart
                 if (brushIndex == Statics.PredefinedMainBrushes.Length) brushIndex = 0;
                 var legend = new Legend();
 
-                var legendBackgroundBinding = new MultiBinding
-                {
-                    Converter = new PieLegendBrushConverter(),
-                    ConverterParameter = Statics.PredefinedMainBrushes[brushIndex++].Brush
-                };
-                legendBackgroundBinding.Bindings.Add(new Binding("IsEnabled")
-                {
-                    Source = this
-                });
-                legendBackgroundBinding.Bindings.Add(new Binding("DisabledBrush")
-                {
-                    Source = this
-                });
-                legendBackgroundBinding.NotifyOnSourceUpdated = true;
-                legend.SetBinding(Legend.LegendBackgroundProperty, legendBackgroundBinding);
+                legend.Background = Statics.PredefinedMainBrushes[brushIndex++].Brush;
 
                 var textBinding = new MultiBinding { Converter = new PieSectionTextConverter(), ConverterParameter = v };
                 textBinding.Bindings.Add(new Binding("Values") { Source = series });
@@ -1853,16 +1679,6 @@ namespace ag.WPF.Chart
         {
             get { return (double)GetValue(ChartOpacityProperty); }
             set { SetValue(ChartOpacityProperty, value); }
-        }
-        /// <summary>
-        /// Gets or sets the brush used for drawing the chart when control is disabled.
-        /// </summary>
-        [EditorBrowsable(EditorBrowsableState.Never), Browsable(false)]
-        [Category("ChartAppearance"), Description("Gets or sets the brush used for drawing the chart when control is disabled")]
-        public Brush DisabledBrush
-        {
-            get { return (Brush)GetValue(DisabledBrushProperty); }
-            set { SetValue(DisabledBrushProperty, value); }
         }
         /// <summary>
         /// Gets or sets the sequence of strings to be drawn next to x-axis instead of numeric values.
