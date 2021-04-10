@@ -206,6 +206,29 @@ namespace ag.WPF.Chart
     }
 
     /// <summary>
+    /// Specifies auto-adjustment mode of chart control
+    /// </summary>
+    public enum AutoAdjustment
+    {
+        /// <summary>
+        /// No auto-adjustment
+        /// </summary>
+        None,
+        /// <summary>
+        /// Horizontal values are auto-adjusted
+        /// </summary>
+        Horizontal,
+        /// <summary>
+        /// Vertical values are auto-adjusted
+        /// </summary>
+        Vertical,
+        /// <summary>
+        /// Both horizontal and vertical values are auto-adjusted
+        /// </summary>
+        Botn
+    }
+
+    /// <summary>
     /// Specifies size of legend
     /// </summary>
     public enum LegendSize
@@ -455,9 +478,9 @@ namespace ag.WPF.Chart
         /// </summary>
         public static readonly DependencyProperty MaxYProperty;
         /// <summary>
-        /// The identifier of the <see cref="AutoAdjust"/> dependency property.
+        /// The identifier of the <see cref="AutoAdjustment"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty AutoAdjustProperty;
+        public static readonly DependencyProperty AutoAdjustmentProperty;
         /// <summary>
         /// The identifier of the <see cref="LegendSize"/> dependency property.
         /// </summary>
@@ -553,8 +576,8 @@ namespace ag.WPF.Chart
                 new FrameworkPropertyMetadata(100.0, OnMaxXChanged, CoerceMaxX));
             MaxYProperty = DependencyProperty.Register(nameof(MaxY), typeof(double), typeof(Chart),
                 new FrameworkPropertyMetadata(100.0, OnMaxYChanged, CoerceMaxY));
-            AutoAdjustProperty = DependencyProperty.Register(nameof(AutoAdjust), typeof(bool), typeof(Chart),
-                new FrameworkPropertyMetadata(true, OnAutoAdjustChanged));
+            AutoAdjustmentProperty = DependencyProperty.Register(nameof(AutoAdjustment), typeof(bool), typeof(Chart),
+                new FrameworkPropertyMetadata(true, OnAutoAdjustmentChanged));
             LegendSizeProperty = DependencyProperty.Register(nameof(LegendSize), typeof(LegendSize), typeof(Chart),
                 new FrameworkPropertyMetadata(LegendSize.ExtraSmall, OnLegendSizeChanged));
             LegendShapeProperty = DependencyProperty.Register(nameof(LegendShape), typeof(LegendShape), typeof(Chart),
@@ -706,7 +729,7 @@ namespace ag.WPF.Chart
                             {
                                 Source = series
                             });
-                            ptsBinding.Bindings.Add(new Binding("AutoAdjust")
+                            ptsBinding.Bindings.Add(new Binding("AutoAdjustment")
                             {
                                 Source = this
                             });
@@ -1385,15 +1408,15 @@ namespace ag.WPF.Chart
         /// </summary>
         /// <remarks>This property will have no effect if <see cref="ChartStyle"/> property is set to <see cref="ChartStyle.SolidPie"/> or <see cref="ChartStyle.SlicedPie"/> or <see cref="ChartStyle.Doughnut"/>.</remarks>
         [Category("ChartAppearance"), Description("Specifies whether control will automatically adjust its max x- and y- values or they should be set explicitly")]
-        public bool AutoAdjust
+        public bool AutoAdjustment
         {
-            get { return (bool)GetValue(AutoAdjustProperty); }
-            set { SetValue(AutoAdjustProperty, value); }
+            get { return (bool)GetValue(AutoAdjustmentProperty); }
+            set { SetValue(AutoAdjustmentProperty, value); }
         }
         /// <summary>
         /// Gets or sets max numeric value for y-axis. The default value is 100.
         /// </summary>
-        /// <remarks>This property will have no effect if <see cref="AutoAdjust"/> property is set to true.</remarks>
+        /// <remarks>This property will have no effect if <see cref="AutoAdjustment"/> property is set to true.</remarks>
         [Category("ChartMeasures"), Description("Gets or sets max numeric value for y-axis. The default value is 100")]
         public double MaxY
         {
@@ -1403,7 +1426,7 @@ namespace ag.WPF.Chart
         /// <summary>
         /// Gets or sets max numeric value for x-axis. The default value is 100.
         /// </summary>
-        /// <remarks>This property will have no effect if <see cref="AutoAdjust"/> property is set to true.</remarks>
+        /// <remarks>This property will have no effect if <see cref="AutoAdjustment"/> property is set to true.</remarks>
         [Category("ChartMeasures"), Description("Gets or sets max numeric value for x-axis. The default value is 100")]
         public double MaxX
         {
@@ -1930,21 +1953,21 @@ namespace ag.WPF.Chart
             RaiseEvent(e);
         }
 
-        private static void OnAutoAdjustChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
+        private static void OnAutoAdjustmentChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
             if (!(sender is Chart ch)) return;
-            ch.OnAutoAdjustChanged((bool)e.OldValue, (bool)e.NewValue);
+            ch.OnAutoAdjustmentChanged((bool)e.OldValue, (bool)e.NewValue);
         }
         /// <summary>
-        /// Invoked just before the <see cref="AutoAdjustChangedEvent"/> event is raised on control
+        /// Invoked just before the <see cref="AutoAdjustmentChangedEvent"/> event is raised on control
         /// </summary>
         /// <param name="oldValue">Old value</param>
         /// <param name="newValue">New value</param>
-        protected void OnAutoAdjustChanged(bool oldValue, bool newValue)
+        protected void OnAutoAdjustmentChanged(bool oldValue, bool newValue)
         {
             var e = new RoutedPropertyChangedEventArgs<bool>(oldValue, newValue)
             {
-                RoutedEvent = AutoAdjustChangedEvent
+                RoutedEvent = AutoAdjustmentChangedEvent
             };
             RaiseEvent(e);
         }
@@ -2790,17 +2813,17 @@ namespace ag.WPF.Chart
             RoutingStrategy.Bubble, typeof(RoutedPropertyChangedEventHandler<ChartStyle>), typeof(Chart));
 
         /// <summary>
-        /// Occurs when the <see cref="AutoAdjust"/> property has been changed in some way
+        /// Occurs when the <see cref="AutoAdjustment"/> property has been changed in some way
         /// </summary>
-        public event RoutedPropertyChangedEventHandler<bool> AutoAdjustChanged
+        public event RoutedPropertyChangedEventHandler<bool> AutoAdjustmentChanged
         {
-            add { AddHandler(AutoAdjustChangedEvent, value); }
-            remove { RemoveHandler(AutoAdjustChangedEvent, value); }
+            add { AddHandler(AutoAdjustmentChangedEvent, value); }
+            remove { RemoveHandler(AutoAdjustmentChangedEvent, value); }
         }
         /// <summary>
-        /// Identifies the <see cref="AutoAdjustChanged"/> routed event
+        /// Identifies the <see cref="AutoAdjustmentChanged"/> routed event
         /// </summary>
-        public static readonly RoutedEvent AutoAdjustChangedEvent = EventManager.RegisterRoutedEvent("AutoAdjustChanged",
+        public static readonly RoutedEvent AutoAdjustmentChangedEvent = EventManager.RegisterRoutedEvent("AutoAdjustmentChanged",
             RoutingStrategy.Bubble, typeof(RoutedPropertyChangedEventHandler<bool>), typeof(Chart));
 
         /// <summary>
