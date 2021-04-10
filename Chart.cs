@@ -746,7 +746,7 @@ namespace ag.WPF.Chart
                         {
                             Source = this
                         });
-                        ptsBinding.ConverterParameter = ColoredPaths.Up;
+                        ptsBinding.ConverterParameter = (0, ColoredPaths.Up);
                         ptsBinding.NotifyOnSourceUpdated = true;
                         series.Paths[0].SetBinding(Path.DataProperty, ptsBinding);
                         #endregion
@@ -867,9 +867,31 @@ namespace ag.WPF.Chart
                         {
                             Source = this
                         });
-                        negativeWaterfallBinding.ConverterParameter = ColoredPaths.Down;
+                        negativeWaterfallBinding.ConverterParameter = (1, ColoredPaths.Down);
                         negativeWaterfallBinding.NotifyOnSourceUpdated = true;
                         series.Paths[1].SetBinding(Path.DataProperty, negativeWaterfallBinding);
+                        #endregion
+
+                        #region Negative series stroke
+                        var negativeStrokeBinding = new MultiBinding { Converter = new PathStrokeConverter() };
+                        negativeStrokeBinding.Bindings.Add(new Binding("ChartStyle")
+                        {
+                            Source = this
+                        });
+                        negativeStrokeBinding.Bindings.Add(new Binding("MainBrush")
+                        {
+                            Source = series
+                        });
+                        negativeStrokeBinding.Bindings.Add(new Binding("DisabledBrush")
+                        {
+                            Source = this
+                        });
+                        negativeStrokeBinding.Bindings.Add(new Binding("IsEnabled")
+                        {
+                            Source = this
+                        });
+                        negativeStrokeBinding.NotifyOnSourceUpdated = true;
+                        series.Paths[1].SetBinding(Shape.StrokeProperty, negativeStrokeBinding);
                         #endregion
 
                         #region Negative waterfall fill
@@ -968,7 +990,7 @@ namespace ag.WPF.Chart
                             {
                                 Source = this
                             });
-                            stockPathBinding.ConverterParameter = ColoredPaths.Stock;
+                            stockPathBinding.ConverterParameter = (2, ColoredPaths.Stock);
                             stockPathBinding.NotifyOnSourceUpdated = true;
                             series.Paths[2].SetBinding(Path.DataProperty, stockPathBinding);
                             #endregion
@@ -1025,7 +1047,7 @@ namespace ag.WPF.Chart
                         //#endregion
 
                         #region Common events
-                        foreach(var p in series.Paths)
+                        foreach (var p in series.Paths)
                         {
                             if (p == null) continue;
                             p.SetBinding(OpacityProperty, new Binding("ChartOpacity") { Source = this });
@@ -1297,7 +1319,7 @@ namespace ag.WPF.Chart
 
                         series.PropertyChanged -= Series_PropertyChanged;
                         //s.Values.CollectionChanged -= Values_CollectionChanged;
-                        foreach(var p in series.Paths)
+                        foreach (var p in series.Paths)
                         {
                             if (p == null) continue;
                             p.MouseLeftButtonDown -= Path_MouseLeftButtonDown;
@@ -1419,7 +1441,7 @@ namespace ag.WPF.Chart
                     {
                         foreach (var sr in ItemsSource.Where(s => s.Index != series.Index))
                         {
-                            foreach(var p in sr.Paths)
+                            foreach (var p in sr.Paths)
                             {
                                 if (p == null) continue;
                                 var b = BindingOperations.GetMultiBindingExpression(p, Path.DataProperty);
@@ -1639,7 +1661,7 @@ namespace ag.WPF.Chart
                 binding.UpdateTarget();
             foreach (var series in ItemsSource)
             {
-                foreach(var p in series.Paths)
+                foreach (var p in series.Paths)
                 {
                     if (p == null) continue;
                     binding = BindingOperations.GetMultiBindingExpression(p, Path.DataProperty);
