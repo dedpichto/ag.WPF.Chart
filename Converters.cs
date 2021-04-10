@@ -151,7 +151,7 @@ namespace ag.WPF.Chart
             return units;
         }
 
-        internal static double GetUnitsForLines(ISeries[] series, ChartStyle chartStyle, Directions dir, double width, double height, double boundOffset, int linesCountY, double formatHeight, bool autoAdjust, double maxY)
+        internal static double GetUnitsForLines(ISeries[] series, ChartStyle chartStyle, Directions dir, double width, double height, double boundOffset, int linesCountY, double formatHeight, AutoAdjustmentMode autoAdjust, double maxY)
         {
             var centerX = 0.0;
             var radius = 0.0;
@@ -173,7 +173,7 @@ namespace ag.WPF.Chart
                     radius = (height - Utils.AXIS_THICKNESS) / 2;
                     break;
             }
-            if (!autoAdjust)
+            if (!autoAdjust.In(AutoAdjustmentMode.Both, AutoAdjustmentMode.Vertical))
                 return radius / maxY;
             var centerPoint = new Point(centerX, radius);
             var (_, _, _, _, _, units, _) = Utils.GetMeasures(
@@ -1220,7 +1220,7 @@ namespace ag.WPF.Chart
                 || chartStyle.In(ChartStyle.SolidPie, ChartStyle.SlicedPie, ChartStyle.Doughnut)
                 || !(values[4] is int index)
                 || chartStyle.In(ChartStyle.Waterfall, ChartStyle.HighLowClose) && index > 0
-                || !(values[5] is bool autoAdjust)
+                || !(values[5] is AutoAdjustmentMode autoAdjust)
                 || !(values[6] is double maxXConv)
                 || !(values[7] is double maxYConv)
                 || !(values[8] is ChartBoundary chartBoundary)
@@ -1639,7 +1639,7 @@ namespace ag.WPF.Chart
             return cgm;
         }
 
-        private double getUnitsForBars(ISeries[] series, ChartStyle chartStyle, Directions dir, double width, double height, double boundOffset, int linesCountX, double formatHeight, bool autoAdjust, double maxX)
+        private double getUnitsForBars(ISeries[] series, ChartStyle chartStyle, Directions dir, double width, double height, double boundOffset, int linesCountX, double formatHeight, AutoAdjustmentMode autoAdjust, double maxX)
         {
             var centerX = 0.0;
             var radius = 0.0;
@@ -1661,7 +1661,7 @@ namespace ag.WPF.Chart
                     radius = width - Utils.AXIS_THICKNESS;
                     break;
             }
-            if (!autoAdjust)
+            if (!autoAdjust.In(AutoAdjustmentMode.Both, AutoAdjustmentMode.Horizontal))
                 return radius / maxX;
             var centerPoint = new Point(centerX, radius);
             var (_, _, _, _, _, units, _) = Utils.GetMeasures(
@@ -3467,7 +3467,7 @@ namespace ag.WPF.Chart
                 || !(values[5] is FontStyle fontStyle)
                 || !(values[6] is FontWeight fontWeight)
                 || !(values[7] is FontStretch fontStretch)
-                || !(values[9] is bool autoAdjust)
+                || !(values[9] is AutoAdjustmentMode autoAdjust)
                 || !(values[10] is double maxX))
                 return 0.0;
 
@@ -3489,12 +3489,12 @@ namespace ag.WPF.Chart
                 if (Utils.StyleBars(chartStyle))
                 {
                     var rawValues = Utils.GetPaddedSeries(series);
-                    maxFromValues = autoAdjust ? Utils.GetMaxValueLength(rawValues, chartStyle) : maxX.ToString(culture).Length;
+                    maxFromValues = autoAdjust.In(AutoAdjustmentMode.Both, AutoAdjustmentMode.Vertical) ? Utils.GetMaxValueLength(rawValues, chartStyle) : maxX.ToString(culture).Length;
                 }
                 else
                 {
                     var maxV = chartStyle != ChartStyle.Waterfall ? series.Max(s => s.Values.Count).ToString(culture).Length : series[0].Values.Count.ToString(culture).Length;
-                    maxFromValues = autoAdjust ? maxV : maxX.ToString(culture).Length;
+                    maxFromValues = autoAdjust.In(AutoAdjustmentMode.Both, AutoAdjustmentMode.Horizontal) ? maxV : maxX.ToString(culture).Length;
                 }
             }
             else
@@ -3504,7 +3504,7 @@ namespace ag.WPF.Chart
                 var totalValues = series[0].Values.Select(v => (v.Value.HighValue, v.Value.LowValue));
                 dir = Utils.GetDirectionFinancial(totalValues, chartStyle);
                 //var rawValues = Utils.GetPaddedSeriesFinancial(series[0]);
-                maxFromValues = autoAdjust ? series[0].Values.Count.ToString(culture).Length : maxX.ToString(culture).Length;
+                maxFromValues = autoAdjust.In(AutoAdjustmentMode.Both, AutoAdjustmentMode.Vertical) ? series[0].Values.Count.ToString(culture).Length : maxX.ToString(culture).Length;
             }
             var maxString = customValues.Any()
                 ? customValues.FirstOrDefault(c => c.Length == customValues.Max(v => v.Length))
@@ -3561,7 +3561,7 @@ namespace ag.WPF.Chart
                 || !(values[5] is FontStyle fontStyle)
                 || !(values[6] is FontWeight fontWeight)
                 || !(values[7] is FontStretch fontStretch)
-                || !(values[9] is bool autoAdjust)
+                || !(values[9] is AutoAdjustmentMode autoAdjust)
                 || !(values[10] is double maxY))
                 return 0.0;
             var width = 28.0;
@@ -3589,7 +3589,7 @@ namespace ag.WPF.Chart
                         ? Utils.GetPaddedSeries(seriesArray)
                         : new List<(List<IChartValue> Values, int Index)> { (seriesArray[0].Values.ToList(), seriesArray[0].Index) };
                     maxFromValues = chartStyle != ChartStyle.Funnel
-                            ? autoAdjust
+                            ? autoAdjust.In(AutoAdjustmentMode.Both, AutoAdjustmentMode.Vertical)
                                 ? Utils.GetMaxValueLength(rawValues, chartStyle)
                                 : maxY.ToString(culture).Length
                             : seriesArray[0].Values.Count.ToString(culture).Length;
@@ -3597,7 +3597,7 @@ namespace ag.WPF.Chart
                 else
                 {
                     var maxV = seriesArray.Max(s => s.Values.Count).ToString(culture).Length;
-                    maxFromValues = autoAdjust ? maxV : maxY.ToString(culture).Length;
+                    maxFromValues = autoAdjust.In(AutoAdjustmentMode.Both, AutoAdjustmentMode.Horizontal) ? maxV : maxY.ToString(culture).Length;
                 }
             }
             else
@@ -3607,7 +3607,7 @@ namespace ag.WPF.Chart
                 var totalValues = seriesArray[0].Values.Select(v => (v.Value.HighValue, v.Value.LowValue));
                 dir = Utils.GetDirectionFinancial(totalValues, chartStyle);
                 var rawValues = Utils.GetPaddedSeriesFinancial(seriesArray[0]);
-                maxFromValues = autoAdjust ? Utils.GetMaxValueLengthFinancial(rawValues, chartStyle) : maxY.ToString(culture).Length;
+                maxFromValues = autoAdjust.In(AutoAdjustmentMode.Both, AutoAdjustmentMode.Horizontal) ? Utils.GetMaxValueLengthFinancial(rawValues, chartStyle) : maxY.ToString(culture).Length;
             }
             var maxString = customValues.Any()
                 ? customValues.FirstOrDefault(c => c.Length == customValues.Max(v => v.Length))
@@ -3741,7 +3741,7 @@ namespace ag.WPF.Chart
                 || !(values[7] is FontStyle fontStyle)
                 || !(values[8] is FontWeight fontWeight)
                 || !(values[9] is FontStretch fontStretch)
-                || !(values[12] is bool autoAdjust)
+                || !(values[12] is AutoAdjustmentMode autoAdjust)
                 || !(values[14] is FlowDirection flowDir))
                 return null;
 
@@ -3761,7 +3761,7 @@ namespace ag.WPF.Chart
 
             var dir = Utils.GetDirection(totalValues, chartStyle);
 
-            if (!autoAdjust)
+            if (!autoAdjust.In(AutoAdjustmentMode.Both, AutoAdjustmentMode.Vertical))
             {
                 ticks = linesCount;
             }
@@ -3826,7 +3826,7 @@ namespace ag.WPF.Chart
                 || !(values[7] is FontStyle fontStyle)
                 || !(values[8] is FontWeight fontWeight)
                 || !(values[9] is FontStretch fontStretch)
-                || !(values[12] is bool autoAdjust)
+                || !(values[12] is AutoAdjustmentMode autoAdjust)
                 || !(values[13] is double maxY)
                 || !(values[14] is FlowDirection flowDir))
                 return null;
@@ -3889,7 +3889,7 @@ namespace ag.WPF.Chart
             var fmtY = new FormattedText("AAA", culture, FlowDirection.LeftToRight,
                     new Typeface(fontFamily, fontStyle, fontWeight, fontStretch), fontSize, Brushes.Black, VisualTreeHelper.GetDpi(Utils.Border).PixelsPerDip);
 
-            var (max, min, realLinesCount, stepSize, stepLength, units, _) = autoAdjust
+            var (max, min, realLinesCount, stepSize, stepLength, units, _) = autoAdjust.In(AutoAdjustmentMode.Both, AutoAdjustmentMode.Vertical)
                 ? Utils.GetMeasures(
                    chartStyle,
                    series,
@@ -4044,7 +4044,7 @@ namespace ag.WPF.Chart
                 || !(values[7] is FontStyle fontStyle)
                 || !(values[8] is FontWeight fontWeight)
                 || !(values[9] is FontStretch fontStretch)
-                || !(values[11] is bool autoAdjust)
+                || !(values[11] is AutoAdjustmentMode autoAdjust)
                 || !(values[12] is double maxX)
                 || !(values[13] is FlowDirection flowDir)
                 || !(values[14] is ChartBoundary chartBoundary))
@@ -4124,7 +4124,7 @@ namespace ag.WPF.Chart
                 var fmtY = new FormattedText("AAA", culture, FlowDirection.LeftToRight,
                     new Typeface(fontFamily, fontStyle, fontWeight, fontStretch), fontSize, Brushes.Black, VisualTreeHelper.GetDpi(Utils.Border).PixelsPerDip);
 
-                var (max, min, realLinesCount, stepS, stepL, units, zeroPoint) = autoAdjust
+                var (max, min, realLinesCount, stepS, stepL, units, zeroPoint) = autoAdjust.In(AutoAdjustmentMode.Both, AutoAdjustmentMode.Horizontal)
                     ? Utils.GetMeasures(
                        chartStyle,
                        series,
@@ -4172,7 +4172,7 @@ namespace ag.WPF.Chart
                     {
                         if (!Utils.StyleBars(chartStyle))
                         {
-                            if (autoAdjust)
+                            if (autoAdjust.In(AutoAdjustmentMode.Both, AutoAdjustmentMode.Horizontal))
                             {
                                 var (Step, Limit) = Utils.Limits(chartStyle, offsetBoundary, linesCount, ticks, boundOffset, width);
                                 xStep = Step;
@@ -4292,7 +4292,7 @@ namespace ag.WPF.Chart
                     }
                 case Directions.SouthEast:
                     {
-                        if (autoAdjust)
+                        if (autoAdjust.In(AutoAdjustmentMode.Both, AutoAdjustmentMode.Horizontal))
                         {
                             var (Step, Limit) = Utils.Limits(chartStyle, offsetBoundary, linesCount, ticks, boundOffset, width);
                             xStep = Step;
@@ -4421,7 +4421,7 @@ namespace ag.WPF.Chart
                 || !(values[9] is FontStyle fontStyle)
                 || !(values[10] is FontWeight fontWeight)
                 || !(values[11] is FontStretch fontStretch)
-                || !(values[12] is bool autoAdjust)
+                || !(values[12] is AutoAdjustmentMode autoAdjust)
                 || !(values[13] is double maxX)
                 || !(values[14] is double maxY)
                 || !(values[15] is AxesVisibility axesVisibility))
@@ -4511,7 +4511,7 @@ namespace ag.WPF.Chart
                     new Typeface(fontFamily, fontStyle, fontWeight, fontStretch), fontSize, Brushes.Black, VisualTreeHelper.GetDpi(Utils.Border).PixelsPerDip);
 
             var (max, min, realLinesCount, stepSize, stepLength, units, zeroPoint) = chartStyle != ChartStyle.Funnel
-                ? autoAdjust
+                ? (autoAdjust.In(AutoAdjustmentMode.Both, AutoAdjustmentMode.Horizontal) && Utils.StyleBars(chartStyle)) || autoAdjust.In(AutoAdjustmentMode.Both, AutoAdjustmentMode.Vertical)
                     ? Utils.GetMeasures(
                        chartStyle,
                        series,
@@ -4523,7 +4523,7 @@ namespace ag.WPF.Chart
                     : (maxY, -maxY, linesCountY, maxY / linesCountY, radius / linesCountY, radius / maxY, default)
                 : (series[0].Values.Count, -maxY, series[0].Values.Count, maxY / series[0].Values.Count, radius / series[0].Values.Count, radius / series[0].Values.Count, default);
 
-            if(Utils.StyleBars(chartStyle) && !autoAdjust)
+            if (Utils.StyleBars(chartStyle) && !autoAdjust.In(AutoAdjustmentMode.Both, AutoAdjustmentMode.Horizontal))
             {
                 (max, min, realLinesCount, stepSize, stepLength, units, zeroPoint) = (maxX, -maxX, linesCountX, maxX / linesCountX, radius / linesCountX, radius / maxX, default);
             }
@@ -4557,7 +4557,7 @@ namespace ag.WPF.Chart
                             var x = Utils.AXIS_THICKNESS + boundOffset;
                             if (!Utils.StyleBars(chartStyle))
                             {
-                                if (autoAdjust)
+                                if (autoAdjust.In(AutoAdjustmentMode.Both, AutoAdjustmentMode.Horizontal))
                                 {
                                     var (Step, Limit) = Utils.Limits(chartStyle, offsetBoundary, linesCountX, ticks, boundOffset, width);
                                     xStep = Step;
@@ -4587,7 +4587,7 @@ namespace ag.WPF.Chart
                         {
                             if (Utils.StyleBars(chartStyle))
                             {
-                                if (autoAdjust)
+                                if (autoAdjust.In(AutoAdjustmentMode.Both, AutoAdjustmentMode.Vertical))
                                 {
                                     yStep = height / ticks;
                                     limit = ticks;
@@ -4637,7 +4637,7 @@ namespace ag.WPF.Chart
 
                         if (axesVisibility.In(AxesVisibility.Both, AxesVisibility.Vertical))
                         {
-                            if (autoAdjust)
+                            if (autoAdjust.In(AutoAdjustmentMode.Both, AutoAdjustmentMode.Vertical))
                             {
                                 yStep = height / ticks;
                                 limit = ticks;
@@ -4667,7 +4667,7 @@ namespace ag.WPF.Chart
                             var x = Utils.AXIS_THICKNESS + boundOffset;
                             if (!Utils.StyleBars(chartStyle))
                             {
-                                if (autoAdjust)
+                                if (autoAdjust.In(AutoAdjustmentMode.Both, AutoAdjustmentMode.Horizontal))
                                 {
                                     var (Step, Limit) = Utils.Limits(chartStyle, offsetBoundary, linesCountX, ticks, boundOffset, width);
                                     xStep = Step;
@@ -4731,7 +4731,7 @@ namespace ag.WPF.Chart
 
                         if (axesVisibility.In(AxesVisibility.Both, AxesVisibility.Vertical))
                         {
-                            if (autoAdjust)
+                            if (autoAdjust.In(AutoAdjustmentMode.Both, AutoAdjustmentMode.Vertical))
                             {
                                 yStep = height / ticks;
                                 limit = ticks;
@@ -4760,7 +4760,7 @@ namespace ag.WPF.Chart
                         {
                             var x = Utils.AXIS_THICKNESS + boundOffset;
 
-                            if (autoAdjust)
+                            if (autoAdjust.In(AutoAdjustmentMode.Both, AutoAdjustmentMode.Horizontal))
                             {
                                 var (Step, Limit) = Utils.Limits(chartStyle, offsetBoundary, linesCountX, ticks, boundOffset, width);
                                 xStep = Step;
@@ -4840,7 +4840,7 @@ namespace ag.WPF.Chart
                 || !(values[8] is FontStyle fontStyle)
                 || !(values[9] is FontWeight fontWeight)
                 || !(values[10] is FontStretch fontStretch)
-                || !(values[11] is bool autoAdjust)
+                || !(values[11] is AutoAdjustmentMode autoAdjust)
                 || !(values[12] is double maxX))
                 return null;
 
@@ -4912,7 +4912,7 @@ namespace ag.WPF.Chart
             var stepLength = 0.0;
             if (Utils.StyleBars(chartStyle))
             {
-                var (max, min, realLinesCount, stepSize, stepL, units, zeroPoint) = autoAdjust
+                var (max, min, realLinesCount, stepSize, stepL, units, zeroPoint) = autoAdjust.In(AutoAdjustmentMode.Both, AutoAdjustmentMode.Horizontal)
                     ? Utils.GetMeasures(
                        chartStyle,
                        series,
@@ -4941,7 +4941,7 @@ namespace ag.WPF.Chart
                         var x = Utils.AXIS_THICKNESS + boundOffset;
                         if (!Utils.StyleBars(chartStyle))
                         {
-                            if (autoAdjust)
+                            if (autoAdjust.In(AutoAdjustmentMode.Both, AutoAdjustmentMode.Horizontal))
                             {
                                 var (Step, Limit) = Utils.Limits(chartStyle, offsetBoundary, linesCount, ticks, boundOffset, width);
                                 xStep = Step;
@@ -4991,7 +4991,7 @@ namespace ag.WPF.Chart
                         var x = Utils.AXIS_THICKNESS + boundOffset;
                         if (!Utils.StyleBars(chartStyle))
                         {
-                            if (autoAdjust)
+                            if (autoAdjust.In(AutoAdjustmentMode.Both, AutoAdjustmentMode.Horizontal))
                             {
                                 var (Step, Limit) = Utils.Limits(chartStyle, offsetBoundary, linesCount, ticks, boundOffset, width);
                                 xStep = Step;
@@ -5040,7 +5040,7 @@ namespace ag.WPF.Chart
                         var x = Utils.AXIS_THICKNESS + boundOffset;
                         if (!Utils.StyleBars(chartStyle))
                         {
-                            if (autoAdjust)
+                            if (autoAdjust.In(AutoAdjustmentMode.Both, AutoAdjustmentMode.Horizontal))
                             {
                                 var (Step, Limit) = Utils.Limits(chartStyle, offsetBoundary, linesCount, ticks, boundOffset, width);
                                 xStep = Step;
@@ -5110,7 +5110,7 @@ namespace ag.WPF.Chart
                 || !(values[7] is FontStyle fontStyle)
                 || !(values[8] is FontWeight fontWeight)
                 || !(values[9] is FontStretch fontStretch)
-                || !(values[10] is bool autoAdjust)
+                || !(values[10] is AutoAdjustmentMode autoAdjust)
                 || !(values[11] is double maxY))
                 return null;
 
@@ -5167,7 +5167,7 @@ namespace ag.WPF.Chart
             var fmtY = new FormattedText("AAA", culture, FlowDirection.LeftToRight,
                     new Typeface(fontFamily, fontStyle, fontWeight, fontStretch), fontSize, Brushes.Black, VisualTreeHelper.GetDpi(Utils.Border).PixelsPerDip);
 
-            var (max, min, realLinesCount, stepSize, stepLength, units, zeroPoint) = autoAdjust
+            var (max, min, realLinesCount, stepSize, stepLength, units, zeroPoint) = autoAdjust.In(AutoAdjustmentMode.Both, AutoAdjustmentMode.Vertical)
                 ? Utils.GetMeasures(
                    chartStyle,
                    series,
@@ -5184,7 +5184,7 @@ namespace ag.WPF.Chart
             switch (dir)
             {
                 case Directions.NorthEastSouthEast:
-                    if (autoAdjust || !Utils.StyleBars(chartStyle))
+                    if (autoAdjust.In(AutoAdjustmentMode.Both, AutoAdjustmentMode.Horizontal) || !Utils.StyleBars(chartStyle))
                     {
                         limit = realLinesCount * 2;
                         if (Utils.StyleFullStacked(chartStyle))
@@ -5201,7 +5201,7 @@ namespace ag.WPF.Chart
                 case Directions.NorthEastNorthWest:
                 case Directions.NorthWest:
                 case Directions.SouthEast:
-                    if (autoAdjust || !Utils.StyleBars(chartStyle))
+                    if (autoAdjust.In(AutoAdjustmentMode.Both, AutoAdjustmentMode.Horizontal) || !Utils.StyleBars(chartStyle))
                     {
                         limit = realLinesCount;
                         if (Utils.StyleFullStacked(chartStyle))
@@ -5362,7 +5362,7 @@ namespace ag.WPF.Chart
                 || !(values[7] is FontWeight fontWeight)
                 || !(values[8] is FontStretch fontStretch)
                 || !(values[10] is int linesCount)
-                || !(values[11] is bool autoAdjust))
+                || !(values[11] is AutoAdjustmentMode autoAdjust))
                 return null;
 
             var gm = new PathGeometry();
@@ -5448,7 +5448,7 @@ namespace ag.WPF.Chart
                 || !(values[12] is int linesCount)
                 || linesCount < 2
                 || !(values[13] is string format)
-                || !(values[14] is bool autoAdjust))
+                || !(values[14] is AutoAdjustmentMode autoAdjust))
                 return null;
 
             var gm = new PathGeometry();

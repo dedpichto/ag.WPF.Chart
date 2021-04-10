@@ -208,7 +208,7 @@ namespace ag.WPF.Chart
     /// <summary>
     /// Specifies auto-adjustment mode of chart control
     /// </summary>
-    public enum AutoAdjustment
+    public enum AutoAdjustmentMode
     {
         /// <summary>
         /// No auto-adjustment
@@ -225,7 +225,7 @@ namespace ag.WPF.Chart
         /// <summary>
         /// Both horizontal and vertical values are auto-adjusted
         /// </summary>
-        Botn
+        Both
     }
 
     /// <summary>
@@ -576,8 +576,8 @@ namespace ag.WPF.Chart
                 new FrameworkPropertyMetadata(100.0, OnMaxXChanged, CoerceMaxX));
             MaxYProperty = DependencyProperty.Register(nameof(MaxY), typeof(double), typeof(Chart),
                 new FrameworkPropertyMetadata(100.0, OnMaxYChanged, CoerceMaxY));
-            AutoAdjustmentProperty = DependencyProperty.Register(nameof(AutoAdjustment), typeof(bool), typeof(Chart),
-                new FrameworkPropertyMetadata(true, OnAutoAdjustmentChanged));
+            AutoAdjustmentProperty = DependencyProperty.Register(nameof(AutoAdjustment), typeof(AutoAdjustmentMode), typeof(Chart),
+                new FrameworkPropertyMetadata(AutoAdjustmentMode.Both, OnAutoAdjustmentChanged));
             LegendSizeProperty = DependencyProperty.Register(nameof(LegendSize), typeof(LegendSize), typeof(Chart),
                 new FrameworkPropertyMetadata(LegendSize.ExtraSmall, OnLegendSizeChanged));
             LegendShapeProperty = DependencyProperty.Register(nameof(LegendShape), typeof(LegendShape), typeof(Chart),
@@ -796,10 +796,20 @@ namespace ag.WPF.Chart
                             {
                                 Source = this
                             });
-                            strkBinding.Bindings.Add(new Binding(brushPath)
+                            if (pathIndex.In(0, 1))
                             {
-                                Source = series
-                            });
+                                strkBinding.Bindings.Add(new Binding(brushPath)
+                                {
+                                    Source = series
+                                }); ;
+                            }
+                            else
+                            {
+                                strkBinding.Bindings.Add(new Binding(brushPath)
+                                {
+                                    Source = this
+                                }); ;
+                            }
                             strkBinding.NotifyOnSourceUpdated = true;
                             path.SetBinding(Shape.StrokeProperty, strkBinding);
                             #endregion
@@ -810,10 +820,20 @@ namespace ag.WPF.Chart
                             {
                                 Source = this
                             });
-                            fillBinding.Bindings.Add(new Binding(brushPath)
+                            if (pathIndex.In(0, 1))
                             {
-                                Source = series
-                            });
+                                fillBinding.Bindings.Add(new Binding(brushPath)
+                                {
+                                    Source = series
+                                });
+                            }
+                            else
+                            {
+                                fillBinding.Bindings.Add(new Binding(brushPath)
+                                {
+                                    Source = this
+                                });
+                            }
                             fillBinding.NotifyOnSourceUpdated = true;
                             path.SetBinding(Shape.FillProperty, fillBinding);
                             #endregion
@@ -1150,7 +1170,7 @@ namespace ag.WPF.Chart
                             tooltip.Content = s.Name;
                             break;
                         }
-                        var content = $"{s.Name}\n{s.Values[index].Value.CloseValue.ToString(CultureInfo.InvariantCulture)}";
+                        var content = $"Close\n{s.Values[index].Value.CloseValue.ToString(CultureInfo.InvariantCulture)}";
                         if (!string.IsNullOrEmpty(s.Values[index].CustomValue))
                             content += $"\n{s.Values[index].CustomValue}";
                         tooltip.Content = content;
@@ -1166,7 +1186,7 @@ namespace ag.WPF.Chart
                                 tooltip.Content = s.Name;
                                 break;
                             }
-                            var content = $"{s.Name}\n{s.Values[index].Value.HighValue.ToString(CultureInfo.InvariantCulture)}";
+                            var content = $"High\n{s.Values[index].Value.HighValue.ToString(CultureInfo.InvariantCulture)}";
                             if (!string.IsNullOrEmpty(s.Values[index].CustomValue))
                                 content += $"\n{s.Values[index].CustomValue}";
                             tooltip.Content = content;
@@ -1182,7 +1202,7 @@ namespace ag.WPF.Chart
                                     tooltip.Content = s.Name;
                                     break;
                                 }
-                                var content = $"{s.Name}\n{s.Values[index].Value.LowValue.ToString(CultureInfo.InvariantCulture)}";
+                                var content = $"Low\n{s.Values[index].Value.LowValue.ToString(CultureInfo.InvariantCulture)}";
                                 if (!string.IsNullOrEmpty(s.Values[index].CustomValue))
                                     content += $"\n{s.Values[index].CustomValue}";
                                 tooltip.Content = content;
@@ -1209,10 +1229,21 @@ namespace ag.WPF.Chart
                 ChartStyle.SmoothStackedLinesWithMarkers, ChartStyle.SmoothFullStackedLinesWithMarkers,
                 ChartStyle.Bubbles, ChartStyle.Columns, ChartStyle.StackedColumns, ChartStyle.FullStackedColumns,
                 ChartStyle.Bars, ChartStyle.StackedBars, ChartStyle.FullStackedBars,
-                ChartStyle.RadarWithMarkers, ChartStyle.Waterfall) || e.ClickCount != 2) return;
+                ChartStyle.RadarWithMarkers, ChartStyle.Waterfall, ChartStyle.HighLowClose) || e.ClickCount != 2) return;
             var rc = s.RealRects.FirstOrDefault(r => r.Contains(e.GetPosition(_canvas)));
-            if (rc == default) return;
+            if (rc == default)
+                rc = s.RealStockHighRects.FirstOrDefault(r => r.Contains(e.GetPosition(_canvas)));
+            if (rc == default)
+                rc = s.RealStockLowRects.FirstOrDefault(r => r.Contains(e.GetPosition(_canvas)));
+            if (rc == default)
+                return;
             var index = s.RealRects.IndexOf(rc);
+            if (index == -1)
+                index = s.RealStockHighRects.IndexOf(rc);
+            if (index == -1)
+                index = s.RealStockLowRects.IndexOf(rc);
+            if (index == -1)
+                return;
             if (s.Values.Count <= index)
             {
                 return;
@@ -1408,9 +1439,9 @@ namespace ag.WPF.Chart
         /// </summary>
         /// <remarks>This property will have no effect if <see cref="ChartStyle"/> property is set to <see cref="ChartStyle.SolidPie"/> or <see cref="ChartStyle.SlicedPie"/> or <see cref="ChartStyle.Doughnut"/>.</remarks>
         [Category("ChartAppearance"), Description("Specifies whether control will automatically adjust its max x- and y- values or they should be set explicitly")]
-        public bool AutoAdjustment
+        public AutoAdjustmentMode AutoAdjustment
         {
-            get { return (bool)GetValue(AutoAdjustmentProperty); }
+            get { return (AutoAdjustmentMode)GetValue(AutoAdjustmentProperty); }
             set { SetValue(AutoAdjustmentProperty, value); }
         }
         /// <summary>
@@ -1956,16 +1987,16 @@ namespace ag.WPF.Chart
         private static void OnAutoAdjustmentChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
             if (!(sender is Chart ch)) return;
-            ch.OnAutoAdjustmentChanged((bool)e.OldValue, (bool)e.NewValue);
+            ch.OnAutoAdjustmentChanged((AutoAdjustmentMode)e.OldValue, (AutoAdjustmentMode)e.NewValue);
         }
         /// <summary>
         /// Invoked just before the <see cref="AutoAdjustmentChangedEvent"/> event is raised on control
         /// </summary>
         /// <param name="oldValue">Old value</param>
         /// <param name="newValue">New value</param>
-        protected void OnAutoAdjustmentChanged(bool oldValue, bool newValue)
+        protected void OnAutoAdjustmentChanged(AutoAdjustmentMode oldValue, AutoAdjustmentMode newValue)
         {
-            var e = new RoutedPropertyChangedEventArgs<bool>(oldValue, newValue)
+            var e = new RoutedPropertyChangedEventArgs<AutoAdjustmentMode>(oldValue, newValue)
             {
                 RoutedEvent = AutoAdjustmentChangedEvent
             };
@@ -2815,7 +2846,7 @@ namespace ag.WPF.Chart
         /// <summary>
         /// Occurs when the <see cref="AutoAdjustment"/> property has been changed in some way
         /// </summary>
-        public event RoutedPropertyChangedEventHandler<bool> AutoAdjustmentChanged
+        public event RoutedPropertyChangedEventHandler<AutoAdjustmentMode> AutoAdjustmentChanged
         {
             add { AddHandler(AutoAdjustmentChangedEvent, value); }
             remove { RemoveHandler(AutoAdjustmentChangedEvent, value); }
@@ -2824,7 +2855,7 @@ namespace ag.WPF.Chart
         /// Identifies the <see cref="AutoAdjustmentChanged"/> routed event
         /// </summary>
         public static readonly RoutedEvent AutoAdjustmentChangedEvent = EventManager.RegisterRoutedEvent("AutoAdjustmentChanged",
-            RoutingStrategy.Bubble, typeof(RoutedPropertyChangedEventHandler<bool>), typeof(Chart));
+            RoutingStrategy.Bubble, typeof(RoutedPropertyChangedEventHandler<AutoAdjustmentMode>), typeof(Chart));
 
         /// <summary>
         /// Occurs when the <see cref="ShowLegend"/> property has been changed in some way
