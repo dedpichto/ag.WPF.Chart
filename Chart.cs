@@ -632,393 +632,179 @@ namespace ag.WPF.Chart
                         series.Index = e.NewStartingIndex;
                         series.PropertyChanged += Series_PropertyChanged;
 
-                        if (series.MainBrush == null)
+                        for (var pathIndex = 0; pathIndex < series.Paths.Length; pathIndex++)
                         {
-                            var min = Statics.PredefinedMainBrushes.Min(b => b.Counter);
-                            for (var i = 0; i < Statics.PredefinedMainBrushes.Length; i++)
+                            var path = series.Paths[pathIndex];
+                            if (path == null) continue;
+                            (int, ColoredPaths) parameter;
+                            string brushPath;
+                            switch (pathIndex)
                             {
-                                if (Statics.PredefinedMainBrushes[i].Counter == min)
-                                {
-                                    series.MainBrush = Statics.PredefinedMainBrushes[i].Brush;
-                                    Statics.PredefinedMainBrushes[i].Counter++;
+                                case 0:
+                                    if (series.MainBrush == null)
+                                    {
+                                        var min = Statics.PredefinedMainBrushes.Min(b => b.Counter);
+                                        for (var i = 0; i < Statics.PredefinedMainBrushes.Length; i++)
+                                        {
+                                            if (Statics.PredefinedMainBrushes[i].Counter == min)
+                                            {
+                                                series.MainBrush = Statics.PredefinedMainBrushes[i].Brush;
+                                                Statics.PredefinedMainBrushes[i].Counter++;
+                                                break;
+                                            }
+                                        }
+                                    }
+                                    else
+                                    {
+                                        ((Series.Series)series).SetValue(Statics.HasCustomMainBrushProperty, true);
+                                    }
+                                    parameter = (0, ColoredPaths.Up);
+                                    brushPath = "MainBrush";
                                     break;
-                                }
-                            }
-                        }
-                        else
-                        {
-                            ((Series.Series)series).SetValue(Statics.HasCustomMainBrushProperty, true);
-                        }
-
-                        if (series.SecondaryBrush == null)
-                        {
-                            var min = Statics.PredefinedSecondaryBrushes.Min(b => b.Counter);
-                            for (var i = 0; i < Statics.PredefinedSecondaryBrushes.Length; i++)
-                            {
-                                if (Statics.PredefinedSecondaryBrushes[i].Counter == min)
-                                {
-                                    series.SecondaryBrush = Statics.PredefinedSecondaryBrushes[i].Brush;
-                                    Statics.PredefinedSecondaryBrushes[i].Counter++;
+                                case 1:
+                                    if (series.SecondaryBrush == null)
+                                    {
+                                        var min = Statics.PredefinedSecondaryBrushes.Min(b => b.Counter);
+                                        for (var i = 0; i < Statics.PredefinedSecondaryBrushes.Length; i++)
+                                        {
+                                            if (Statics.PredefinedSecondaryBrushes[i].Counter == min)
+                                            {
+                                                series.SecondaryBrush = Statics.PredefinedSecondaryBrushes[i].Brush;
+                                                Statics.PredefinedSecondaryBrushes[i].Counter++;
+                                                break;
+                                            }
+                                        }
+                                    }
+                                    else
+                                    {
+                                        ((Series.Series)series).SetValue(Statics.HasCustomSecondaryBrushProperty, true);
+                                    }
+                                    parameter = (1, ColoredPaths.Down);
+                                    brushPath = "SecondaryBrush";
                                     break;
-                                }
+                                case 2:
+                                    if (!(series is StockSeries)) continue;
+                                    parameter = (0, ColoredPaths.Stock);
+                                    brushPath = "Foreground";
+                                    break;
+                                default:
+                                    continue;
                             }
-                        }
-                        else
-                        {
-                            ((Series.Series)series).SetValue(Statics.HasCustomSecondaryBrushProperty, true);
-                        }
-
-                        #region Main series path
-                        var ptsBinding = new MultiBinding { Converter = new ValuesToPathConverter() };
-                        ptsBinding.Bindings.Add(new Binding("ActualWidth") { ElementName = ElementCanvas });
-                        ptsBinding.Bindings.Add(new Binding("ActualHeight") { ElementName = ElementCanvas });
-                        ptsBinding.Bindings.Add(new Binding("ItemsSource")
-                        {
-                            Source = this
-                        });
-                        ptsBinding.Bindings.Add(new Binding("ChartStyle")
-                        {
-                            Source = this
-                        });
-                        ptsBinding.Bindings.Add(new Binding("Index")
-                        {
-                            Source = series
-                        });
-                        ptsBinding.Bindings.Add(new Binding("AutoAdjust")
-                        {
-                            Source = this
-                        });
-                        ptsBinding.Bindings.Add(new Binding("MaxX")
-                        {
-                            Source = this
-                        });
-                        ptsBinding.Bindings.Add(new Binding("MaxY")
-                        {
-                            Source = this
-                        });
-                        ptsBinding.Bindings.Add(new Binding("ChartBoundary")
-                        {
-                            Source = this
-                        });
-                        ptsBinding.Bindings.Add(new Binding("AxesFontFamily")
-                        {
-                            Source = this
-                        });
-                        ptsBinding.Bindings.Add(new Binding("AxesFontSize")
-                        {
-                            Source = this
-                        });
-                        ptsBinding.Bindings.Add(new Binding("AxesFontStyle")
-                        {
-                            Source = this
-                        });
-                        ptsBinding.Bindings.Add(new Binding("AxesFontWeight")
-                        {
-                            Source = this
-                        });
-                        ptsBinding.Bindings.Add(new Binding("AxesFontStretch")
-                        {
-                            Source = this
-                        });
-                        ptsBinding.Bindings.Add(new Binding("CustomXAxisValues")
-                        {
-                            Source = this
-                        });
-                        ptsBinding.Bindings.Add(new Binding("SectionsY")
-                        {
-                            Source = this
-                        });
-                        ptsBinding.Bindings.Add(new Binding("SectionsX")
-                        {
-                            Source = this
-                        });
-                        ptsBinding.Bindings.Add(new Binding("ShowValuesOnBarsAndColumns")
-                        {
-                            Source = this
-                        });
-                        ptsBinding.Bindings.Add(new Binding("FlowDirection")
-                        {
-                            Source = this
-                        });
-                        ptsBinding.ConverterParameter = (0, ColoredPaths.Up);
-                        ptsBinding.NotifyOnSourceUpdated = true;
-                        series.Paths[0].SetBinding(Path.DataProperty, ptsBinding);
-                        #endregion
-
-                        #region Main series stroke
-                        var strkBinding = new MultiBinding { Converter = new PathStrokeConverter() };
-                        strkBinding.Bindings.Add(new Binding("ChartStyle")
-                        {
-                            Source = this
-                        });
-                        strkBinding.Bindings.Add(new Binding("MainBrush")
-                        {
-                            Source = series
-                        });
-                        strkBinding.NotifyOnSourceUpdated = true;
-                        series.Paths[0].SetBinding(Shape.StrokeProperty, strkBinding);
-                        #endregion
-
-                        #region Main series fill
-                        var fillBinding = new MultiBinding { Converter = new PathFillConverter() };
-                        fillBinding.Bindings.Add(new Binding("ChartStyle")
-                        {
-                            Source = this
-                        });
-                        fillBinding.Bindings.Add(new Binding("MainBrush")
-                        {
-                            Source = series
-                        });
-                        fillBinding.NotifyOnSourceUpdated = true;
-                        series.Paths[0].SetBinding(Shape.FillProperty, fillBinding);
-                        #endregion
-
-                        #region Negative waterfall path
-                        var negativeWaterfallBinding = new MultiBinding { Converter = new ValuesToPathConverter() };
-                        negativeWaterfallBinding.Bindings.Add(new Binding("ActualWidth") { ElementName = ElementCanvas });
-                        negativeWaterfallBinding.Bindings.Add(new Binding("ActualHeight") { ElementName = ElementCanvas });
-                        negativeWaterfallBinding.Bindings.Add(new Binding("ItemsSource")
-                        {
-                            Source = this
-                        });
-                        negativeWaterfallBinding.Bindings.Add(new Binding("ChartStyle")
-                        {
-                            Source = this
-                        });
-                        negativeWaterfallBinding.Bindings.Add(new Binding("Index")
-                        {
-                            Source = series
-                        });
-                        negativeWaterfallBinding.Bindings.Add(new Binding("AutoAdjust")
-                        {
-                            Source = this
-                        });
-                        negativeWaterfallBinding.Bindings.Add(new Binding("MaxX")
-                        {
-                            Source = this
-                        });
-                        negativeWaterfallBinding.Bindings.Add(new Binding("MaxY")
-                        {
-                            Source = this
-                        });
-                        negativeWaterfallBinding.Bindings.Add(new Binding("ChartBoundary")
-                        {
-                            Source = this
-                        });
-                        negativeWaterfallBinding.Bindings.Add(new Binding("AxesFontFamily")
-                        {
-                            Source = this
-                        });
-                        negativeWaterfallBinding.Bindings.Add(new Binding("AxesFontSize")
-                        {
-                            Source = this
-                        });
-                        negativeWaterfallBinding.Bindings.Add(new Binding("AxesFontStyle")
-                        {
-                            Source = this
-                        });
-                        negativeWaterfallBinding.Bindings.Add(new Binding("AxesFontWeight")
-                        {
-                            Source = this
-                        });
-                        negativeWaterfallBinding.Bindings.Add(new Binding("AxesFontStretch")
-                        {
-                            Source = this
-                        });
-                        negativeWaterfallBinding.Bindings.Add(new Binding("CustomXAxisValues")
-                        {
-                            Source = this
-                        });
-                        negativeWaterfallBinding.Bindings.Add(new Binding("SectionsY")
-                        {
-                            Source = this
-                        });
-                        negativeWaterfallBinding.Bindings.Add(new Binding("SectionsX")
-                        {
-                            Source = this
-                        });
-                        negativeWaterfallBinding.Bindings.Add(new Binding("ShowValuesOnBarsAndColumns")
-                        {
-                            Source = this
-                        });
-                        negativeWaterfallBinding.Bindings.Add(new Binding("FlowDirection")
-                        {
-                            Source = this
-                        });
-                        negativeWaterfallBinding.ConverterParameter = (1, ColoredPaths.Down);
-                        negativeWaterfallBinding.NotifyOnSourceUpdated = true;
-                        series.Paths[1].SetBinding(Path.DataProperty, negativeWaterfallBinding);
-                        #endregion
-
-                        #region Negative series stroke
-                        var negativeStrokeBinding = new MultiBinding { Converter = new PathStrokeConverter() };
-                        negativeStrokeBinding.Bindings.Add(new Binding("ChartStyle")
-                        {
-                            Source = this
-                        });
-                        negativeStrokeBinding.Bindings.Add(new Binding("MainBrush")
-                        {
-                            Source = series
-                        });
-                        negativeStrokeBinding.NotifyOnSourceUpdated = true;
-                        series.Paths[1].SetBinding(Shape.StrokeProperty, negativeStrokeBinding);
-                        #endregion
-
-                        #region Negative waterfall fill
-                        var fillNegativeBinding = new MultiBinding { Converter = new PathFillConverter() };
-                        fillNegativeBinding.Bindings.Add(new Binding("ChartStyle")
-                        {
-                            Source = this
-                        });
-                        fillNegativeBinding.Bindings.Add(new Binding("SecondaryBrush")
-                        {
-                            Source = series
-                        });
-                        fillNegativeBinding.NotifyOnSourceUpdated = true;
-                        series.Paths[1].SetBinding(Shape.FillProperty, fillNegativeBinding);
-                        #endregion
-
-                        if (series is StockSeries)
-                        {
-                            #region Stock path
-                            var stockPathBinding = new MultiBinding { Converter = new ValuesToPathConverter() };
-                            stockPathBinding.Bindings.Add(new Binding("ActualWidth") { ElementName = ElementCanvas });
-                            stockPathBinding.Bindings.Add(new Binding("ActualHeight") { ElementName = ElementCanvas });
-                            stockPathBinding.Bindings.Add(new Binding("ItemsSource")
+                            #region Path data
+                            var ptsBinding = new MultiBinding { Converter = new ValuesToPathConverter() };
+                            ptsBinding.Bindings.Add(new Binding("ActualWidth") { ElementName = ElementCanvas });
+                            ptsBinding.Bindings.Add(new Binding("ActualHeight") { ElementName = ElementCanvas });
+                            ptsBinding.Bindings.Add(new Binding("ItemsSource")
                             {
                                 Source = this
                             });
-                            stockPathBinding.Bindings.Add(new Binding("ChartStyle")
+                            ptsBinding.Bindings.Add(new Binding("ChartStyle")
                             {
                                 Source = this
                             });
-                            stockPathBinding.Bindings.Add(new Binding("Index")
+                            ptsBinding.Bindings.Add(new Binding("Index")
                             {
                                 Source = series
                             });
-                            stockPathBinding.Bindings.Add(new Binding("AutoAdjust")
+                            ptsBinding.Bindings.Add(new Binding("AutoAdjust")
                             {
                                 Source = this
                             });
-                            stockPathBinding.Bindings.Add(new Binding("MaxX")
+                            ptsBinding.Bindings.Add(new Binding("MaxX")
                             {
                                 Source = this
                             });
-                            stockPathBinding.Bindings.Add(new Binding("MaxY")
+                            ptsBinding.Bindings.Add(new Binding("MaxY")
                             {
                                 Source = this
                             });
-                            stockPathBinding.Bindings.Add(new Binding("ChartBoundary")
+                            ptsBinding.Bindings.Add(new Binding("ChartBoundary")
                             {
                                 Source = this
                             });
-                            stockPathBinding.Bindings.Add(new Binding("AxesFontFamily")
+                            ptsBinding.Bindings.Add(new Binding("AxesFontFamily")
                             {
                                 Source = this
                             });
-                            stockPathBinding.Bindings.Add(new Binding("AxesFontSize")
+                            ptsBinding.Bindings.Add(new Binding("AxesFontSize")
                             {
                                 Source = this
                             });
-                            stockPathBinding.Bindings.Add(new Binding("AxesFontStyle")
+                            ptsBinding.Bindings.Add(new Binding("AxesFontStyle")
                             {
                                 Source = this
                             });
-                            stockPathBinding.Bindings.Add(new Binding("AxesFontWeight")
+                            ptsBinding.Bindings.Add(new Binding("AxesFontWeight")
                             {
                                 Source = this
                             });
-                            stockPathBinding.Bindings.Add(new Binding("AxesFontStretch")
+                            ptsBinding.Bindings.Add(new Binding("AxesFontStretch")
                             {
                                 Source = this
                             });
-                            stockPathBinding.Bindings.Add(new Binding("CustomXAxisValues")
+                            ptsBinding.Bindings.Add(new Binding("CustomXAxisValues")
                             {
                                 Source = this
                             });
-                            stockPathBinding.Bindings.Add(new Binding("SectionsY")
+                            ptsBinding.Bindings.Add(new Binding("SectionsY")
                             {
                                 Source = this
                             });
-                            stockPathBinding.Bindings.Add(new Binding("SectionsX")
+                            ptsBinding.Bindings.Add(new Binding("SectionsX")
                             {
                                 Source = this
                             });
-                            stockPathBinding.Bindings.Add(new Binding("ShowValuesOnBarsAndColumns")
+                            ptsBinding.Bindings.Add(new Binding("ShowValuesOnBarsAndColumns")
                             {
                                 Source = this
                             });
-                            stockPathBinding.Bindings.Add(new Binding("FlowDirection")
+                            ptsBinding.Bindings.Add(new Binding("FlowDirection")
                             {
                                 Source = this
                             });
-                            stockPathBinding.ConverterParameter = (2, ColoredPaths.Stock);
-                            stockPathBinding.NotifyOnSourceUpdated = true;
-                            series.Paths[2].SetBinding(Path.DataProperty, stockPathBinding);
+                            ptsBinding.ConverterParameter = parameter;
+                            ptsBinding.NotifyOnSourceUpdated = true;
+                            path.SetBinding(Path.DataProperty, ptsBinding);
                             #endregion
 
-                            #region Stock fill
-                            var fillStockBinding = new MultiBinding { Converter = new PathFillConverter() };
-                            fillStockBinding.Bindings.Add(new Binding("ChartStyle")
+                            #region Path stroke
+                            var strkBinding = new MultiBinding { Converter = new PathStrokeConverter() };
+                            strkBinding.Bindings.Add(new Binding("ChartStyle")
                             {
                                 Source = this
                             });
-                            fillStockBinding.Bindings.Add(new Binding("Foreground")
+                            strkBinding.Bindings.Add(new Binding(brushPath)
                             {
-                                Source = this
+                                Source = series
                             });
-                            fillStockBinding.NotifyOnSourceUpdated = true;
-                            series.Paths[2].SetBinding(Shape.FillProperty, fillStockBinding);
+                            strkBinding.NotifyOnSourceUpdated = true;
+                            path.SetBinding(Shape.StrokeProperty, strkBinding);
                             #endregion
 
-                            #region Stock stroke
-                            var strokeStockBinding = new MultiBinding { Converter = new PathStrokeConverter() };
-                            strokeStockBinding.Bindings.Add(new Binding("ChartStyle")
+                            #region Path fill
+                            var fillBinding = new MultiBinding { Converter = new PathFillConverter() };
+                            fillBinding.Bindings.Add(new Binding("ChartStyle")
                             {
                                 Source = this
                             });
-                            strokeStockBinding.Bindings.Add(new Binding("Foreground")
+                            fillBinding.Bindings.Add(new Binding(brushPath)
                             {
-                                Source = this
+                                Source = series
                             });
-                            strokeStockBinding.NotifyOnSourceUpdated = true;
-                            series.Paths[2].SetBinding(Shape.StrokeProperty, strokeStockBinding);
+                            fillBinding.NotifyOnSourceUpdated = true;
+                            path.SetBinding(Shape.FillProperty, fillBinding);
                             #endregion
+
+                            path.SetBinding(OpacityProperty, new Binding("ChartOpacity") { Source = this });
+                            path.MouseLeftButtonDown += Path_MouseLeftButtonDown;
+                            path.MouseMove += Path_MouseMove;
+                            _canvas.Children.Add(path);
                         }
-
-                        //#region Common opacities
-                        //series.Path.SetBinding(OpacityProperty, new Binding("ChartOpacity") { Source = this });
-                        //series.PositivePath.SetBinding(OpacityProperty, new Binding("ChartOpacity") { Source = this });
-                        //series.NegativePath.SetBinding(OpacityProperty, new Binding("ChartOpacity") { Source = this });
-                        //#endregion
-
-                        #region Common events
-                        foreach (var p in series.Paths)
-                        {
-                            if (p == null) continue;
-                            p.SetBinding(OpacityProperty, new Binding("ChartOpacity") { Source = this });
-                            p.MouseLeftButtonDown += Path_MouseLeftButtonDown;
-                            p.MouseMove += Path_MouseMove;
-                        }
-                        //series.Path.MouseLeftButtonDown += Path_MouseLeftButtonDown;
-                        //series.Path.MouseMove += Path_MouseMove;
-                        ////series.PieBrushes.BrushChanged += PieBrushes_BrushChanged;
-
-                        //series.PositivePath.MouseLeftButtonDown += Path_MouseLeftButtonDown;
-                        //series.PositivePath.MouseMove += Path_MouseMove;
-
-                        //series.NegativePath.MouseLeftButtonDown += Path_MouseLeftButtonDown;
-                        //series.NegativePath.MouseMove += Path_MouseMove;
-
-                        //series.StockPath.MouseLeftButtonDown += Path_MouseLeftButtonDown;
-                        //series.StockPath.MouseMove += Path_MouseMove;
-                        #endregion
 
                         #region Main legend
                         var legend = new Legend() { Index = series.Index };
 
-                        legend.LegendBackground = series.MainBrush;
-                        //legend.SetBinding(Legend.LegendBackgroundProperty, new Binding("MainBrush") { Source = series });
+                        legend.SetBinding(Legend.LegendBackgroundProperty, new Binding("MainBrush") { Source = series });
                         var legendVisibilityBinding = new MultiBinding { Converter = new LegendVisibilityConverter() };
                         legendVisibilityBinding.Bindings.Add(new Binding("ChartStyle")
                         {
@@ -1038,8 +824,8 @@ namespace ag.WPF.Chart
 
                         #region Positive waterfall legend
                         legend = new Legend() { Index = series.Index };
-                        legend.LegendBackground = series.MainBrush;
 
+                        legend.SetBinding(Legend.LegendBackgroundProperty, new Binding("MainBrush") { Source = series });
                         legendVisibilityBinding = new MultiBinding { Converter = new LegendWaterfallVisibilityConverter() };
                         legendVisibilityBinding.Bindings.Add(new Binding("ChartStyle")
                         {
@@ -1062,8 +848,8 @@ namespace ag.WPF.Chart
 
                         #region Negative waterfall legend
                         legend = new Legend() { Index = series.Index };
-                        legend.LegendBackground = series.SecondaryBrush;
 
+                        legend.SetBinding(Legend.LegendBackgroundProperty, new Binding("SecondaryBrush") { Source = series });
                         legendVisibilityBinding = new MultiBinding { Converter = new LegendWaterfallVisibilityConverter() };
                         legendVisibilityBinding.Bindings.Add(new Binding("ChartStyle")
                         {
@@ -1087,8 +873,8 @@ namespace ag.WPF.Chart
 
                         #region Stock legend
                         legend = new Legend() { Index = series.Index };
-                        legend.LegendBackground = Foreground;
 
+                        legend.SetBinding(Legend.LegendBackgroundProperty, new Binding("Foreground") { Source = this });
                         legendVisibilityBinding = new MultiBinding { Converter = new LegendStockVisibilityConverter() };
                         legendVisibilityBinding.Bindings.Add(new Binding("ChartStyle")
                         {
@@ -1112,8 +898,8 @@ namespace ag.WPF.Chart
 
                         #region Up stock legend
                         legend = new Legend() { Index = series.Index };
-                        legend.LegendBackground = series.MainBrush;
 
+                        legend.SetBinding(Legend.LegendBackgroundProperty, new Binding("MainBrush") { Source = series });
                         legendVisibilityBinding = new MultiBinding { Converter = new LegendStockVisibilityConverter() };
                         legendVisibilityBinding.Bindings.Add(new Binding("ChartStyle")
                         {
@@ -1136,8 +922,8 @@ namespace ag.WPF.Chart
 
                         #region Stock down legend
                         legend = new Legend() { Index = series.Index };
-                        legend.LegendBackground = series.SecondaryBrush;
 
+                        legend.SetBinding(Legend.LegendBackgroundProperty, new Binding("SecondaryBrush") { Source = series });
                         legendVisibilityBinding = new MultiBinding { Converter = new LegendStockVisibilityConverter() };
                         legendVisibilityBinding.Bindings.Add(new Binding("ChartStyle")
                         {
@@ -1159,16 +945,6 @@ namespace ag.WPF.Chart
                         LegendsCollection.Add(legend);
                         #endregion
 
-                        foreach (var p in series.Paths)
-                        {
-                            if (p == null) continue;
-                            _canvas.Children.Add(p);
-                        }
-                        //    _canvas.Children.Add(series.Path);
-                        //_canvas.Children.Add(series.PositivePath);
-                        //_canvas.Children.Add(series.NegativePath);
-                        //_canvas.Children.Add(series.StockPath);
-
                         rebuildPieLegends(series.Values, series);
 
                         updateBindings();
@@ -1180,7 +956,7 @@ namespace ag.WPF.Chart
                         if (!(e.OldItems[0] is ISeries series)) break;
 
                         series.PropertyChanged -= Series_PropertyChanged;
-                        //s.Values.CollectionChanged -= Values_CollectionChanged;
+
                         foreach (var p in series.Paths)
                         {
                             if (p == null) continue;
@@ -1190,27 +966,6 @@ namespace ag.WPF.Chart
                             if (i > -1)
                                 _canvas.Children.RemoveAt(i);
                         }
-                        //series.Path.MouseLeftButtonDown -= Path_MouseLeftButtonDown;
-                        //series.Path.MouseMove -= Path_MouseMove;
-                        //series.PositivePath.MouseLeftButtonDown -= Path_MouseLeftButtonDown;
-                        //series.PositivePath.MouseMove -= Path_MouseMove;
-                        //series.NegativePath.MouseLeftButtonDown -= Path_MouseLeftButtonDown;
-                        //series.NegativePath.MouseMove -= Path_MouseMove;
-                        //series.StockPath.MouseLeftButtonDown -= Path_MouseLeftButtonDown;
-                        //series.StockPath.MouseMove -= Path_MouseMove;
-
-                        //var index = _canvas.Children.IndexOf(series.Path);
-                        //if (index > -1)
-                        //    _canvas.Children.RemoveAt(index);
-                        //index = _canvas.Children.IndexOf(series.PositivePath);
-                        //if (index > -1)
-                        //    _canvas.Children.RemoveAt(index);
-                        //index = _canvas.Children.IndexOf(series.NegativePath);
-                        //if (index > -1)
-                        //    _canvas.Children.RemoveAt(index);
-                        //index = _canvas.Children.IndexOf(series.StockPath);
-                        //if (index > -1)
-                        //    _canvas.Children.RemoveAt(index);
 
                         for (var i = LegendsCollection.Count - 1; i >= 0; i--)
                         {
@@ -1234,7 +989,6 @@ namespace ag.WPF.Chart
                             rebuildPieLegends(sr.Values, sr);
                         }
 
-                        //series.PropertyChanged -= Series_PropertyChanged;
                         if (!(bool)((Series.Series)series).GetValue(Statics.HasCustomMainBrushProperty))
                         {
                             for (var i = 0; i < Statics.PredefinedMainBrushes.Length; i++)
@@ -1508,21 +1262,6 @@ namespace ag.WPF.Chart
                     if (binding != null)
                         binding.UpdateTarget();
                 }
-                //if (ChartStyle != ChartStyle.Waterfall)
-                //{
-                //    binding = BindingOperations.GetMultiBindingExpression(series.Path, Path.DataProperty);
-                //    if (binding != null)
-                //        binding.UpdateTarget();
-                //}
-                //else
-                //{
-                //    binding = BindingOperations.GetMultiBindingExpression(series.PositivePath, Path.DataProperty);
-                //    if (binding != null)
-                //        binding.UpdateTarget();
-                //    binding = BindingOperations.GetMultiBindingExpression(series.NegativePath, Path.DataProperty);
-                //    if (binding != null)
-                //        binding.UpdateTarget();
-                //}
             }
         }
 
