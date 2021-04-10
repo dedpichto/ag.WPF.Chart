@@ -40,6 +40,10 @@
                             BorderBrush="{TemplateBinding BorderBrush}"
                             BorderThickness="{TemplateBinding BorderThickness}">
                         <Grid>
+                            <Grid.Resources>
+                                <SolidColorBrush x:Key="DisabledColor"
+                                                 Color="#A5FFFFFF" />
+                            </Grid.Resources>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="Auto"/>
@@ -419,6 +423,16 @@
                                     </ItemsPanelTemplate>
                                 </ItemsControl.ItemsPanel>
                             </ItemsControl>
+                            <Rectangle x:Name="DisabledRect" 
+                                       Grid.Row="0"
+                                       Grid.Column="0"
+                                       Grid.RowSpan="8"
+                                       Grid.ColumnSpan="7"
+                                       Stretch="Fill"
+                                       Stroke="{StaticResource DisabledColor}"
+                                       StrokeThickness="1"
+                                       Fill="{StaticResource DisabledColor}"
+                                       Visibility="Collapsed"/>
                         </Grid>
                     </Border>
                     <ControlTemplate.Triggers>
@@ -482,9 +496,11 @@
                             <Setter Property="Visibility" TargetName="TextCaption" Value="Collapsed"/>
                         </Trigger>
                         <Trigger Property="IsEnabled" Value="false">
+                            <Setter Property="Visibility" TargetName="DisabledRect" Value="Visible"/>
+                            <!--<Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
                             <Setter Property="Foreground" TargetName="TextCaption" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
                             <Setter Property="Foreground" TargetName="TextYAxis" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
-                            <Setter Property="Foreground" TargetName="TextXAxis" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
+                            <Setter Property="Foreground" TargetName="TextXAxis" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>-->
                         </Trigger>
                         <Trigger Property="ShowLegend" Value="false">
                             <Setter Property="Visibility" TargetName="LegendField" Value="Collapsed"/>
@@ -514,9 +530,9 @@
                             <Setter Property="Visibility" TargetName="PART_PathXAxesLines" Value="Collapsed"/>
                             <Setter Property="Visibility" TargetName="PART_PathYAxesLines" Value="Collapsed"/>
                         </Trigger>
-                        <Trigger Property="IsEnabled" Value="false">
+                        <!--<Trigger Property="IsEnabled" Value="false">
                             <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
-                        </Trigger>
+                        </Trigger>-->
                         <Trigger Property="ChartStyle" Value="Funnel">
                             <Setter Property="Visibility" TargetName="LegendField" Value="Collapsed"/>
                         </Trigger>
@@ -680,9 +696,9 @@
                             <Setter Property="Visibility" TargetName="ellipse" Value="Visible"/>
                             <Setter Property="Visibility" TargetName="rect" Value="Collapsed"/>
                         </DataTrigger>
-                        <Trigger Property="IsEnabled" Value="false">
+                        <!--<Trigger Property="IsEnabled" Value="false">
                             <Setter Property="Foreground" TargetName="LegendText" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
-                        </Trigger>
+                        </Trigger>-->
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>

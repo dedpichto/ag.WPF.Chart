@@ -1017,8 +1017,8 @@ namespace ag.WPF.Chart
                         #region Main legend
                         var legend = new Legend() { Index = series.Index };
 
-                        legend.Background = series.MainBrush;
-
+                        legend.LegendBackground = series.MainBrush;
+                        //legend.SetBinding(Legend.LegendBackgroundProperty, new Binding("MainBrush") { Source = series });
                         var legendVisibilityBinding = new MultiBinding { Converter = new LegendVisibilityConverter() };
                         legendVisibilityBinding.Bindings.Add(new Binding("ChartStyle")
                         {
@@ -1038,7 +1038,7 @@ namespace ag.WPF.Chart
 
                         #region Positive waterfall legend
                         legend = new Legend() { Index = series.Index };
-                        legend.Background = series.MainBrush;
+                        legend.LegendBackground = series.MainBrush;
 
                         legendVisibilityBinding = new MultiBinding { Converter = new LegendWaterfallVisibilityConverter() };
                         legendVisibilityBinding.Bindings.Add(new Binding("ChartStyle")
@@ -1062,7 +1062,7 @@ namespace ag.WPF.Chart
 
                         #region Negative waterfall legend
                         legend = new Legend() { Index = series.Index };
-                        legend.Background = series.SecondaryBrush;
+                        legend.LegendBackground = series.SecondaryBrush;
 
                         legendVisibilityBinding = new MultiBinding { Converter = new LegendWaterfallVisibilityConverter() };
                         legendVisibilityBinding.Bindings.Add(new Binding("ChartStyle")
@@ -1087,7 +1087,7 @@ namespace ag.WPF.Chart
 
                         #region Stock legend
                         legend = new Legend() { Index = series.Index };
-                        legend.Background = Foreground;
+                        legend.LegendBackground = Foreground;
 
                         legendVisibilityBinding = new MultiBinding { Converter = new LegendStockVisibilityConverter() };
                         legendVisibilityBinding.Bindings.Add(new Binding("ChartStyle")
@@ -1112,7 +1112,7 @@ namespace ag.WPF.Chart
 
                         #region Up stock legend
                         legend = new Legend() { Index = series.Index };
-                        legend.Background = series.MainBrush;
+                        legend.LegendBackground = series.MainBrush;
 
                         legendVisibilityBinding = new MultiBinding { Converter = new LegendStockVisibilityConverter() };
                         legendVisibilityBinding.Bindings.Add(new Binding("ChartStyle")
@@ -1136,7 +1136,7 @@ namespace ag.WPF.Chart
 
                         #region Stock down legend
                         legend = new Legend() { Index = series.Index };
-                        legend.Background = series.SecondaryBrush;
+                        legend.LegendBackground = series.SecondaryBrush;
 
                         legendVisibilityBinding = new MultiBinding { Converter = new LegendStockVisibilityConverter() };
                         legendVisibilityBinding.Bindings.Add(new Binding("ChartStyle")
@@ -1536,7 +1536,7 @@ namespace ag.WPF.Chart
                 if (brushIndex == Statics.PredefinedMainBrushes.Length) brushIndex = 0;
                 var legend = new Legend();
 
-                legend.Background = Statics.PredefinedMainBrushes[brushIndex++].Brush;
+                legend.LegendBackground = Statics.PredefinedMainBrushes[brushIndex++].Brush;
 
                 var textBinding = new MultiBinding { Converter = new PieSectionTextConverter(), ConverterParameter = v };
                 textBinding.Bindings.Add(new Binding("Values") { Source = series });
