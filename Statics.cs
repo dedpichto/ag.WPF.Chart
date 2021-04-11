@@ -9,42 +9,77 @@ using ag.WPF.Chart.Series;
 
 namespace ag.WPF.Chart
 {
+    /// <summary>
+    /// Represents static class with number of attached dependency properties.
+    /// </summary>
     public static class Statics
     {
+        /// <summary>
+        /// The identifier of the SectorData attached dependency property.
+        /// </summary>
         public static readonly DependencyProperty SectorDataProperty = DependencyProperty.RegisterAttached("SectorData",
             typeof(string), typeof(ISeries), new FrameworkPropertyMetadata("", null));
-
+        /// <summary>
+        /// The identifier of the HasCustomMainBrush attached dependency property.
+        /// </summary>
         public static readonly DependencyProperty HasCustomMainBrushProperty = DependencyProperty.RegisterAttached("HasCustomMainBrush",
             typeof(bool), typeof(ISeries), new FrameworkPropertyMetadata(false, null));
-
+        /// <summary>
+        /// The identifier of the HasCustomSecondaryBrushProperty attached dependency property.
+        /// </summary>
         public static readonly DependencyProperty HasCustomSecondaryBrushProperty = DependencyProperty.RegisterAttached("HasCustomSecondaryBrush",
             typeof(bool), typeof(ISeries), new FrameworkPropertyMetadata(false, null));
 
+        /// <summary>
+        /// Gets SectorData attached dependency property.
+        /// </summary>
+        /// <param name="obj">DependencyObject</param>
+        /// <returns>SectorData (string).</returns>
         public static string GetSectorData(DependencyObject obj)
         {
             return (string)obj.GetValue(SectorDataProperty);
         }
-
+        /// <summary>
+        /// Sets SectorData attached dependency property.
+        /// </summary>
+        /// <param name="obj">DependencyObject</param>
+        /// <param name="value">String</param>
         public static void SetSectorData(DependencyObject obj, string value)
         {
             obj.SetValue(SectorDataProperty, value);
         }
-
+        /// <summary>
+        /// Gets HasCustomMainBrush attached dependency property.
+        /// </summary>
+        /// <param name="obj">DependencyObject</param>
+        /// <returns>HasCustomMainBrush (boolean).</returns>
         public static bool GetHasCustomMainBrush(DependencyObject obj)
         {
             return (bool)obj.GetValue(HasCustomMainBrushProperty);
         }
-
+        /// <summary>
+        /// Sets HasCustomMainBrush attached dependency property.
+        /// </summary>
+        /// <param name="obj">DependencyObject</param>
+        /// <param name="value">Boolean</param>
         public static void SetHasCustomMainBrush(DependencyObject obj, bool value)
         {
             obj.SetValue(HasCustomMainBrushProperty, value);
         }
-
+        /// <summary>
+        /// Gets HasCustomSecondaryBrush attached dependency property.
+        /// </summary>
+        /// <param name="obj">DependencyObject</param>
+        /// <returns>HasCustomSecondaryBrush (boolean).</returns>
         public static bool GetHasCustomSecondaryBrush(DependencyObject obj)
         {
             return (bool)obj.GetValue(HasCustomSecondaryBrushProperty);
         }
-
+        /// <summary>
+        /// Sets HasCustomSecondaryBrush attached dependency property.
+        /// </summary>
+        /// <param name="obj">DependencyObject</param>
+        /// <param name="value">Boolean</param>
         public static void SetHasCustomSecondaryBrush(DependencyObject obj, bool value)
         {
             obj.SetValue(HasCustomSecondaryBrushProperty, value);

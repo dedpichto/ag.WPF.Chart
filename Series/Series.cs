@@ -18,6 +18,9 @@ using System.Windows.Shapes;
 
 namespace ag.WPF.Chart.Series
 {
+    /// <summary>
+    /// Represents the basic abstract class of series
+    /// </summary>
     public abstract class Series : DependencyObject, ISeries
     {
         #region Private fields
@@ -204,7 +207,6 @@ namespace ag.WPF.Chart.Series
         /// <summary>
         /// Raises the PropertyChanged event when the property value has changed
         /// </summary>
-        /// <param name="propertyName">Property name</param>
         public event PropertyChangedEventHandler PropertyChanged;
 
         [NotifyPropertyChangedInvocator]

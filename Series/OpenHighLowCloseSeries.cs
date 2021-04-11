@@ -8,6 +8,9 @@ using System.Windows.Media;
 
 namespace ag.WPF.Chart.Series
 {
+    /// <summary>
+    /// Represents stock series object (with open, high, low, and close values for each series point).
+    /// </summary>
     public class OpenHighLowCloseSeries : Series
     {
         #region ctor

@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace ag.WPF.Chart.Values
 {
+    /// <summary>
+    /// Represents stock value object (with open, high, low, and close values).
+    /// </summary>
     public class OpenHighLowCloseChartValue : ChartValue
     {
         #region ctor
@@ -23,6 +26,7 @@ namespace ag.WPF.Chart.Values
         #endregion
 
         #region Abstraction metods overrides
+        /// <inheritdoc />
         public override IChartValue Clone()
         {
             return (OpenHighLowCloseChartValue)MemberwiseClone();

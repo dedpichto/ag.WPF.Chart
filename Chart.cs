@@ -1696,7 +1696,7 @@ namespace ag.WPF.Chart
         /// <summary>
         /// Gets or sets amount of sections on x-axis.
         /// </summary>
-        /// <remarks>This property will have no effect if <see cref="ChartStyle"/> property is set to one of the following: <see cref="ChartStyle.SolidPie"/>, <see cref="ChartStyle.SlicedPie"/>, <see cref="ChartStyle.Doughnut"/>, <see cref="ChartStyle.Radar"/>, <see cref="ChartStyle.RadarWithMarkers"/>, <see cref="ChartStyle.RadarArea"/>.</remarks>
+        /// <remarks>This property will have no effect if <see cref="ChartStyle"/> property is set to one of the following: <see cref="ChartStyle.SolidPie"/>, <see cref="ChartStyle.SlicedPie"/>, <see cref="ChartStyle.Doughnut"/>, <see cref="ChartStyle.Radar"/>, <see cref="ChartStyle.RadarWithMarkers"/>, <see cref="ChartStyle.RadarArea"/>.
         /// </remarks>
         [Category("ChartMeasures"), Description("Gets or sets amount of sections on x-axis")]
         public int SectionsX
@@ -1726,10 +1726,14 @@ namespace ag.WPF.Chart
             get { return (string)GetValue(AxesValuesFormatProperty); }
             set { SetValue(AxesValuesFormatProperty, value); }
         }
-
+        /// <summary>
+        /// Gets legends collection.
+        /// </summary>
         [EditorBrowsable(EditorBrowsableState.Never), Browsable(false)]
         public ObservableCollection<FrameworkElement> LegendsCollection => _legendsCollection;
-
+        /// <summary>
+        /// Gets pie legends collection
+        /// </summary>
         [EditorBrowsable(EditorBrowsableState.Never), Browsable(false)]
         public ObservableCollection<FrameworkElement> PieLegendsCollection => _pieLegendsCollection;
 

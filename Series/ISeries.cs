@@ -9,7 +9,7 @@ using System.Windows.Shapes;
 namespace ag.WPF.Chart.Series
 {
     /// <summary>
-    /// Represents single chart series
+    /// Represents ISeries interface.
     /// </summary>
     public interface ISeries : INotifyPropertyChanged
     {

@@ -16,7 +16,9 @@ using ag.WPF.Chart.Values;
 
 namespace ag.WPF.Chart.Series
 {
-    /// <inheritdoc />
+    /// <summary>
+    /// Represents plain series object (with one value for each series point).
+    /// </summary>
     public class PlainSeries : Series
     {
         #region ctor

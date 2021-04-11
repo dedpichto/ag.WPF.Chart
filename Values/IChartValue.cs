@@ -1,5 +1,8 @@
 ﻿namespace ag.WPF.Chart.Values
 {
+    /// <summary>
+    /// Represents IChartValue interface
+    /// </summary>
     public interface IChartValue
     {
         /// <summary>

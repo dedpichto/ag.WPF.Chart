@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace ag.WPF.Chart.Values
 {
+    /// <summary>
+    /// Represents the basic abstract class of chart value
+    /// </summary>
     public abstract class ChartValue : IChartValue
     {
         #region Public properties

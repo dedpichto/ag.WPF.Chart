@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using ag.WPF.Chart.Series;
+using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -7,7 +8,7 @@ namespace ag.WPF.Chart
 {
     
     /// <summary>
-    /// Represents <see cref="ISeries"/> legend
+    /// Represents series legend
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never), Browsable(false)]
     public class Legend : Control

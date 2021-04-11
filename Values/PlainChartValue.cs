@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace ag.WPF.Chart.Values
 {
     /// <summary>
-    /// Represents single chart value
+    /// Represents plain series value object
     /// </summary>
     public class PlainChartValue : ChartValue
     {
@@ -34,6 +34,7 @@ namespace ag.WPF.Chart.Values
         #endregion
 
         #region Abstraction metods overrides
+        /// <inheritdoc />
         public override IChartValue Clone()
         {
             return (PlainChartValue)MemberwiseClone();
