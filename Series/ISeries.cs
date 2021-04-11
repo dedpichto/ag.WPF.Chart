@@ -1,5 +1,6 @@
 ﻿using ag.WPF.Chart.Values;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Media;
@@ -39,7 +40,7 @@ namespace ag.WPF.Chart.Series
         /// <summary>
         /// Gets the collection of <see cref="IChartValue"/> objects associated with current series
         /// </summary>
-        ChartValues Values { get; }
+        ObservableCollection<IChartValue> Values { get; }
         ///// <summary>
         ///// Gets series drawing path
         ///// </summary>

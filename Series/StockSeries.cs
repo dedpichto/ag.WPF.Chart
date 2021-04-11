@@ -37,11 +37,12 @@ namespace ag.WPF.Chart.Series
         /// </summary>
         /// <param name="name">Series name</param>
         /// <param name="values">Series values</param>
-        public StockSeries(string name, IEnumerable<(double volumeValue, double highValue, double lowValue, double closeValue)> values)
+        /// <param name="volumeOrClose">Boolen, specifies whether Volume or Open value should be set. Send True for Volume and False for Open</param>
+        public StockSeries(string name, IEnumerable<(double volumeValue, double highValue, double lowValue, double closeValue)> values, bool volumeOrClose)
         {
             foreach (var v in values)
             {
-                Values.Add(new StockChartValue(v.volumeValue, v.highValue, v.lowValue, v.closeValue));
+                Values.Add(new StockChartValue(v.volumeValue, v.highValue, v.lowValue, v.closeValue, volumeOrClose));
             }
 
             InitFields(name);
@@ -94,8 +95,9 @@ namespace ag.WPF.Chart.Series
         /// <param name="mainBrush">Series background</param>
         /// <param name="name">Series name</param>
         /// <param name="values">Series values</param>
-        public StockSeries(Brush mainBrush, string name, IEnumerable<(double volumeValue, double highValue, double lowValue, double closeValue)> values)
-            : this(name, values)
+        /// <param name="volumeOrClose">Boolen, specifies whether Volume or Open value should be set. Send True for Volume and False for Open</param>
+        public StockSeries(Brush mainBrush, string name, IEnumerable<(double volumeValue, double highValue, double lowValue, double closeValue)> values, bool volumeOrClose)
+            : this(name, values, volumeOrClose)
         {
             MainBrush = mainBrush;
         }
@@ -107,8 +109,9 @@ namespace ag.WPF.Chart.Series
         /// <param name="secondaryBrush">Series secondary background</param>
         /// <param name="name">Series name</param>
         /// <param name="values">Series values</param>
-        public StockSeries(Brush mainBrush, Brush secondaryBrush, string name, IEnumerable<(double volumeValue, double highValue, double lowValue, double closeValue)> values)
-            : this(name, values)
+        /// <param name="volumeOrClose">Boolen, specifies whether Volume or Open value should be set. Send True for Volume and False for Open</param>
+        public StockSeries(Brush mainBrush, Brush secondaryBrush, string name, IEnumerable<(double volumeValue, double highValue, double lowValue, double closeValue)> values, bool volumeOrClose)
+            : this(name, values, volumeOrClose)
         {
             MainBrush = mainBrush;
             SecondaryBrush = secondaryBrush;

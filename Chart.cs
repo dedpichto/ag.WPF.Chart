@@ -156,7 +156,11 @@ namespace ag.WPF.Chart
         /// <summary>
         /// The finantial style represented by high, low, and close prices
         /// </summary>
-        HighLowClose
+        HighLowClose,
+        /// <summary>
+        /// The finantial style represented by open, high, low, and close prices
+        /// </summary>
+        OpenHighLowClose
     }
 
     /// <summary>
@@ -290,6 +294,15 @@ namespace ag.WPF.Chart
         Stock,
         Up,
         Down
+    }
+
+    internal enum StockType
+    {
+        None,
+        HLC,
+        OHLC,
+        VHLC,
+        VOHLC
     }
 
     /// <summary>
@@ -914,79 +927,86 @@ namespace ag.WPF.Chart
                         LegendsCollection.Add(legend);
                         #endregion
 
-                        #region Stock legend
-                        legend = new Legend() { Index = series.Index };
+                        if (series is StockSeries)
+                        {
+                            #region Stock legend
+                            legend = new Legend() { Index = series.Index };
 
-                        legend.SetBinding(Legend.LegendBackgroundProperty, new Binding("Foreground") { Source = this });
-                        legendVisibilityBinding = new MultiBinding { Converter = new LegendStockVisibilityConverter() };
-                        legendVisibilityBinding.Bindings.Add(new Binding("ChartStyle")
-                        {
-                            Source = this
-                        });
-                        legendVisibilityBinding.Bindings.Add(new Binding("Index")
-                        {
-                            Source = series
-                        });
-                        legendVisibilityBinding.Bindings.Add(new Binding("ItemsSource")
-                        {
-                            Source = this
-                        });
-                        legendVisibilityBinding.NotifyOnSourceUpdated = true;
-                        legend.SetBinding(VisibilityProperty, legendVisibilityBinding);
-                        legend.Text = "Close";
-                        //legend.SetBinding(Legend.TextProperty, new Binding("CustomWaterfallLegends[1]") { Source = this });
+                            legend.SetBinding(Legend.LegendBackgroundProperty, new Binding("Foreground") { Source = this });
+                            legendVisibilityBinding = new MultiBinding { Converter = new LegendStockVisibilityConverter() };
+                            legendVisibilityBinding.Bindings.Add(new Binding("ChartStyle")
+                            {
+                                Source = this
+                            });
+                            legendVisibilityBinding.Bindings.Add(new Binding("Index")
+                            {
+                                Source = series
+                            });
+                            legendVisibilityBinding.Bindings.Add(new Binding("ItemsSource")
+                            {
+                                Source = this
+                            });
+                            legendVisibilityBinding.ConverterParameter = ColoredPaths.Stock;
+                            legendVisibilityBinding.NotifyOnSourceUpdated = true;
+                            legend.SetBinding(VisibilityProperty, legendVisibilityBinding);
+                            legend.Text = "Close";
+                            //legend.SetBinding(Legend.TextProperty, new Binding("CustomWaterfallLegends[1]") { Source = this });
 
-                        LegendsCollection.Add(legend);
-                        #endregion
+                            LegendsCollection.Add(legend);
+                            #endregion
 
-                        #region Up stock legend
-                        legend = new Legend() { Index = series.Index };
+                            #region Up stock legend
+                            legend = new Legend() { Index = series.Index };
 
-                        legend.SetBinding(Legend.LegendBackgroundProperty, new Binding("MainBrush") { Source = series });
-                        legendVisibilityBinding = new MultiBinding { Converter = new LegendStockVisibilityConverter() };
-                        legendVisibilityBinding.Bindings.Add(new Binding("ChartStyle")
-                        {
-                            Source = this
-                        });
-                        legendVisibilityBinding.Bindings.Add(new Binding("Index")
-                        {
-                            Source = series
-                        });
-                        legendVisibilityBinding.Bindings.Add(new Binding("ItemsSource")
-                        {
-                            Source = this
-                        });
-                        legend.SetBinding(VisibilityProperty, legendVisibilityBinding);
-                        legend.Text = "High";
-                        //legend.SetBinding(Legend.TextProperty, new Binding("CustomWaterfallLegends[0]") { Source = this });
+                            legend.SetBinding(Legend.LegendBackgroundProperty, new Binding("MainBrush") { Source = series });
+                            legendVisibilityBinding = new MultiBinding { Converter = new LegendStockVisibilityConverter() };
+                            legendVisibilityBinding.Bindings.Add(new Binding("ChartStyle")
+                            {
+                                Source = this
+                            });
+                            legendVisibilityBinding.Bindings.Add(new Binding("Index")
+                            {
+                                Source = series
+                            });
+                            legendVisibilityBinding.Bindings.Add(new Binding("ItemsSource")
+                            {
+                                Source = this
+                            });
+                            legendVisibilityBinding.ConverterParameter = ColoredPaths.Up;
+                            legendVisibilityBinding.NotifyOnSourceUpdated = true;
+                            legend.SetBinding(VisibilityProperty, legendVisibilityBinding);
+                            legend.Text = ((StockChartValue)series.Values[0]).StockType == StockType.HLC ? "High" : "Increase";
+                            //legend.SetBinding(Legend.TextProperty, new Binding("CustomWaterfallLegends[0]") { Source = this });
 
-                        LegendsCollection.Add(legend);
-                        #endregion
+                            LegendsCollection.Add(legend);
+                            #endregion
 
-                        #region Stock down legend
-                        legend = new Legend() { Index = series.Index };
+                            #region Stock down legend
+                            legend = new Legend() { Index = series.Index };
 
-                        legend.SetBinding(Legend.LegendBackgroundProperty, new Binding("SecondaryBrush") { Source = series });
-                        legendVisibilityBinding = new MultiBinding { Converter = new LegendStockVisibilityConverter() };
-                        legendVisibilityBinding.Bindings.Add(new Binding("ChartStyle")
-                        {
-                            Source = this
-                        });
-                        legendVisibilityBinding.Bindings.Add(new Binding("Index")
-                        {
-                            Source = series
-                        });
-                        legendVisibilityBinding.Bindings.Add(new Binding("ItemsSource")
-                        {
-                            Source = this
-                        });
-                        legendVisibilityBinding.NotifyOnSourceUpdated = true;
-                        legend.SetBinding(VisibilityProperty, legendVisibilityBinding);
-                        legend.Text = "Low";
-                        //legend.SetBinding(Legend.TextProperty, new Binding("CustomWaterfallLegends[1]") { Source = this });
+                            legend.SetBinding(Legend.LegendBackgroundProperty, new Binding("SecondaryBrush") { Source = series });
+                            legendVisibilityBinding = new MultiBinding { Converter = new LegendStockVisibilityConverter() };
+                            legendVisibilityBinding.Bindings.Add(new Binding("ChartStyle")
+                            {
+                                Source = this
+                            });
+                            legendVisibilityBinding.Bindings.Add(new Binding("Index")
+                            {
+                                Source = series
+                            });
+                            legendVisibilityBinding.Bindings.Add(new Binding("ItemsSource")
+                            {
+                                Source = this
+                            });
+                            legendVisibilityBinding.ConverterParameter = ColoredPaths.Down;
+                            legendVisibilityBinding.NotifyOnSourceUpdated = true;
+                            legend.SetBinding(VisibilityProperty, legendVisibilityBinding);
+                            legend.Text = legend.Text = ((StockChartValue)series.Values[0]).StockType == StockType.HLC ? "Low" : "Decrease";
+                            //legend.SetBinding(Legend.TextProperty, new Binding("CustomWaterfallLegends[1]") { Source = this });
 
-                        LegendsCollection.Add(legend);
-                        #endregion
+                            LegendsCollection.Add(legend);
+                            #endregion
+                        }
 
                         rebuildPieLegends(series.Values, series);
 
@@ -1170,7 +1190,9 @@ namespace ag.WPF.Chart
                             tooltip.Content = s.Name;
                             break;
                         }
-                        var content = $"Close\n{s.Values[index].Value.CloseValue.ToString(CultureInfo.InvariantCulture)}";
+                        var content = $"High\t{s.Values[index].Value.HighValue.ToString(CultureInfo.InvariantCulture)}\n" +
+                            $"Low\t{s.Values[index].Value.LowValue.ToString(CultureInfo.InvariantCulture)}\n" +
+                            $"Close\t{s.Values[index].Value.CloseValue.ToString(CultureInfo.InvariantCulture)}";
                         if (!string.IsNullOrEmpty(s.Values[index].CustomValue))
                             content += $"\n{s.Values[index].CustomValue}";
                         tooltip.Content = content;
@@ -1186,7 +1208,9 @@ namespace ag.WPF.Chart
                                 tooltip.Content = s.Name;
                                 break;
                             }
-                            var content = $"High\n{s.Values[index].Value.HighValue.ToString(CultureInfo.InvariantCulture)}";
+                            var content = $"High\t{s.Values[index].Value.HighValue.ToString(CultureInfo.InvariantCulture)}\n" +
+                                $"Low\t{s.Values[index].Value.LowValue.ToString(CultureInfo.InvariantCulture)}\n" +
+                                $"Close\t{s.Values[index].Value.CloseValue.ToString(CultureInfo.InvariantCulture)}";
                             if (!string.IsNullOrEmpty(s.Values[index].CustomValue))
                                 content += $"\n{s.Values[index].CustomValue}";
                             tooltip.Content = content;
@@ -1202,7 +1226,9 @@ namespace ag.WPF.Chart
                                     tooltip.Content = s.Name;
                                     break;
                                 }
-                                var content = $"Low\n{s.Values[index].Value.LowValue.ToString(CultureInfo.InvariantCulture)}";
+                                var content = $"High\t{s.Values[index].Value.HighValue.ToString(CultureInfo.InvariantCulture)}\n" +
+                                    $"Low\t{s.Values[index].Value.LowValue.ToString(CultureInfo.InvariantCulture)}\n" +
+                                    $"Close\t{s.Values[index].Value.CloseValue.ToString(CultureInfo.InvariantCulture)}";
                                 if (!string.IsNullOrEmpty(s.Values[index].CustomValue))
                                     content += $"\n{s.Values[index].CustomValue}";
                                 tooltip.Content = content;
@@ -1229,7 +1255,7 @@ namespace ag.WPF.Chart
                 ChartStyle.SmoothStackedLinesWithMarkers, ChartStyle.SmoothFullStackedLinesWithMarkers,
                 ChartStyle.Bubbles, ChartStyle.Columns, ChartStyle.StackedColumns, ChartStyle.FullStackedColumns,
                 ChartStyle.Bars, ChartStyle.StackedBars, ChartStyle.FullStackedBars,
-                ChartStyle.RadarWithMarkers, ChartStyle.Waterfall, ChartStyle.HighLowClose) || e.ClickCount != 2) return;
+                ChartStyle.RadarWithMarkers, ChartStyle.Waterfall, ChartStyle.HighLowClose, ChartStyle.OpenHighLowClose) || e.ClickCount != 2) return;
             var rc = s.RealRects.FirstOrDefault(r => r.Contains(e.GetPosition(_canvas)));
             if (rc == default)
                 rc = s.RealStockHighRects.FirstOrDefault(r => r.Contains(e.GetPosition(_canvas)));
@@ -1319,7 +1345,7 @@ namespace ag.WPF.Chart
             }
         }
 
-        private void rebuildPieLegends(ChartValues values, ISeries series)
+        private void rebuildPieLegends(ObservableCollection<IChartValue> values, ISeries series)
         {
             if (series.Index > 0) return;
             PieLegendsCollection.Clear();

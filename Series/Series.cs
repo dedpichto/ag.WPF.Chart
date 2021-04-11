@@ -2,6 +2,7 @@
 using ag.WPF.Chart.Values;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
@@ -24,12 +25,12 @@ namespace ag.WPF.Chart.Series
         private Brush _secondaryBrush;
         private string _name;
         private int _index;
-        private readonly ChartValues _values = new ChartValues();
+        private readonly ObservableCollection<IChartValue> _values = new ObservableCollection<IChartValue>();
         #endregion
 
         #region Public properties
         /// <inheritdoc />
-        public ChartValues Values
+        public ObservableCollection<IChartValue> Values
         {
             get { return _values; }
         }
@@ -102,7 +103,6 @@ namespace ag.WPF.Chart.Series
         #region Event handlers
         private void values_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
-            if (!(sender is ChartValues chartValues)) return;
             foreach (var p in Paths)
             {
                 if (p == null) continue;

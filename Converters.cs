@@ -807,7 +807,7 @@ namespace ag.WPF.Chart
 
         internal static bool OffsetBoundary(ChartBoundary boundary, ChartStyle style)
         {
-            return style.In(ChartStyle.HighLowClose)
+            return style.In(ChartStyle.HighLowClose, ChartStyle.OpenHighLowClose)
                 || (boundary == ChartBoundary.WithOffset &&
                    style.In(ChartStyle.Lines, ChartStyle.StackedLines, ChartStyle.FullStackedLines,
                        ChartStyle.LinesWithMarkers, ChartStyle.StackedLinesWithMarkers,
@@ -974,12 +974,13 @@ namespace ag.WPF.Chart
                 || !(values[3] is ChartStyle chartStyle))
                 return null;
 
+            var seriesArray = seriesEnumerable.ToArray();
             var gm = new PathGeometry();
             Directions dir;
 
             if (seriesEnumerable.All(s => s is PlainSeries))
             {
-                if (chartStyle.In(ChartStyle.HighLowClose))
+                if (chartStyle.In(ChartStyle.HighLowClose, ChartStyle.OpenHighLowClose))
                     return null;
                 var totalValues = chartStyle.In(ChartStyle.Waterfall)
                     ? seriesEnumerable.First().Values.Select(v => v.Value.PlainValue)
@@ -988,8 +989,16 @@ namespace ag.WPF.Chart
             }
             else
             {
-                if (!chartStyle.In(ChartStyle.HighLowClose))
+                if (!chartStyle.In(ChartStyle.HighLowClose, ChartStyle.OpenHighLowClose))
                     return null;
+                if (!seriesArray[0].Values.Any())
+                    return null;
+                var stockType = (((StockChartValue)seriesArray[0].Values[0]).StockType);
+                if (chartStyle == ChartStyle.HighLowClose && stockType != StockType.HLC)
+                    return null;
+                else if (chartStyle == ChartStyle.OpenHighLowClose && stockType != StockType.OHLC)
+                    return null;
+
                 var totalValues = seriesEnumerable.First().Values.Select(v => (v.Value.HighValue, v.Value.LowValue));
                 dir = Utils.GetDirectionFinancial(totalValues, chartStyle);
             }
@@ -1048,12 +1057,13 @@ namespace ag.WPF.Chart
                 || !(values[3] is ChartStyle chartStyle))
                 return null;
 
+            var seriesArray = seriesEnumerable.ToArray();
             var gm = new PathGeometry();
             Directions dir;
 
             if (seriesEnumerable.All(s => s is PlainSeries))
             {
-                if (chartStyle.In(ChartStyle.HighLowClose))
+                if (chartStyle.In(ChartStyle.HighLowClose, ChartStyle.OpenHighLowClose))
                     return null;
                 var totalValues = chartStyle.In(ChartStyle.Waterfall)
                     ? seriesEnumerable.First().Values.Select(v => v.Value.PlainValue)
@@ -1062,8 +1072,17 @@ namespace ag.WPF.Chart
             }
             else
             {
-                if (!chartStyle.In(ChartStyle.HighLowClose))
+                if (!chartStyle.In(ChartStyle.HighLowClose, ChartStyle.OpenHighLowClose))
                     return null;
+
+                if (!seriesArray[0].Values.Any())
+                    return null;
+                var stockType = (((StockChartValue)seriesArray[0].Values[0]).StockType);
+                if (chartStyle == ChartStyle.HighLowClose && stockType != StockType.HLC)
+                    return null;
+                else if (chartStyle == ChartStyle.OpenHighLowClose && stockType != StockType.OHLC)
+                    return null;
+
                 var totalValues = seriesEnumerable.First().Values.Select(v => (v.Value.HighValue, v.Value.LowValue));
                 dir = Utils.GetDirectionFinancial(totalValues, chartStyle);
             }
@@ -1125,13 +1144,25 @@ namespace ag.WPF.Chart
         {
             if (values == null
                 || !(values[0] is ChartStyle chartStyle)
-                || !chartStyle.In(ChartStyle.HighLowClose)
+                || !chartStyle.In(ChartStyle.HighLowClose, ChartStyle.OpenHighLowClose)
                 || !(values[1] is int index)
                 || index > 0
                 || !(values[2] is IEnumerable<ISeries> seriesEnumerable)
-                || !seriesEnumerable.All(s => s is StockSeries))
+                || !seriesEnumerable.All(s => s is StockSeries)
+                || !(parameter is ColoredPaths colored))
                 return Visibility.Collapsed;
 
+            var seriesArray = seriesEnumerable.ToArray();
+            if (!seriesArray[0].Values.Any())
+                return Visibility.Collapsed;
+            var stockType = (((StockChartValue)seriesArray[0].Values[0]).StockType);
+
+            if (chartStyle == ChartStyle.HighLowClose && stockType != StockType.HLC)
+                return Visibility.Collapsed;
+            else if (chartStyle == ChartStyle.OpenHighLowClose && stockType != StockType.OHLC)
+                return Visibility.Collapsed;
+            else if (chartStyle == ChartStyle.OpenHighLowClose && colored == ColoredPaths.Stock)
+                return Visibility.Collapsed;
             return Visibility.Visible;
         }
 
@@ -1175,7 +1206,7 @@ namespace ag.WPF.Chart
         {
             if (values == null
                 || !(values[0] is ChartStyle chartStyle)
-                || chartStyle.In(ChartStyle.Waterfall, ChartStyle.HighLowClose)
+                || chartStyle.In(ChartStyle.Waterfall, ChartStyle.HighLowClose, ChartStyle.OpenHighLowClose)
                 || !(values[1] is IEnumerable<ISeries> seriesEnumerable)
                 || !seriesEnumerable.All(s => s is PlainSeries))
                 return Visibility.Collapsed;
@@ -1219,7 +1250,7 @@ namespace ag.WPF.Chart
                 || !(values[3] is ChartStyle chartStyle)
                 || chartStyle.In(ChartStyle.SolidPie, ChartStyle.SlicedPie, ChartStyle.Doughnut)
                 || !(values[4] is int index)
-                || chartStyle.In(ChartStyle.Waterfall, ChartStyle.HighLowClose) && index > 0
+                || chartStyle.In(ChartStyle.Waterfall, ChartStyle.HighLowClose, ChartStyle.OpenHighLowClose) && index > 0
                 || !(values[5] is AutoAdjustmentMode autoAdjust)
                 || !(values[6] is double maxXConv)
                 || !(values[7] is double maxYConv)
@@ -1236,7 +1267,7 @@ namespace ag.WPF.Chart
                 || !(parameter is (int order, ColoredPaths colored)))
                 return null;
 
-            if (!chartStyle.In(ChartStyle.Waterfall, ChartStyle.HighLowClose) && order > 0)
+            if (!chartStyle.In(ChartStyle.Waterfall, ChartStyle.HighLowClose, ChartStyle.OpenHighLowClose) && order > 0)
                 return null;
 
             var seriesArray = seriesEnumerable.ToArray();
@@ -1251,7 +1282,7 @@ namespace ag.WPF.Chart
 
             if (seriesArray.All(s => s is PlainSeries))
             {
-                if (chartStyle.In(ChartStyle.HighLowClose))
+                if (chartStyle.In(ChartStyle.HighLowClose, ChartStyle.OpenHighLowClose))
                     return null;
                 rawValues = Utils.GetPaddedSeries(seriesArray);
                 var totalValues = chartStyle.In(ChartStyle.Waterfall)
@@ -1261,15 +1292,28 @@ namespace ag.WPF.Chart
             }
             else
             {
-                if (!chartStyle.In(ChartStyle.HighLowClose))
+                if (!chartStyle.In(ChartStyle.HighLowClose, ChartStyle.OpenHighLowClose))
                     return null;
+                if (!seriesArray[0].Values.Any())
+                    return null;
+                //if (chartStyle == ChartStyle.HighLowClose && colored != ColoredPaths.Stock)
+                //    return null;
+                var stockType = ((StockChartValue)seriesArray[0].Values[0]).StockType;
+                if (chartStyle == ChartStyle.HighLowClose && stockType != StockType.HLC)
+                {
+                    return null;
+                }
+                if (chartStyle == ChartStyle.OpenHighLowClose && stockType != StockType.OHLC)
+                {
+                    return null;
+                }
                 rawValues = Utils.GetPaddedSeriesFinancial(seriesArray[0]);
                 var totalValues = seriesArray[0].Values.Select(v => (v.Value.HighValue, v.Value.LowValue));
                 dir = Utils.GetDirectionFinancial(totalValues, chartStyle);
             }
 
             var customValues = values[14] is IEnumerable<string> customEnumerable ? customEnumerable.ToArray() : new string[] { };
-            var maxPointsCount = chartStyle.In(ChartStyle.Waterfall, ChartStyle.HighLowClose)
+            var maxPointsCount = chartStyle.In(ChartStyle.Waterfall, ChartStyle.HighLowClose, ChartStyle.OpenHighLowClose)
                 ? seriesArray[0].Values.Count
                 : seriesArray.Max(s => s.Values.Count);
 
@@ -1283,15 +1327,21 @@ namespace ag.WPF.Chart
             {
                 ChartStyle.Waterfall => 0.0,
                 ChartStyle.HighLowClose => Utils.BoundaryOffset(true, width, maxPointsCount),
+                ChartStyle.OpenHighLowClose => Utils.BoundaryOffset(true, width, maxPointsCount),
                 _ => Utils.BoundaryOffset(offsetBoundary, width, maxPointsCount)
             };
 
             switch (chartStyle)
             {
+                case ChartStyle.OpenHighLowClose:
+                    {
+                        var units = Utils.GetUnitsForLines(new[] { seriesArray[0] }, chartStyle, dir, width, height, boundOffset, linesCountY, fmt.Height, autoAdjust, maxYConv);
+                        return drawOHLC(width, height, seriesArray[0].Values.Count, units, dir, seriesArray[0], colored);
+                    }
                 case ChartStyle.HighLowClose:
                     {
                         var units = Utils.GetUnitsForLines(new[] { seriesArray[0] }, chartStyle, dir, width, height, boundOffset, linesCountY, fmt.Height, autoAdjust, maxYConv);
-                        return drawHLC(width, height, seriesArray[0].Values.Count, units, chartStyle, dir, seriesArray[0], colored);
+                        return drawHLC(width, height, seriesArray[0].Values.Count, units, dir, seriesArray[0], colored);
                     }
                 case ChartStyle.Waterfall:
                     {
@@ -1398,7 +1448,99 @@ namespace ag.WPF.Chart
             return gm;
         }
 
-        private PathGeometry drawHLC(double width, double height, int maxX, double units, ChartStyle style, Directions dir, ISeries currentSeries, ColoredPaths colored)
+        private PathGeometry drawOHLC(double width, double height, int maxX, double units, Directions dir, ISeries currentSeries, ColoredPaths colored)
+        {
+            double stepX;
+            double centerX, centerY;
+            var gm = new PathGeometry();
+            var boundOffset = Utils.BoundaryOffset(true, width, maxX);
+
+            switch (dir)
+            {
+                case Directions.NorthEast:
+                    centerX = Utils.AXIS_THICKNESS + boundOffset;
+                    centerY = height - Utils.AXIS_THICKNESS;
+                    stepX = (width - 2 * Utils.AXIS_THICKNESS - 2 * boundOffset) / (maxX - 1);
+                    break;
+                case Directions.NorthEastSouthEast:
+                    centerX = Utils.AXIS_THICKNESS + boundOffset;
+                    centerY = height / 2;
+                    stepX = (width - 2 * Utils.AXIS_THICKNESS - 2 * boundOffset) / (maxX - 1);
+                    break;
+                case Directions.SouthEast:
+                    centerX = Utils.AXIS_THICKNESS + boundOffset;
+                    centerY = Utils.AXIS_THICKNESS;
+                    stepX = (width - 2 * Utils.AXIS_THICKNESS - 2 * boundOffset) / (maxX - 1);
+                    break;
+                default:
+                    return null;
+            }
+
+            var addition = 2 * Utils.RECT_SIZE < boundOffset ? 2 * Utils.RECT_SIZE : boundOffset - 2 * Utils.RECT_SIZE;
+
+            switch (colored)
+            {
+                case ColoredPaths.Stock:
+                    currentSeries.RealRects.Clear();
+                    break;
+                case ColoredPaths.Up:
+                    currentSeries.RealStockHighRects.Clear();
+                    break;
+                case ColoredPaths.Down:
+                    currentSeries.RealStockLowRects.Clear();
+                    break;
+            }
+
+            for (var i = 0; i < currentSeries.Values.Count; i++)
+            {
+                var x = centerX + i * stepX;
+
+                switch (colored)
+                {
+                    case ColoredPaths.Stock:
+                        {
+                            var y1 = centerY - currentSeries.Values[i].Value.HighValue * units;
+                            var y2 = currentSeries.Values[i].Value.CloseValue > currentSeries.Values[i].Value.OpenValue
+                                ? centerY - currentSeries.Values[i].Value.CloseValue * units
+                                : centerY - currentSeries.Values[i].Value.OpenValue * units;
+                            var line = new LineGeometry(new Point(x, y1), new Point(x, y2));
+                            gm.AddGeometry(line);
+
+                            y1 = currentSeries.Values[i].Value.CloseValue > currentSeries.Values[i].Value.OpenValue
+                                ? centerY - currentSeries.Values[i].Value.OpenValue * units
+                                : centerY - currentSeries.Values[i].Value.CloseValue * units;
+                            y2 = centerY - currentSeries.Values[i].Value.LowValue * units;
+                            line = new LineGeometry(new Point(x, y1), new Point(x, y2));
+                            gm.AddGeometry(line);
+
+                            break;
+                        }
+                    case ColoredPaths.Up:
+                        {
+                            if (currentSeries.Values[i].Value.CloseValue <= currentSeries.Values[i].Value.OpenValue)
+                                break;
+                            var y1 = centerY - currentSeries.Values[i].Value.CloseValue * units;
+                            var y2 = centerY - currentSeries.Values[i].Value.OpenValue * units;
+                            var rect = new Rect(new Point(x - addition, y1), new Point(x + addition, y2));
+                            gm.AddGeometry(new RectangleGeometry(rect));
+                            break;
+                        }
+                    case ColoredPaths.Down:
+                        {
+                            if (currentSeries.Values[i].Value.OpenValue <= currentSeries.Values[i].Value.CloseValue)
+                                break;
+                            var y1 = centerY - currentSeries.Values[i].Value.OpenValue * units;
+                            var y2 = centerY - currentSeries.Values[i].Value.CloseValue * units;
+                            var rect = new Rect(new Point(x - addition, y1), new Point(x + addition, y2));
+                            gm.AddGeometry(new RectangleGeometry(rect));
+                            break;
+                        }
+                }
+            }
+            return gm;
+        }
+
+        private PathGeometry drawHLC(double width, double height, int maxX, double units, Directions dir, ISeries currentSeries, ColoredPaths colored)
         {
             double stepX;
             double centerX, centerY;
@@ -1452,19 +1594,22 @@ namespace ag.WPF.Chart
                             var y3 = centerY - currentSeries.Values[i].Value.CloseValue * units;
                             var line = new LineGeometry(new Point(x, y1), new Point(x, y2));
                             gm.AddGeometry(line);
-                            drawCircle(x, y3, gm, currentSeries.RealRects);
+                            drawMarker(x, y3, gm, currentSeries.RealRects);
+                            //drawCircle(x, y3, gm, currentSeries.RealRects);
                             break;
                         }
                     case ColoredPaths.Up:
                         {
                             var y1 = centerY - currentSeries.Values[i].Value.HighValue * units;
-                            drawTriangle(x, y1, gm, true, currentSeries.RealStockHighRects);
+                            drawMarker(x, y1 + Utils.RECT_SIZE, gm, currentSeries.RealStockHighRects);
+                            //drawTriangle(x, y1, gm, true, currentSeries.RealStockHighRects);
                             break;
                         }
                     case ColoredPaths.Down:
                         {
-                            var y2 = centerY - currentSeries.Values[i].Value.LowValue * units;
-                            drawTriangle(x, y2, gm, false, currentSeries.RealStockLowRects);
+                            var y1 = centerY - currentSeries.Values[i].Value.LowValue * units;
+                            drawMarker(x, y1 - Utils.RECT_SIZE, gm, currentSeries.RealStockLowRects);
+                            //drawTriangle(x, y1, gm, false, currentSeries.RealStockLowRects);
                             break;
                         }
                 }
@@ -2872,7 +3017,7 @@ namespace ag.WPF.Chart
 
             if (seriesEnumerable.All(s => s is PlainSeries))
             {
-                if (chartStyle.In(ChartStyle.HighLowClose))
+                if (chartStyle.In(ChartStyle.HighLowClose, ChartStyle.OpenHighLowClose))
                     return HorizontalAlignment.Right;
                 var totalValues = chartStyle.In(ChartStyle.Waterfall)
                     ? seriesEnumerable.First().Values.Select(v => v.Value.PlainValue)
@@ -2881,7 +3026,7 @@ namespace ag.WPF.Chart
             }
             else
             {
-                if (!chartStyle.In(ChartStyle.HighLowClose))
+                if (!chartStyle.In(ChartStyle.HighLowClose, ChartStyle.OpenHighLowClose))
                     return HorizontalAlignment.Right;
                 var totalValues = seriesEnumerable.First().Values.Select(v => (v.Value.HighValue, v.Value.LowValue));
                 dir = Utils.GetDirectionFinancial(totalValues, chartStyle);
@@ -2936,7 +3081,7 @@ namespace ag.WPF.Chart
 
             if (seriesEnumerable.All(s => s is PlainSeries))
             {
-                if (chartStyle.In(ChartStyle.HighLowClose))
+                if (chartStyle.In(ChartStyle.HighLowClose, ChartStyle.OpenHighLowClose))
                     return 2;
                 var totalValues = chartStyle.In(ChartStyle.Waterfall)
                     ? seriesEnumerable.First().Values.Select(v => v.Value.PlainValue)
@@ -2945,7 +3090,7 @@ namespace ag.WPF.Chart
             }
             else
             {
-                if (!chartStyle.In(ChartStyle.HighLowClose))
+                if (!chartStyle.In(ChartStyle.HighLowClose, ChartStyle.OpenHighLowClose))
                     return 2;
                 var totalValues = seriesEnumerable.First().Values.Select(v => (v.Value.HighValue, v.Value.LowValue));
                 dir = Utils.GetDirectionFinancial(totalValues, chartStyle);
@@ -3000,7 +3145,7 @@ namespace ag.WPF.Chart
 
             if (seriesEnumerable.All(s => s is PlainSeries))
             {
-                if (chartStyle.In(ChartStyle.HighLowClose))
+                if (chartStyle.In(ChartStyle.HighLowClose, ChartStyle.OpenHighLowClose))
                     return VerticalAlignment.Top;
                 var totalValues = chartStyle.In(ChartStyle.Waterfall)
                     ? seriesEnumerable.First().Values.Select(v => v.Value.PlainValue)
@@ -3009,7 +3154,7 @@ namespace ag.WPF.Chart
             }
             else
             {
-                if (!chartStyle.In(ChartStyle.HighLowClose))
+                if (!chartStyle.In(ChartStyle.HighLowClose, ChartStyle.OpenHighLowClose))
                     return VerticalAlignment.Top;
                 var totalValues = seriesEnumerable.First().Values.Select(v => (v.Value.HighValue, v.Value.LowValue));
                 dir = Utils.GetDirectionFinancial(totalValues, chartStyle);
@@ -3064,7 +3209,7 @@ namespace ag.WPF.Chart
 
             if (seriesEnumerable.All(s => s is PlainSeries))
             {
-                if (chartStyle.In(ChartStyle.HighLowClose))
+                if (chartStyle.In(ChartStyle.HighLowClose, ChartStyle.OpenHighLowClose))
                     return 5;
                 var totalValues = chartStyle.In(ChartStyle.Waterfall)
                     ? seriesEnumerable.First().Values.Select(v => v.Value.PlainValue)
@@ -3073,7 +3218,7 @@ namespace ag.WPF.Chart
             }
             else
             {
-                if (!chartStyle.In(ChartStyle.HighLowClose))
+                if (!chartStyle.In(ChartStyle.HighLowClose, ChartStyle.OpenHighLowClose))
                     return 5;
                 var totalValues = seriesEnumerable.First().Values.Select(v => (v.Value.HighValue, v.Value.LowValue));
                 dir = Utils.GetDirectionFinancial(totalValues, chartStyle);
@@ -3128,7 +3273,7 @@ namespace ag.WPF.Chart
 
             if (seriesEnumerable.All(s => s is PlainSeries))
             {
-                if (chartStyle.In(ChartStyle.HighLowClose))
+                if (chartStyle.In(ChartStyle.HighLowClose, ChartStyle.OpenHighLowClose))
                     return 2;
                 var totalValues = chartStyle.In(ChartStyle.Waterfall)
                     ? seriesEnumerable.First().Values.Select(v => v.Value.PlainValue)
@@ -3137,7 +3282,7 @@ namespace ag.WPF.Chart
             }
             else
             {
-                if (!chartStyle.In(ChartStyle.HighLowClose))
+                if (!chartStyle.In(ChartStyle.HighLowClose, ChartStyle.OpenHighLowClose))
                     return 2;
                 var totalValues = seriesEnumerable.First().Values.Select(v => (v.Value.HighValue, v.Value.LowValue));
                 dir = Utils.GetDirectionFinancial(totalValues, chartStyle);
@@ -3188,7 +3333,7 @@ namespace ag.WPF.Chart
 
             if (seriesEnumerable.All(s => s is PlainSeries))
             {
-                if (chartStyle.In(ChartStyle.HighLowClose))
+                if (chartStyle.In(ChartStyle.HighLowClose, ChartStyle.OpenHighLowClose))
                     return 5;
                 var totalValues = chartStyle.In(ChartStyle.Waterfall)
                     ? seriesEnumerable.First().Values.Select(v => v.Value.PlainValue)
@@ -3197,7 +3342,7 @@ namespace ag.WPF.Chart
             }
             else
             {
-                if (!chartStyle.In(ChartStyle.HighLowClose))
+                if (!chartStyle.In(ChartStyle.HighLowClose, ChartStyle.OpenHighLowClose))
                     return 5;
                 var totalValues = seriesEnumerable.First().Values.Select(v => (v.Value.HighValue, v.Value.LowValue));
                 dir = Utils.GetDirectionFinancial(totalValues, chartStyle);
@@ -3249,7 +3394,7 @@ namespace ag.WPF.Chart
 
             if (seriesEnumerable.All(s => s is PlainSeries))
             {
-                if (chartStyle.In(ChartStyle.HighLowClose))
+                if (chartStyle.In(ChartStyle.HighLowClose, ChartStyle.OpenHighLowClose))
                     return VerticalAlignment.Bottom;
                 var totalValues = chartStyle.In(ChartStyle.Waterfall)
                     ? seriesEnumerable.First().Values.Select(v => v.Value.PlainValue)
@@ -3258,7 +3403,7 @@ namespace ag.WPF.Chart
             }
             else
             {
-                if (!chartStyle.In(ChartStyle.HighLowClose))
+                if (!chartStyle.In(ChartStyle.HighLowClose, ChartStyle.OpenHighLowClose))
                     return VerticalAlignment.Bottom;
                 var totalValues = seriesEnumerable.First().Values.Select(v => (v.Value.HighValue, v.Value.LowValue));
                 dir = Utils.GetDirectionFinancial(totalValues, chartStyle);
@@ -3309,7 +3454,7 @@ namespace ag.WPF.Chart
 
             if (seriesEnumerable.All(s => s is PlainSeries))
             {
-                if (chartStyle.In(ChartStyle.HighLowClose))
+                if (chartStyle.In(ChartStyle.HighLowClose, ChartStyle.OpenHighLowClose))
                     return HorizontalAlignment.Left;
                 var totalValues = chartStyle.In(ChartStyle.Waterfall)
                     ? seriesEnumerable.First().Values.Select(v => v.Value.PlainValue)
@@ -3318,7 +3463,7 @@ namespace ag.WPF.Chart
             }
             else
             {
-                if (!chartStyle.In(ChartStyle.HighLowClose))
+                if (!chartStyle.In(ChartStyle.HighLowClose, ChartStyle.OpenHighLowClose))
                     return HorizontalAlignment.Left;
                 var totalValues = seriesEnumerable.First().Values.Select(v => (v.Value.HighValue, v.Value.LowValue));
                 dir = Utils.GetDirectionFinancial(totalValues, chartStyle);
@@ -3379,7 +3524,6 @@ namespace ag.WPF.Chart
                 case ChartStyle.FullStackedLinesWithMarkers:
                 case ChartStyle.Radar:
                 case ChartStyle.RadarWithMarkers:
-                    //case ChartStyle.HighLowClose:
                     return null;
             }
             return brush;
@@ -3472,7 +3616,7 @@ namespace ag.WPF.Chart
                 return 0.0;
 
             var height = 8.0;
-            var series = seriesEnumerable.ToArray();
+            var seriesArray = seriesEnumerable.ToArray();
             var customValues = values[8] is IEnumerable<string> customEnumerable ? customEnumerable.ToArray() : new string[] { };
 
             Directions dir;
@@ -3480,31 +3624,40 @@ namespace ag.WPF.Chart
 
             if (seriesEnumerable.All(s => s is PlainSeries))
             {
-                if (chartStyle.In(ChartStyle.HighLowClose))
+                if (chartStyle.In(ChartStyle.HighLowClose, ChartStyle.OpenHighLowClose))
                     return 0.0;
                 var totalValues = chartStyle != ChartStyle.Waterfall
-                    ? series.SelectMany(s => s.Values.Select(v => v.Value.PlainValue))
-                    : series[0].Values.Select(v => v.Value.PlainValue);
+                    ? seriesArray.SelectMany(s => s.Values.Select(v => v.Value.PlainValue))
+                    : seriesArray[0].Values.Select(v => v.Value.PlainValue);
                 dir = Utils.GetDirection(totalValues, chartStyle);
                 if (Utils.StyleBars(chartStyle))
                 {
-                    var rawValues = Utils.GetPaddedSeries(series);
+                    var rawValues = Utils.GetPaddedSeries(seriesArray);
                     maxFromValues = autoAdjust.In(AutoAdjustmentMode.Both, AutoAdjustmentMode.Vertical) ? Utils.GetMaxValueLength(rawValues, chartStyle) : maxX.ToString(culture).Length;
                 }
                 else
                 {
-                    var maxV = chartStyle != ChartStyle.Waterfall ? series.Max(s => s.Values.Count).ToString(culture).Length : series[0].Values.Count.ToString(culture).Length;
+                    var maxV = chartStyle != ChartStyle.Waterfall ? seriesArray.Max(s => s.Values.Count).ToString(culture).Length : seriesArray[0].Values.Count.ToString(culture).Length;
                     maxFromValues = autoAdjust.In(AutoAdjustmentMode.Both, AutoAdjustmentMode.Horizontal) ? maxV : maxX.ToString(culture).Length;
                 }
             }
             else
             {
-                if (!chartStyle.In(ChartStyle.HighLowClose))
+                if (!chartStyle.In(ChartStyle.HighLowClose, ChartStyle.OpenHighLowClose))
                     return 0.0;
-                var totalValues = series[0].Values.Select(v => (v.Value.HighValue, v.Value.LowValue));
+
+                if (!seriesArray[0].Values.Any())
+                    return 0.0;
+                var stockType = (((StockChartValue)seriesArray[0].Values[0]).StockType);
+                if (chartStyle == ChartStyle.HighLowClose && stockType != StockType.HLC)
+                    return 0.0;
+                else if (chartStyle == ChartStyle.OpenHighLowClose && stockType != StockType.OHLC)
+                    return 0.0;
+
+                var totalValues = seriesArray[0].Values.Select(v => (v.Value.HighValue, v.Value.LowValue));
                 dir = Utils.GetDirectionFinancial(totalValues, chartStyle);
                 //var rawValues = Utils.GetPaddedSeriesFinancial(series[0]);
-                maxFromValues = autoAdjust.In(AutoAdjustmentMode.Both, AutoAdjustmentMode.Vertical) ? series[0].Values.Count.ToString(culture).Length : maxX.ToString(culture).Length;
+                maxFromValues = autoAdjust.In(AutoAdjustmentMode.Both, AutoAdjustmentMode.Vertical) ? seriesArray[0].Values.Count.ToString(culture).Length : maxX.ToString(culture).Length;
             }
             var maxString = customValues.Any()
                 ? customValues.FirstOrDefault(c => c.Length == customValues.Max(v => v.Length))
@@ -3577,7 +3730,7 @@ namespace ag.WPF.Chart
 
             if (seriesEnumerable.All(s => s is PlainSeries))
             {
-                if (chartStyle.In(ChartStyle.HighLowClose))
+                if (chartStyle.In(ChartStyle.HighLowClose, ChartStyle.OpenHighLowClose))
                     return 0.0;
                 var totalValues = chartStyle != ChartStyle.Waterfall
                     ? seriesArray.SelectMany(s => s.Values.Select(v => v.Value.PlainValue))
@@ -3602,8 +3755,17 @@ namespace ag.WPF.Chart
             }
             else
             {
-                if (!chartStyle.In(ChartStyle.HighLowClose))
+                if (!chartStyle.In(ChartStyle.HighLowClose, ChartStyle.OpenHighLowClose))
                     return 0.0;
+
+                if (!seriesArray[0].Values.Any())
+                    return 0.0;
+                var stockType = (((StockChartValue)seriesArray[0].Values[0]).StockType);
+                if (chartStyle == ChartStyle.HighLowClose && stockType != StockType.HLC)
+                    return 0.0;
+                else if (chartStyle == ChartStyle.OpenHighLowClose && stockType != StockType.OHLC)
+                    return 0.0;
+
                 var totalValues = seriesArray[0].Values.Select(v => (v.Value.HighValue, v.Value.LowValue));
                 dir = Utils.GetDirectionFinancial(totalValues, chartStyle);
                 var rawValues = Utils.GetPaddedSeriesFinancial(seriesArray[0]);
@@ -3654,14 +3816,24 @@ namespace ag.WPF.Chart
                 || !seriesEnumerable.Any())
                 return null;
 
+            var seriesArray = seriesEnumerable.ToArray();
+
             if (seriesEnumerable.All(s => s is PlainSeries))
             {
-                if (chartStyle.In(ChartStyle.HighLowClose))
+                if (chartStyle.In(ChartStyle.HighLowClose, ChartStyle.OpenHighLowClose))
                     return null;
             }
             else
             {
-                if (!chartStyle.In(ChartStyle.HighLowClose))
+                if (!chartStyle.In(ChartStyle.HighLowClose, ChartStyle.OpenHighLowClose))
+                    return null;
+
+                if (!seriesArray[0].Values.Any())
+                    return null;
+                var stockType = (((StockChartValue)seriesArray[0].Values[0]).StockType);
+                if (chartStyle == ChartStyle.HighLowClose && stockType != StockType.HLC)
+                    return null;
+                else if (chartStyle == ChartStyle.OpenHighLowClose && stockType != StockType.OHLC)
                     return null;
             }
 
@@ -4053,7 +4225,7 @@ namespace ag.WPF.Chart
             if (chartStyle.In(ChartStyle.Area, ChartStyle.StackedArea, ChartStyle.FullStackedArea, ChartStyle.SlicedPie, ChartStyle.SolidPie, ChartStyle.Doughnut, ChartStyle.Radar, ChartStyle.RadarWithMarkers, ChartStyle.RadarArea, ChartStyle.SmoothArea))
                 return null;
 
-            var series = seriesEnumerable.ToArray();
+            var seriesArray = seriesEnumerable.ToArray();
             var drawBetween = Utils.StyleColumns(chartStyle);
             var customValues = values[10] is IEnumerable<string> customEnumerable ? customEnumerable.ToArray() : new string[] { };
 
@@ -4066,24 +4238,33 @@ namespace ag.WPF.Chart
 
             if (seriesEnumerable.All(s => s is PlainSeries))
             {
-                if (chartStyle.In(ChartStyle.HighLowClose))
+                if (chartStyle.In(ChartStyle.HighLowClose, ChartStyle.OpenHighLowClose))
                     return null;
                 var totalValues = chartStyle != ChartStyle.Waterfall
-                    ? series.SelectMany(s => s.Values.Select(v => v.Value.PlainValue))
-                    : series[0].Values.Select(v => v.Value.PlainValue);
+                    ? seriesArray.SelectMany(s => s.Values.Select(v => v.Value.PlainValue))
+                    : seriesArray[0].Values.Select(v => v.Value.PlainValue);
                 dir = Utils.GetDirection(totalValues, chartStyle);
                 var rawValues = chartStyle != ChartStyle.Waterfall
-                    ? Utils.GetPaddedSeries(series)
-                    : new List<(List<IChartValue> Values, int Index)> { (series[0].Values.ToList(), series[0].Index) };
+                    ? Utils.GetPaddedSeries(seriesArray)
+                    : new List<(List<IChartValue> Values, int Index)> { (seriesArray[0].Values.ToList(), seriesArray[0].Index) };
                 ticks = rawValues.Max(rw => rw.Values.Count);
             }
             else
             {
-                if (!chartStyle.In(ChartStyle.HighLowClose))
+                if (!chartStyle.In(ChartStyle.HighLowClose, ChartStyle.OpenHighLowClose))
                     return null;
-                var totalValues = series[0].Values.Select(v => (v.Value.HighValue, v.Value.LowValue));
+
+                if (!seriesArray[0].Values.Any())
+                    return null;
+                var stockType = (((StockChartValue)seriesArray[0].Values[0]).StockType);
+                if (chartStyle == ChartStyle.HighLowClose && stockType != StockType.HLC)
+                    return null;
+                else if (chartStyle == ChartStyle.OpenHighLowClose && stockType != StockType.OHLC)
+                    return null;
+
+                var totalValues = seriesArray[0].Values.Select(v => (v.Value.HighValue, v.Value.LowValue));
                 dir = Utils.GetDirectionFinancial(totalValues, chartStyle);
-                var rawValues = Utils.GetPaddedSeriesFinancial(series[0]);
+                var rawValues = Utils.GetPaddedSeriesFinancial(seriesArray[0]);
                 ticks = rawValues.Max(rw => rw.Values.Count);
             }
 
@@ -4127,7 +4308,7 @@ namespace ag.WPF.Chart
                 var (max, min, realLinesCount, stepS, stepL, units, zeroPoint) = autoAdjust.In(AutoAdjustmentMode.Both, AutoAdjustmentMode.Horizontal)
                     ? Utils.GetMeasures(
                        chartStyle,
-                       series,
+                       seriesArray,
                        linesCount,
                        radius,
                        fmtY.Height,
@@ -4194,7 +4375,7 @@ namespace ag.WPF.Chart
                         {
                             var indexStep = flowDir == FlowDirection.LeftToRight ? i + 1 : i;
                             var num = !Utils.StyleBars(chartStyle)
-                                ? Utils.StyleColumns(chartStyle) || chartStyle.In(ChartStyle.HighLowClose)
+                                ? Utils.StyleColumns(chartStyle) || chartStyle.In(ChartStyle.HighLowClose, ChartStyle.OpenHighLowClose)
                                     ? flowDir == FlowDirection.LeftToRight
                                         ? i + 1
                                         : j + 1
@@ -4305,7 +4486,7 @@ namespace ag.WPF.Chart
                         }
                         for (int i = 0, j = limit - 1; i < limit; i++, j--)
                         {
-                            var num = Utils.StyleColumns(chartStyle) || chartStyle.In(ChartStyle.HighLowClose)
+                            var num = Utils.StyleColumns(chartStyle) || chartStyle.In(ChartStyle.HighLowClose, ChartStyle.OpenHighLowClose)
                                 ? flowDir == FlowDirection.LeftToRight
                                     ? i + 1
                                     : j + 1
@@ -4434,28 +4615,37 @@ namespace ag.WPF.Chart
 
             double xStep, yStep;
 
-            var series = seriesEnumerable.ToArray();
+            var seriesArray = seriesEnumerable.ToArray();
             var offsetBoundary = Utils.OffsetBoundary(chartBoundary, chartStyle);
             Directions dir;
             int ticks;
 
             if (seriesEnumerable.All(s => s is PlainSeries))
             {
-                if (chartStyle.In(ChartStyle.HighLowClose))
+                if (chartStyle.In(ChartStyle.HighLowClose, ChartStyle.OpenHighLowClose))
                     return null;
                 var totalValues = chartStyle.In(ChartStyle.Waterfall)
-                    ? series[0].Values.Select(v => v.Value.PlainValue)
+                    ? seriesArray[0].Values.Select(v => v.Value.PlainValue)
                     : seriesEnumerable.SelectMany(s => s.Values.Select(v => v.Value.PlainValue));
                 dir = Utils.GetDirection(totalValues, chartStyle);
-                ticks = series.Select(s => s.Values.Count).Max();
+                ticks = seriesArray.Select(s => s.Values.Count).Max();
             }
             else
             {
-                if (!chartStyle.In(ChartStyle.HighLowClose))
+                if (!chartStyle.In(ChartStyle.HighLowClose, ChartStyle.OpenHighLowClose))
                     return null;
-                var totalValues = series[0].Values.Select(v => (v.Value.HighValue, v.Value.LowValue));
+
+                if(!seriesArray[0].Values.Any())
+                    return null;
+                var stockType = (((StockChartValue)seriesArray[0].Values[0]).StockType);
+                if (chartStyle == ChartStyle.HighLowClose && stockType != StockType.HLC)
+                    return null;
+                else if (chartStyle == ChartStyle.OpenHighLowClose && stockType != StockType.OHLC)
+                    return null;
+
+                var totalValues = seriesArray[0].Values.Select(v => (v.Value.HighValue, v.Value.LowValue));
                 dir = Utils.GetDirectionFinancial(totalValues, chartStyle);
-                ticks = series[0].Values.Count;
+                ticks = seriesArray[0].Values.Count;
             }
 
             var radius = 0.0;
@@ -4514,14 +4704,14 @@ namespace ag.WPF.Chart
                 ? (autoAdjust.In(AutoAdjustmentMode.Both, AutoAdjustmentMode.Horizontal) && Utils.StyleBars(chartStyle)) || autoAdjust.In(AutoAdjustmentMode.Both, AutoAdjustmentMode.Vertical)
                     ? Utils.GetMeasures(
                        chartStyle,
-                       series,
+                       seriesArray,
                        Utils.StyleBars(chartStyle) ? linesCountX : linesCountY,
                        radius,
                        fmtY.Height,
                        centerPoint,
                        !Utils.StyleBars(chartStyle) ? dir == Directions.NorthEastSouthEast : dir == Directions.NorthEastNorthWest)
                     : (maxY, -maxY, linesCountY, maxY / linesCountY, radius / linesCountY, radius / maxY, default)
-                : (series[0].Values.Count, -maxY, series[0].Values.Count, maxY / series[0].Values.Count, radius / series[0].Values.Count, radius / series[0].Values.Count, default);
+                : (seriesArray[0].Values.Count, -maxY, seriesArray[0].Values.Count, maxY / seriesArray[0].Values.Count, radius / seriesArray[0].Values.Count, radius / seriesArray[0].Values.Count, default);
 
             if (Utils.StyleBars(chartStyle) && !autoAdjust.In(AutoAdjustmentMode.Both, AutoAdjustmentMode.Horizontal))
             {
@@ -4847,7 +5037,7 @@ namespace ag.WPF.Chart
             if (chartStyle.In(ChartStyle.Area, ChartStyle.StackedArea, ChartStyle.FullStackedArea, ChartStyle.SmoothArea))
                 return null;
 
-            var series = seriesEnumerable.ToArray();
+            var seriesArray = seriesEnumerable.ToArray();
             var offsetBoundary = Utils.OffsetBoundary(chartBoundary, chartStyle);
 
             Directions dir;
@@ -4855,21 +5045,30 @@ namespace ag.WPF.Chart
 
             if (seriesEnumerable.All(s => s is PlainSeries))
             {
-                if (chartStyle.In(ChartStyle.HighLowClose))
+                if (chartStyle.In(ChartStyle.HighLowClose, ChartStyle.OpenHighLowClose))
                     return null;
                 var totalValues = chartStyle.In(ChartStyle.Waterfall)
                     ? seriesEnumerable.First().Values.Select(v => v.Value.PlainValue)
                     : seriesEnumerable.SelectMany(s => s.Values.Select(v => v.Value.PlainValue));
                 dir = Utils.GetDirection(totalValues, chartStyle);
-                ticks = series.Select(s => s.Values.Count).Max();
+                ticks = seriesArray.Select(s => s.Values.Count).Max();
             }
             else
             {
-                if (!chartStyle.In(ChartStyle.HighLowClose))
+                if (!chartStyle.In(ChartStyle.HighLowClose, ChartStyle.OpenHighLowClose))
                     return null;
-                var totalValues = series[0].Values.Select(v => (v.Value.HighValue, v.Value.LowValue));
+
+                if (!seriesArray[0].Values.Any())
+                    return null;
+                var stockType = (((StockChartValue)seriesArray[0].Values[0]).StockType);
+                if (chartStyle == ChartStyle.HighLowClose && stockType != StockType.HLC)
+                    return null;
+                else if (chartStyle == ChartStyle.OpenHighLowClose && stockType != StockType.OHLC)
+                    return null;
+
+                var totalValues = seriesArray[0].Values.Select(v => (v.Value.HighValue, v.Value.LowValue));
                 dir = Utils.GetDirectionFinancial(totalValues, chartStyle);
-                ticks = series[0].Values.Count;
+                ticks = seriesArray[0].Values.Count;
             }
 
             double xStep;
@@ -4915,7 +5114,7 @@ namespace ag.WPF.Chart
                 var (max, min, realLinesCount, stepSize, stepL, units, zeroPoint) = autoAdjust.In(AutoAdjustmentMode.Both, AutoAdjustmentMode.Horizontal)
                     ? Utils.GetMeasures(
                        chartStyle,
-                       series,
+                       seriesArray,
                        linesCount,
                        radius,
                        fmtY.Height,
@@ -5114,24 +5313,33 @@ namespace ag.WPF.Chart
                 || !(values[11] is double maxY))
                 return null;
 
-            var series = seriesEnumerable.ToArray();
+            var seriesArray = seriesEnumerable.ToArray();
 
             Directions dir;
 
             if (seriesEnumerable.All(s => s is PlainSeries))
             {
-                if (chartStyle.In(ChartStyle.HighLowClose))
+                if (chartStyle.In(ChartStyle.HighLowClose, ChartStyle.OpenHighLowClose))
                     return null;
                 var totalValues = chartStyle != ChartStyle.Waterfall
-                   ? series.SelectMany(s => s.Values.Select(v => v.Value.PlainValue))
-                   : series[0].Values.Select(v => v.Value.PlainValue);
+                   ? seriesArray.SelectMany(s => s.Values.Select(v => v.Value.PlainValue))
+                   : seriesArray[0].Values.Select(v => v.Value.PlainValue);
                 dir = Utils.GetDirection(totalValues, chartStyle);
             }
             else
             {
-                if (!chartStyle.In(ChartStyle.HighLowClose))
+                if (!chartStyle.In(ChartStyle.HighLowClose, ChartStyle.OpenHighLowClose))
                     return null;
-                var totalValues = series[0].Values.Select(v => (v.Value.HighValue, v.Value.LowValue));
+
+                if (!seriesArray[0].Values.Any())
+                    return null;
+                var stockType = (((StockChartValue)seriesArray[0].Values[0]).StockType);
+                if (chartStyle == ChartStyle.HighLowClose && stockType != StockType.HLC)
+                    return null;
+                else if (chartStyle == ChartStyle.OpenHighLowClose && stockType != StockType.OHLC)
+                    return null;
+
+                var totalValues = seriesArray[0].Values.Select(v => (v.Value.HighValue, v.Value.LowValue));
                 dir = Utils.GetDirectionFinancial(totalValues, chartStyle);
             }
 
@@ -5170,7 +5378,7 @@ namespace ag.WPF.Chart
             var (max, min, realLinesCount, stepSize, stepLength, units, zeroPoint) = autoAdjust.In(AutoAdjustmentMode.Both, AutoAdjustmentMode.Vertical)
                 ? Utils.GetMeasures(
                    chartStyle,
-                   series,
+                   seriesArray,
                    linesCount,
                    radius,
                    fmtY.Height,
@@ -5320,7 +5528,7 @@ namespace ag.WPF.Chart
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
             if (values == null
-                || !(values[0] is ChartValues chartValues)
+                || !(values[0] is IEnumerable<IChartValue> chartValues)
                 || !(values[1] is string format)
                 || !(parameter is IChartValue chartValue))
                 return null;
@@ -5611,12 +5819,12 @@ namespace ag.WPF.Chart
 
             if (seriesEnumerable.All(s => s is PlainSeries))
             {
-                if (chartStyle.In(ChartStyle.HighLowClose))
+                if (chartStyle.In(ChartStyle.HighLowClose, ChartStyle.OpenHighLowClose))
                     return null;
             }
             else
             {
-                if (!chartStyle.In(ChartStyle.HighLowClose))
+                if (!chartStyle.In(ChartStyle.HighLowClose, ChartStyle.OpenHighLowClose))
                     return null;
             }
 

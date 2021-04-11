@@ -61,7 +61,6 @@
     <Compile Include="Statics.cs" />
     <Compile Include="Series\StockSeries.cs" />
     <Compile Include="Values\ChartValue.cs" />
-    <Compile Include="Values\ChartValues.cs" />
     <Compile Include="Legend.cs" />
     <Compile Include="Properties\Annotations.cs" />
     <Compile Include="Series\PlainSeries.cs" />

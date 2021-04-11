@@ -18,18 +18,29 @@ namespace ag.WPF.Chart.Values
         public StockChartValue(double highValue, double lowValue, double closeValue)
         {
             Value = (0, highValue, lowValue, closeValue, 0, 0);
+            StockType = StockType.HLC;
         }
 
         /// <summary>
         /// Initializes a new instance of StockChartValue object
         /// </summary>
-        /// <param name="volumeValue">Volume value</param>
+        /// <param name="volumeOrOpenValue">Volume or open value</param>
         /// <param name="highValue">High value</param>
         /// <param name="lowValue">Low value</param>
         /// <param name="closeValue">Close value</param>
-        public StockChartValue(double volumeValue, double highValue, double lowValue, double closeValue)
+        /// <param name="volumeOrOpen">Boolen, specifies whether Volume or Open value should be set. Send True for Volume and False for Open</param>
+        public StockChartValue(double volumeOrOpenValue, double highValue, double lowValue, double closeValue, bool volumeOrOpen)
         {
-            Value = (0, highValue, lowValue, closeValue, volumeValue, 0);
+            if (volumeOrOpen)
+            {
+                Value = (0, highValue, lowValue, closeValue, volumeOrOpenValue, 0);
+                StockType = StockType.VHLC;
+            }
+            else
+            {
+                Value = (0, highValue, lowValue, closeValue, 0, volumeOrOpenValue);
+                StockType = StockType.OHLC;
+            }
         }
 
         /// <summary>
@@ -43,6 +54,7 @@ namespace ag.WPF.Chart.Values
         public StockChartValue(double volumeValue, double openValue, double highValue, double lowValue, double closeValue)
         {
             Value = (0, highValue, lowValue, closeValue, volumeValue, openValue);
+            StockType = StockType.VOHLC;
         }
         #endregion
 
