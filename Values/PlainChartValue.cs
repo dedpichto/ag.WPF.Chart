@@ -19,7 +19,6 @@ namespace ag.WPF.Chart.Values
         public PlainChartValue(double plainValue)
         {
             Value = (plainValue, 0, 0, 0, 0, 0);
-            StockType = StockType.None;
         }
 
         /// <summary>

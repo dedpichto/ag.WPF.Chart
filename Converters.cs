@@ -211,7 +211,12 @@ namespace ag.WPF.Chart
             {
                 var diff = maxCount - rw.Item1.Count;
                 for (var i = 0; i < diff; i++)
-                    rw.Item1.Add(new StockChartValue(0, 0, 0, 0, 0));
+                {
+                    if (series is HighLowCloseSeries)
+                        rw.Values.Add(new HighLowCloseChartValue(0, 0, 0));
+                    else if (series is OpenHighLowCloseSeries)
+                        rw.Values.Add(new OpenHighLowCloseChartValue(0, 0, 0, 0));
+                }
             }
             return rawValues;
         }
@@ -947,6 +952,11 @@ namespace ag.WPF.Chart
                 return Directions.NorthEastSouthEast;
         }
 
+        internal static bool IsStockSeries(this ISeries series)
+        {
+            return (series is HighLowCloseSeries) || (series is OpenHighLowCloseSeries);
+        }
+
         internal static bool In<T>(this T t, params T[] values)
         {
             return values.Contains(t);
@@ -993,10 +1003,9 @@ namespace ag.WPF.Chart
                     return null;
                 if (!seriesArray[0].Values.Any())
                     return null;
-                var stockType = (((StockChartValue)seriesArray[0].Values[0]).StockType);
-                if (chartStyle == ChartStyle.HighLowClose && stockType != StockType.HLC)
+                if (chartStyle == ChartStyle.HighLowClose && !(seriesArray[0] is HighLowCloseSeries))
                     return null;
-                else if (chartStyle == ChartStyle.OpenHighLowClose && stockType != StockType.OHLC)
+                else if (chartStyle == ChartStyle.OpenHighLowClose && !(seriesArray[0] is OpenHighLowCloseSeries))
                     return null;
 
                 var totalValues = seriesEnumerable.First().Values.Select(v => (v.Value.HighValue, v.Value.LowValue));
@@ -1077,10 +1086,9 @@ namespace ag.WPF.Chart
 
                 if (!seriesArray[0].Values.Any())
                     return null;
-                var stockType = (((StockChartValue)seriesArray[0].Values[0]).StockType);
-                if (chartStyle == ChartStyle.HighLowClose && stockType != StockType.HLC)
+                if (chartStyle == ChartStyle.HighLowClose && !(seriesArray[0] is HighLowCloseSeries))
                     return null;
-                else if (chartStyle == ChartStyle.OpenHighLowClose && stockType != StockType.OHLC)
+                else if (chartStyle == ChartStyle.OpenHighLowClose && !(seriesArray[0] is OpenHighLowCloseSeries))
                     return null;
 
                 var totalValues = seriesEnumerable.First().Values.Select(v => (v.Value.HighValue, v.Value.LowValue));
@@ -1148,18 +1156,17 @@ namespace ag.WPF.Chart
                 || !(values[1] is int index)
                 || index > 0
                 || !(values[2] is IEnumerable<ISeries> seriesEnumerable)
-                || !seriesEnumerable.All(s => s is StockSeries)
+                || !seriesEnumerable.All(s => s.IsStockSeries())
                 || !(parameter is ColoredPaths colored))
                 return Visibility.Collapsed;
 
             var seriesArray = seriesEnumerable.ToArray();
             if (!seriesArray[0].Values.Any())
                 return Visibility.Collapsed;
-            var stockType = (((StockChartValue)seriesArray[0].Values[0]).StockType);
 
-            if (chartStyle == ChartStyle.HighLowClose && stockType != StockType.HLC)
+            if (chartStyle == ChartStyle.HighLowClose && !(seriesArray[0] is HighLowCloseSeries))
                 return Visibility.Collapsed;
-            else if (chartStyle == ChartStyle.OpenHighLowClose && stockType != StockType.OHLC)
+            else if (chartStyle == ChartStyle.OpenHighLowClose && !(seriesArray[0] is OpenHighLowCloseSeries))
                 return Visibility.Collapsed;
             else if (chartStyle == ChartStyle.OpenHighLowClose && colored == ColoredPaths.Stock)
                 return Visibility.Collapsed;
@@ -1296,14 +1303,11 @@ namespace ag.WPF.Chart
                     return null;
                 if (!seriesArray[0].Values.Any())
                     return null;
-                //if (chartStyle == ChartStyle.HighLowClose && colored != ColoredPaths.Stock)
-                //    return null;
-                var stockType = ((StockChartValue)seriesArray[0].Values[0]).StockType;
-                if (chartStyle == ChartStyle.HighLowClose && stockType != StockType.HLC)
+                if (chartStyle == ChartStyle.HighLowClose && !(seriesArray[0] is HighLowCloseSeries))
                 {
                     return null;
                 }
-                if (chartStyle == ChartStyle.OpenHighLowClose && stockType != StockType.OHLC)
+                if (chartStyle == ChartStyle.OpenHighLowClose && !(seriesArray[0] is OpenHighLowCloseSeries))
                 {
                     return null;
                 }
@@ -3648,10 +3652,9 @@ namespace ag.WPF.Chart
 
                 if (!seriesArray[0].Values.Any())
                     return 0.0;
-                var stockType = (((StockChartValue)seriesArray[0].Values[0]).StockType);
-                if (chartStyle == ChartStyle.HighLowClose && stockType != StockType.HLC)
+                if (chartStyle == ChartStyle.HighLowClose && !(seriesArray[0] is HighLowCloseSeries))
                     return 0.0;
-                else if (chartStyle == ChartStyle.OpenHighLowClose && stockType != StockType.OHLC)
+                else if (chartStyle == ChartStyle.OpenHighLowClose && !(seriesArray[0] is OpenHighLowCloseSeries))
                     return 0.0;
 
                 var totalValues = seriesArray[0].Values.Select(v => (v.Value.HighValue, v.Value.LowValue));
@@ -3760,10 +3763,9 @@ namespace ag.WPF.Chart
 
                 if (!seriesArray[0].Values.Any())
                     return 0.0;
-                var stockType = (((StockChartValue)seriesArray[0].Values[0]).StockType);
-                if (chartStyle == ChartStyle.HighLowClose && stockType != StockType.HLC)
+                if (chartStyle == ChartStyle.HighLowClose && !(seriesArray[0] is HighLowCloseSeries))
                     return 0.0;
-                else if (chartStyle == ChartStyle.OpenHighLowClose && stockType != StockType.OHLC)
+                else if (chartStyle == ChartStyle.OpenHighLowClose && !(seriesArray[0] is OpenHighLowCloseSeries))
                     return 0.0;
 
                 var totalValues = seriesArray[0].Values.Select(v => (v.Value.HighValue, v.Value.LowValue));
@@ -3830,10 +3832,9 @@ namespace ag.WPF.Chart
 
                 if (!seriesArray[0].Values.Any())
                     return null;
-                var stockType = (((StockChartValue)seriesArray[0].Values[0]).StockType);
-                if (chartStyle == ChartStyle.HighLowClose && stockType != StockType.HLC)
+                if (chartStyle == ChartStyle.HighLowClose && !(seriesArray[0] is HighLowCloseSeries))
                     return null;
-                else if (chartStyle == ChartStyle.OpenHighLowClose && stockType != StockType.OHLC)
+                else if (chartStyle == ChartStyle.OpenHighLowClose && !(seriesArray[0] is OpenHighLowCloseSeries))
                     return null;
             }
 
@@ -4256,10 +4257,9 @@ namespace ag.WPF.Chart
 
                 if (!seriesArray[0].Values.Any())
                     return null;
-                var stockType = (((StockChartValue)seriesArray[0].Values[0]).StockType);
-                if (chartStyle == ChartStyle.HighLowClose && stockType != StockType.HLC)
+                if (chartStyle == ChartStyle.HighLowClose && !(seriesArray[0] is HighLowCloseSeries))
                     return null;
-                else if (chartStyle == ChartStyle.OpenHighLowClose && stockType != StockType.OHLC)
+                else if (chartStyle == ChartStyle.OpenHighLowClose && !(seriesArray[0] is OpenHighLowCloseSeries))
                     return null;
 
                 var totalValues = seriesArray[0].Values.Select(v => (v.Value.HighValue, v.Value.LowValue));
@@ -4635,12 +4635,11 @@ namespace ag.WPF.Chart
                 if (!chartStyle.In(ChartStyle.HighLowClose, ChartStyle.OpenHighLowClose))
                     return null;
 
-                if(!seriesArray[0].Values.Any())
+                if (!seriesArray[0].Values.Any())
                     return null;
-                var stockType = (((StockChartValue)seriesArray[0].Values[0]).StockType);
-                if (chartStyle == ChartStyle.HighLowClose && stockType != StockType.HLC)
+                if (chartStyle == ChartStyle.HighLowClose && !(seriesArray[0] is HighLowCloseSeries))
                     return null;
-                else if (chartStyle == ChartStyle.OpenHighLowClose && stockType != StockType.OHLC)
+                else if (chartStyle == ChartStyle.OpenHighLowClose && !(seriesArray[0] is OpenHighLowCloseSeries))
                     return null;
 
                 var totalValues = seriesArray[0].Values.Select(v => (v.Value.HighValue, v.Value.LowValue));
@@ -5060,10 +5059,9 @@ namespace ag.WPF.Chart
 
                 if (!seriesArray[0].Values.Any())
                     return null;
-                var stockType = (((StockChartValue)seriesArray[0].Values[0]).StockType);
-                if (chartStyle == ChartStyle.HighLowClose && stockType != StockType.HLC)
+                if (chartStyle == ChartStyle.HighLowClose && !(seriesArray[0] is HighLowCloseSeries))
                     return null;
-                else if (chartStyle == ChartStyle.OpenHighLowClose && stockType != StockType.OHLC)
+                else if (chartStyle == ChartStyle.OpenHighLowClose && !(seriesArray[0] is OpenHighLowCloseSeries))
                     return null;
 
                 var totalValues = seriesArray[0].Values.Select(v => (v.Value.HighValue, v.Value.LowValue));
@@ -5333,10 +5331,9 @@ namespace ag.WPF.Chart
 
                 if (!seriesArray[0].Values.Any())
                     return null;
-                var stockType = (((StockChartValue)seriesArray[0].Values[0]).StockType);
-                if (chartStyle == ChartStyle.HighLowClose && stockType != StockType.HLC)
+                if (chartStyle == ChartStyle.HighLowClose && !(seriesArray[0] is HighLowCloseSeries))
                     return null;
-                else if (chartStyle == ChartStyle.OpenHighLowClose && stockType != StockType.OHLC)
+                else if (chartStyle == ChartStyle.OpenHighLowClose && !(seriesArray[0] is OpenHighLowCloseSeries))
                     return null;
 
                 var totalValues = seriesArray[0].Values.Select(v => (v.Value.HighValue, v.Value.LowValue));

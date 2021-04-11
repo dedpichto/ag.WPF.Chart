@@ -15,7 +15,6 @@ namespace ag.WPF.Chart.Values
         public string CustomValue { get; set; }
         /// <inheritdoc />
         public abstract IChartValue Clone();
-        internal StockType StockType { get; set; }
         #endregion
     }
 }

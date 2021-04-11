@@ -296,15 +296,6 @@ namespace ag.WPF.Chart
         Down
     }
 
-    internal enum StockType
-    {
-        None,
-        HLC,
-        OHLC,
-        VHLC,
-        VOHLC
-    }
-
     /// <summary>
     /// Represents custom control for creating simple 2-D charts
     /// </summary>
@@ -719,7 +710,7 @@ namespace ag.WPF.Chart
                                     brushPath = "SecondaryBrush";
                                     break;
                                 case 2:
-                                    if (!(series is StockSeries)) continue;
+                                    if (!series.IsStockSeries()) continue;
                                     parameter = (0, ColoredPaths.Stock);
                                     brushPath = "Foreground";
                                     break;
@@ -927,7 +918,7 @@ namespace ag.WPF.Chart
                         LegendsCollection.Add(legend);
                         #endregion
 
-                        if (series is StockSeries)
+                        if (series.IsStockSeries())
                         {
                             #region Stock legend
                             legend = new Legend() { Index = series.Index };
@@ -975,7 +966,7 @@ namespace ag.WPF.Chart
                             legendVisibilityBinding.ConverterParameter = ColoredPaths.Up;
                             legendVisibilityBinding.NotifyOnSourceUpdated = true;
                             legend.SetBinding(VisibilityProperty, legendVisibilityBinding);
-                            legend.Text = ((StockChartValue)series.Values[0]).StockType == StockType.HLC ? "High" : "Increase";
+                            legend.Text = series is HighLowCloseSeries ? "High" : "Increase";
                             //legend.SetBinding(Legend.TextProperty, new Binding("CustomWaterfallLegends[0]") { Source = this });
 
                             LegendsCollection.Add(legend);
@@ -1001,7 +992,7 @@ namespace ag.WPF.Chart
                             legendVisibilityBinding.ConverterParameter = ColoredPaths.Down;
                             legendVisibilityBinding.NotifyOnSourceUpdated = true;
                             legend.SetBinding(VisibilityProperty, legendVisibilityBinding);
-                            legend.Text = legend.Text = ((StockChartValue)series.Values[0]).StockType == StockType.HLC ? "Low" : "Decrease";
+                            legend.Text = legend.Text = series is HighLowCloseSeries ? "Low" : "Decrease";
                             //legend.SetBinding(Legend.TextProperty, new Binding("CustomWaterfallLegends[1]") { Source = this });
 
                             LegendsCollection.Add(legend);

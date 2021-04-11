@@ -143,7 +143,7 @@ namespace ag.WPF.Chart.Series
                 Tag = this,
                 ToolTip = new ToolTip { Placement = PlacementMode.Mouse }
             };
-            if (this is StockSeries)
+            if (this.IsStockSeries())
             {
                 Paths[2] = new Path
                 {

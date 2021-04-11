@@ -56,17 +56,19 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BrushesCollection.cs" />
+    <Compile Include="Series\HighLowCloseSeries.cs" />
     <Compile Include="Series\ISeries.cs" />
+    <Compile Include="Series\OpenHighLowCloseSeries.cs" />
     <Compile Include="Series\Series.cs" />
     <Compile Include="Statics.cs" />
-    <Compile Include="Series\StockSeries.cs" />
     <Compile Include="Values\ChartValue.cs" />
     <Compile Include="Legend.cs" />
     <Compile Include="Properties\Annotations.cs" />
     <Compile Include="Series\PlainSeries.cs" />
+    <Compile Include="Values\HighLowCloseChartValue.cs" />
     <Compile Include="Values\IChartValue.cs" />
+    <Compile Include="Values\OpenHighLowCloseChartValue.cs" />
     <Compile Include="Values\PlainChartValue.cs" />
-    <Compile Include="Values\StockChartValue.cs" />
     <Page Include="Themes\Generic.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
