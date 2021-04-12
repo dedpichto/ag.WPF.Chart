@@ -1493,7 +1493,7 @@ namespace ag.WPF.Chart
         /// <summary>
         /// Gets or sets the sequence of strings to be drawn next to x-axis instead of numeric values.
         /// </summary>
-        [Category("ChartAppearance"), Description("Gets or sets the sequence of strings to be drawn next to x-axis instead of numeric values")]
+        [Category("ChartAxes"), Description("Gets or sets the sequence of strings to be drawn next to x-axis instead of numeric values")]
         public IEnumerable<string> CustomXAxisValues
         {
             get { return (IEnumerable<string>)GetValue(CustomXAxisValuesProperty); }
@@ -1502,7 +1502,7 @@ namespace ag.WPF.Chart
         /// <summary>
         /// Gets or sets the sequence of strings to be drawn next to y-axis instead of numeric values.
         /// </summary>
-        [Category("ChartAppearance"), Description("Gets or sets the sequence of strings to be drawn next to y-axis instead of numeric values")]
+        [Category("ChartAxes"), Description("Gets or sets the sequence of strings to be drawn next to y-axis instead of numeric values")]
         public IEnumerable<string> CustomYAxisValues
         {
             get { return (IEnumerable<string>)GetValue(CustomYAxisValuesProperty); }
@@ -1512,7 +1512,7 @@ namespace ag.WPF.Chart
         /// Gets or sets the visibility state of x- and y- axes numeric/custom values. Can be one of <see cref="AxesVisibility"/> enumeration members.
         /// </summary>
         /// <remarks>This property will have no effect if <see cref="ChartStyle"/> property is set to <see cref="ChartStyle.SolidPie"/> or <see cref="ChartStyle.SlicedPie"/> or <see cref="ChartStyle.Doughnut"/>.</remarks>
-        [Category("ChartAppearance"), Description("Gets or sets the visibility state of x- and y- axes numeric/custom values. Can be one of AxesValuesVisibility enumeration members")]
+        [Category("ChartAxes"), Description("Gets or sets the visibility state of x- and y- axes numeric/custom values. Can be one of AxesValuesVisibility enumeration members")]
         public AxesVisibility AxesValuesVisibility
         {
             get { return (AxesVisibility)GetValue(AxesValuesVisibilityProperty); }
@@ -1522,7 +1522,7 @@ namespace ag.WPF.Chart
         /// Gets or sets the visibility state of x- and y- axes lines. Can be one of <see cref="AxesVisibility"/> enumeration members.
         /// </summary>
         /// <remarks>This property will have no effect if <see cref="ChartStyle"/> property is set to <see cref="ChartStyle.SolidPie"/> or <see cref="ChartStyle.SlicedPie"/> or <see cref="ChartStyle.Doughnut"/>.</remarks>
-        [Category("ChartAppearance"), Description("Gets or sets the visibility state of x- and y- axes lines. Can be one of AxesValuesVisibility enumeration members")]
+        [Category("ChartAxes"), Description("Gets or sets the visibility state of x- and y- axes lines. Can be one of AxesValuesVisibility enumeration members")]
         public AxesVisibility AxesLinesVisibility
         {
             get { return (AxesVisibility)GetValue(AxesLinesVisibilityProperty); }
@@ -1622,7 +1622,7 @@ namespace ag.WPF.Chart
         /// <summary>
         /// Gets of sets the font family of chart axes.
         /// </summary>
-        [Category("ChartAppearance"), Description("Gets of sets the font family of chart axes")]
+        [Category("ChartAxes"), Description("Gets of sets the font family of chart axes")]
         public FontFamily AxesFontFamily
         {
             get { return (FontFamily)GetValue(AxesFontFamilyProperty); }
@@ -1631,7 +1631,7 @@ namespace ag.WPF.Chart
         /// <summary>
         /// Gets of sets the font weight of chart axes.
         /// </summary>
-        [Category("ChartAppearance"), Description("Gets of sets the font weight of chart axes")]
+        [Category("ChartAxes"), Description("Gets of sets the font weight of chart axes")]
         public FontWeight AxesFontWeight
         {
             get { return (FontWeight)GetValue(AxesFontWeightProperty); }
@@ -1640,7 +1640,7 @@ namespace ag.WPF.Chart
         /// <summary>
         /// Gets of sets the font size of chart axes.
         /// </summary>
-        [Category("ChartAppearance"), Description("Gets of sets the font size of chart axes")]
+        [Category("ChartAxes"), Description("Gets of sets the font size of chart axes")]
         public double AxesFontSize
         {
             get { return (double)GetValue(AxesFontSizeProperty); }
@@ -1649,7 +1649,7 @@ namespace ag.WPF.Chart
         /// <summary>
         /// Gets of sets the font style of chart axes.
         /// </summary>
-        [Category("ChartAppearance"), Description("Gets of sets the font style of chart axes")]
+        [Category("ChartAxes"), Description("Gets of sets the font style of chart axes")]
         public FontStyle AxesFontStyle
         {
             get { return (FontStyle)GetValue(AxesFontStyleProperty); }
@@ -1658,7 +1658,7 @@ namespace ag.WPF.Chart
         /// <summary>
         /// Gets of sets the font stretch of chart axes.
         /// </summary>
-        [Category("ChartAppearance"), Description("Gets of sets the font stretch of chart axes")]
+        [Category("ChartAxes"), Description("Gets of sets the font stretch of chart axes")]
         public FontStretch AxesFontStretch
         {
             get { return (FontStretch)GetValue(AxesFontStretchProperty); }
@@ -1668,7 +1668,7 @@ namespace ag.WPF.Chart
         /// Gets or sets the text which appears on the top/bottom of y-axis.
         /// </summary>
         /// <remarks>This property will have no effect if <see cref="ChartStyle"/> property is set to one of the following: <see cref="ChartStyle.SolidPie"/>, <see cref="ChartStyle.SlicedPie"/>, <see cref="ChartStyle.Doughnut"/>, <see cref="ChartStyle.Radar"/>, <see cref="ChartStyle.RadarWithMarkers"/>, <see cref="ChartStyle.RadarArea"/>.</remarks>
-        [Category("ChartAppearance"), Description("Gets or sets the text which appears on the top/bottom of y-axis")]
+        [Category("ChartAxes"), Description("Gets or sets the text which appears on the top/bottom of y-axis")]
         public string YAxisText
         {
             get { return (string)GetValue(YAxisTextProperty); }
@@ -1678,7 +1678,7 @@ namespace ag.WPF.Chart
         /// Gets or sets the text which appears on the right/left of x-axis.
         /// </summary>
         /// <remarks>This property will have no effect if <see cref="ChartStyle"/> property is set to one of the following: <see cref="ChartStyle.SolidPie"/>, <see cref="ChartStyle.SlicedPie"/>, <see cref="ChartStyle.Doughnut"/>, <see cref="ChartStyle.Radar"/>, <see cref="ChartStyle.RadarWithMarkers"/>, <see cref="ChartStyle.RadarArea"/>.</remarks>
-        [Category("ChartAppearance"), Description("Gets or sets the text which appears on the right/left of x-axis")]
+        [Category("ChartAxes"), Description("Gets or sets the text which appears on the right/left of x-axis")]
         public string XAxisText
         {
             get { return (string)GetValue(XAxisTextProperty); }
@@ -1720,7 +1720,7 @@ namespace ag.WPF.Chart
         /// <summary>
         /// Gets or sets format for numeric values drawn next to x- and/or y- axes.
         /// </summary>
-        [Category("ChartAppearance"), Description("Gets or sets format for numeric values drawn next to x- and/or y- axes")]
+        [Category("ChartAxes"), Description("Gets or sets format for numeric values drawn next to x- and/or y- axes")]
         public string AxesValuesFormat
         {
             get { return (string)GetValue(AxesValuesFormatProperty); }
