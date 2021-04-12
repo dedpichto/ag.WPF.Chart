@@ -3774,7 +3774,9 @@ namespace ag.WPF.Chart
                 || !(values[6] is FontWeight fontWeight)
                 || !(values[7] is FontStretch fontStretch)
                 || !(values[9] is AutoAdjustmentMode autoAdjust)
-                || !(values[10] is double maxY))
+                || !(values[10] is double maxY)
+                || !(values[11] is double height)
+                || !(values[12] is int linesCountY))
                 return 0.0;
             var width = 28.0;
 
@@ -3829,9 +3831,61 @@ namespace ag.WPF.Chart
                 var rawValues = Utils.GetPaddedSeriesFinancial(seriesArray[0]);
                 maxFromValues = autoAdjust.In(AutoAdjustmentMode.Both, AutoAdjustmentMode.Horizontal) ? Utils.GetMaxValueLengthFinancial(rawValues, chartStyle) : maxY.ToString(culture).Length;
             }
+
+            var radius = 0.0;
+            var centerX = 0.0;
+            Point centerPoint;
+
+            switch (dir)
+            {
+                case Directions.NorthEast:
+                case Directions.NorthWest:
+                case Directions.SouthEast:
+                    centerX = 0;
+                    radius = height - Utils.AXIS_THICKNESS;
+                    break;
+                case Directions.NorthEastNorthWest:
+                    centerX = 0;
+                    radius = height - Utils.AXIS_THICKNESS;
+                    break;
+                case Directions.NorthEastSouthEast:
+                    centerX = 0;
+                    radius = (height - Utils.AXIS_THICKNESS) / 2;
+                    break;
+            }
+            centerPoint = new Point(centerX, radius);
+
+            height -= 2 * Utils.AXIS_THICKNESS;
+
+            var fmtY = new FormattedText("AAA", culture, FlowDirection.LeftToRight,
+                    new Typeface(fontFamily, fontStyle, fontWeight, fontStretch), fontSize, Brushes.Black, VisualTreeHelper.GetDpi(Utils.Border).PixelsPerDip);
+
+            var (max, min, _, stepSize, _, _, _) = autoAdjust.In(AutoAdjustmentMode.Both, AutoAdjustmentMode.Vertical)
+                ? Utils.GetMeasures(
+                   chartStyle,
+                   seriesArray,
+                   linesCountY,
+                   radius,
+                   fmtY.Height,
+                   centerPoint,
+                   dir == Directions.NorthEastSouthEast)
+                : (maxY, -maxY, linesCountY, maxY / linesCountY, radius / linesCountY, radius / maxY, default);
+
+            var maxMin = Math.Abs(Math.Max(max, Math.Abs(min)));
+
+            // fractional stepSize
+            if (!Utils.IsInteger(stepSize))
+            {
+                var fractions = Utils.GetDecimalPlaces(stepSize);
+                if (format.EndsWith("%"))
+                    format = $"{format.Substring(0, format.Length - 1)}{culture.NumberFormat.NumberDecimalSeparator}{new string('0', fractions)}%";
+                else
+                    format += $"{culture.NumberFormat.NumberDecimalSeparator}{new string('0', fractions)}";
+            }
+
             var maxString = customValues.Any()
                 ? customValues.FirstOrDefault(c => c.Length == customValues.Max(v => v.Length))
-                : new string('0', maxFromValues);
+                : max.ToString(culture).Length >= min.ToString(culture).Length ? max.ToString(format,culture) : min.ToString(format,culture);
 
             var fmt = new FormattedText(maxString, culture, FlowDirection.LeftToRight,
                             new Typeface(fontFamily, fontStyle, fontWeight, fontStretch), fontSize, Brushes.Black, VisualTreeHelper.GetDpi(Utils.Border).PixelsPerDip)
@@ -4062,7 +4116,7 @@ namespace ag.WPF.Chart
 
             var gm = new PathGeometry();
 
-            var series = seriesEnumerable.ToArray();
+            var seriesArray = seriesEnumerable.ToArray();
             var customValues = values[11] is IEnumerable<string> customEnumerable ? customEnumerable.ToArray() : new string[] { };
             var drawBetween = chartStyle.In(ChartStyle.Bars, ChartStyle.StackedBars, ChartStyle.FullStackedBars);
 
@@ -4075,19 +4129,19 @@ namespace ag.WPF.Chart
             if (seriesEnumerable.All(s => s is PlainSeries))
             {
                 var totalValues = chartStyle != ChartStyle.Waterfall
-                    ? series.SelectMany(s => s.Values.Select(v => v.Value.PlainValue))
-                    : series[0].Values.Select(v => v.Value.PlainValue);
+                    ? seriesArray.SelectMany(s => s.Values.Select(v => v.Value.PlainValue))
+                    : seriesArray[0].Values.Select(v => v.Value.PlainValue);
                 dir = Utils.GetDirection(totalValues, chartStyle);
                 rawValues = chartStyle != ChartStyle.Waterfall
-                    ? Utils.GetPaddedSeries(series)
-                    : new List<(List<IChartValue> Values, int Index)> { (series[0].Values.ToList(), series[0].Index) };
+                    ? Utils.GetPaddedSeries(seriesArray)
+                    : new List<(List<IChartValue> Values, int Index)> { (seriesArray[0].Values.ToList(), seriesArray[0].Index) };
                 maxCount = rawValues.Max(rw => rw.Values.Count);
             }
             else
             {
-                var totalValues = series[0].Values.Select(v => (v.Value.HighValue, v.Value.LowValue));
+                var totalValues = seriesArray[0].Values.Select(v => (v.Value.HighValue, v.Value.LowValue));
                 dir = Utils.GetDirectionFinancial(totalValues, chartStyle);
-                maxCount = series[0].Values.Count;
+                maxCount = seriesArray[0].Values.Count;
             }
 
             var radius = 0.0;
@@ -4121,7 +4175,7 @@ namespace ag.WPF.Chart
             var (max, min, realLinesCount, stepSize, stepLength, units, _) = autoAdjust.In(AutoAdjustmentMode.Both, AutoAdjustmentMode.Vertical)
                 ? Utils.GetMeasures(
                    chartStyle,
-                   series,
+                   seriesArray,
                    linesCountY,
                    radius,
                    fmtY.Height,
