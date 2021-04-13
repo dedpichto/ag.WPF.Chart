@@ -1334,6 +1334,12 @@ namespace ag.WPF.Chart
                         binding.UpdateTarget();
                 }
             }
+            foreach(var legend in LegendsCollection)
+            {
+                binding = BindingOperations.GetMultiBindingExpression(legend, VisibilityProperty);
+                if (binding != null)
+                    binding.UpdateTarget();
+            }
         }
 
         private void rebuildPieLegends(ObservableCollection<IChartValue> values, ISeries series)
