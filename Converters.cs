@@ -738,6 +738,47 @@ namespace ag.WPF.Chart
                 return getMeasuresForComplex(chartStyle, max, min, linesCount, radius, fontHeight, getMaxFractionPower(values), new ZeroPoint { Point = centerPoint }, splitSides);
         }
 
+        // Return PointFs to define a star.
+        internal static PathGeometry StarPoints(int numberOfPoints, double radius)
+        {
+            var gm = new PathGeometry();
+
+            var degreesStep = 360.0 / numberOfPoints;
+
+            var rSmall = radius - 3;
+
+            var centerPoint = new Point(radius, radius);
+
+            var points = new List<Point>();
+
+            for (var i = 0; i < numberOfPoints; i++)
+            {
+                var currentDegrees = 90.0 + i * degreesStep;
+                var rads = currentDegrees * Math.PI / 180.0;
+                var x = centerPoint.X - radius * Math.Cos(rads);
+                var y = centerPoint.Y - radius * Math.Sin(rads);
+                points.Add(new Point(x, y));
+
+                var smalDegrees = currentDegrees + 360.0 / numberOfPoints / 2;// 30.0;
+                rads = smalDegrees * Math.PI / 180.0;
+                x = centerPoint.X - rSmall * Math.Cos(rads);
+                y = centerPoint.Y - rSmall * Math.Sin(rads);
+                points.Add(new Point(x, y));
+            }
+
+            //for (var i = 0; i < points.Count - 1; i++)
+            //{
+            //    gm.AddGeometry(new LineGeometry(points[i], points[i + 1]));
+            //}
+            //gm.AddGeometry(new LineGeometry(points[points.Count - 1], points[0]));
+
+
+            var poly = new PolyLineSegment(points, false);
+            gm.Figures.Add(new PathFigure(points[0], new[] { poly }, true));
+
+            return gm;
+        }
+
         internal static bool IsInteger(double step)
         {
             return Math.Abs(step % 1) < double.Epsilon;
@@ -960,6 +1001,29 @@ namespace ag.WPF.Chart
         internal static bool In<T>(this T t, params T[] values)
         {
             return values.Contains(t);
+        }
+    }
+
+    internal class StarDrawingConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (!(value is ShapeStyle shapeStyle))
+                return null;
+            return shapeStyle switch
+            {
+                ShapeStyle.Star5 => Utils.StarPoints(5, 8),
+                ShapeStyle.Star6 => Utils.StarPoints(6, 8),
+                ShapeStyle.Star8 => Utils.StarPoints(8, 8),
+                ShapeStyle.Circle => new EllipseGeometry(new Rect(new Size(16, 16))),
+                ShapeStyle.Rectangle => new RectangleGeometry(new Rect(new Size(16, 16))),
+                _ => null
+            };
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
         }
     }
 
@@ -3913,7 +3977,7 @@ namespace ag.WPF.Chart
 
             var maxString = customValues.Any()
                 ? customValues.FirstOrDefault(c => c.Length == customValues.Max(v => v.Length))
-                : max.ToString(culture).Length >= min.ToString(culture).Length ? max.ToString(format,culture) : min.ToString(format,culture);
+                : max.ToString(culture).Length >= min.ToString(culture).Length ? max.ToString(format, culture) : min.ToString(format, culture);
 
             var fmt = new FormattedText(maxString, culture, FlowDirection.LeftToRight,
                             new Typeface(fontFamily, fontStyle, fontWeight, fontStretch), fontSize, Brushes.Black, VisualTreeHelper.GetDpi(Utils.Border).PixelsPerDip)
@@ -5999,7 +6063,7 @@ namespace ag.WPF.Chart
             }
             else if (seriesEnumerable.All(s => s.IsStockSeries()))
             {
-                    return null;
+                return null;
             }
 
             var brushIndex = 0;

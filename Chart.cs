@@ -142,7 +142,7 @@ namespace ag.WPF.Chart
         /// </summary>
         Radar,
         /// <summary>
-        /// The style represented by radar with markers
+        /// The style represented by radar with markers at control ponts
         /// </summary>
         RadarWithMarkers,
         /// <summary>
@@ -154,11 +154,11 @@ namespace ag.WPF.Chart
         /// </summary>
         Funnel,
         /// <summary>
-        /// The finantial style represented by high, low, and close prices
+        /// The stock style represented by high, low, and close prices
         /// </summary>
         HighLowClose,
         /// <summary>
-        /// The finantial style represented by open, high, low, and close prices
+        /// The stock style represented by open, high, low, and close prices
         /// </summary>
         OpenHighLowClose
     }
@@ -262,7 +262,7 @@ namespace ag.WPF.Chart
     /// <summary>
     /// Specifies shape of legend
     /// </summary>
-    public enum LegendShape
+    public enum ShapeStyle
     {
         /// <summary>
         /// Rectanglular shape
@@ -271,7 +271,19 @@ namespace ag.WPF.Chart
         /// <summary>
         /// Circular shape
         /// </summary>
-        Circle
+        Circle,
+        /// <summary>
+        /// Star shape with five ras
+        /// </summary>
+        Star5,
+        /// <summary>
+        /// Star shape with six rays
+        /// </summary>
+        Star6,
+        /// <summary>
+        /// Star shape with eight rays
+        /// </summary>
+        Star8
     }
 
     /// <summary>
@@ -584,8 +596,8 @@ namespace ag.WPF.Chart
                 new FrameworkPropertyMetadata(AutoAdjustmentMode.Both, OnAutoAdjustmentChanged));
             LegendSizeProperty = DependencyProperty.Register(nameof(LegendSize), typeof(LegendSize), typeof(Chart),
                 new FrameworkPropertyMetadata(LegendSize.ExtraSmall, OnLegendSizeChanged));
-            LegendShapeProperty = DependencyProperty.Register(nameof(LegendShape), typeof(LegendShape), typeof(Chart),
-                new FrameworkPropertyMetadata(LegendShape.Rectangle, OnLegendShapeChanged));
+            LegendShapeProperty = DependencyProperty.Register(nameof(LegendShape), typeof(ShapeStyle), typeof(Chart),
+                new FrameworkPropertyMetadata(ShapeStyle.Rectangle, OnLegendShapeChanged));
             ShowTicksProperty = DependencyProperty.Register(nameof(ShowTicks),
                 typeof(bool), typeof(Chart), new FrameworkPropertyMetadata(true, OnShowTicksChanged));
             ChartBoundaryProperty = DependencyProperty.Register(nameof(ChartBoundary), typeof(ChartBoundary), typeof(Chart),
@@ -1443,9 +1455,9 @@ namespace ag.WPF.Chart
         /// Gets or sets the shape of legend. Can be one of <see cref="LegendShape"/> enumeration members.
         /// </summary>
         [Category("ChartLegend"), Description("Gets or sets the shape of legend. Can be one of LegendShape enumeration members")]
-        public LegendShape LegendShape
+        public ShapeStyle LegendShape
         {
-            get { return (LegendShape)GetValue(LegendShapeProperty); }
+            get { return (ShapeStyle)GetValue(LegendShapeProperty); }
             set { SetValue(LegendShapeProperty, value); }
         }
         /// <summary>
@@ -1976,16 +1988,16 @@ namespace ag.WPF.Chart
         private static void OnLegendShapeChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
             if (!(sender is Chart ch)) return;
-            ch.OnLegendShapeChanged((LegendShape)e.OldValue, (LegendShape)e.NewValue);
+            ch.OnLegendShapeChanged((ShapeStyle)e.OldValue, (ShapeStyle)e.NewValue);
         }
         /// <summary>
         /// Invoked just before the <see cref="LegendShapeChangedEvent"/> event is raised on control
         /// </summary>
         /// <param name="oldValue">Old value</param>
         /// <param name="newValue">New value</param>
-        protected void OnLegendShapeChanged(LegendShape oldValue, LegendShape newValue)
+        protected void OnLegendShapeChanged(ShapeStyle oldValue, ShapeStyle newValue)
         {
-            var e = new RoutedPropertyChangedEventArgs<LegendShape>(oldValue, newValue)
+            var e = new RoutedPropertyChangedEventArgs<ShapeStyle>(oldValue, newValue)
             {
                 RoutedEvent = LegendShapeChangedEvent
             };
@@ -2747,7 +2759,7 @@ namespace ag.WPF.Chart
         /// <summary>
         /// Occurs when the <see cref="LegendShape"/> property has been changed in some way
         /// </summary>
-        public event RoutedPropertyChangedEventHandler<LegendShape> LegendShapeChanged
+        public event RoutedPropertyChangedEventHandler<ShapeStyle> LegendShapeChanged
         {
             add { AddHandler(LegendShapeChangedEvent, value); }
             remove { RemoveHandler(LegendShapeChangedEvent, value); }
@@ -2756,7 +2768,7 @@ namespace ag.WPF.Chart
         /// Identifies the <see cref="LegendShapeChanged"/> routed event
         /// </summary>
         public static readonly RoutedEvent LegendShapeChangedEvent = EventManager.RegisterRoutedEvent("LegendShapeChanged",
-            RoutingStrategy.Bubble, typeof(RoutedPropertyChangedEventHandler<LegendShape>), typeof(Chart));
+            RoutingStrategy.Bubble, typeof(RoutedPropertyChangedEventHandler<ShapeStyle>), typeof(Chart));
 
         /// <summary>
         /// Occurs when the <see cref="LegendSize"/> property has been changed in some way

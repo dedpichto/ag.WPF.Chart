@@ -29,6 +29,7 @@
     <local:AxesXLinesConverter x:Key="AxesXLinesConverter"/>
     <local:AxesYLinesConverter x:Key="AxesYLinesConverter"/>
     <local:LegendPieVisibilityConverter x:Key="LegendPieVisibilityConverter"/>
+    <local:StarDrawingConverter x:Key="StarDrawingConverter"/>
     
     <Style TargetType="{x:Type local:Chart}">
         <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.WindowTextBrushKey}}"/>
@@ -657,17 +658,13 @@
                 <ControlTemplate TargetType="{x:Type local:Legend}">
                     <Border>
                         <StackPanel x:Name="stack" Orientation="Horizontal">
-                            <Rectangle x:Name="rect" 
-                                       Opacity="{Binding ChartOpacity,RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:Chart}}"
-                                       Width="{Binding LegendSize, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:Chart}, Converter={StaticResource LegendSizeConverter}}" 
-                                       Height="{Binding LegendSize, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:Chart}, Converter={StaticResource LegendSizeConverter}}" 
-                                       Fill="{TemplateBinding LegendBackground}" Margin="2"/>
-                            <Ellipse x:Name="ellipse" 
-                                     Visibility="Collapsed"
-                                     Opacity="{Binding ChartOpacity,RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:Chart}}"
-                                     Width="{Binding LegendSize, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:Chart}, Converter={StaticResource LegendSizeConverter}}" 
-                                     Height="{Binding LegendSize, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:Chart}, Converter={StaticResource LegendSizeConverter}}" 
-                                     Fill="{TemplateBinding LegendBackground}" Margin="2"/>
+                            <Border x:Name="star"
+                                    Margin="2"
+                                    Opacity="{Binding ChartOpacity,RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:Chart}}"
+                                    Width="{Binding LegendSize, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:Chart}, Converter={StaticResource LegendSizeConverter}}" 
+                                    Height="{Binding LegendSize, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:Chart}, Converter={StaticResource LegendSizeConverter}}" >
+                                <Path Fill="{TemplateBinding LegendBackground}" Stretch="Fill" Data="{Binding LegendShape, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:Chart}, Converter={StaticResource StarDrawingConverter}}"/>
+                            </Border>
                             <!--Text block has FlowDirection explicitly set to LeftToRight in order to preserve correct string order when parent FlowDirection is set to RightToLeft-->
                             <TextBlock x:Name="LegendText" 
                                        FlowDirection="LeftToRight"
@@ -682,24 +679,15 @@
                     </Border>
                     <ControlTemplate.Triggers>
                         <DataTrigger Binding="{Binding LegendAlignment, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:Chart}}" Value="Left">
-                            <Setter Property="HorizontalAlignment" TargetName="rect" Value="Center"/>
-                            <Setter Property="HorizontalAlignment" TargetName="ellipse" Value="Center"/>
+                            <Setter Property="HorizontalAlignment" TargetName="star" Value="Center"/>
                             <Setter Property="HorizontalAlignment" TargetName="LegendText" Value="Center"/>
                             <Setter Property="Orientation" TargetName="stack" Value="Vertical"/>
                         </DataTrigger>
                         <DataTrigger Binding="{Binding LegendAlignment, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:Chart}}" Value="Right">
-                            <Setter Property="HorizontalAlignment" TargetName="rect" Value="Center"/>
-                            <Setter Property="HorizontalAlignment" TargetName="ellipse" Value="Center"/>
+                            <Setter Property="HorizontalAlignment" TargetName="star" Value="Center"/>
                             <Setter Property="HorizontalAlignment" TargetName="LegendText" Value="Center"/>
                             <Setter Property="Orientation" TargetName="stack" Value="Vertical"/>
                         </DataTrigger>
-                        <DataTrigger Binding="{Binding LegendShape, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:Chart}}" Value="Circle">
-                            <Setter Property="Visibility" TargetName="ellipse" Value="Visible"/>
-                            <Setter Property="Visibility" TargetName="rect" Value="Collapsed"/>
-                        </DataTrigger>
-                        <!--<Trigger Property="IsEnabled" Value="false">
-                            <Setter Property="Foreground" TargetName="LegendText" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
-                        </Trigger>-->
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
