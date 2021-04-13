@@ -739,15 +739,16 @@ namespace ag.WPF.Chart
         }
 
         // Return PointFs to define a star.
-        internal static PathGeometry StarPoints(int numberOfPoints, double radius)
+        internal static PathGeometry DrawStar(int numberOfPoints, double radius, Point centerPoint = default, bool stroked = false)
         {
             var gm = new PathGeometry();
 
             var degreesStep = 360.0 / numberOfPoints;
 
-            var rSmall = radius - 3;
+            var rSmall = radius / 2;
 
-            var centerPoint = new Point(radius, radius);
+            if (centerPoint == default)
+                centerPoint = new Point(radius, radius);
 
             var points = new List<Point>();
 
@@ -766,14 +767,7 @@ namespace ag.WPF.Chart
                 points.Add(new Point(x, y));
             }
 
-            //for (var i = 0; i < points.Count - 1; i++)
-            //{
-            //    gm.AddGeometry(new LineGeometry(points[i], points[i + 1]));
-            //}
-            //gm.AddGeometry(new LineGeometry(points[points.Count - 1], points[0]));
-
-
-            var poly = new PolyLineSegment(points, false);
+            var poly = new PolyLineSegment(points, stroked);
             gm.Figures.Add(new PathFigure(points[0], new[] { poly }, true));
 
             return gm;
@@ -1012,9 +1006,9 @@ namespace ag.WPF.Chart
                 return null;
             return shapeStyle switch
             {
-                ShapeStyle.Star5 => Utils.StarPoints(5, 8),
-                ShapeStyle.Star6 => Utils.StarPoints(6, 8),
-                ShapeStyle.Star8 => Utils.StarPoints(8, 8),
+                ShapeStyle.Star5 => Utils.DrawStar(5, 8),
+                ShapeStyle.Star6 => Utils.DrawStar(6, 8),
+                ShapeStyle.Star8 => Utils.DrawStar(8, 8),
                 ShapeStyle.Circle => new EllipseGeometry(new Rect(new Size(16, 16))),
                 ShapeStyle.Rectangle => new RectangleGeometry(new Rect(new Size(16, 16))),
                 _ => null
@@ -1384,6 +1378,7 @@ namespace ag.WPF.Chart
                 || !(values[16] is int linesCountX)
                 || !(values[17] is bool showValues)
                 || !(values[18] is FlowDirection flowDirection)
+                || !(values[19] is ShapeStyle shapeStyle)
                 || !(parameter is (int order, ColoredPaths colored)))
                 return null;
 
@@ -1460,7 +1455,7 @@ namespace ag.WPF.Chart
                 case ChartStyle.HighLowClose:
                     {
                         var units = Utils.GetUnitsForLines(new[] { seriesArray[0] }, chartStyle, dir, width, height, boundOffset, linesCountY, fmt.Height, autoAdjust, maxYConv);
-                        return drawHLC(width, height, seriesArray[0].Values.Count, units, dir, seriesArray[0], colored);
+                        return drawHLC(width, height, seriesArray[0].Values.Count, units, dir, seriesArray[0], colored, shapeStyle);
                     }
                 case ChartStyle.Waterfall:
                     {
@@ -1482,7 +1477,7 @@ namespace ag.WPF.Chart
                         else
                             radius -= (2 * fmt.Width + 8);
                         var (max, min, realLinesCount, stepSize, stepLength, units, zeroPoint) = Utils.GetMeasures(chartStyle, seriesArray, linesCountY, radius, fmt.Height, centerPoint);
-                        gm = drawRadar(seriesArray, index, chartStyle, units, stepLength, radius, maxPointsCount, realLinesCount, zeroPoint.Level, centerPoint);
+                        gm = drawRadar(seriesArray, index, chartStyle, units, stepLength, radius, maxPointsCount, realLinesCount, zeroPoint.Level, centerPoint, shapeStyle);
                         break;
                     }
                 case ChartStyle.Lines:
@@ -1497,7 +1492,7 @@ namespace ag.WPF.Chart
                         var currentSeries = seriesArray.FirstOrDefault(s => s.Index == index);
                         if (currentSeries == null)
                             return null;
-                        gm = drawLine(width, height, maxX, units, chartStyle, dir, currentSeries, offsetBoundary);
+                        gm = drawLine(width, height, maxX, units, chartStyle, dir, currentSeries, offsetBoundary, shapeStyle);
                         break;
                     }
                 case ChartStyle.Bubbles:
@@ -1518,7 +1513,7 @@ namespace ag.WPF.Chart
                     {
                         var units = Utils.GetUnitsForLines(seriesArray, chartStyle, dir, width, height, boundOffset, linesCountY, fmt.Height, autoAdjust, maxYConv);
                         maxX = seriesArray.Max(s => s.Values.Count);
-                        gm = drawStackedLine(width, height, maxX, units, chartStyle, dir, seriesArray, index, rawValues, offsetBoundary);
+                        gm = drawStackedLine(width, height, maxX, units, chartStyle, dir, seriesArray, index, rawValues, offsetBoundary, shapeStyle);
                         break;
                     }
                 case ChartStyle.FullStackedLines:
@@ -1526,7 +1521,7 @@ namespace ag.WPF.Chart
                 case ChartStyle.SmoothFullStackedLines:
                 case ChartStyle.SmoothFullStackedLinesWithMarkers:
                     maxX = seriesArray.Max(s => s.Values.Count);
-                    gm = drawFullStackedLine(width, height, maxX, chartStyle, dir, seriesArray, index, rawValues, offsetBoundary);
+                    gm = drawFullStackedLine(width, height, maxX, chartStyle, dir, seriesArray, index, rawValues, offsetBoundary, shapeStyle);
                     break;
                 case ChartStyle.Columns:
                     {
@@ -1659,7 +1654,7 @@ namespace ag.WPF.Chart
             return gm;
         }
 
-        private PathGeometry drawHLC(double width, double height, int maxX, double units, Directions dir, ISeries currentSeries, ColoredPaths colored)
+        private PathGeometry drawHLC(double width, double height, int maxX, double units, Directions dir, ISeries currentSeries, ColoredPaths colored, ShapeStyle shapeStyle)
         {
             double stepX;
             double centerX, centerY;
@@ -1713,21 +1708,21 @@ namespace ag.WPF.Chart
                             var y3 = centerY - currentSeries.Values[i].Value.CloseValue * units;
                             var line = new LineGeometry(new Point(x, y1), new Point(x, y2));
                             gm.AddGeometry(line);
-                            drawMarker(x, y3, gm, currentSeries.RealRects);
+                            drawMarker(x, y3, gm, shapeStyle, currentSeries.RealRects);
                             //drawCircle(x, y3, gm, currentSeries.RealRects);
                             break;
                         }
                     case ColoredPaths.Up:
                         {
                             var y1 = centerY - currentSeries.Values[i].Value.HighValue * units;
-                            drawMarker(x, y1 + Utils.RECT_SIZE, gm, currentSeries.RealStockHighRects);
+                            drawMarker(x, y1 + Utils.RECT_SIZE, gm, shapeStyle, currentSeries.RealStockHighRects);
                             //drawTriangle(x, y1, gm, true, currentSeries.RealStockHighRects);
                             break;
                         }
                     case ColoredPaths.Down:
                         {
                             var y1 = centerY - currentSeries.Values[i].Value.LowValue * units;
-                            drawMarker(x, y1 - Utils.RECT_SIZE, gm, currentSeries.RealStockLowRects);
+                            drawMarker(x, y1 - Utils.RECT_SIZE, gm, shapeStyle, currentSeries.RealStockLowRects);
                             //drawTriangle(x, y1, gm, false, currentSeries.RealStockLowRects);
                             break;
                         }
@@ -2499,18 +2494,24 @@ namespace ag.WPF.Chart
             return gm;
         }
 
-        private void drawMarker(double x, double y, PathGeometry gm, List<Rect> realRects)
+        private void drawMarker(double x, double y, PathGeometry gm, ShapeStyle shapeStyle, List<Rect> realRects)
         {
             var rect = new Rect(new Point(x - RECT_SIZE, y - RECT_SIZE), new Point(x + RECT_SIZE, y + RECT_SIZE));
             realRects.Add(rect);
-            for (var r = RECT_SIZE; r > 0; r--)
+            Geometry g = shapeStyle switch
             {
-                gm.AddGeometry(new RectangleGeometry(new Rect(new Point(x - r, y - r), new Point(x + r, y + r))));
-            }
+                ShapeStyle.Rectangle => new RectangleGeometry(rect),
+                ShapeStyle.Circle => new EllipseGeometry(rect),
+                ShapeStyle.Star5 => Utils.DrawStar(5, RECT_SIZE * 1.5, new Point(x, y), true),
+                ShapeStyle.Star6 => Utils.DrawStar(6, RECT_SIZE * 1.5, new Point(x, y), true),
+                ShapeStyle.Star8 => Utils.DrawStar(8, RECT_SIZE * 1.5, new Point(x, y), true),
+                _ => null
+            };
+            gm.AddGeometry(g);
         }
 
         private PathGeometry drawFullStackedLine(double width, double height, double maxX, ChartStyle style,
-            Directions dir, ISeries[] series, int index, List<(List<IChartValue> Values, int Index)> tuples, bool offsetBoundary)
+            Directions dir, ISeries[] series, int index, List<(List<IChartValue> Values, int Index)> tuples, bool offsetBoundary, ShapeStyle shapeStyle)
         {
             var tp = tuples.FirstOrDefault(t => t.Index == index);
             if (tp == default) return null;
@@ -2581,7 +2582,7 @@ namespace ag.WPF.Chart
                 if (i == 0)
                     start = new Point(x, y);
                 if (!style.In(ChartStyle.FullStackedLinesWithMarkers, ChartStyle.SmoothFullStackedLinesWithMarkers)) continue;
-                drawMarker(x, y, gm, currentSeries.RealRects);
+                drawMarker(x, y, gm, shapeStyle, currentSeries.RealRects);
             }
 
             if (style.In(ChartStyle.SmoothFullStackedLines, ChartStyle.SmoothFullStackedLinesWithMarkers))
@@ -2612,7 +2613,7 @@ namespace ag.WPF.Chart
         }
 
         private PathGeometry drawStackedLine(double width, double height, double maxX, double units, ChartStyle style,
-            Directions dir, ISeries[] series, int index, List<(List<IChartValue> Values, int Index)> tuples, bool offsetBoundary)
+            Directions dir, ISeries[] series, int index, List<(List<IChartValue> Values, int Index)> tuples, bool offsetBoundary, ShapeStyle shapeStyle)
         {
             var tp = tuples.FirstOrDefault(t => t.Index == index);
             if (tp == default) return null;
@@ -2671,7 +2672,7 @@ namespace ag.WPF.Chart
                 }
                 points.Add(new Point(x, y));
                 if (!style.In(ChartStyle.StackedLinesWithMarkers, ChartStyle.SmoothStackedLinesWithMarkers)) continue;
-                drawMarker(x, y, gm, currentSeries.RealRects);
+                drawMarker(x, y, gm, shapeStyle, currentSeries.RealRects);
             }
             if (style.In(ChartStyle.SmoothStackedLines, ChartStyle.SmoothStackedLinesWithMarkers))
             {
@@ -2707,7 +2708,7 @@ namespace ag.WPF.Chart
             return gm;
         }
 
-        private PathGeometry drawRadar(ISeries[] series, int index, ChartStyle chartStyle, double units, double stepLength, double radius, int pointsCount, int linesCount, int zeroLevel, Point centerPoint)
+        private PathGeometry drawRadar(ISeries[] series, int index, ChartStyle chartStyle, double units, double stepLength, double radius, int pointsCount, int linesCount, int zeroLevel, Point centerPoint, ShapeStyle shapeStyle)
         {
             //var values = tp.Values.Select(v => v.Value.PlainValue).ToArray();
             var currentSeries = series.FirstOrDefault(s => s.Index == index);
@@ -2736,7 +2737,7 @@ namespace ag.WPF.Chart
                 points.Add(new Point(xBeg, yBeg));
                 if (chartStyle == ChartStyle.RadarWithMarkers)
                 {
-                    drawMarker(xBeg, yBeg, gm, currentSeries.RealRects);
+                    drawMarker(xBeg, yBeg, gm, shapeStyle, currentSeries.RealRects);
                 }
             }
             for (var i = 0; i < points.Count; i++)
@@ -2750,7 +2751,7 @@ namespace ag.WPF.Chart
             return gm;
         }
 
-        private PathGeometry drawLine(double width, double height, int maxX, double units, ChartStyle style, Directions dir, ISeries currentSeries, bool offsetBoundary)
+        private PathGeometry drawLine(double width, double height, int maxX, double units, ChartStyle style, Directions dir, ISeries currentSeries, bool offsetBoundary, ShapeStyle shapeStyle)
         {
             double stepX;
             double centerX, centerY;
@@ -2802,7 +2803,7 @@ namespace ag.WPF.Chart
 
                 points.Add(new Point(x, y));
                 if (!style.In(ChartStyle.LinesWithMarkers, ChartStyle.SmoothLinesWithMarkers)) continue;
-                drawMarker(x, y, gm, currentSeries.RealRects);
+                drawMarker(x, y, gm, shapeStyle, currentSeries.RealRects);
             }
             if (style.In(ChartStyle.SmoothLines, ChartStyle.SmoothLinesWithMarkers))
             {

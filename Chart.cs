@@ -366,6 +366,10 @@ namespace ag.WPF.Chart
 
         #region Dependency properties
         /// <summary>
+        /// The identifier of the <see cref="MarkerShape"/> dependency property.
+        /// </summary>
+        public static readonly DependencyProperty MarkerShapeProperty;
+        /// <summary>
         /// The identifier of the <see cref="SectionsX"/> dependency property.
         /// </summary>
         public static readonly DependencyProperty SectionsXProperty;
@@ -600,6 +604,8 @@ namespace ag.WPF.Chart
                 new FrameworkPropertyMetadata(ShapeStyle.Rectangle, OnLegendShapeChanged));
             ShowTicksProperty = DependencyProperty.Register(nameof(ShowTicks),
                 typeof(bool), typeof(Chart), new FrameworkPropertyMetadata(true, OnShowTicksChanged));
+            MarkerShapeProperty = DependencyProperty.Register(nameof(MarkerShape), typeof(ShapeStyle), typeof(Chart),
+                new FrameworkPropertyMetadata(ShapeStyle.Rectangle, OnMarkerShapeCahnged));
             ChartBoundaryProperty = DependencyProperty.Register(nameof(ChartBoundary), typeof(ChartBoundary), typeof(Chart),
                 new FrameworkPropertyMetadata(ChartBoundary.WithOffset, OnChartBoundaryChanged));
             CustomWaterfallLegendsProperty = DependencyProperty.RegisterAttached(nameof(CustomWaterfallLegends), typeof(IEnumerable<string>), typeof(Chart), new FrameworkPropertyMetadata(new[] { "Increase", "Decrease" }));
@@ -798,6 +804,10 @@ namespace ag.WPF.Chart
                                 Source = this
                             });
                             ptsBinding.Bindings.Add(new Binding("FlowDirection")
+                            {
+                                Source = this
+                            });
+                            ptsBinding.Bindings.Add(new Binding("MarkerShape")
                             {
                                 Source = this
                             });
@@ -1346,7 +1356,7 @@ namespace ag.WPF.Chart
                         binding.UpdateTarget();
                 }
             }
-            foreach(var legend in LegendsCollection)
+            foreach (var legend in LegendsCollection)
             {
                 binding = BindingOperations.GetMultiBindingExpression(legend, VisibilityProperty);
                 if (binding != null)
@@ -1478,6 +1488,15 @@ namespace ag.WPF.Chart
         {
             get { return (AutoAdjustmentMode)GetValue(AutoAdjustmentProperty); }
             set { SetValue(AutoAdjustmentProperty, value); }
+        }
+        /// <summary>
+        /// Gets or sets the shape of chart series markers.
+        /// </summary>
+        [Category("ChartAppearance"), Description("Gets or sets the shape of chart series markers")]
+        public ShapeStyle MarkerShape
+        {
+            get { return (ShapeStyle)GetValue(MarkerShapeProperty); }
+            set { SetValue(MarkerShapeProperty, value); }
         }
         /// <summary>
         /// Gets or sets max numeric value for y-axis. The default value is 100.
@@ -1905,6 +1924,25 @@ namespace ag.WPF.Chart
             var e = new RoutedPropertyChangedEventArgs<bool>(oldValue, newValue)
             {
                 RoutedEvent = ShowTicksChangedEvent
+            };
+            RaiseEvent(e);
+        }
+
+        private static void OnMarkerShapeCahnged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
+        {
+            if (!(sender is Chart ch)) return;
+            ch.OnMarkerShapeCahnged((ShapeStyle)e.OldValue, (ShapeStyle)e.NewValue);
+        }
+        /// <summary>
+        /// Invoked just before the <see cref="MarkerShapeChangedEvent"/> event is raised on control
+        /// </summary>
+        /// <param name="oldValue">Old value</param>
+        /// <param name="newValue">New value</param>
+        protected void OnMarkerShapeCahnged(ShapeStyle oldValue, ShapeStyle newValue)
+        {
+            var e = new RoutedPropertyChangedEventArgs<ShapeStyle>(oldValue, newValue)
+            {
+                RoutedEvent = MarkerShapeChangedEvent
             };
             RaiseEvent(e);
         }
@@ -2642,6 +2680,20 @@ namespace ag.WPF.Chart
         /// </summary>
         public static readonly RoutedEvent ShowTicksChangedEvent = EventManager.RegisterRoutedEvent("ShowTicksChanged",
             RoutingStrategy.Bubble, typeof(RoutedPropertyChangedEventHandler<bool>), typeof(Chart));
+
+        /// <summary>
+        /// Occurs when the <see cref="MarkerShape"/> property has been changed in some way
+        /// </summary>
+        public event RoutedPropertyChangedEventHandler<ShapeStyle> MarkerShapeChanged
+        {
+            add { AddHandler(MarkerShapeChangedEvent, value); }
+            remove { RemoveHandler(MarkerShapeChangedEvent, value); }
+        }
+        /// <summary>
+        /// Identifies the <see cref="MarkerShapeChanged"/> routed event
+        /// </summary>
+        public static readonly RoutedEvent MarkerShapeChangedEvent = EventManager.RegisterRoutedEvent("MarkerShapeChanged",
+            RoutingStrategy.Bubble, typeof(RoutedPropertyChangedEventHandler<ShapeStyle>), typeof(Chart));
 
         /// <summary>
         /// Occurs when the <see cref="AxesFontSize"/> property has been changed in some way
