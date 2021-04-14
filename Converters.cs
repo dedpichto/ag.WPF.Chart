@@ -4627,15 +4627,25 @@ namespace ag.WPF.Chart
                                 x = flowDir == FlowDirection.LeftToRight
                                     ? drawBetween
                                         ? boundOffset + i * xStep - fmt.Width + xStep / 2
-                                        : boundOffset + i * xStep - fmt.Width
-                                    : drawBetween ? boundOffset + indexStep * xStep + xStep / 2 : boundOffset + indexStep * xStep;
+                                        : i > 0
+                                            ? boundOffset + i * xStep - fmt.Width
+                                            : boundOffset > 0
+                                                ? boundOffset + i * xStep - fmt.Width
+                                                : boundOffset + i * xStep+fmt.Height
+                                    : drawBetween
+                                        ? boundOffset + indexStep * xStep + xStep / 2
+                                        : boundOffset + indexStep * xStep;
                             }
                             var pt = new Point(x, 0);
                             var ngm = fmt.BuildGeometry(pt);
 
                             var trgr = new TransformGroup();
                             trgr.Children.Add(flowDir == FlowDirection.LeftToRight
-                                ? new RotateTransform(-45, pt.X + fmt.Width, pt.Y)
+                                ? i > 0
+                                    ? new RotateTransform(-45, pt.X + fmt.Width, pt.Y)
+                                    : boundOffset > 0 || drawBetween
+                                        ? new RotateTransform(-45, pt.X + fmt.Width, pt.Y)
+                                        : new RotateTransform(45, pt.X, pt.Y)
                                 : new RotateTransform(45, pt.X, pt.Y));
                             if (flowDir == FlowDirection.RightToLeft)
                                 trgr.Children.Add(new ScaleTransform { ScaleX = -1, CenterX = width / 2 });
