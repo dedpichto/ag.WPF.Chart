@@ -1445,6 +1445,7 @@ namespace ag.WPF.Chart
                 _ => Utils.BoundaryOffset(offsetBoundary, width, maxPointsCount)
             };
 
+            width -= boundOffset;
             switch (chartStyle)
             {
                 case ChartStyle.OpenHighLowClose:
@@ -1492,7 +1493,7 @@ namespace ag.WPF.Chart
                         var currentSeries = seriesArray.FirstOrDefault(s => s.Index == index);
                         if (currentSeries == null)
                             return null;
-                        gm = drawLine(width, height, maxX, units, chartStyle, dir, currentSeries, offsetBoundary, shapeStyle);
+                        gm = drawLine(width, height, maxX, units, chartStyle, dir, currentSeries, offsetBoundary, boundOffset, shapeStyle);
                         break;
                     }
                 case ChartStyle.Bubbles:
@@ -1502,7 +1503,7 @@ namespace ag.WPF.Chart
                         var currentSeries = seriesArray.FirstOrDefault(s => s.Index == index);
                         if (currentSeries == null)
                             return null;
-                        gm = drawBubbles(width, height, maxX, units, dir, currentSeries, offsetBoundary);
+                        gm = drawBubbles(width, height, maxX, units, dir, currentSeries, offsetBoundary, boundOffset);
                         break;
                     }
                 case ChartStyle.StackedLines:
@@ -1513,7 +1514,7 @@ namespace ag.WPF.Chart
                     {
                         var units = Utils.GetUnitsForLines(seriesArray, chartStyle, dir, width, height, boundOffset, linesCountY, fmt.Height, autoAdjust, maxYConv);
                         maxX = seriesArray.Max(s => s.Values.Count);
-                        gm = drawStackedLine(width, height, maxX, units, chartStyle, dir, seriesArray, index, rawValues, offsetBoundary, shapeStyle);
+                        gm = drawStackedLine(width, height, maxX, units, chartStyle, dir, seriesArray, index, rawValues, offsetBoundary, boundOffset, shapeStyle);
                         break;
                     }
                 case ChartStyle.FullStackedLines:
@@ -1521,7 +1522,7 @@ namespace ag.WPF.Chart
                 case ChartStyle.SmoothFullStackedLines:
                 case ChartStyle.SmoothFullStackedLinesWithMarkers:
                     maxX = seriesArray.Max(s => s.Values.Count);
-                    gm = drawFullStackedLine(width, height, maxX, chartStyle, dir, seriesArray, index, rawValues, offsetBoundary, shapeStyle);
+                    gm = drawFullStackedLine(width, height, maxX, chartStyle, dir, seriesArray, index, rawValues, offsetBoundary, boundOffset, shapeStyle);
                     break;
                 case ChartStyle.Columns:
                     {
@@ -2511,7 +2512,7 @@ namespace ag.WPF.Chart
         }
 
         private PathGeometry drawFullStackedLine(double width, double height, double maxX, ChartStyle style,
-            Directions dir, ISeries[] series, int index, List<(List<IChartValue> Values, int Index)> tuples, bool offsetBoundary, ShapeStyle shapeStyle)
+            Directions dir, ISeries[] series, int index, List<(List<IChartValue> Values, int Index)> tuples, bool offsetBoundary, double boundOffset, ShapeStyle shapeStyle)
         {
             var tp = tuples.FirstOrDefault(t => t.Index == index);
             if (tp == default) return null;
@@ -2520,7 +2521,7 @@ namespace ag.WPF.Chart
             double centerY;
             var gm = new PathGeometry();
 
-            var boundOffset = Utils.BoundaryOffset(offsetBoundary, width, values.Count);
+            //var boundOffset = Utils.BoundaryOffset(offsetBoundary, width, values.Count);
 
             var currentSeries = series.FirstOrDefault(s => s.Index == index);
             if (currentSeries == null) return null;
@@ -2613,7 +2614,7 @@ namespace ag.WPF.Chart
         }
 
         private PathGeometry drawStackedLine(double width, double height, double maxX, double units, ChartStyle style,
-            Directions dir, ISeries[] series, int index, List<(List<IChartValue> Values, int Index)> tuples, bool offsetBoundary, ShapeStyle shapeStyle)
+            Directions dir, ISeries[] series, int index, List<(List<IChartValue> Values, int Index)> tuples, bool offsetBoundary, double boundOffset, ShapeStyle shapeStyle)
         {
             var tp = tuples.FirstOrDefault(t => t.Index == index);
             if (tp == default) return null;
@@ -2624,7 +2625,7 @@ namespace ag.WPF.Chart
             var currentSeries = series.FirstOrDefault(s => s.Index == index);
             if (currentSeries == null) return null;
 
-            var boundOffset = Utils.BoundaryOffset(offsetBoundary, width, values.Count);
+            //var boundOffset = Utils.BoundaryOffset(offsetBoundary, width, values.Count);
 
             switch (dir)
             {
@@ -2751,13 +2752,13 @@ namespace ag.WPF.Chart
             return gm;
         }
 
-        private PathGeometry drawLine(double width, double height, int maxX, double units, ChartStyle style, Directions dir, ISeries currentSeries, bool offsetBoundary, ShapeStyle shapeStyle)
+        private PathGeometry drawLine(double width, double height, int maxX, double units, ChartStyle style, Directions dir, ISeries currentSeries, bool offsetBoundary, double boundOffset, ShapeStyle shapeStyle)
         {
             double stepX;
             double centerX, centerY;
             var gm = new PathGeometry();
 
-            var boundOffset = Utils.BoundaryOffset(offsetBoundary, width, maxX);
+            //var boundOffset = Utils.BoundaryOffset(offsetBoundary, width, maxX);
 
             switch (dir)
             {
@@ -2861,13 +2862,13 @@ namespace ag.WPF.Chart
             return gm;
         }
 
-        private PathGeometry drawBubbles(double width, double height, int maxX, double units, Directions dir, ISeries currentSeries, bool offsetBoundary)
+        private PathGeometry drawBubbles(double width, double height, int maxX, double units, Directions dir, ISeries currentSeries, bool offsetBoundary, double boundOffset)
         {
             double stepX;
             double centerX, centerY;
             var segSize = height > width ? (width - 2 * Utils.AXIS_THICKNESS) / (maxX + 2) / 2 : (height - 2 * Utils.AXIS_THICKNESS) / (maxX + 2) / 2;
 
-            var boundOffset = Utils.BoundaryOffset(offsetBoundary, width, maxX);
+            //var boundOffset = Utils.BoundaryOffset(offsetBoundary, width, maxX);
             if (boundOffset > 0)
                 segSize = boundOffset;
 
@@ -3878,7 +3879,7 @@ namespace ag.WPF.Chart
                 return 0.0;
 
             Directions dir;
-            int maxFromValues;
+            int maxFromValues, maxForBars = 0;
 
             if (seriesEnumerable.All(s => s is PlainSeries))
             {
@@ -3901,8 +3902,7 @@ namespace ag.WPF.Chart
                 }
                 else
                 {
-                    var maxV = seriesArray.Max(s => s.Values.Count).ToString(culture).Length;
-                    maxFromValues = autoAdjust.In(AutoAdjustmentMode.Both, AutoAdjustmentMode.Horizontal) ? maxV : maxY.ToString(culture).Length;
+                    maxForBars = autoAdjust.In(AutoAdjustmentMode.Both, AutoAdjustmentMode.Vertical) ? seriesArray.Max(s => s.Values.Count) : linesCountY;
                 }
             }
             else if (seriesEnumerable.All(s => s.IsStockSeries()))
@@ -3925,6 +3925,7 @@ namespace ag.WPF.Chart
             else
                 return 0.0;
 
+            string maxString;
             var radius = 0.0;
             var centerX = 0.0;
             Point centerPoint;
@@ -3950,35 +3951,39 @@ namespace ag.WPF.Chart
 
             height -= 2 * Utils.AXIS_THICKNESS;
 
-            var fmtY = new FormattedText("AAA", culture, FlowDirection.LeftToRight,
+            if (!Utils.StyleBars(chartStyle))
+            {
+                var fmtY = new FormattedText("AAA", culture, FlowDirection.LeftToRight,
                     new Typeface(fontFamily, fontStyle, fontWeight, fontStretch), fontSize, Brushes.Black, VisualTreeHelper.GetDpi(Utils.Border).PixelsPerDip);
 
-            var (max, min, _, stepSize, _, _, _) = autoAdjust.In(AutoAdjustmentMode.Both, AutoAdjustmentMode.Vertical)
-                ? Utils.GetMeasures(
-                   chartStyle,
-                   seriesArray,
-                   linesCountY,
-                   radius,
-                   fmtY.Height,
-                   centerPoint,
-                   dir == Directions.NorthEastSouthEast)
-                : (maxY, -maxY, linesCountY, maxY / linesCountY, radius / linesCountY, radius / maxY, default);
+                var (max, min, _, stepSize, _, _, _) = autoAdjust.In(AutoAdjustmentMode.Both, AutoAdjustmentMode.Vertical)
+                    ? Utils.GetMeasures(
+                       chartStyle,
+                       seriesArray,
+                       linesCountY,
+                       radius,
+                       fmtY.Height,
+                       centerPoint,
+                       dir == Directions.NorthEastSouthEast)
+                    : (maxY, -maxY, linesCountY, maxY / linesCountY, radius / linesCountY, radius / maxY, default);
 
-            var maxMin = Math.Abs(Math.Max(max, Math.Abs(min)));
-
-            // fractional stepSize
-            if (!Utils.IsInteger(stepSize))
-            {
-                var fractions = Utils.GetDecimalPlaces(stepSize);
-                if (format.EndsWith("%"))
-                    format = $"{format.Substring(0, format.Length - 1)}{culture.NumberFormat.NumberDecimalSeparator}{new string('0', fractions)}%";
-                else
-                    format += $"{culture.NumberFormat.NumberDecimalSeparator}{new string('0', fractions)}";
+                // fractional stepSize
+                if (!Utils.IsInteger(stepSize))
+                {
+                    var fractions = Utils.GetDecimalPlaces(stepSize);
+                    if (format.EndsWith("%"))
+                        format = $"{format.Substring(0, format.Length - 1)}{culture.NumberFormat.NumberDecimalSeparator}{new string('0', fractions)}%";
+                    else
+                        format += $"{culture.NumberFormat.NumberDecimalSeparator}{new string('0', fractions)}";
+                }
+                maxString = customValues.Any()
+                    ? customValues.FirstOrDefault(c => c.Length == customValues.Max(v => v.Length))
+                    : max.ToString(culture).Length >= min.ToString(culture).Length ? max.ToString(format, culture) : min.ToString(format, culture);
             }
-
-            var maxString = customValues.Any()
-                ? customValues.FirstOrDefault(c => c.Length == customValues.Max(v => v.Length))
-                : max.ToString(culture).Length >= min.ToString(culture).Length ? max.ToString(format, culture) : min.ToString(format, culture);
+            else
+            {
+                maxString = maxForBars.ToString(format, culture);
+            }
 
             var fmt = new FormattedText(maxString, culture, FlowDirection.LeftToRight,
                             new Typeface(fontFamily, fontStyle, fontWeight, fontStretch), fontSize, Brushes.Black, VisualTreeHelper.GetDpi(Utils.Border).PixelsPerDip)
@@ -4560,6 +4565,8 @@ namespace ag.WPF.Chart
                 case Directions.NorthEast:
                 case Directions.NorthEastSouthEast:
                     {
+                        if (dir == Directions.NorthEast)
+                            width -= boundOffset;
                         if (!Utils.StyleBars(chartStyle))
                         {
                             if (autoAdjust.In(AutoAdjustmentMode.Both, AutoAdjustmentMode.Horizontal))
@@ -4571,7 +4578,7 @@ namespace ag.WPF.Chart
                             else
                             {
                                 xStep = width / linesCount;
-                                limit = linesCount;
+                                limit = linesCount + 1;
                             }
                         }
                         else
@@ -4682,6 +4689,7 @@ namespace ag.WPF.Chart
                     }
                 case Directions.SouthEast:
                     {
+                        width -= boundOffset;
                         if (autoAdjust.In(AutoAdjustmentMode.Both, AutoAdjustmentMode.Horizontal))
                         {
                             var (Step, Limit) = Utils.Limits(chartStyle, offsetBoundary, linesCount, ticks, boundOffset, width);
@@ -4691,7 +4699,7 @@ namespace ag.WPF.Chart
                         else
                         {
                             xStep = width / linesCount;
-                            limit = linesCount;
+                            limit = linesCount + 1;
                         }
                         for (int i = 0, j = limit - 1; i < limit; i++, j--)
                         {
@@ -4952,6 +4960,7 @@ namespace ag.WPF.Chart
             {
                 case Directions.NorthEast:
                     {
+                        width -= boundOffset;
                         if (axesVisibility.In(AxesVisibility.Both, AxesVisibility.Horizontal) && chartStyle != ChartStyle.Funnel)
                         {
                             var x = Utils.AXIS_THICKNESS + boundOffset;
@@ -5156,6 +5165,7 @@ namespace ag.WPF.Chart
                     {
                         if (Utils.StyleBars(chartStyle))
                             return null;
+                        width -= boundOffset;
                         if (axesVisibility.In(AxesVisibility.Both, AxesVisibility.Horizontal))
                         {
                             var x = Utils.AXIS_THICKNESS + boundOffset;
@@ -5348,6 +5358,7 @@ namespace ag.WPF.Chart
             {
                 case Directions.NorthEast:
                     {
+                        width -= boundOffset;
                         var x = Utils.AXIS_THICKNESS + boundOffset;
                         if (!Utils.StyleBars(chartStyle))
                         {
@@ -5381,18 +5392,15 @@ namespace ag.WPF.Chart
                     {
                         if (!Utils.StyleBars(chartStyle))
                             return null;
-                        if (!Utils.StyleBars(chartStyle))
-                            xStep = width / 2 / linesCount;
-                        else
-                            xStep = stepLength;
+                        xStep = stepLength;
                         var x = Utils.AXIS_THICKNESS;
-                        for (var i = 1; i < linesCount * 2; i++)
+                        for (var i = 0; i <= linesCount * 2 + 1; i++)
                         {
-                            x += xStep;
                             if (i == linesCount) continue;
                             var start = new Point(x, 0);
                             var end = new Point(start.X, height);
                             gm.Figures.Add(new PathFigure(start, new[] { new LineSegment(end, true) }, false));
+                            x += xStep;
                         }
                         break;
                     }
@@ -5418,7 +5426,7 @@ namespace ag.WPF.Chart
                             xStep = stepLength;
                             limit = linesCount;
                         }
-                        for (var i = 0; i < limit; i++)
+                        for (var i = 0; i <= limit; i++)
                         {
                             var start = new Point(x, 0);
                             var end = new Point(start.X, height);
@@ -5431,23 +5439,21 @@ namespace ag.WPF.Chart
                     {
                         if (!Utils.StyleBars(chartStyle))
                             return null;
-                        if (!Utils.StyleBars(chartStyle))
-                            xStep = width / linesCount;
-                        else
-                            xStep = stepLength;
+                        xStep = stepLength;
                         var x = Utils.AXIS_THICKNESS;
-                        for (var i = 1; i < linesCount; i++)
+                        for (var i = 0; i < linesCount; i++)
                         {
-                            x += xStep;
                             var start = new Point(x, 0);
                             var end = new Point(start.X, height);
                             gm.Figures.Add(new PathFigure(start, new[] { new LineSegment(end, true) }, false));
+                            x += xStep;
                         }
                         break;
                     }
                 case Directions.SouthEast:
                     {
                         var x = Utils.AXIS_THICKNESS + boundOffset;
+                        width -= boundOffset;
                         if (!Utils.StyleBars(chartStyle))
                         {
                             if (autoAdjust.In(AutoAdjustmentMode.Both, AutoAdjustmentMode.Horizontal))
@@ -5459,7 +5465,7 @@ namespace ag.WPF.Chart
                             else
                             {
                                 xStep = width / linesCount;
-                                limit = linesCount;
+                                limit = linesCount + 1;
                             }
                         }
                         else
