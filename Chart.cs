@@ -370,13 +370,13 @@ namespace ag.WPF.Chart
         /// </summary>
         public static readonly DependencyProperty MarkerShapeProperty;
         /// <summary>
-        /// The identifier of the <see cref="SectionsX"/> dependency property.
+        /// The identifier of the <see cref="VerticalLinesCount"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty SectionsXProperty;
+        public static readonly DependencyProperty VerticalLinesCountProperty;
         /// <summary>
-        /// The identifier of the <see cref="SectionsY"/> dependency property.
+        /// The identifier of the <see cref="HorizontalLinesCount"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty SectionsYProperty;
+        public static readonly DependencyProperty HorizontalLinesCountProperty;
         /// <summary>
         /// The identifier of the <see cref="AxesFontFamily"/> dependency property.
         /// </summary>
@@ -532,10 +532,10 @@ namespace ag.WPF.Chart
         {
             DefaultStyleKeyProperty.OverrideMetadata(typeof(Chart), new FrameworkPropertyMetadata(typeof(Chart)));
 
-            SectionsXProperty = DependencyProperty.Register(nameof(SectionsX), typeof(int), typeof(Chart),
-                new FrameworkPropertyMetadata(10, OnSectionsXChanged, CoerceSectionsX));
-            SectionsYProperty = DependencyProperty.Register(nameof(SectionsY), typeof(int), typeof(Chart),
-                new FrameworkPropertyMetadata(10, OnSectionsYChanged, CoerceSectionsY));
+            VerticalLinesCountProperty = DependencyProperty.Register(nameof(VerticalLinesCount), typeof(int), typeof(Chart),
+                new FrameworkPropertyMetadata(10, OnVerticalLinesCountChanged, CoerceVerticalLinesCount));
+            HorizontalLinesCountProperty = DependencyProperty.Register(nameof(HorizontalLinesCount), typeof(int), typeof(Chart),
+                new FrameworkPropertyMetadata(10, OnHorizontalLinesCountChanged, CoerceHorizontalLinesCount));
             ChartOpacityProperty = DependencyProperty.Register(nameof(ChartOpacity), typeof(double), typeof(Chart),
                 new FrameworkPropertyMetadata(1.0, OnChartOpacityChanged, CoerceChartOpacity));
             CaptionProperty = DependencyProperty.Register(nameof(Caption), typeof(string), typeof(Chart),
@@ -791,11 +791,11 @@ namespace ag.WPF.Chart
                             {
                                 Source = this
                             });
-                            ptsBinding.Bindings.Add(new Binding("SectionsY")
+                            ptsBinding.Bindings.Add(new Binding("HorizontalLinesCount")
                             {
                                 Source = this
                             });
-                            ptsBinding.Bindings.Add(new Binding("SectionsX")
+                            ptsBinding.Bindings.Add(new Binding("VerticalLinesCount")
                             {
                                 Source = this
                             });
@@ -1731,28 +1731,28 @@ namespace ag.WPF.Chart
             set { SetValue(CaptionProperty, value); }
         }
         /// <summary>
-        /// Gets or sets amount of sections on x-axis.
+        /// Gets or sets amount of vertical lines.
         /// </summary>
         /// <remarks>This property will have no effect if <see cref="ChartStyle"/> property is set to one of the following: <see cref="ChartStyle.SolidPie"/>, <see cref="ChartStyle.SlicedPie"/>, <see cref="ChartStyle.Doughnut"/>, <see cref="ChartStyle.Radar"/>, <see cref="ChartStyle.RadarWithMarkers"/>, <see cref="ChartStyle.RadarArea"/>.
         /// </remarks>
-        [Category("ChartMeasures"), Description("Gets or sets amount of sections on x-axis")]
-        public int SectionsX
+        [Category("ChartMeasures"), Description("Gets or sets amount of vertical lines")]
+        public int VerticalLinesCount
         {
-            get { return (int)GetValue(SectionsXProperty); }
-            set { SetValue(SectionsXProperty, value); }
+            get { return (int)GetValue(VerticalLinesCountProperty); }
+            set { SetValue(VerticalLinesCountProperty, value); }
         }
         /// <summary>
-        /// Gets or sets amount of sections on y-axis.
+        /// Gets or sets amount of horizontal lines.
         /// </summary>
         /// <remarks>
         /// This property has no effect if <see cref="ChartStyle"/> is set to <see cref="ChartStyle.Bars"/>, <see cref="ChartStyle.StackedBars"/>, <see cref="ChartStyle.FullStackedBars"/>, 
         /// <see cref="ChartStyle.SolidPie"/> or <see cref="ChartStyle.SlicedPie"/> or <see cref="ChartStyle.Doughnut"/>
         /// </remarks>
-        [Category("ChartMeasures"), Description("Gets or sets amount of sections on y-axis")]
-        public int SectionsY
+        [Category("ChartMeasures"), Description("Gets or sets amount of horizontal lines")]
+        public int HorizontalLinesCount
         {
-            get { return (int)GetValue(SectionsYProperty); }
-            set { SetValue(SectionsYProperty, value); }
+            get { return (int)GetValue(HorizontalLinesCountProperty); }
+            set { SetValue(HorizontalLinesCountProperty, value); }
         }
         /// <summary>
         /// Gets or sets format for numeric values drawn next to x- and/or y- axes.
@@ -2589,50 +2589,50 @@ namespace ag.WPF.Chart
             return !(d is Chart) ? value : (double)value < 0 || (double)value > 1 ? 1 : value;
         }
 
-        private static void OnSectionsYChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
+        private static void OnHorizontalLinesCountChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
             if (!(sender is Chart ch)) return;
-            ch.OnSectionsYChanged((int)e.OldValue, (int)e.NewValue);
+            ch.OnHorizontalLinesCountChanged((int)e.OldValue, (int)e.NewValue);
         }
         /// <summary>
-        /// Invoked just before the <see cref="SectionsYChanged"/> event is raised on Chart
+        /// Invoked just before the <see cref="HorizontalLinesCountChanged"/> event is raised on Chart
         /// </summary>
         /// <param name="oldValue">Old y-axis stops count</param>
         /// <param name="newValue">New y-axis stops count</param>
-        protected virtual void OnSectionsYChanged(int oldValue, int newValue)
+        protected virtual void OnHorizontalLinesCountChanged(int oldValue, int newValue)
         {
             var e = new RoutedPropertyChangedEventArgs<int>(oldValue, newValue)
             {
-                RoutedEvent = SectionsYChangedEvent
+                RoutedEvent = HorizontalLinesCountChangedEvent
             };
             RaiseEvent(e);
         }
 
-        private static object CoerceSectionsY(DependencyObject d, object value)
+        private static object CoerceHorizontalLinesCount(DependencyObject d, object value)
         {
             return !(d is Chart) ? value : (int)value <= 0 ? 10 : value;
         }
 
-        private static void OnSectionsXChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
+        private static void OnVerticalLinesCountChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
             if (!(sender is Chart ch)) return;
-            ch.OnSectionsXChanged((int)e.OldValue, (int)e.NewValue);
+            ch.OnVerticalLinesCountChanged((int)e.OldValue, (int)e.NewValue);
         }
         /// <summary>
-        /// Invoked just before the <see cref="SectionsXChanged"/> event is raised on Chart
+        /// Invoked just before the <see cref="VerticalLinesCountChanged"/> event is raised on Chart
         /// </summary>
         /// <param name="oldValue">Old x-axis stops count</param>
         /// <param name="newValue">New x-axis stops count</param>
-        protected virtual void OnSectionsXChanged(int oldValue, int newValue)
+        protected virtual void OnVerticalLinesCountChanged(int oldValue, int newValue)
         {
             var e = new RoutedPropertyChangedEventArgs<int>(oldValue, newValue)
             {
-                RoutedEvent = SectionsXChangedEvent
+                RoutedEvent = VerticalLinesCountChangedEvent
             };
             RaiseEvent(e);
         }
 
-        private static object CoerceSectionsX(DependencyObject d, object value)
+        private static object CoerceVerticalLinesCount(DependencyObject d, object value)
         {
             return !(d is Chart) ? value : (int)value <= 0 ? 10 : value;
         }
@@ -3159,31 +3159,31 @@ namespace ag.WPF.Chart
             RoutingStrategy.Bubble, typeof(RoutedPropertyChangedEventHandler<double>), typeof(Chart));
 
         /// <summary>
-        /// Occurs when the <see cref="SectionsY"/> property has been changed in some way
+        /// Occurs when the <see cref="HorizontalLinesCount"/> property has been changed in some way
         /// </summary>
-        public event RoutedPropertyChangedEventHandler<int> SectionsYChanged
+        public event RoutedPropertyChangedEventHandler<int> HorizontalLinesCountChanged
         {
-            add { AddHandler(SectionsYChangedEvent, value); }
-            remove { RemoveHandler(SectionsYChangedEvent, value); }
+            add { AddHandler(HorizontalLinesCountChangedEvent, value); }
+            remove { RemoveHandler(HorizontalLinesCountChangedEvent, value); }
         }
         /// <summary>
-        /// Identifies the <see cref="SectionsYChanged"/> routed event
+        /// Identifies the <see cref="HorizontalLinesCountChanged"/> routed event
         /// </summary>
-        public static readonly RoutedEvent SectionsYChangedEvent = EventManager.RegisterRoutedEvent("SectionsYChanged",
+        public static readonly RoutedEvent HorizontalLinesCountChangedEvent = EventManager.RegisterRoutedEvent("HorizontalLinesCountChanged",
             RoutingStrategy.Bubble, typeof(RoutedPropertyChangedEventHandler<int>), typeof(Chart));
 
         /// <summary>
-        /// Occurs when the <see cref="SectionsX"/> property has been changed in some way
+        /// Occurs when the <see cref="VerticalLinesCount"/> property has been changed in some way
         /// </summary>
-        public event RoutedPropertyChangedEventHandler<int> SectionsXChanged
+        public event RoutedPropertyChangedEventHandler<int> VerticalLinesCountChanged
         {
-            add { AddHandler(SectionsXChangedEvent, value); }
-            remove { RemoveHandler(SectionsXChangedEvent, value); }
+            add { AddHandler(VerticalLinesCountChangedEvent, value); }
+            remove { RemoveHandler(VerticalLinesCountChangedEvent, value); }
         }
         /// <summary>
-        /// Identifies the <see cref="SectionsXChanged"/> routed event
+        /// Identifies the <see cref="VerticalLinesCountChanged"/> routed event
         /// </summary>
-        public static readonly RoutedEvent SectionsXChangedEvent = EventManager.RegisterRoutedEvent("SectionsXChanged",
+        public static readonly RoutedEvent VerticalLinesCountChangedEvent = EventManager.RegisterRoutedEvent("VerticalLinesCountChanged",
             RoutingStrategy.Bubble, typeof(RoutedPropertyChangedEventHandler<int>), typeof(Chart));
 
         /// <summary>
