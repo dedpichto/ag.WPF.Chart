@@ -139,6 +139,7 @@
                                         <Binding Path="MaxY" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                         <Binding Path="ActualHeight" ElementName="PART_Canvas"/>
                                         <Binding Path="HorizontalLinesCount" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                        <Binding Path="CustomXAxisValues" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                     </MultiBinding>
                                 </Border.Width>
                             </Border>

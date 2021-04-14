@@ -3873,7 +3873,8 @@ namespace ag.WPF.Chart
             var width = 28.0;
 
             var seriesArray = seriesEnumerable.ToArray();
-            var customValues = values[8] is IEnumerable<string> customEnumerable ? customEnumerable.ToArray() : new string[] { };
+            var customValuesY = values[8] is IEnumerable<string> customEnumerableY ? customEnumerableY.ToArray() : new string[] { };
+            var customValuesX = values[13] is IEnumerable<string> customEnumerableX ? customEnumerableX.ToArray() : new string[] { };
 
             if (chartStyle.In(ChartStyle.Radar, ChartStyle.RadarWithMarkers, ChartStyle.RadarArea))
                 return 0.0;
@@ -3976,13 +3977,24 @@ namespace ag.WPF.Chart
                     else
                         format += $"{culture.NumberFormat.NumberDecimalSeparator}{new string('0', fractions)}";
                 }
-                maxString = customValues.Any()
-                    ? customValues.FirstOrDefault(c => c.Length == customValues.Max(v => v.Length))
+                maxString = customValuesY.Any()
+                    ? customValuesY.FirstOrDefault(c => c.Length == customValuesY.Max(v => v.Length))
                     : max.ToString(culture).Length >= min.ToString(culture).Length ? max.ToString(format, culture) : min.ToString(format, culture);
             }
             else
             {
-                maxString = maxForBars.ToString(format, culture);
+                if (customValuesX.Any())
+                {
+                    var cv = customValuesX.FirstOrDefault(c => c.Length == customValuesX.Max(v => v.Length));
+                    if (cv.Length > maxForBars.ToString(format, culture).Length)
+                        maxString = cv;
+                    else
+                        maxString = maxForBars.ToString(format, culture);
+                }
+                else
+                {
+                    maxString = maxForBars.ToString(format, culture);
+                }
             }
 
             var fmt = new FormattedText(maxString, culture, FlowDirection.LeftToRight,
@@ -4631,7 +4643,7 @@ namespace ag.WPF.Chart
                                             ? boundOffset + i * xStep - fmt.Width
                                             : boundOffset > 0
                                                 ? boundOffset + i * xStep - fmt.Width
-                                                : boundOffset + i * xStep+fmt.Height
+                                                : boundOffset + i * xStep + fmt.Height
                                     : drawBetween
                                         ? boundOffset + indexStep * xStep + xStep / 2
                                         : boundOffset + indexStep * xStep;
