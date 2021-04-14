@@ -4578,7 +4578,7 @@ namespace ag.WPF.Chart
                             else
                             {
                                 xStep = width / linesCount;
-                                limit = linesCount + 1;
+                                limit = drawBetween ? linesCount : linesCount + 1;
                             }
                         }
                         else
@@ -4699,7 +4699,7 @@ namespace ag.WPF.Chart
                         else
                         {
                             xStep = width / linesCount;
-                            limit = linesCount + 1;
+                            limit = drawBetween ? linesCount : linesCount + 1;
                         }
                         for (int i = 0, j = limit - 1; i < limit; i++, j--)
                         {
