@@ -206,10 +206,10 @@ namespace ag.WPF.Chart
             {
                 (series.Values.ToList(), series.Index)
             };
-            var maxCount = rawValues.Max(rw => rw.Item1.Count);
-            foreach (var rw in rawValues.Where(rv => rv.Item1.Count < maxCount))
+            var maxCount = rawValues.Max(rw => rw.Values.Count);
+            foreach (var rw in rawValues.Where(rv => rv.Values.Count < maxCount))
             {
-                var diff = maxCount - rw.Item1.Count;
+                var diff = maxCount - rw.Values.Count;
                 for (var i = 0; i < diff; i++)
                 {
                     if (series is HighLowCloseSeries)
@@ -1510,11 +1510,17 @@ namespace ag.WPF.Chart
                 case ChartStyle.StackedLinesWithMarkers:
                 case ChartStyle.SmoothStackedLines:
                 case ChartStyle.SmoothStackedLinesWithMarkers:
-                case ChartStyle.StackedArea:
                     {
                         var units = Utils.GetUnitsForLines(seriesArray, chartStyle, dir, width, height, boundOffset, linesCountY, fmt.Height, autoAdjust, maxYConv);
                         maxX = seriesArray.Max(s => s.Values.Count);
                         gm = drawStackedLine(width, height, maxX, units, chartStyle, dir, seriesArray, index, rawValues, offsetBoundary, boundOffset, shapeStyle);
+                        break;
+                    }
+                case ChartStyle.StackedArea:
+                    {
+                        var units = Utils.GetUnitsForLines(seriesArray, chartStyle, dir, width, height, boundOffset, linesCountY, fmt.Height, autoAdjust, maxYConv);
+                        maxX = seriesArray.Max(s => s.Values.Count);
+                        gm = drawStackedArea(width, height, maxX, units, dir, seriesArray, index, rawValues);
                         break;
                     }
                 case ChartStyle.FullStackedLines:
@@ -2610,6 +2616,101 @@ namespace ag.WPF.Chart
                 var poly = new PolyLineSegment(currentSeries.RealPoints, true);
                 gm.Figures.Add(new PathFigure(start, new[] { poly }, false));
             }
+            return gm;
+        }
+
+        private PathGeometry drawStackedArea(double width, double height, double maxX, double units, Directions dir,
+           ISeries[] series, int index, List<(List<IChartValue> Values, int Index)> tuples)
+        {
+            var tp = tuples.FirstOrDefault(t => t.Index == index);
+            if (tp == default) return null;
+            var values = tp.Values;
+            double stepX;
+            double centerX, centerY;
+            var gm = new PathGeometry();
+            var currentSeries = series.FirstOrDefault(s => s.Index == index);
+            if (currentSeries == null) return null;
+
+            switch (dir)
+            {
+                case Directions.NorthEast:
+                    centerX = Utils.AXIS_THICKNESS;
+                    centerY = height - Utils.AXIS_THICKNESS;
+                    stepX = (width - 2 * Utils.AXIS_THICKNESS) / (maxX - 1);
+                    //stepY = (height - 2 * Utils.AXIS_THICKNESS) / units;
+                    break;
+                case Directions.NorthEastNorthWest:
+                    centerX = width / 2;
+                    centerY = height - Utils.AXIS_THICKNESS;
+                    stepX = (width - 2 * Utils.AXIS_THICKNESS) / 2 / (maxX - 1);
+                    //stepY = (height - 2 * Utils.AXIS_THICKNESS) / units;
+                    break;
+                case Directions.NorthEastSouthEast:
+                    centerX = Utils.AXIS_THICKNESS;
+                    centerY = height / 2;
+                    stepX = (width - 2 * Utils.AXIS_THICKNESS) / (maxX - 1);
+                    //stepY = (height - 2 * Utils.AXIS_THICKNESS) / 2 / units;
+                    break;
+                case Directions.SouthEast:
+                    centerX = Utils.AXIS_THICKNESS;
+                    centerY = Utils.AXIS_THICKNESS;
+                    stepX = (width - 2 * Utils.AXIS_THICKNESS) / (maxX - 1);
+                    //stepY = (height - 2 * Utils.AXIS_THICKNESS) / units;
+                    break;
+                case Directions.NorthWest:
+                    centerX = width - Utils.AXIS_THICKNESS;
+                    centerY = Utils.AXIS_THICKNESS;
+                    stepX = (width - 2 * Utils.AXIS_THICKNESS) / (maxX - 1);
+                    //stepY = (height - 2 * Utils.AXIS_THICKNESS) / units;
+                    break;
+                default:
+                    return null;
+            }
+
+            var points = new List<Point>();
+            var x = centerX;
+            var y = centerY;
+            if (index > 0)
+            {
+                var prevs = tuples.Where(s => s.Index < index);
+                var sum = prevs.Sum(sr => sr.Values[0].Value.PlainValue);
+                y -= sum * units;
+            }
+            var start = new Point(x, y);
+            for (var i = 0; i < values.Count; i++)
+            {
+                x = centerX + i * stepX;
+                y = centerY - values[i].Value.PlainValue * units;
+                if (index > 0)
+                {
+                    var prevs = tuples.Where(s => s.Index < index);
+                    var sum = prevs.Sum(sr => sr.Values[i].Value.PlainValue);
+                    y -= sum * units;
+                }
+                points.Add(new Point(x, y));
+            }
+
+            if (index == 0)
+            {
+                y = centerY;
+                var end = new Point(x, y);
+
+                points.Add(end);
+            }
+            else
+            {
+                var prevs = tuples.Where(s => s.Index < index).ToList();
+                for (var i = values.Count - 1; i >= 0; i--)
+                {
+                    y = centerY;
+                    var sum = prevs.Sum(sr => sr.Values[i].Value.PlainValue);
+                    y -= sum * units;
+                    points.Add(new Point(x, y));
+                    x -= stepX;
+                }
+            }
+            var polySegment = new PolyLineSegment(points, true);
+            gm.Figures.Add(new PathFigure(start, new[] { polySegment }, true));
             return gm;
         }
 
