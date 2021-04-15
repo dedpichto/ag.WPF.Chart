@@ -64,14 +64,14 @@
                                 <ColumnDefinition Width="Auto"/>
                                 <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
-                            <TextBlock x:Name="TextCaption" Grid.Row="1" Grid.Column="3" 
+                            <TextBlock x:Name="TextTitle" Grid.Row="1" Grid.Column="3" 
                                        Foreground="{TemplateBinding Foreground}"
-                                       Text="{TemplateBinding Caption}" 
-                                       FontFamily="{TemplateBinding CaptionFontFamily}" 
-                                       FontWeight="{TemplateBinding CaptionFontWeight}" 
-                                       FontStyle="{TemplateBinding CaptionFontStyle}" 
-                                       FontSize="{TemplateBinding CaptionFontSize}" 
-                                       FontStretch="{TemplateBinding CaptionFontStretch}"
+                                       Text="{TemplateBinding Title}" 
+                                       FontFamily="{TemplateBinding TitleFontFamily}" 
+                                       FontWeight="{TemplateBinding TitleFontWeight}" 
+                                       FontStyle="{TemplateBinding TitleFontStyle}" 
+                                       FontSize="{TemplateBinding TitleFontSize}" 
+                                       FontStretch="{TemplateBinding TitleFontStretch}"
                                        HorizontalAlignment="Center" 
                                        VerticalAlignment="Center" 
                                        Margin="4,4,4,8"/>
@@ -495,13 +495,13 @@
                         <Trigger Property="ChartStyle" Value="Waterfall">
                             <Setter Property="Visibility" TargetName="PART_PathVertLines" Value="Hidden"/>
                         </Trigger>
-                        <Trigger Property="Caption" Value="">
-                            <Setter Property="Visibility" TargetName="TextCaption" Value="Collapsed"/>
+                        <Trigger Property="Title" Value="">
+                            <Setter Property="Visibility" TargetName="TextTitle" Value="Collapsed"/>
                         </Trigger>
                         <Trigger Property="IsEnabled" Value="false">
                             <Setter Property="Visibility" TargetName="DisabledRect" Value="Visible"/>
                             <!--<Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
-                            <Setter Property="Foreground" TargetName="TextCaption" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
+                            <Setter Property="Foreground" TargetName="TextTitle" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
                             <Setter Property="Foreground" TargetName="TextYAxis" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
                             <Setter Property="Foreground" TargetName="TextXAxis" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>-->
                         </Trigger>

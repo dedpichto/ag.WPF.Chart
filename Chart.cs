@@ -365,265 +365,227 @@ namespace ag.WPF.Chart
         #endregion
 
         #region Dependency properties
+
+        #region Title properties
         /// <summary>
-        /// The identifier of the <see cref="MarkerShape"/> dependency property.
+        /// The identifier of the <see cref="Title"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty MarkerShapeProperty;
+        public static readonly DependencyProperty TitleProperty = DependencyProperty.Register(nameof(Title), typeof(string), typeof(Chart),
+                new FrameworkPropertyMetadata("", OnTitleChanged));
         /// <summary>
-        /// The identifier of the <see cref="VerticalLinesCount"/> dependency property.
+        /// The identifier of the <see cref="TitleFontFamily"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty VerticalLinesCountProperty;
+        public static readonly DependencyProperty TitleFontFamilyProperty = DependencyProperty.Register(nameof(TitleFontFamily), typeof(FontFamily), typeof(Chart),
+                new FrameworkPropertyMetadata(SystemFonts.CaptionFontFamily, OnTitleFontFamilyChanged));
         /// <summary>
-        /// The identifier of the <see cref="HorizontalLinesCount"/> dependency property.
+        /// The identifier of the <see cref="TitleFontWeight"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty HorizontalLinesCountProperty;
+        public static readonly DependencyProperty TitleFontWeightProperty = DependencyProperty.Register(nameof(TitleFontWeight), typeof(FontWeight), typeof(Chart),
+                new FrameworkPropertyMetadata(SystemFonts.CaptionFontWeight, OnTitleFontWeightChanged));
         /// <summary>
-        /// The identifier of the <see cref="AxesFontFamily"/> dependency property.
+        /// The identifier of the <see cref="TitleFontStyle"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty AxesFontFamilyProperty;
+        public static readonly DependencyProperty TitleFontStyleProperty = DependencyProperty.Register(nameof(TitleFontStyle), typeof(FontStyle), typeof(Chart),
+                new FrameworkPropertyMetadata(SystemFonts.CaptionFontStyle, OnTitleFontStyleChanged));
         /// <summary>
-        /// The identifier of the <see cref="AxesFontWeight"/> dependency property.
+        /// The identifier of the <see cref="TitleFontSize"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty AxesFontWeightProperty;
+        public static readonly DependencyProperty TitleFontSizeProperty = DependencyProperty.Register(nameof(TitleFontSize), typeof(double), typeof(Chart),
+                new FrameworkPropertyMetadata(SystemFonts.CaptionFontSize, OnTitleFontSizeChanged));
         /// <summary>
-        /// The identifier of the <see cref="AxesFontSize"/> dependency property.
+        /// The identifier of the <see cref="TitleFontStretch"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty AxesFontSizeProperty;
-        /// <summary>
-        /// The identifier of the <see cref="AxesFontStyle"/> dependency property.
-        /// </summary>
-        public static readonly DependencyProperty AxesFontStyleProperty;
-        /// <summary>
-        /// The identifier of the <see cref="AxesFontStretch"/> dependency property.
-        /// </summary>
-        public static readonly DependencyProperty AxesFontStretchProperty;
-        /// <summary>
-        /// The identifier of the <see cref="Caption"/> dependency property.
-        /// </summary>
-        public static readonly DependencyProperty CaptionProperty;
-        /// <summary>
-        /// The identifier of the <see cref="CaptionFontFamily"/> dependency property.
-        /// </summary>
-        public static readonly DependencyProperty CaptionFontFamilyProperty;
-        /// <summary>
-        /// The identifier of the <see cref="CaptionFontWeight"/> dependency property.
-        /// </summary>
-        public static readonly DependencyProperty CaptionFontWeightProperty;
-        /// <summary>
-        /// The identifier of the <see cref="CaptionFontStyle"/> dependency property.
-        /// </summary>
-        public static readonly DependencyProperty CaptionFontStyleProperty;
-        /// <summary>
-        /// The identifier of the <see cref="CaptionFontSize"/> dependency property.
-        /// </summary>
-        public static readonly DependencyProperty CaptionFontSizeProperty;
-        /// <summary>
-        /// The identifier of the <see cref="CaptionFontStretch"/> dependency property.
-        /// </summary>
-        public static readonly DependencyProperty CaptionFontStretchProperty;
+        public static readonly DependencyProperty TitleFontStretchProperty = DependencyProperty.Register(nameof(TitleFontStretch), typeof(FontStretch), typeof(Chart),
+                new FrameworkPropertyMetadata(FontStretches.Normal, OnTitleFontStretchChanged));
+
+        #endregion
+
+        #region Legend properties
         /// <summary>
         /// The identifier of the <see cref="LegendFontFamily"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty LegendFontFamilyProperty;
+        public static readonly DependencyProperty LegendFontFamilyProperty = DependencyProperty.Register(nameof(LegendFontFamily), typeof(FontFamily), typeof(Chart),
+                new FrameworkPropertyMetadata(SystemFonts.StatusFontFamily, OnLegendFontFamilyChanged));
         /// <summary>
         /// The identifier of the <see cref="LegendFontWeight"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty LegendFontWeightProperty;
+        public static readonly DependencyProperty LegendFontWeightProperty = DependencyProperty.Register(nameof(LegendFontWeight), typeof(FontWeight), typeof(Chart),
+                new FrameworkPropertyMetadata(SystemFonts.StatusFontWeight, OnLegendFontWeightChanged));
         /// <summary>
         /// The identifier of the <see cref="LegendFontStyle"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty LegendFontStyleProperty;
+        public static readonly DependencyProperty LegendFontStyleProperty = DependencyProperty.Register(nameof(LegendFontStyle), typeof(FontStyle), typeof(Chart),
+                new FrameworkPropertyMetadata(SystemFonts.StatusFontStyle, OnLegendFontStyleChanged));
         /// <summary>
         /// The identifier of the <see cref="LegendFontSize"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty LegendFontSizeProperty;
-        /// <summary>
-        /// The identifier of the <see cref="XAxisText"/> dependency property.
-        /// </summary>
-        public static readonly DependencyProperty XAxisTextProperty;
-        /// <summary>
-        /// The identifier of the <see cref="YAxisText"/> dependency property.
-        /// </summary>
-        public static readonly DependencyProperty YAxisTextProperty;
+        public static readonly DependencyProperty LegendFontSizeProperty = DependencyProperty.Register(nameof(LegendFontSize), typeof(double), typeof(Chart),
+                new FrameworkPropertyMetadata(SystemFonts.StatusFontSize, OnLegendFontSizeChanged));
         /// <summary>
         /// The identifier of the <see cref="LegendAlignment"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty LegendAlignmentProperty;
-        /// <summary>
-        /// The identifier of the <see cref="ShowLegend"/> dependency property.
-        /// </summary>
-        public static readonly DependencyProperty ShowLegendProperty;
-        /// <summary>
-        /// The identifier of the <see cref="ShowValuesOnBarsAndColumns"/> dependency property.
-        /// </summary>
-        public static readonly DependencyProperty ShowValuesOnBarsAndColumnsProperty;
-        /// <summary>
-        /// The identifier of the <see cref="ChartStyle"/> dependency property.
-        /// </summary>
-        public static readonly DependencyProperty ChartStyleProperty;
-        /// <summary>
-        /// The identifier of the <see cref="AxesValuesVisibility"/> dependency property.
-        /// </summary>
-        public static readonly DependencyProperty AxesValuesVisibilityProperty;
-        /// <summary>
-        /// The identifier of the <see cref="AxesLinesVisibility"/> dependency property.
-        /// </summary>
-        public static readonly DependencyProperty AxesLinesVisibilityProperty;
-        /// <summary>
-        /// The identifier of the <see cref="SecondaryLinesVisibility"/> dependency property.
-        /// </summary>
-        public static readonly DependencyProperty SecondaryLinesVisibilityProperty;
-        /// <summary>
-        /// The identifier of the <see cref="AxesValuesFormat"/> dependency property.
-        /// </summary>
-        public static readonly DependencyProperty AxesValuesFormatProperty;
-        /// <summary>
-        /// The identifier of the <see cref="CustomXAxisValues"/> dependency property.
-        /// </summary>
-        public static readonly DependencyProperty CustomXAxisValuesProperty;
-        /// <summary>
-        /// The identifier of the <see cref="CustomYAxisValues"/> dependency property.
-        /// </summary>
-        public static readonly DependencyProperty CustomYAxisValuesProperty;
-        /// <summary>
-        /// The identifier of the <see cref="ChartOpacity"/> dependency property.
-        /// </summary>
-        public static readonly DependencyProperty ChartOpacityProperty;
-        /// <summary>
-        /// The identifier of the <see cref="MaxX"/> dependency property.
-        /// </summary>
-        public static readonly DependencyProperty MaxXProperty;
-        /// <summary>
-        /// The identifier of the <see cref="MaxY"/> dependency property.
-        /// </summary>
-        public static readonly DependencyProperty MaxYProperty;
-        /// <summary>
-        /// The identifier of the <see cref="AutoAdjustment"/> dependency property.
-        /// </summary>
-        public static readonly DependencyProperty AutoAdjustmentProperty;
+        public static readonly DependencyProperty LegendAlignmentProperty = DependencyProperty.Register(nameof(LegendAlignment), typeof(LegendAlignment), typeof(Chart),
+                new FrameworkPropertyMetadata(LegendAlignment.Bottom, OnLegendAlignmentChanged));
         /// <summary>
         /// The identifier of the <see cref="LegendSize"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty LegendSizeProperty;
+        public static readonly DependencyProperty LegendSizeProperty = DependencyProperty.Register(nameof(LegendSize), typeof(LegendSize), typeof(Chart),
+                new FrameworkPropertyMetadata(LegendSize.ExtraSmall, OnLegendSizeChanged));
         /// <summary>
         /// The identifier of the <see cref="LegendShape"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty LegendShapeProperty;
+        public static readonly DependencyProperty LegendShapeProperty = DependencyProperty.Register(nameof(LegendShape), typeof(ShapeStyle), typeof(Chart),
+                new FrameworkPropertyMetadata(ShapeStyle.Rectangle, OnLegendShapeChanged));
+        /// <summary>
+        /// The identifier of the <see cref="ShowLegend"/> dependency property.
+        /// </summary>
+        public static readonly DependencyProperty ShowLegendProperty = DependencyProperty.Register(nameof(ShowLegend), typeof(bool), typeof(Chart),
+                new FrameworkPropertyMetadata(true, OnShowLegendChanged));
+
+        #endregion
+
+        #region Axes properties
+        /// <summary>
+        /// The identifier of the <see cref="AxesFontFamily"/> dependency property.
+        /// </summary>
+        public static readonly DependencyProperty AxesFontFamilyProperty = DependencyProperty.Register(nameof(AxesFontFamily), typeof(FontFamily), typeof(Chart),
+                new FrameworkPropertyMetadata(SystemFonts.StatusFontFamily, OnAxesFontFamilyChanged));
+        /// <summary>
+        /// The identifier of the <see cref="AxesFontWeight"/> dependency property.
+        /// </summary>
+        public static readonly DependencyProperty AxesFontWeightProperty = DependencyProperty.Register(nameof(AxesFontWeight), typeof(FontWeight), typeof(Chart),
+                new FrameworkPropertyMetadata(SystemFonts.StatusFontWeight, OnAxesFontWeightChanged));
+        /// <summary>
+        /// The identifier of the <see cref="AxesFontSize"/> dependency property.
+        /// </summary>
+        public static readonly DependencyProperty AxesFontSizeProperty = DependencyProperty.Register(nameof(AxesFontSize), typeof(double), typeof(Chart),
+                new FrameworkPropertyMetadata(SystemFonts.StatusFontSize, OnAxesFontSizeChanged));
+        /// <summary>
+        /// The identifier of the <see cref="AxesFontStyle"/> dependency property.
+        /// </summary>
+        public static readonly DependencyProperty AxesFontStyleProperty = DependencyProperty.Register(nameof(AxesFontStyle), typeof(FontStyle), typeof(Chart),
+                new FrameworkPropertyMetadata(SystemFonts.StatusFontStyle, OnAxesFontStyleChanged));
+        /// <summary>
+        /// The identifier of the <see cref="AxesFontStretch"/> dependency property.
+        /// </summary>
+        public static readonly DependencyProperty AxesFontStretchProperty = DependencyProperty.Register(nameof(AxesFontStretch), typeof(FontStretch), typeof(Chart),
+                new FrameworkPropertyMetadata(FontStretches.Normal, OnAxesFontStretchChanged));
+        /// <summary>
+        /// The identifier of the <see cref="XAxisText"/> dependency property.
+        /// </summary>
+        public static readonly DependencyProperty XAxisTextProperty = DependencyProperty.Register(nameof(XAxisText), typeof(string), typeof(Chart),
+                new FrameworkPropertyMetadata("x-Axis", OnXAxisTextChanged));
+        /// <summary>
+        /// The identifier of the <see cref="YAxisText"/> dependency property.
+        /// </summary>
+        public static readonly DependencyProperty YAxisTextProperty = DependencyProperty.Register(nameof(YAxisText), typeof(string), typeof(Chart),
+                new FrameworkPropertyMetadata("y-Axis", OnYAxisTextChanged));
+        /// <summary>
+        /// The identifier of the <see cref="AxesValuesVisibility"/> dependency property.
+        /// </summary>
+        public static readonly DependencyProperty AxesValuesVisibilityProperty = DependencyProperty.Register(nameof(AxesValuesVisibility), typeof(AxesVisibility), typeof(Chart),
+                new FrameworkPropertyMetadata(AxesVisibility.Both, OnAxesValuesVisibilityChanged));
+        /// <summary>
+        /// The identifier of the <see cref="AxesLinesVisibility"/> dependency property.
+        /// </summary>
+        public static readonly DependencyProperty AxesLinesVisibilityProperty = DependencyProperty.Register(nameof(AxesLinesVisibility), typeof(AxesVisibility), typeof(Chart),
+                new FrameworkPropertyMetadata(AxesVisibility.Both, OnAxesLinesVisibilityChanged));
+        /// <summary>
+        /// The identifier of the <see cref="SecondaryLinesVisibility"/> dependency property.
+        /// </summary>
+        public static readonly DependencyProperty SecondaryLinesVisibilityProperty = DependencyProperty.Register(nameof(SecondaryLinesVisibility), typeof(AxesVisibility), typeof(Chart),
+                new FrameworkPropertyMetadata(AxesVisibility.Both, OnSecondaryLinesVisibilityChanged));
+        /// <summary>
+        /// The identifier of the <see cref="AxesValuesFormat"/> dependency property.
+        /// </summary>
+        public static readonly DependencyProperty AxesValuesFormatProperty = DependencyProperty.Register(nameof(AxesValuesFormat), typeof(string), typeof(Chart),
+                new FrameworkPropertyMetadata("0", OnAxesValuesFormatChanged));
+        /// <summary>
+        /// The identifier of the <see cref="CustomXAxisValues"/> dependency property.
+        /// </summary>
+        public static readonly DependencyProperty CustomXAxisValuesProperty = DependencyProperty.Register(nameof(CustomXAxisValues), typeof(IEnumerable<string>), typeof(Chart),
+                new FrameworkPropertyMetadata(null, OnCustomXAxisValuesChanged));
+        /// <summary>
+        /// The identifier of the <see cref="CustomYAxisValues"/> dependency property.
+        /// </summary>
+        public static readonly DependencyProperty CustomYAxisValuesProperty = DependencyProperty.Register(nameof(CustomYAxisValues), typeof(IEnumerable<string>), typeof(Chart),
+                new FrameworkPropertyMetadata(null, OnCustomYAxisValuesChanged));
+
+        #endregion
+
+        #region Misc properties
+        /// <summary>
+        /// The identifier of the <see cref="MarkerShape"/> dependency property.
+        /// </summary>
+        public static readonly DependencyProperty MarkerShapeProperty = DependencyProperty.Register(nameof(MarkerShape), typeof(ShapeStyle), typeof(Chart),
+                new FrameworkPropertyMetadata(ShapeStyle.Rectangle, OnMarkerShapeCahnged));
+        /// <summary>
+        /// The identifier of the <see cref="VerticalLinesCount"/> dependency property.
+        /// </summary>
+        public static readonly DependencyProperty VerticalLinesCountProperty = DependencyProperty.Register(nameof(VerticalLinesCount), typeof(int), typeof(Chart),
+                new FrameworkPropertyMetadata(10, OnVerticalLinesCountChanged, CoerceVerticalLinesCount));
+        /// <summary>
+        /// The identifier of the <see cref="HorizontalLinesCount"/> dependency property.
+        /// </summary>
+        public static readonly DependencyProperty HorizontalLinesCountProperty = DependencyProperty.Register(nameof(HorizontalLinesCount), typeof(int), typeof(Chart),
+                new FrameworkPropertyMetadata(10, OnHorizontalLinesCountChanged, CoerceHorizontalLinesCount));
+        /// <summary>
+        /// The identifier of the <see cref="ShowValuesOnBarsAndColumns"/> dependency property.
+        /// </summary>
+        public static readonly DependencyProperty ShowValuesOnBarsAndColumnsProperty = DependencyProperty.Register(nameof(ShowValuesOnBarsAndColumns), typeof(bool), typeof(Chart),
+                new FrameworkPropertyMetadata(true, OnShowValuesOnBarsAndColumnsChanged));
+        /// <summary>
+        /// The identifier of the <see cref="ChartStyle"/> dependency property.
+        /// </summary>
+        public static readonly DependencyProperty ChartStyleProperty = DependencyProperty.Register(nameof(ChartStyle), typeof(ChartStyle), typeof(Chart),
+                new FrameworkPropertyMetadata(ChartStyle.Lines, OnChartStyleChanged));
+        /// <summary>
+        /// The identifier of the <see cref="ChartOpacity"/> dependency property.
+        /// </summary>
+        public static readonly DependencyProperty ChartOpacityProperty = DependencyProperty.Register(nameof(ChartOpacity), typeof(double), typeof(Chart),
+                new FrameworkPropertyMetadata(1.0, OnChartOpacityChanged, CoerceChartOpacity));
+        /// <summary>
+        /// The identifier of the <see cref="MaxX"/> dependency property.
+        /// </summary>
+        public static readonly DependencyProperty MaxXProperty = DependencyProperty.Register(nameof(MaxX), typeof(double), typeof(Chart),
+                new FrameworkPropertyMetadata(100.0, OnMaxXChanged, CoerceMaxX));
+        /// <summary>
+        /// The identifier of the <see cref="MaxY"/> dependency property.
+        /// </summary>
+        public static readonly DependencyProperty MaxYProperty = DependencyProperty.Register(nameof(MaxY), typeof(double), typeof(Chart),
+                new FrameworkPropertyMetadata(100.0, OnMaxYChanged, CoerceMaxY));
+        /// <summary>
+        /// The identifier of the <see cref="AutoAdjustment"/> dependency property.
+        /// </summary>
+        public static readonly DependencyProperty AutoAdjustmentProperty = DependencyProperty.Register(nameof(AutoAdjustment), typeof(AutoAdjustmentMode), typeof(Chart),
+                new FrameworkPropertyMetadata(AutoAdjustmentMode.Both, OnAutoAdjustmentChanged));
         /// <summary>
         /// The identifier of the <see cref="ShowTicks"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty ShowTicksProperty;
+        public static readonly DependencyProperty ShowTicksProperty = DependencyProperty.Register(nameof(ShowTicks),
+                typeof(bool), typeof(Chart), new FrameworkPropertyMetadata(true, OnShowTicksChanged));
         /// <summary>
         /// The identifier of the <see cref="ChartBoundary"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty ChartBoundaryProperty;
+        public static readonly DependencyProperty ChartBoundaryProperty = DependencyProperty.Register(nameof(ChartBoundary), typeof(ChartBoundary), typeof(Chart),
+                new FrameworkPropertyMetadata(ChartBoundary.WithOffset, OnChartBoundaryChanged));
         /// <summary>
         /// The identifier of the <see cref="CustomWaterfallLegendsProperty"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty CustomWaterfallLegendsProperty;
+        public static readonly DependencyProperty CustomWaterfallLegendsProperty = DependencyProperty.RegisterAttached(nameof(CustomWaterfallLegends), typeof(IEnumerable<string>), typeof(Chart), new FrameworkPropertyMetadata(new[] { "Increase", "Decrease" }));
         /// <summary>
         /// The identifier of the <see cref="ItemsSource"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty ItemsSourceProperty;
+        public static readonly DependencyProperty ItemsSourceProperty = DependencyProperty.Register(nameof(ItemsSource), typeof(IEnumerable<ISeries>), typeof(Chart), new FrameworkPropertyMetadata(null, OnItemsSourceChanged));
+
+        #endregion
+
         #endregion
 
         #region ctor
         static Chart()
         {
             DefaultStyleKeyProperty.OverrideMetadata(typeof(Chart), new FrameworkPropertyMetadata(typeof(Chart)));
-
-            VerticalLinesCountProperty = DependencyProperty.Register(nameof(VerticalLinesCount), typeof(int), typeof(Chart),
-                new FrameworkPropertyMetadata(10, OnVerticalLinesCountChanged, CoerceVerticalLinesCount));
-            HorizontalLinesCountProperty = DependencyProperty.Register(nameof(HorizontalLinesCount), typeof(int), typeof(Chart),
-                new FrameworkPropertyMetadata(10, OnHorizontalLinesCountChanged, CoerceHorizontalLinesCount));
-            ChartOpacityProperty = DependencyProperty.Register(nameof(ChartOpacity), typeof(double), typeof(Chart),
-                new FrameworkPropertyMetadata(1.0, OnChartOpacityChanged, CoerceChartOpacity));
-            CaptionProperty = DependencyProperty.Register(nameof(Caption), typeof(string), typeof(Chart),
-                new FrameworkPropertyMetadata("", OnCaptionChanged));
-            XAxisTextProperty = DependencyProperty.Register(nameof(XAxisText), typeof(string), typeof(Chart),
-                new FrameworkPropertyMetadata("x-Axis", OnXAxisTextChanged));
-            YAxisTextProperty = DependencyProperty.Register(nameof(YAxisText), typeof(string), typeof(Chart),
-                new FrameworkPropertyMetadata("y-Axis", OnYAxisTextChanged));
-            AxesFontFamilyProperty = DependencyProperty.Register(nameof(AxesFontFamily), typeof(FontFamily), typeof(Chart),
-                new FrameworkPropertyMetadata(SystemFonts.StatusFontFamily, OnAxesFontFamilyChanged));
-            AxesFontWeightProperty = DependencyProperty.Register(nameof(AxesFontWeight), typeof(FontWeight), typeof(Chart),
-                new FrameworkPropertyMetadata(SystemFonts.StatusFontWeight, OnAxesFontWeightChanged));
-            AxesFontSizeProperty = DependencyProperty.Register(nameof(AxesFontSize), typeof(double), typeof(Chart),
-                new FrameworkPropertyMetadata(SystemFonts.StatusFontSize, OnAxesFontSizeChanged));
-            AxesFontStyleProperty = DependencyProperty.Register(nameof(AxesFontStyle), typeof(FontStyle), typeof(Chart),
-                new FrameworkPropertyMetadata(SystemFonts.StatusFontStyle, OnAxesFontStyleChanged));
-            AxesFontStretchProperty = DependencyProperty.Register(nameof(AxesFontStretch), typeof(FontStretch), typeof(Chart),
-                new FrameworkPropertyMetadata(FontStretches.Normal, OnAxesFontStretchChanged));
-            CaptionFontFamilyProperty = DependencyProperty.Register(nameof(CaptionFontFamily), typeof(FontFamily), typeof(Chart),
-                new FrameworkPropertyMetadata(SystemFonts.CaptionFontFamily, OnCaptionFontFamilyChanged));
-            LegendFontFamilyProperty = DependencyProperty.Register(nameof(LegendFontFamily), typeof(FontFamily), typeof(Chart),
-                new FrameworkPropertyMetadata(SystemFonts.StatusFontFamily, OnLegendFontFamilyChanged));
-            CaptionFontWeightProperty = DependencyProperty.Register(nameof(CaptionFontWeight), typeof(FontWeight), typeof(Chart),
-                new FrameworkPropertyMetadata(SystemFonts.CaptionFontWeight, OnCaptionFontWeightChanged));
-            LegendFontWeightProperty = DependencyProperty.Register(nameof(LegendFontWeight), typeof(FontWeight), typeof(Chart),
-                new FrameworkPropertyMetadata(SystemFonts.StatusFontWeight, OnLegendFontWeightChanged));
-            CaptionFontStyleProperty = DependencyProperty.Register(nameof(CaptionFontStyle), typeof(FontStyle), typeof(Chart),
-                new FrameworkPropertyMetadata(SystemFonts.CaptionFontStyle, OnCaptionFontStyleChanged));
-            LegendFontStyleProperty = DependencyProperty.Register(nameof(LegendFontStyle), typeof(FontStyle), typeof(Chart),
-                new FrameworkPropertyMetadata(SystemFonts.StatusFontStyle, OnLegendFontStyleChanged));
-            CaptionFontSizeProperty = DependencyProperty.Register(nameof(CaptionFontSize), typeof(double), typeof(Chart),
-                new FrameworkPropertyMetadata(SystemFonts.CaptionFontSize, OnCaptionFontSizeChanged));
-            CaptionFontStretchProperty = DependencyProperty.Register(nameof(CaptionFontStretch), typeof(FontStretch), typeof(Chart),
-                new FrameworkPropertyMetadata(FontStretches.Normal, OnCaptionFontStretchChanged));
-            LegendFontSizeProperty = DependencyProperty.Register(nameof(LegendFontSize), typeof(double), typeof(Chart),
-                new FrameworkPropertyMetadata(SystemFonts.StatusFontSize, OnLegendFontSizeChanged));
-            LegendAlignmentProperty = DependencyProperty.Register(nameof(LegendAlignment), typeof(LegendAlignment), typeof(Chart),
-                new FrameworkPropertyMetadata(LegendAlignment.Bottom, OnLegendAlignmentChanged));
-            ShowLegendProperty = DependencyProperty.Register(nameof(ShowLegend), typeof(bool), typeof(Chart),
-                new FrameworkPropertyMetadata(true, OnShowLegendChanged));
-            ShowValuesOnBarsAndColumnsProperty = DependencyProperty.Register(nameof(ShowValuesOnBarsAndColumns), typeof(bool), typeof(Chart),
-                new FrameworkPropertyMetadata(true, OnShowValuesOnBarsAndColumnsChanged));
-            ChartStyleProperty = DependencyProperty.Register(nameof(ChartStyle), typeof(ChartStyle), typeof(Chart),
-                new FrameworkPropertyMetadata(ChartStyle.Lines, OnChartStyleChanged));
-            AxesValuesVisibilityProperty = DependencyProperty.Register(nameof(AxesValuesVisibility), typeof(AxesVisibility), typeof(Chart),
-                new FrameworkPropertyMetadata(AxesVisibility.Both, OnAxesValuesVisibilityChanged));
-            AxesLinesVisibilityProperty = DependencyProperty.Register(nameof(AxesLinesVisibility), typeof(AxesVisibility), typeof(Chart),
-                new FrameworkPropertyMetadata(AxesVisibility.Both, OnAxesLinesVisibilityChanged));
-            SecondaryLinesVisibilityProperty = DependencyProperty.Register(nameof(SecondaryLinesVisibility), typeof(AxesVisibility), typeof(Chart),
-                new FrameworkPropertyMetadata(AxesVisibility.Both, OnSecondaryLinesVisibilityChanged));
-            AxesValuesFormatProperty = DependencyProperty.Register(nameof(AxesValuesFormat), typeof(string), typeof(Chart),
-                new FrameworkPropertyMetadata("0", OnAxesValuesFormatChanged));
-            CustomXAxisValuesProperty = DependencyProperty.Register(nameof(CustomXAxisValues), typeof(IEnumerable<string>), typeof(Chart),
-                new FrameworkPropertyMetadata(null, OnCustomXAxisValuesChanged));
-            CustomYAxisValuesProperty = DependencyProperty.Register(nameof(CustomYAxisValues), typeof(IEnumerable<string>), typeof(Chart),
-                new FrameworkPropertyMetadata(null, OnCustomYAxisValuesChanged));
-            MaxXProperty = DependencyProperty.Register(nameof(MaxX), typeof(double), typeof(Chart),
-                new FrameworkPropertyMetadata(100.0, OnMaxXChanged, CoerceMaxX));
-            MaxYProperty = DependencyProperty.Register(nameof(MaxY), typeof(double), typeof(Chart),
-                new FrameworkPropertyMetadata(100.0, OnMaxYChanged, CoerceMaxY));
-            AutoAdjustmentProperty = DependencyProperty.Register(nameof(AutoAdjustment), typeof(AutoAdjustmentMode), typeof(Chart),
-                new FrameworkPropertyMetadata(AutoAdjustmentMode.Both, OnAutoAdjustmentChanged));
-            LegendSizeProperty = DependencyProperty.Register(nameof(LegendSize), typeof(LegendSize), typeof(Chart),
-                new FrameworkPropertyMetadata(LegendSize.ExtraSmall, OnLegendSizeChanged));
-            LegendShapeProperty = DependencyProperty.Register(nameof(LegendShape), typeof(ShapeStyle), typeof(Chart),
-                new FrameworkPropertyMetadata(ShapeStyle.Rectangle, OnLegendShapeChanged));
-            ShowTicksProperty = DependencyProperty.Register(nameof(ShowTicks),
-                typeof(bool), typeof(Chart), new FrameworkPropertyMetadata(true, OnShowTicksChanged));
-            MarkerShapeProperty = DependencyProperty.Register(nameof(MarkerShape), typeof(ShapeStyle), typeof(Chart),
-                new FrameworkPropertyMetadata(ShapeStyle.Rectangle, OnMarkerShapeCahnged));
-            ChartBoundaryProperty = DependencyProperty.Register(nameof(ChartBoundary), typeof(ChartBoundary), typeof(Chart),
-                new FrameworkPropertyMetadata(ChartBoundary.WithOffset, OnChartBoundaryChanged));
-            CustomWaterfallLegendsProperty = DependencyProperty.RegisterAttached(nameof(CustomWaterfallLegends), typeof(IEnumerable<string>), typeof(Chart), new FrameworkPropertyMetadata(new[] { "Increase", "Decrease" }));
-            ItemsSourceProperty = DependencyProperty.Register(nameof(ItemsSource), typeof(IEnumerable<ISeries>), typeof(Chart), new PropertyMetadata(null, (u, e) =>
-                 {
-                     if (u is Chart chart)
-                     {
-                         if (e.OldValue is INotifyCollectionChanged oldValueNotifyCollectionChanged)
-                         {
-                             oldValueNotifyCollectionChanged.CollectionChanged -= chart.ItemsSource_CollectionChanged;
-                         }
-                         if (e.NewValue is INotifyCollectionChanged newValueNotifyCollectionChanged)
-                         {
-                             newValueNotifyCollectionChanged.CollectionChanged += chart.ItemsSource_CollectionChanged;
-                         }
-                         chart.OnItemsSourceChanged((IEnumerable<ISeries>)e.OldValue, (IEnumerable<ISeries>)e.NewValue);
-                     }
-                 }));
         }
         #endregion
 
@@ -1612,49 +1574,49 @@ namespace ag.WPF.Chart
             set { SetValue(LegendAlignmentProperty, value); }
         }
         /// <summary>
-        /// Gets of sets the font size of chart caption.
+        /// Gets of sets the font size of chart Title.
         /// </summary>
-        [Category("ChartCaption"), Description("Gets of sets the font size of chart caption")]
-        public double CaptionFontSize
+        [Category("ChartTitle"), Description("Gets of sets the font size of chart Title")]
+        public double TitleFontSize
         {
-            get { return (double)GetValue(CaptionFontSizeProperty); }
-            set { SetValue(CaptionFontSizeProperty, value); }
+            get { return (double)GetValue(TitleFontSizeProperty); }
+            set { SetValue(TitleFontSizeProperty, value); }
         }
         /// <summary>
-        /// Gets of sets the font style of chart caption.
+        /// Gets of sets the font style of chart Title.
         /// </summary>
-        [Category("ChartCaption"), Description("Gets of sets the font style of chart caption")]
-        public FontStyle CaptionFontStyle
+        [Category("ChartTitle"), Description("Gets of sets the font style of chart Title")]
+        public FontStyle TitleFontStyle
         {
-            get { return (FontStyle)GetValue(CaptionFontStyleProperty); }
-            set { SetValue(CaptionFontStyleProperty, value); }
+            get { return (FontStyle)GetValue(TitleFontStyleProperty); }
+            set { SetValue(TitleFontStyleProperty, value); }
         }
         /// <summary>
-        /// Gets of sets the font weight of chart caption.
+        /// Gets of sets the font weight of chart Title.
         /// </summary>
-        [Category("ChartCaption"), Description("Gets of sets the font weight of chart caption")]
-        public FontWeight CaptionFontWeight
+        [Category("ChartTitle"), Description("Gets of sets the font weight of chart Title")]
+        public FontWeight TitleFontWeight
         {
-            get { return (FontWeight)GetValue(CaptionFontWeightProperty); }
-            set { SetValue(CaptionFontWeightProperty, value); }
+            get { return (FontWeight)GetValue(TitleFontWeightProperty); }
+            set { SetValue(TitleFontWeightProperty, value); }
         }
         /// <summary>
-        /// Gets of sets the font family of chart caption.
+        /// Gets of sets the font family of chart Title.
         /// </summary>
-        [Category("ChartCaption"), Description("Gets of sets the font family of chart caption")]
-        public FontFamily CaptionFontFamily
+        [Category("ChartTitle"), Description("Gets of sets the font family of chart Title")]
+        public FontFamily TitleFontFamily
         {
-            get { return (FontFamily)GetValue(CaptionFontFamilyProperty); }
-            set { SetValue(CaptionFontFamilyProperty, value); }
+            get { return (FontFamily)GetValue(TitleFontFamilyProperty); }
+            set { SetValue(TitleFontFamilyProperty, value); }
         }
         /// <summary>
-        /// Gets of sets the font stretch of chart caption.
+        /// Gets of sets the font stretch of chart Title.
         /// </summary>
-        [Category("ChartCaption"), Description("Gets of sets the font stretch of chart caption")]
-        public FontStretch CaptionFontStretch
+        [Category("ChartTitle"), Description("Gets of sets the font stretch of chart Title")]
+        public FontStretch TitleFontStretch
         {
-            get { return (FontStretch)GetValue(CaptionFontStretchProperty); }
-            set { SetValue(CaptionFontStretchProperty, value); }
+            get { return (FontStretch)GetValue(TitleFontStretchProperty); }
+            set { SetValue(TitleFontStretchProperty, value); }
         }
         /// <summary>
         /// Gets of sets the font family of chart axes.
@@ -1722,13 +1684,13 @@ namespace ag.WPF.Chart
             set { SetValue(XAxisTextProperty, value); }
         }
         /// <summary>
-        /// Gets or sets the chart caption.
+        /// Gets or sets the chart Title.
         /// </summary>
-        [Category("ChartCaption"), Description("Gets or sets the chart caption")]
-        public string Caption
+        [Category("ChartTitle"), Description("Gets or sets the chart Title")]
+        public string Title
         {
-            get { return (string)GetValue(CaptionProperty); }
-            set { SetValue(CaptionProperty, value); }
+            get { return (string)GetValue(TitleProperty); }
+            set { SetValue(TitleProperty, value); }
         }
         /// <summary>
         /// Gets or sets amount of vertical lines.
@@ -1875,7 +1837,19 @@ namespace ag.WPF.Chart
         #endregion
 
         #region Callbacks
-
+        private static void OnItemsSourceChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
+        {
+            if (!(sender is Chart chart)) return;
+            if (e.OldValue is INotifyCollectionChanged oldValueNotifyCollectionChanged)
+            {
+                oldValueNotifyCollectionChanged.CollectionChanged -= chart.ItemsSource_CollectionChanged;
+            }
+            if (e.NewValue is INotifyCollectionChanged newValueNotifyCollectionChanged)
+            {
+                newValueNotifyCollectionChanged.CollectionChanged += chart.ItemsSource_CollectionChanged;
+            }
+            chart.OnItemsSourceChanged((IEnumerable<ISeries>)e.OldValue, (IEnumerable<ISeries>)e.NewValue);
+        }
         /// <summary>
         /// Invoked just before the <see cref="ItemsSourceChangedEvent"/> event is raised on control
         /// </summary>
@@ -2270,59 +2244,59 @@ namespace ag.WPF.Chart
             RaiseEvent(e);
         }
 
-        private static void OnCaptionFontSizeChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
+        private static void OnTitleFontSizeChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
             if (!(sender is Chart ch)) return;
-            ch.OnCaptionFontSizeChanged((double)e.OldValue, (double)e.NewValue);
+            ch.OnTitleFontSizeChanged((double)e.OldValue, (double)e.NewValue);
         }
         /// <summary>
-        /// Invoked just before the <see cref="CaptionFontSizeChangedEvent"/> event is raised on control
+        /// Invoked just before the <see cref="TitleFontSizeChangedEvent"/> event is raised on control
         /// </summary>
         /// <param name="oldValue">Old value</param>
         /// <param name="newValue">New value</param>
-        protected void OnCaptionFontSizeChanged(double oldValue, double newValue)
+        protected void OnTitleFontSizeChanged(double oldValue, double newValue)
         {
             var e = new RoutedPropertyChangedEventArgs<double>(oldValue, newValue)
             {
-                RoutedEvent = CaptionFontSizeChangedEvent
+                RoutedEvent = TitleFontSizeChangedEvent
             };
             RaiseEvent(e);
         }
 
-        private static void OnCaptionFontStyleChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
+        private static void OnTitleFontStyleChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
             if (!(sender is Chart ch)) return;
-            ch.OnCaptionFontStyleChanged((FontStyle)e.OldValue, (FontStyle)e.NewValue);
+            ch.OnTitleFontStyleChanged((FontStyle)e.OldValue, (FontStyle)e.NewValue);
         }
         /// <summary>
-        /// Invoked just before the <see cref="CaptionFontStyleChangedEvent"/> event is raised on control
+        /// Invoked just before the <see cref="TitleFontStyleChangedEvent"/> event is raised on control
         /// </summary>
         /// <param name="oldValue">Old value</param>
         /// <param name="newValue">New value</param>
-        protected void OnCaptionFontStyleChanged(FontStyle oldValue, FontStyle newValue)
+        protected void OnTitleFontStyleChanged(FontStyle oldValue, FontStyle newValue)
         {
             var e = new RoutedPropertyChangedEventArgs<FontStyle>(oldValue, newValue)
             {
-                RoutedEvent = CaptionFontStyleChangedEvent
+                RoutedEvent = TitleFontStyleChangedEvent
             };
             RaiseEvent(e);
         }
 
-        private static void OnCaptionFontWeightChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
+        private static void OnTitleFontWeightChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
             if (!(sender is Chart ch)) return;
-            ch.OnCaptionFontWeightChanged((FontWeight)e.OldValue, (FontWeight)e.NewValue);
+            ch.OnTitleFontWeightChanged((FontWeight)e.OldValue, (FontWeight)e.NewValue);
         }
         /// <summary>
-        /// Invoked just before the <see cref="CaptionFontWeightChangedEvent"/> event is raised on control
+        /// Invoked just before the <see cref="TitleFontWeightChangedEvent"/> event is raised on control
         /// </summary>
         /// <param name="oldValue">Old value</param>
         /// <param name="newValue">New value</param>
-        protected void OnCaptionFontWeightChanged(FontWeight oldValue, FontWeight newValue)
+        protected void OnTitleFontWeightChanged(FontWeight oldValue, FontWeight newValue)
         {
             var e = new RoutedPropertyChangedEventArgs<FontWeight>(oldValue, newValue)
             {
-                RoutedEvent = CaptionFontWeightChangedEvent
+                RoutedEvent = TitleFontWeightChangedEvent
             };
             RaiseEvent(e);
         }
@@ -2346,21 +2320,21 @@ namespace ag.WPF.Chart
             RaiseEvent(e);
         }
 
-        private static void OnCaptionFontFamilyChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
+        private static void OnTitleFontFamilyChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
             if (!(sender is Chart ch)) return;
-            ch.OnCaptionFontFamilyChanged((FontFamily)e.OldValue, (FontFamily)e.NewValue);
+            ch.OnTitleFontFamilyChanged((FontFamily)e.OldValue, (FontFamily)e.NewValue);
         }
         /// <summary>
-        /// Invoked just before the <see cref="CaptionFontFamilyChangedEvent"/> event is raised on control
+        /// Invoked just before the <see cref="TitleFontFamilyChangedEvent"/> event is raised on control
         /// </summary>
         /// <param name="oldValue">Old value</param>
         /// <param name="newValue">New value</param>
-        protected void OnCaptionFontFamilyChanged(FontFamily oldValue, FontFamily newValue)
+        protected void OnTitleFontFamilyChanged(FontFamily oldValue, FontFamily newValue)
         {
             var e = new RoutedPropertyChangedEventArgs<FontFamily>(oldValue, newValue)
             {
-                RoutedEvent = CaptionFontFamilyChangedEvent
+                RoutedEvent = TitleFontFamilyChangedEvent
             };
             RaiseEvent(e);
         }
@@ -2441,21 +2415,21 @@ namespace ag.WPF.Chart
             RaiseEvent(e);
         }
 
-        private static void OnCaptionFontStretchChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
+        private static void OnTitleFontStretchChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
             if (!(sender is Chart ch)) return;
-            ch.OnCaptionFontStretchChanged((FontStretch)e.OldValue, (FontStretch)e.NewValue);
+            ch.OnTitleFontStretchChanged((FontStretch)e.OldValue, (FontStretch)e.NewValue);
         }
         /// <summary>
-        /// Invoked just before the <see cref="CaptionFontStretchChangedEvent"/> event is raised on control
+        /// Invoked just before the <see cref="TitleFontStretchChangedEvent"/> event is raised on control
         /// </summary>
         /// <param name="oldValue">Old value</param>
         /// <param name="newValue">New value</param>
-        protected void OnCaptionFontStretchChanged(FontStretch oldValue, FontStretch newValue)
+        protected void OnTitleFontStretchChanged(FontStretch oldValue, FontStretch newValue)
         {
             var e = new RoutedPropertyChangedEventArgs<FontStretch>(oldValue, newValue)
             {
-                RoutedEvent = CaptionFontStretchChangedEvent
+                RoutedEvent = TitleFontStretchChangedEvent
             };
             RaiseEvent(e);
         }
@@ -2498,21 +2472,21 @@ namespace ag.WPF.Chart
             RaiseEvent(e);
         }
 
-        private static void OnCaptionChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
+        private static void OnTitleChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
             if (!(sender is Chart ch)) return;
-            ch.OnCaptionChanged((string)e.OldValue, (string)e.NewValue);
+            ch.OnTitleChanged((string)e.OldValue, (string)e.NewValue);
         }
         /// <summary>
-        /// Invoked just before the <see cref="CaptionChangedEvent"/> event is raised on control
+        /// Invoked just before the <see cref="TitleChangedEvent"/> event is raised on control
         /// </summary>
         /// <param name="oldValue">Old value</param>
         /// <param name="newValue">New value</param>
-        protected void OnCaptionChanged(string oldValue, string newValue)
+        protected void OnTitleChanged(string oldValue, string newValue)
         {
             var e = new RoutedPropertyChangedEventArgs<string>(oldValue, newValue)
             {
-                RoutedEvent = CaptionChangedEvent
+                RoutedEvent = TitleChangedEvent
             };
             RaiseEvent(e);
         }
@@ -2767,17 +2741,17 @@ namespace ag.WPF.Chart
             RoutingStrategy.Bubble, typeof(RoutedPropertyChangedEventHandler<FontStretch>), typeof(Chart));
 
         /// <summary>
-        /// Occurs when the <see cref="CaptionFontStretch"/> property has been changed in some way
+        /// Occurs when the <see cref="TitleFontStretch"/> property has been changed in some way
         /// </summary>
-        public event RoutedPropertyChangedEventHandler<FontStretch> CaptionFontStretchChanged
+        public event RoutedPropertyChangedEventHandler<FontStretch> TitleFontStretchChanged
         {
-            add { AddHandler(CaptionFontStretchChangedEvent, value); }
-            remove { RemoveHandler(CaptionFontStretchChangedEvent, value); }
+            add { AddHandler(TitleFontStretchChangedEvent, value); }
+            remove { RemoveHandler(TitleFontStretchChangedEvent, value); }
         }
         /// <summary>
-        /// Identifies the <see cref="CaptionFontStretchChanged"/> routed event
+        /// Identifies the <see cref="TitleFontStretchChanged"/> routed event
         /// </summary>
-        public static readonly RoutedEvent CaptionFontStretchChangedEvent = EventManager.RegisterRoutedEvent("CaptionFontStretchChanged",
+        public static readonly RoutedEvent TitleFontStretchChangedEvent = EventManager.RegisterRoutedEvent("TitleFontStretchChanged",
             RoutingStrategy.Bubble, typeof(RoutedPropertyChangedEventHandler<FontStretch>), typeof(Chart));
 
         /// <summary>
@@ -2991,31 +2965,31 @@ namespace ag.WPF.Chart
             RoutingStrategy.Bubble, typeof(RoutedPropertyChangedEventHandler<LegendAlignment>), typeof(Chart));
 
         /// <summary>
-        /// Occurs when the <see cref="CaptionFontSize"/> property has been changed in some way
+        /// Occurs when the <see cref="TitleFontSize"/> property has been changed in some way
         /// </summary>
-        public event RoutedPropertyChangedEventHandler<double> CaptionFontSizeChanged
+        public event RoutedPropertyChangedEventHandler<double> TitleFontSizeChanged
         {
-            add { AddHandler(CaptionFontSizeChangedEvent, value); }
-            remove { RemoveHandler(CaptionFontSizeChangedEvent, value); }
+            add { AddHandler(TitleFontSizeChangedEvent, value); }
+            remove { RemoveHandler(TitleFontSizeChangedEvent, value); }
         }
         /// <summary>
-        /// Identifies the <see cref="CaptionFontSizeChanged"/> routed event
+        /// Identifies the <see cref="TitleFontSizeChanged"/> routed event
         /// </summary>
-        public static readonly RoutedEvent CaptionFontSizeChangedEvent = EventManager.RegisterRoutedEvent("CaptionFontSizeChanged",
+        public static readonly RoutedEvent TitleFontSizeChangedEvent = EventManager.RegisterRoutedEvent("TitleFontSizeChanged",
             RoutingStrategy.Bubble, typeof(RoutedPropertyChangedEventHandler<double>), typeof(Chart));
 
         /// <summary>
-        /// Occurs when the <see cref="CaptionFontStyle"/> property has been changed in some way
+        /// Occurs when the <see cref="TitleFontStyle"/> property has been changed in some way
         /// </summary>
-        public event RoutedPropertyChangedEventHandler<FontStyle> CaptionFontStyleChanged
+        public event RoutedPropertyChangedEventHandler<FontStyle> TitleFontStyleChanged
         {
-            add { AddHandler(CaptionFontStyleChangedEvent, value); }
-            remove { RemoveHandler(CaptionFontStyleChangedEvent, value); }
+            add { AddHandler(TitleFontStyleChangedEvent, value); }
+            remove { RemoveHandler(TitleFontStyleChangedEvent, value); }
         }
         /// <summary>
-        /// Identifies the <see cref="CaptionFontStyleChanged"/> routed event
+        /// Identifies the <see cref="TitleFontStyleChanged"/> routed event
         /// </summary>
-        public static readonly RoutedEvent CaptionFontStyleChangedEvent = EventManager.RegisterRoutedEvent("CaptionFontStyleChanged",
+        public static readonly RoutedEvent TitleFontStyleChangedEvent = EventManager.RegisterRoutedEvent("TitleFontStyleChanged",
             RoutingStrategy.Bubble, typeof(RoutedPropertyChangedEventHandler<FontStyle>), typeof(Chart));
 
         /// <summary>
@@ -3033,31 +3007,31 @@ namespace ag.WPF.Chart
             RoutingStrategy.Bubble, typeof(RoutedPropertyChangedEventHandler<FontWeight>), typeof(Chart));
 
         /// <summary>
-        /// Occurs when the <see cref="CaptionFontWeight"/> property has been changed in some way
+        /// Occurs when the <see cref="TitleFontWeight"/> property has been changed in some way
         /// </summary>
-        public event RoutedPropertyChangedEventHandler<FontWeight> CaptionFontWeightChanged
+        public event RoutedPropertyChangedEventHandler<FontWeight> TitleFontWeightChanged
         {
-            add { AddHandler(CaptionFontWeightChangedEvent, value); }
-            remove { RemoveHandler(CaptionFontWeightChangedEvent, value); }
+            add { AddHandler(TitleFontWeightChangedEvent, value); }
+            remove { RemoveHandler(TitleFontWeightChangedEvent, value); }
         }
         /// <summary>
-        /// Identifies the <see cref="CaptionFontWeightChanged"/> routed event
+        /// Identifies the <see cref="TitleFontWeightChanged"/> routed event
         /// </summary>
-        public static readonly RoutedEvent CaptionFontWeightChangedEvent = EventManager.RegisterRoutedEvent("CaptionFontWeightChanged",
+        public static readonly RoutedEvent TitleFontWeightChangedEvent = EventManager.RegisterRoutedEvent("TitleFontWeightChanged",
             RoutingStrategy.Bubble, typeof(RoutedPropertyChangedEventHandler<FontWeight>), typeof(Chart));
 
         /// <summary>
-        /// Occurs when the <see cref="CaptionFontFamily"/> property has been changed in some way
+        /// Occurs when the <see cref="TitleFontFamily"/> property has been changed in some way
         /// </summary>
-        public event RoutedPropertyChangedEventHandler<FontFamily> CaptionFontFamilyChanged
+        public event RoutedPropertyChangedEventHandler<FontFamily> TitleFontFamilyChanged
         {
-            add { AddHandler(CaptionFontFamilyChangedEvent, value); }
-            remove { RemoveHandler(CaptionFontFamilyChangedEvent, value); }
+            add { AddHandler(TitleFontFamilyChangedEvent, value); }
+            remove { RemoveHandler(TitleFontFamilyChangedEvent, value); }
         }
         /// <summary>
-        /// Identifies the <see cref="CaptionFontFamilyChanged"/> routed event
+        /// Identifies the <see cref="TitleFontFamilyChanged"/> routed event
         /// </summary>
-        public static readonly RoutedEvent CaptionFontFamilyChangedEvent = EventManager.RegisterRoutedEvent("CaptionFontFamilyChanged",
+        public static readonly RoutedEvent TitleFontFamilyChangedEvent = EventManager.RegisterRoutedEvent("TitleFontFamilyChanged",
             RoutingStrategy.Bubble, typeof(RoutedPropertyChangedEventHandler<FontFamily>), typeof(Chart));
 
         /// <summary>
@@ -3103,17 +3077,17 @@ namespace ag.WPF.Chart
             RoutingStrategy.Bubble, typeof(RoutedPropertyChangedEventHandler<string>), typeof(Chart));
 
         /// <summary>
-        /// Occurs when the <see cref="Caption"/> property has been changed in some way
+        /// Occurs when the <see cref="Title"/> property has been changed in some way
         /// </summary>
-        public event RoutedPropertyChangedEventHandler<string> CaptionChanged
+        public event RoutedPropertyChangedEventHandler<string> TitleChanged
         {
-            add { AddHandler(CaptionChangedEvent, value); }
-            remove { RemoveHandler(CaptionChangedEvent, value); }
+            add { AddHandler(TitleChangedEvent, value); }
+            remove { RemoveHandler(TitleChangedEvent, value); }
         }
         /// <summary>
-        /// Identifies the <see cref="CaptionChanged"/> routed event
+        /// Identifies the <see cref="TitleChanged"/> routed event
         /// </summary>
-        public static readonly RoutedEvent CaptionChangedEvent = EventManager.RegisterRoutedEvent("CaptionChanged",
+        public static readonly RoutedEvent TitleChangedEvent = EventManager.RegisterRoutedEvent("TitleChanged",
             RoutingStrategy.Bubble, typeof(RoutedPropertyChangedEventHandler<string>), typeof(Chart));
 
         /// <summary>
