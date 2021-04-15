@@ -555,6 +555,11 @@ namespace ag.WPF.Chart
         public static readonly DependencyProperty MaxYProperty = DependencyProperty.Register(nameof(MaxY), typeof(double), typeof(Chart),
                 new FrameworkPropertyMetadata(100.0, OnMaxYChanged, CoerceMaxY));
         /// <summary>
+        /// The identifier of the <see cref="LineThickness"/> dependency property.
+        /// </summary>
+        public static readonly DependencyProperty LineThicknessProperty = DependencyProperty.Register(nameof(LineThickness), typeof(double), typeof(Chart),
+                new FrameworkPropertyMetadata(2.0, OnLineThicknessChanged, CoerceLineThickness));
+        /// <summary>
         /// The identifier of the <see cref="AutoAdjustment"/> dependency property.
         /// </summary>
         public static readonly DependencyProperty AutoAdjustmentProperty = DependencyProperty.Register(nameof(AutoAdjustment), typeof(AutoAdjustmentMode), typeof(Chart),
@@ -779,6 +784,8 @@ namespace ag.WPF.Chart
                             #endregion
 
                             #region Path stroke
+                            path.SetBinding(Shape.StrokeThicknessProperty, new Binding("LineThickness") { Source = this });
+
                             var strkBinding = new MultiBinding { Converter = new PathStrokeConverter() };
                             strkBinding.Bindings.Add(new Binding("ChartStyle")
                             {
@@ -1479,6 +1486,15 @@ namespace ag.WPF.Chart
         {
             get { return (double)GetValue(MaxXProperty); }
             set { SetValue(MaxXProperty, value); }
+        }
+        /// <summary>
+        /// Gets or sets the thickness of chart lines. The default value is 2.
+        /// </summary>
+        [Category("ChartAppearance"), Description("Gets or sets the thickness of chart lines. The default value is 2")]
+        public double LineThickness
+        {
+            get { return (double)GetValue(LineThicknessProperty); }
+            set { SetValue(LineThicknessProperty, value); }
         }
         /// <summary>
         /// Gets or set chart opacity in range of 0.0 (fully transparent) to 1.0 (fully opaque).
@@ -2491,6 +2507,31 @@ namespace ag.WPF.Chart
             RaiseEvent(e);
         }
 
+        private static void OnLineThicknessChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
+        {
+            if (!(sender is Chart ch)) return;
+            ch.OnLineThicknessChanged((double)e.OldValue, (double)e.NewValue);
+        }
+
+        /// <summary>
+        /// Invoked just before the <see cref="LineThicknessChangedEvent"/> event is raised on control
+        /// </summary>
+        /// <param name="oldValue">Old value</param>
+        /// <param name="newValue">New value</param>
+        protected void OnLineThicknessChanged(double oldValue, double newValue)
+        {
+            var e = new RoutedPropertyChangedEventArgs<double>(oldValue, newValue)
+            {
+                RoutedEvent = LineThicknessChangedEvent
+            };
+            RaiseEvent(e);
+        }
+
+        private static object CoerceLineThickness(DependencyObject d, object value)
+        {
+            return !(d is Chart) ? value : (double)value <= 0 ? 2.0 : value;
+        }
+
         private static void OnMaxYChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
             if (!(sender is Chart ch)) return;
@@ -3116,6 +3157,20 @@ namespace ag.WPF.Chart
         /// Identifies the <see cref="MaxXChanged"/> routed event
         /// </summary>
         public static readonly RoutedEvent MaxXChangedEvent = EventManager.RegisterRoutedEvent("MaxXChanged",
+            RoutingStrategy.Bubble, typeof(RoutedPropertyChangedEventHandler<double>), typeof(Chart));
+
+        /// <summary>
+        /// Occurs when the <see cref="LineThickness"/> property has been changed in some way
+        /// </summary>
+        public event RoutedPropertyChangedEventHandler<double> LineThicknessChanged
+        {
+            add { AddHandler(LineThicknessChangedEvent, value); }
+            remove { RemoveHandler(LineThicknessChangedEvent, value); }
+        }
+        /// <summary>
+        /// Identifies the <see cref="LineThicknessChanged"/> routed event
+        /// </summary>
+        public static readonly RoutedEvent LineThicknessChangedEvent = EventManager.RegisterRoutedEvent("LineThicknessChanged",
             RoutingStrategy.Bubble, typeof(RoutedPropertyChangedEventHandler<double>), typeof(Chart));
 
         /// <summary>

@@ -128,7 +128,6 @@ namespace ag.WPF.Chart.Series
             Name = name;
             Paths[0] = new Path
             {
-                StrokeThickness = 2,
                 StrokeLineJoin = PenLineJoin.Round,
                 StrokeEndLineCap = PenLineCap.Round,
                 StrokeStartLineCap = PenLineCap.Round,
@@ -138,7 +137,6 @@ namespace ag.WPF.Chart.Series
             };
             Paths[1] = new Path
             {
-                StrokeThickness = 2,
                 StrokeLineJoin = PenLineJoin.Round,
                 StrokeEndLineCap = PenLineCap.Round,
                 StrokeStartLineCap = PenLineCap.Round,
@@ -150,7 +148,6 @@ namespace ag.WPF.Chart.Series
             {
                 Paths[2] = new Path
                 {
-                    StrokeThickness = 2,
                     StrokeLineJoin = PenLineJoin.Miter,
                     StrokeEndLineCap = PenLineCap.Flat,
                     StrokeStartLineCap = PenLineCap.Flat,
