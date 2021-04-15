@@ -4381,7 +4381,7 @@ namespace ag.WPF.Chart
                     {
                         var num = (!Utils.StyleFullStacked(chartStyle))
                             ? maxMin - stepSize * i
-                            : 100 - stepSize * i;
+                            : (linesCountY - i) * 10;
                         var number = customValues.Length > index
                             ? customValues[index++]
                             : format.EndsWith("%") ? num.ToString(format.Substring(0, format.Length - 1)) + "%" : num.ToString(format);
