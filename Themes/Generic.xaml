@@ -200,7 +200,8 @@
                                         <Binding Path="CustomXAxisValues" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                         <Binding Path="AutoAdjustment" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                         <Binding Path="MaxX" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
-
+                                        <Binding Path="CustomYAxisValues" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                        <Binding Path="HorizontalLinesCount" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                     </MultiBinding>
                                 </Border.Height>
                             </Border>
@@ -236,7 +237,7 @@
                                         <Binding Path="MaxX" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                         <Binding Path="FlowDirection" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                         <Binding Path="ChartBoundary" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
-
+                                        <Binding Path="CustomYAxisValues" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                     </MultiBinding>
                                 </Path.Data>
                             </Path>

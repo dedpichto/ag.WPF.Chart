@@ -3863,14 +3863,16 @@ namespace ag.WPF.Chart
                 || !(values[6] is FontWeight fontWeight)
                 || !(values[7] is FontStretch fontStretch)
                 || !(values[9] is AutoAdjustmentMode autoAdjust)
-                || !(values[10] is double maxX))
+                || !(values[10] is double maxX)
+                || !(values[12] is int linesCountX))
                 return height;
 
             var seriesArray = seriesEnumerable.ToArray();
-            var customValues = values[8] is IEnumerable<string> customEnumerable ? customEnumerable.ToArray() : new string[] { };
+            var customValuesX = values[8] is IEnumerable<string> customEnumerableX ? customEnumerableX.ToArray() : new string[] { };
+            var customValuesY = values[11] is IEnumerable<string> customEnumerableY ? customEnumerableY.ToArray() : new string[] { };
 
             Directions dir;
-            int maxFromValues;
+            int maxFromValues = 0, maxForBars = 0;
 
             if (seriesEnumerable.All(s => s is PlainSeries))
             {
@@ -3882,8 +3884,7 @@ namespace ag.WPF.Chart
                 dir = Utils.GetDirection(totalValues, chartStyle);
                 if (Utils.StyleBars(chartStyle))
                 {
-                    var rawValues = Utils.GetPaddedSeries(seriesArray);
-                    maxFromValues = autoAdjust.In(AutoAdjustmentMode.Both, AutoAdjustmentMode.Vertical) ? Utils.GetMaxValueLength(rawValues, chartStyle) : maxX.ToString(culture).Length;
+                    maxForBars = autoAdjust.In(AutoAdjustmentMode.Both, AutoAdjustmentMode.Horizontal) ? seriesArray.Max(s => s.Values.Count) : linesCountX;
                 }
                 else
                 {
@@ -3911,9 +3912,28 @@ namespace ag.WPF.Chart
             else
                 return height;
 
-            var maxString = customValues.Any()
-                ? customValues.FirstOrDefault(c => c.Length == customValues.Max(v => v.Length))
-                : new string('0', maxFromValues);
+            string maxString;
+            if (!Utils.StyleBars(chartStyle))
+            {
+                maxString = customValuesX.Any()
+                    ? customValuesX.FirstOrDefault(c => c.Length == customValuesX.Max(v => v.Length))
+                    : new string('0', maxFromValues);
+            }
+            else
+            {
+                if (customValuesY.Any())
+                {
+                    var cv = customValuesY.FirstOrDefault(c => c.Length == customValuesY.Max(v => v.Length));
+                    if (cv.Length > maxForBars.ToString(format, culture).Length)
+                        maxString = cv;
+                    else
+                        maxString = maxForBars.ToString(format, culture);
+                }
+                else
+                {
+                    maxString = maxForBars.ToString(format, culture);
+                }
+            }
 
 
             var fmt = new FormattedText(maxString, culture, FlowDirection.LeftToRight,
@@ -4553,7 +4573,8 @@ namespace ag.WPF.Chart
 
             var seriesArray = seriesEnumerable.ToArray();
             var drawBetween = Utils.StyleColumns(chartStyle);
-            var customValues = values[10] is IEnumerable<string> customEnumerable ? customEnumerable.ToArray() : new string[] { };
+            var customValuesX = values[10] is IEnumerable<string> customEnumerableX ? customEnumerableX.ToArray() : new string[] { };
+            var customValuesY = values[15] is IEnumerable<string> customEnumerableY ? customEnumerableY.ToArray() : new string[] { };
 
             double xStep;
 
@@ -4719,9 +4740,11 @@ namespace ag.WPF.Chart
                                         ? 10 * (i + 1)
                                         : 10 * (j + 1);
                             var index = flowDir == FlowDirection.LeftToRight ? i : j;
-                            var number = customValues.Length > index && !Utils.StyleBars(chartStyle)
-                                ? customValues[index]
-                                : format.EndsWith("%") ? num.ToString(format.Substring(0, format.Length - 1)) + "%" : num.ToString(format);
+                            var number = customValuesX.Length > index && !Utils.StyleBars(chartStyle)
+                                ? customValuesX[index]
+                                : customValuesY.Length > index && Utils.StyleBars(chartStyle)
+                                    ? customValuesY[index]
+                                    : format.EndsWith("%") ? num.ToString(format.Substring(0, format.Length - 1)) + "%" : num.ToString(format);
                             if (chartStyle == ChartStyle.FullStackedBars)
                                 number += "%";
                             var fmt = new FormattedText(number, culture, FlowDirection.LeftToRight,
@@ -4774,8 +4797,8 @@ namespace ag.WPF.Chart
                                     : -(linesCount - i) * 10;
                             if (flowDir == FlowDirection.RightToLeft)
                                 num *= -1;
-                            var number = customValues.Length > index && !Utils.StyleBars(chartStyle)
-                                ? customValues[index++]
+                            var number = customValuesY.Length > index
+                                ? customValuesY[index++]
                                 : format.EndsWith("%") ? num.ToString(format.Substring(0, format.Length - 1)) + "%" : num.ToString(format);
 
                             if (chartStyle == ChartStyle.FullStackedBars)
@@ -4826,9 +4849,11 @@ namespace ag.WPF.Chart
                                     ? i
                                     : j;
                             var index = flowDir == FlowDirection.LeftToRight ? i : j;
-                            var number = customValues.Length > index && !Utils.StyleBars(chartStyle)
-                                    ? customValues[index]
-                                    : format.EndsWith("%") ? num.ToString(format.Substring(0, format.Length - 1)) + "%" : num.ToString(format);
+                            var number = customValuesX.Length > index && !Utils.StyleBars(chartStyle)
+                                    ? customValuesX[index]
+                                    : customValuesY.Length > index && Utils.StyleBars(chartStyle)
+                                        ? customValuesY[index]
+                                        :format.EndsWith("%") ? num.ToString(format.Substring(0, format.Length - 1)) + "%" : num.ToString(format);
 
                             if (chartStyle == ChartStyle.FullStackedBars)
                                 number += "%";
@@ -4865,8 +4890,8 @@ namespace ag.WPF.Chart
                             var num = Utils.StyleMeasuredBars(chartStyle)
                                     ? flowDir == FlowDirection.LeftToRight ? -j * maxMin / linesCount : -(i + 1) * maxMin / linesCount
                                     : flowDir == FlowDirection.LeftToRight ? -j * 10 : -indexStep * 10;
-                            var number = customValues.Length > index && !Utils.StyleBars(chartStyle)
-                                ? customValues[index]
+                            var number = customValuesY.Length > index
+                                ? customValuesY[index]
                                 : format.EndsWith("%") ? num.ToString(format.Substring(0, format.Length - 1)) + "%" : num.ToString(format);
                             if (chartStyle == ChartStyle.FullStackedBars)
                                 number += "%";
