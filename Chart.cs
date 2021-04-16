@@ -496,10 +496,16 @@ namespace ag.WPF.Chart
         public static readonly DependencyProperty SecondaryLinesVisibilityProperty = DependencyProperty.Register(nameof(SecondaryLinesVisibility), typeof(AxesVisibility), typeof(Chart),
                 new FrameworkPropertyMetadata(AxesVisibility.Both, OnSecondaryLinesVisibilityChanged));
         /// <summary>
-        /// The identifier of the <see cref="AxesValuesFormat"/> dependency property.
+        /// The identifier of the <see cref="VerticalAxisValuesFormat"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty AxesValuesFormatProperty = DependencyProperty.Register(nameof(AxesValuesFormat), typeof(string), typeof(Chart),
-                new FrameworkPropertyMetadata("0", OnAxesValuesFormatChanged));
+        public static readonly DependencyProperty VerticalAxisValuesFormatProperty = DependencyProperty.Register(nameof(VerticalAxisValuesFormat), typeof(string), typeof(Chart),
+                new FrameworkPropertyMetadata("0", OnVerticalAxisValuesFormatChanged));
+        /// <summary>
+        /// The identifier of the <see cref="HorizontalAxisValuesFormat"/> dependency property.
+        /// </summary>
+        public static readonly DependencyProperty HorizontalAxisValuesFormatProperty = DependencyProperty.Register(nameof(HorizontalAxisValuesFormat), typeof(string), typeof(Chart),
+                new FrameworkPropertyMetadata("0", OnHorizontalAxisValuesFormatChanged));
+
         /// <summary>
         /// The identifier of the <see cref="CustomXAxisValues"/> dependency property.
         /// </summary>
@@ -1341,13 +1347,14 @@ namespace ag.WPF.Chart
             {
                 var v = values[i];
                 if (brushIndex == Statics.PredefinedMainBrushes.Length) brushIndex = 0;
-                var legend = new Legend();
-
-                legend.LegendBackground = Statics.PredefinedMainBrushes[brushIndex++].Brush;
+                var legend = new Legend
+                {
+                    LegendBackground = Statics.PredefinedMainBrushes[brushIndex++].Brush
+                };
 
                 var textBinding = new MultiBinding { Converter = new PieSectionTextConverter(), ConverterParameter = v };
                 textBinding.Bindings.Add(new Binding("Values") { Source = series });
-                textBinding.Bindings.Add(new Binding("AxesValuesFormat") { Source = this });
+                textBinding.Bindings.Add(new Binding("VerticalAxisValuesFormat") { Source = this });
                 legend.SetBinding(Legend.TextProperty, textBinding);
 
                 PieLegendsCollection.Add(legend);
@@ -1733,13 +1740,22 @@ namespace ag.WPF.Chart
             set { SetValue(HorizontalLinesCountProperty, value); }
         }
         /// <summary>
-        /// Gets or sets format for numeric values drawn next to x- and/or y- axes.
+        /// Gets or sets format for numeric values drawn next to vertical axis.
         /// </summary>
-        [Category("ChartAxes"), Description("Gets or sets format for numeric values drawn next to x- and/or y- axes")]
-        public string AxesValuesFormat
+        [Category("ChartAxes"), Description("Gets or sets format for numeric values drawn next to vertical axis")]
+        public string VerticalAxisValuesFormat
         {
-            get { return (string)GetValue(AxesValuesFormatProperty); }
-            set { SetValue(AxesValuesFormatProperty, value); }
+            get { return (string)GetValue(VerticalAxisValuesFormatProperty); }
+            set { SetValue(VerticalAxisValuesFormatProperty, value); }
+        }
+        /// <summary>
+        /// Gets or sets format for numeric values drawn next to horizontal axis.
+        /// </summary>
+        [Category("ChartAxes"), Description("Gets or sets format for numeric values drawn next to horizontal axis")]
+        public string HorizontalAxisValuesFormat
+        {
+            get { return (string)GetValue(HorizontalAxisValuesFormatProperty); }
+            set { SetValue(HorizontalAxisValuesFormatProperty, value); }
         }
         /// <summary>
         /// Gets legends collection.
@@ -2108,21 +2124,40 @@ namespace ag.WPF.Chart
             RaiseEvent(e);
         }
 
-        private static void OnAxesValuesFormatChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
+        private static void OnVerticalAxisValuesFormatChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
             if (!(sender is Chart ch)) return;
-            ch.OnAxesValuesFormatChanged((string)e.OldValue, (string)e.NewValue);
+            ch.OnVerticalAxisValuesFormatChanged((string)e.OldValue, (string)e.NewValue);
         }
         /// <summary>
-        /// Invoked just before the <see cref="AxesValuesFormatChangedEvent"/> event is raised on control
+        /// Invoked just before the <see cref="VerticalAxisValuesFormatChangedEvent"/> event is raised on control
         /// </summary>
         /// <param name="oldValue">Old value</param>
         /// <param name="newValue">New value</param>
-        protected void OnAxesValuesFormatChanged(string oldValue, string newValue)
+        protected void OnVerticalAxisValuesFormatChanged(string oldValue, string newValue)
         {
             var e = new RoutedPropertyChangedEventArgs<string>(oldValue, newValue)
             {
-                RoutedEvent = AxesValuesFormatChangedEvent
+                RoutedEvent = VerticalAxisValuesFormatChangedEvent
+            };
+            RaiseEvent(e);
+        }
+
+        private static void OnHorizontalAxisValuesFormatChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
+        {
+            if (!(sender is Chart ch)) return;
+            ch.OnHorizontalAxisValuesFormatChanged((string)e.OldValue, (string)e.NewValue);
+        }
+        /// <summary>
+        /// Invoked just before the <see cref="HorizontalAxisValuesFormatChangedEvent"/> event is raised on control
+        /// </summary>
+        /// <param name="oldValue">Old value</param>
+        /// <param name="newValue">New value</param>
+        protected void OnHorizontalAxisValuesFormatChanged(string oldValue, string newValue)
+        {
+            var e = new RoutedPropertyChangedEventArgs<string>(oldValue, newValue)
+            {
+                RoutedEvent = HorizontalAxisValuesFormatChangedEvent
             };
             RaiseEvent(e);
         }
@@ -2880,17 +2915,31 @@ namespace ag.WPF.Chart
             RoutingStrategy.Bubble, typeof(RoutedPropertyChangedEventHandler<IEnumerable<string>>), typeof(Chart));
 
         /// <summary>
-        /// Occurs when the <see cref="AxesValuesFormat"/> property has been changed in some way
+        /// Occurs when the <see cref="VerticalAxisValuesFormat"/> property has been changed in some way
         /// </summary>
-        public event RoutedPropertyChangedEventHandler<string> AxesValuesFormatChanged
+        public event RoutedPropertyChangedEventHandler<string> VerticalAxisValuesFormatChanged
         {
-            add { AddHandler(AxesValuesFormatChangedEvent, value); }
-            remove { RemoveHandler(AxesValuesFormatChangedEvent, value); }
+            add { AddHandler(VerticalAxisValuesFormatChangedEvent, value); }
+            remove { RemoveHandler(VerticalAxisValuesFormatChangedEvent, value); }
         }
         /// <summary>
-        /// Identifies the <see cref="AxesValuesFormatChanged"/> routed event
+        /// Identifies the <see cref="VerticalAxisValuesFormatChanged"/> routed event
         /// </summary>
-        public static readonly RoutedEvent AxesValuesFormatChangedEvent = EventManager.RegisterRoutedEvent("AxesValuesFormatChanged",
+        public static readonly RoutedEvent VerticalAxisValuesFormatChangedEvent = EventManager.RegisterRoutedEvent("VerticalAxisValuesFormatChanged",
+            RoutingStrategy.Bubble, typeof(RoutedPropertyChangedEventHandler<string>), typeof(Chart));
+
+        /// <summary>
+        /// Occurs when the <see cref="HorizontalAxisValuesFormat"/> property has been changed in some way
+        /// </summary>
+        public event RoutedPropertyChangedEventHandler<string> HorizontalAxisValuesFormatChanged
+        {
+            add { AddHandler(HorizontalAxisValuesFormatChangedEvent, value); }
+            remove { RemoveHandler(HorizontalAxisValuesFormatChangedEvent, value); }
+        }
+        /// <summary>
+        /// Identifies the <see cref="HorizontalAxisValuesFormatChanged"/> routed event
+        /// </summary>
+        public static readonly RoutedEvent HorizontalAxisValuesFormatChangedEvent = EventManager.RegisterRoutedEvent("HorizontalAxisValuesFormatChanged",
             RoutingStrategy.Bubble, typeof(RoutedPropertyChangedEventHandler<string>), typeof(Chart));
 
         /// <summary>
