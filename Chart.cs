@@ -505,7 +505,11 @@ namespace ag.WPF.Chart
         /// </summary>
         public static readonly DependencyProperty HorizontalAxisValuesFormatProperty = DependencyProperty.Register(nameof(HorizontalAxisValuesFormat), typeof(string), typeof(Chart),
                 new FrameworkPropertyMetadata("0", OnHorizontalAxisValuesFormatChanged));
-
+        /// <summary>
+        /// The identifier of the <see cref="PiePercentsFormatProperty"/> dependency property.
+        /// </summary>
+        public static readonly DependencyProperty PiePercentsFormatProperty= DependencyProperty.Register(nameof(PiePercentsFormat), typeof(string), typeof(Chart),
+                new FrameworkPropertyMetadata("0", OnPiePercentsFormatChanged));
         /// <summary>
         /// The identifier of the <see cref="CustomXAxisValues"/> dependency property.
         /// </summary>
@@ -1354,7 +1358,7 @@ namespace ag.WPF.Chart
 
                 var textBinding = new MultiBinding { Converter = new PieSectionTextConverter(), ConverterParameter = v };
                 textBinding.Bindings.Add(new Binding("Values") { Source = series });
-                textBinding.Bindings.Add(new Binding("VerticalAxisValuesFormat") { Source = this });
+                textBinding.Bindings.Add(new Binding("PiePercentsFormat") { Source = this });
                 legend.SetBinding(Legend.TextProperty, textBinding);
 
                 PieLegendsCollection.Add(legend);
@@ -1758,6 +1762,15 @@ namespace ag.WPF.Chart
             set { SetValue(HorizontalAxisValuesFormatProperty, value); }
         }
         /// <summary>
+        /// Gets or sets numeric format for pie percents.
+        /// </summary>
+        [Category("ChartAppearance"), Description("Gets or sets numeric format pie percents")]
+        public string PiePercentsFormat
+        {
+            get { return (string)GetValue(PiePercentsFormatProperty); }
+            set { SetValue(PiePercentsFormatProperty, value); }
+        }
+        /// <summary>
         /// Gets legends collection.
         /// </summary>
         [EditorBrowsable(EditorBrowsableState.Never), Browsable(false)]
@@ -2158,6 +2171,25 @@ namespace ag.WPF.Chart
             var e = new RoutedPropertyChangedEventArgs<string>(oldValue, newValue)
             {
                 RoutedEvent = HorizontalAxisValuesFormatChangedEvent
+            };
+            RaiseEvent(e);
+        }
+
+        private static void OnPiePercentsFormatChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
+        {
+            if (!(sender is Chart ch)) return;
+            ch.OnPiePercentsFormatChanged((string)e.OldValue, (string)e.NewValue);
+        }
+        /// <summary>
+        /// Invoked just before the <see cref="PiePercentsFormatChangedEvent"/> event is raised on control
+        /// </summary>
+        /// <param name="oldValue">Old value</param>
+        /// <param name="newValue">New value</param>
+        protected void OnPiePercentsFormatChanged(string oldValue, string newValue)
+        {
+            var e = new RoutedPropertyChangedEventArgs<string>(oldValue, newValue)
+            {
+                RoutedEvent = PiePercentsFormatChangedEvent
             };
             RaiseEvent(e);
         }
@@ -2940,6 +2972,20 @@ namespace ag.WPF.Chart
         /// Identifies the <see cref="HorizontalAxisValuesFormatChanged"/> routed event
         /// </summary>
         public static readonly RoutedEvent HorizontalAxisValuesFormatChangedEvent = EventManager.RegisterRoutedEvent("HorizontalAxisValuesFormatChanged",
+            RoutingStrategy.Bubble, typeof(RoutedPropertyChangedEventHandler<string>), typeof(Chart));
+
+        /// <summary>
+        /// Occurs when the <see cref="PiePercentsFormat"/> property has been changed in some way
+        /// </summary>
+        public event RoutedPropertyChangedEventHandler<string> PiePercentsFormatChanged
+        {
+            add { AddHandler(PiePercentsFormatChangedEvent, value); }
+            remove { RemoveHandler(PiePercentsFormatChangedEvent, value); }
+        }
+        /// <summary>
+        /// Identifies the <see cref="PiePercentsFormatChanged"/> routed event
+        /// </summary>
+        public static readonly RoutedEvent PiePercentsFormatChangedEvent = EventManager.RegisterRoutedEvent("PiePercentsFormatChanged",
             RoutingStrategy.Bubble, typeof(RoutedPropertyChangedEventHandler<string>), typeof(Chart));
 
         /// <summary>

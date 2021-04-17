@@ -274,7 +274,7 @@
                                                     <Binding Path="ItemsSource" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                                     <Binding Path="Background" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                                     <Binding Path="ChartStyle" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
-                                                    <Binding Path="VerticalAxisValuesFormat" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                                    <Binding Path="PiePercentsFormat" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                                 </MultiBinding>
                                             </DrawingImage.Drawing>
                                         </DrawingImage>
