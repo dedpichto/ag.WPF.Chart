@@ -555,15 +555,15 @@ namespace ag.WPF.Chart
         public static readonly DependencyProperty ChartOpacityProperty = DependencyProperty.Register(nameof(ChartOpacity), typeof(double), typeof(Chart),
                 new FrameworkPropertyMetadata(1.0, OnChartOpacityChanged, CoerceChartOpacity));
         /// <summary>
-        /// The identifier of the <see cref="MaxX"/> dependency property.
+        /// The identifier of the <see cref="HorizontalMax"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty MaxXProperty = DependencyProperty.Register(nameof(MaxX), typeof(double), typeof(Chart),
-                new FrameworkPropertyMetadata(100.0, OnMaxXChanged, CoerceMaxX));
+        public static readonly DependencyProperty HorizontalMaxProperty = DependencyProperty.Register(nameof(HorizontalMax), typeof(double), typeof(Chart),
+                new FrameworkPropertyMetadata(100.0, OnHorizontalMaxChanged, CoerceHorizontalMax));
         /// <summary>
-        /// The identifier of the <see cref="MaxY"/> dependency property.
+        /// The identifier of the <see cref="VerticalMax"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty MaxYProperty = DependencyProperty.Register(nameof(MaxY), typeof(double), typeof(Chart),
-                new FrameworkPropertyMetadata(100.0, OnMaxYChanged, CoerceMaxY));
+        public static readonly DependencyProperty VerticalMaxProperty = DependencyProperty.Register(nameof(VerticalMax), typeof(double), typeof(Chart),
+                new FrameworkPropertyMetadata(100.0, OnVerticalMaxChanged, CoerceVerticalMax));
         /// <summary>
         /// The identifier of the <see cref="LineThickness"/> dependency property.
         /// </summary>
@@ -732,11 +732,11 @@ namespace ag.WPF.Chart
                             {
                                 Source = this
                             });
-                            ptsBinding.Bindings.Add(new Binding("MaxX")
+                            ptsBinding.Bindings.Add(new Binding("HorizontalMax")
                             {
                                 Source = this
                             });
-                            ptsBinding.Bindings.Add(new Binding("MaxY")
+                            ptsBinding.Bindings.Add(new Binding("VerticalMax")
                             {
                                 Source = this
                             });
@@ -1479,24 +1479,24 @@ namespace ag.WPF.Chart
             set { SetValue(MarkerShapeProperty, value); }
         }
         /// <summary>
-        /// Gets or sets max numeric value for y-axis. The default value is 100.
+        /// Gets or sets max numeric value for vertical axis. The default value is 100.
         /// </summary>
-        /// <remarks>This property will have no effect if <see cref="AutoAdjustment"/> property is set to true.</remarks>
-        [Category("ChartMeasures"), Description("Gets or sets max numeric value for y-axis. The default value is 100")]
-        public double MaxY
+        /// <remarks>This property has no effect if <see cref="AutoAdjustment"/> property is set to <see cref="AutoAdjustmentMode.Both"/> or <see cref="AutoAdjustmentMode.Vertical"/>.</remarks>
+        [Category("ChartMeasures"), Description("Gets or sets max numeric value for vertical axis. The default value is 100")]
+        public double VerticalMax
         {
-            get { return (double)GetValue(MaxYProperty); }
-            set { SetValue(MaxYProperty, value); }
+            get { return (double)GetValue(VerticalMaxProperty); }
+            set { SetValue(VerticalMaxProperty, value); }
         }
         /// <summary>
-        /// Gets or sets max numeric value for x-axis. The default value is 100.
+        /// Gets or sets max numeric value for horizontal axis. The default value is 100.
         /// </summary>
-        /// <remarks>This property will have no effect if <see cref="AutoAdjustment"/> property is set to true.</remarks>
-        [Category("ChartMeasures"), Description("Gets or sets max numeric value for x-axis. The default value is 100")]
-        public double MaxX
+        /// <remarks>This property has no effect if <see cref="AutoAdjustment"/> property is set to <see cref="AutoAdjustmentMode.Both"/> or <see cref="AutoAdjustmentMode.Horizontal"/>.</remarks>
+        [Category("ChartMeasures"), Description("Gets or sets max numeric value for horizontal axis. The default value is 100")]
+        public double HorizontalMax
         {
-            get { return (double)GetValue(MaxXProperty); }
-            set { SetValue(MaxXProperty, value); }
+            get { return (double)GetValue(HorizontalMaxProperty); }
+            set { SetValue(HorizontalMaxProperty, value); }
         }
         /// <summary>
         /// Gets or sets the thickness of chart lines. The default value is 2.
@@ -2599,50 +2599,50 @@ namespace ag.WPF.Chart
             return !(d is Chart) ? value : (double)value <= 0 ? 2.0 : value;
         }
 
-        private static void OnMaxYChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
+        private static void OnVerticalMaxChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
             if (!(sender is Chart ch)) return;
-            ch.OnMaxYChanged((double)e.OldValue, (double)e.NewValue);
+            ch.OnVerticalMaxChanged((double)e.OldValue, (double)e.NewValue);
         }
         /// <summary>
-        /// Invoked just before the <see cref="MaxYChangedEvent"/> event is raised on control
+        /// Invoked just before the <see cref="VerticalMaxChangedEvent"/> event is raised on control
         /// </summary>
         /// <param name="oldValue">Old value</param>
         /// <param name="newValue">New value</param>
-        protected void OnMaxYChanged(double oldValue, double newValue)
+        protected void OnVerticalMaxChanged(double oldValue, double newValue)
         {
             var e = new RoutedPropertyChangedEventArgs<double>(oldValue, newValue)
             {
-                RoutedEvent = MaxYChangedEvent
+                RoutedEvent = VerticalMaxChangedEvent
             };
             RaiseEvent(e);
         }
 
-        private static object CoerceMaxY(DependencyObject d, object value)
+        private static object CoerceVerticalMax(DependencyObject d, object value)
         {
             return !(d is Chart) ? value : (double)value < 0 ? 100.0 : value;
         }
 
-        private static void OnMaxXChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
+        private static void OnHorizontalMaxChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
             if (!(sender is Chart ch)) return;
-            ch.OnMaxXChanged((double)e.OldValue, (double)e.NewValue);
+            ch.OnHorizontalMaxChanged((double)e.OldValue, (double)e.NewValue);
         }
         /// <summary>
-        /// Invoked just before the <see cref="MaxXChangedEvent"/> event is raised on control
+        /// Invoked just before the <see cref="HorizontalMaxChangedEvent"/> event is raised on control
         /// </summary>
         /// <param name="oldValue">Old value</param>
         /// <param name="newValue">New value</param>
-        protected void OnMaxXChanged(double oldValue, double newValue)
+        protected void OnHorizontalMaxChanged(double oldValue, double newValue)
         {
             var e = new RoutedPropertyChangedEventArgs<double>(oldValue, newValue)
             {
-                RoutedEvent = MaxXChangedEvent
+                RoutedEvent = HorizontalMaxChangedEvent
             };
             RaiseEvent(e);
         }
 
-        private static object CoerceMaxX(DependencyObject d, object value)
+        private static object CoerceHorizontalMax(DependencyObject d, object value)
         {
             return !(d is Chart) ? value : (double)value < 0 ? 100.0 : value;
         }
@@ -3227,31 +3227,31 @@ namespace ag.WPF.Chart
             RoutingStrategy.Bubble, typeof(RoutedPropertyChangedEventHandler<string>), typeof(Chart));
 
         /// <summary>
-        /// Occurs when the <see cref="MaxY"/> property has been changed in some way
+        /// Occurs when the <see cref="VerticalMax"/> property has been changed in some way
         /// </summary>
-        public event RoutedPropertyChangedEventHandler<double> MaxYChanged
+        public event RoutedPropertyChangedEventHandler<double> VerticalMaxChanged
         {
-            add { AddHandler(MaxYChangedEvent, value); }
-            remove { RemoveHandler(MaxYChangedEvent, value); }
+            add { AddHandler(VerticalMaxChangedEvent, value); }
+            remove { RemoveHandler(VerticalMaxChangedEvent, value); }
         }
         /// <summary>
-        /// Identifies the <see cref="MaxYChanged"/> routed event
+        /// Identifies the <see cref="VerticalMaxChanged"/> routed event
         /// </summary>
-        public static readonly RoutedEvent MaxYChangedEvent = EventManager.RegisterRoutedEvent("MaxYChanged",
+        public static readonly RoutedEvent VerticalMaxChangedEvent = EventManager.RegisterRoutedEvent("VerticalMaxChanged",
             RoutingStrategy.Bubble, typeof(RoutedPropertyChangedEventHandler<double>), typeof(Chart));
 
         /// <summary>
-        /// Occurs when the <see cref="MaxX"/> property has been changed in some way
+        /// Occurs when the <see cref="HorizontalMax"/> property has been changed in some way
         /// </summary>
-        public event RoutedPropertyChangedEventHandler<double> MaxXChanged
+        public event RoutedPropertyChangedEventHandler<double> HorizontalMaxChanged
         {
-            add { AddHandler(MaxXChangedEvent, value); }
-            remove { RemoveHandler(MaxXChangedEvent, value); }
+            add { AddHandler(HorizontalMaxChangedEvent, value); }
+            remove { RemoveHandler(HorizontalMaxChangedEvent, value); }
         }
         /// <summary>
-        /// Identifies the <see cref="MaxXChanged"/> routed event
+        /// Identifies the <see cref="HorizontalMaxChanged"/> routed event
         /// </summary>
-        public static readonly RoutedEvent MaxXChangedEvent = EventManager.RegisterRoutedEvent("MaxXChanged",
+        public static readonly RoutedEvent HorizontalMaxChangedEvent = EventManager.RegisterRoutedEvent("HorizontalMaxChanged",
             RoutingStrategy.Bubble, typeof(RoutedPropertyChangedEventHandler<double>), typeof(Chart));
 
         /// <summary>
