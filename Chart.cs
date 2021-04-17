@@ -499,17 +499,17 @@ namespace ag.WPF.Chart
         /// The identifier of the <see cref="VerticalAxisValuesFormat"/> dependency property.
         /// </summary>
         public static readonly DependencyProperty VerticalAxisValuesFormatProperty = DependencyProperty.Register(nameof(VerticalAxisValuesFormat), typeof(string), typeof(Chart),
-                new FrameworkPropertyMetadata("0", OnVerticalAxisValuesFormatChanged));
+                new FrameworkPropertyMetadata("0", OnVerticalAxisValuesFormatChanged, CoerceFormats));
         /// <summary>
         /// The identifier of the <see cref="HorizontalAxisValuesFormat"/> dependency property.
         /// </summary>
         public static readonly DependencyProperty HorizontalAxisValuesFormatProperty = DependencyProperty.Register(nameof(HorizontalAxisValuesFormat), typeof(string), typeof(Chart),
-                new FrameworkPropertyMetadata("0", OnHorizontalAxisValuesFormatChanged));
+                new FrameworkPropertyMetadata("0", OnHorizontalAxisValuesFormatChanged, CoerceFormats));
         /// <summary>
         /// The identifier of the <see cref="PiePercentsFormatProperty"/> dependency property.
         /// </summary>
         public static readonly DependencyProperty PiePercentsFormatProperty= DependencyProperty.Register(nameof(PiePercentsFormat), typeof(string), typeof(Chart),
-                new FrameworkPropertyMetadata("0", OnPiePercentsFormatChanged));
+                new FrameworkPropertyMetadata("0", OnPiePercentsFormatChanged, CoerceFormats));
         /// <summary>
         /// The identifier of the <see cref="CustomXAxisValues"/> dependency property.
         /// </summary>
@@ -2192,6 +2192,11 @@ namespace ag.WPF.Chart
                 RoutedEvent = PiePercentsFormatChangedEvent
             };
             RaiseEvent(e);
+        }
+
+        private static object CoerceFormats(DependencyObject d, object value)
+        {
+            return !(d is Chart) ? value : string.IsNullOrEmpty((string)value) ? "0" : value;
         }
 
         private static void OnAxesValuesVisibilityChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
