@@ -121,10 +121,7 @@ namespace ag.WPF.Chart.Series
         internal void InitFields(string name)
         {
             _values.CollectionChanged += values_CollectionChanged;
-            //PieBrushes = new BrushesCollection(Statics.PredefinedMainBrushes.Length, this);
 
-            //for (var i = 0; i < PieBrushes.Length(); i++)
-            //    PieBrushes[i] = Statics.PredefinedMainBrushes[i].Brush;
             Name = name;
             Paths[0] = new Path
             {

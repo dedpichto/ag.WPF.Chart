@@ -229,6 +229,7 @@ namespace ag.WPF.Chart
 
             // round max to next integer
             diff = Math.Ceiling(diff);
+            var realDiff = diff;
 
             if (fractionPower > 0)
             {
@@ -246,12 +247,36 @@ namespace ag.WPF.Chart
             var lines = calculatedSteps(power, diff).Where(l => IsInteger(l)).OrderBy(l => l).Distinct().ToArray();
             // calculate real size for each step
             var sizes = lines.Select(s => radius / s).ToArray();
-            // get the largest step with real size more/equal font height
-            var item = sizes.Select((size, index) => new { size, index }).LastOrDefault(a => a.size >= fontHeight + 4);
-            if (item != null)
+            // get all steps with real size more/equal font height
+            var allSuitableSizes = sizes.Where(s => s >= fontHeight + 4).Select((size, index) => new { size, index }).ToArray();
+
+            //var item = sizes.Select((size, index) => new { size, index }).LastOrDefault(a => a.size >= fontHeight + 4);
+            // get largest lines count which gives integer division on diff
+            int lineIndex = -1;
+            if (allSuitableSizes.Any())
+            {
+                if (Math.Abs(realDiff) > 1)
+                {
+                    for (var i = allSuitableSizes.Length - 1; i >= 0; i--)
+                    {
+                        if (IsInteger(lines[allSuitableSizes[i].index] / realDiff))
+                        {
+                            lineIndex = allSuitableSizes[i].index;
+                        }
+                    }
+                }
+                else
+                {
+                    // in case of fraction numbers between 0 and 1 get the last index
+                    lineIndex = allSuitableSizes[allSuitableSizes.Length - 1].index;
+                }
+            }
+
+            //var item = sizes.Select((size, index) => new { size, index }).LastOrDefault(a => a.size >= fontHeight + 4);
+            if (lineIndex != -1)
             {
                 // change lines count to selected one
-                linesCount = (int)lines[item.index];
+                linesCount = (int)lines[lineIndex];
                 // prepare step
                 stepSize = diff / linesCount;
                 stepLength = radius / linesCount;

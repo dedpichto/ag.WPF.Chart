@@ -29,7 +29,30 @@ namespace ag.WPF.Chart
         /// </summary>
         public static readonly DependencyProperty HasCustomSecondaryBrushProperty = DependencyProperty.RegisterAttached("HasCustomSecondaryBrush",
             typeof(bool), typeof(ISeries), new FrameworkPropertyMetadata(false, null));
+        /// <summary>
+        /// The identifier of the AddedToCanvasProperty attached dependency property.
+        /// </summary>
+        public static readonly DependencyProperty AddedToCanvasProperty = DependencyProperty.RegisterAttached("AddedToCanvas", 
+            typeof(bool), typeof(ISeries), new FrameworkPropertyMetadata(false, null));
 
+        /// <summary>
+        /// Gets AddedToCanvas attached dependency property.
+        /// </summary>
+        /// <param name="obj">DependencyObject</param>
+        /// <returns>AddedToCanvas (boolean).</returns>
+        public static bool GetAddedToCanvas(DependencyObject obj)
+        {
+            return (bool)obj.GetValue(AddedToCanvasProperty);
+        }
+        /// <summary>
+        /// Sets AddedToCanvas attached dependency property.
+        /// </summary>
+        /// <param name="obj">DependencyObject</param>
+        /// <param name="value">Boolean</param>
+        public static void SetAddedToCanvas(DependencyObject obj, bool value)
+        {
+            obj.SetValue(AddedToCanvasProperty, value);
+        }
         /// <summary>
         /// Gets SectorData attached dependency property.
         /// </summary>
