@@ -471,15 +471,15 @@ namespace ag.WPF.Chart
         public static readonly DependencyProperty AxesFontStretchProperty = DependencyProperty.Register(nameof(AxesFontStretch), typeof(FontStretch), typeof(Chart),
                 new FrameworkPropertyMetadata(FontStretches.Normal, OnAxesFontStretchChanged));
         /// <summary>
-        /// The identifier of the <see cref="XAxisText"/> dependency property.
+        /// The identifier of the <see cref="HorizontalAxisTitle"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty XAxisTextProperty = DependencyProperty.Register(nameof(XAxisText), typeof(string), typeof(Chart),
-                new FrameworkPropertyMetadata("x-Axis", OnXAxisTextChanged));
+        public static readonly DependencyProperty HorizontalAxisTitleProperty = DependencyProperty.Register(nameof(HorizontalAxisTitle), typeof(string), typeof(Chart),
+                new FrameworkPropertyMetadata("x-Axis", OnHorizontalAxisTitleChanged));
         /// <summary>
-        /// The identifier of the <see cref="YAxisText"/> dependency property.
+        /// The identifier of the <see cref="VerticalAxisTitle"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty YAxisTextProperty = DependencyProperty.Register(nameof(YAxisText), typeof(string), typeof(Chart),
-                new FrameworkPropertyMetadata("y-Axis", OnYAxisTextChanged));
+        public static readonly DependencyProperty VerticalAxisTitleProperty = DependencyProperty.Register(nameof(VerticalAxisTitle), typeof(string), typeof(Chart),
+                new FrameworkPropertyMetadata("y-Axis", OnVerticalAxisTitleChanged));
         /// <summary>
         /// The identifier of the <see cref="AxesValuesVisibility"/> dependency property.
         /// </summary>
@@ -1691,24 +1691,24 @@ namespace ag.WPF.Chart
             set { SetValue(AxesFontStretchProperty, value); }
         }
         /// <summary>
-        /// Gets or sets the text which appears on the top/bottom of y-axis.
+        /// Gets or sets the text which appears on the top/bottom of the vertical axis.
         /// </summary>
         /// <remarks>This property will have no effect if <see cref="ChartStyle"/> property is set to one of the following: <see cref="ChartStyle.SolidPie"/>, <see cref="ChartStyle.SlicedPie"/>, <see cref="ChartStyle.Doughnut"/>, <see cref="ChartStyle.Radar"/>, <see cref="ChartStyle.RadarWithMarkers"/>, <see cref="ChartStyle.RadarArea"/>.</remarks>
-        [Category("ChartAxes"), Description("Gets or sets the text which appears on the top/bottom of y-axis")]
-        public string YAxisText
+        [Category("ChartAxes"), Description("Gets or sets the text which appears on the top/bottom of the vertical axis")]
+        public string VerticalAxisTitle
         {
-            get { return (string)GetValue(YAxisTextProperty); }
-            set { SetValue(YAxisTextProperty, value); }
+            get { return (string)GetValue(VerticalAxisTitleProperty); }
+            set { SetValue(VerticalAxisTitleProperty, value); }
         }
         /// <summary>
-        /// Gets or sets the text which appears on the right/left of x-axis.
+        /// Gets or sets the text which appears on right/left of the horizontal axis.
         /// </summary>
         /// <remarks>This property will have no effect if <see cref="ChartStyle"/> property is set to one of the following: <see cref="ChartStyle.SolidPie"/>, <see cref="ChartStyle.SlicedPie"/>, <see cref="ChartStyle.Doughnut"/>, <see cref="ChartStyle.Radar"/>, <see cref="ChartStyle.RadarWithMarkers"/>, <see cref="ChartStyle.RadarArea"/>.</remarks>
-        [Category("ChartAxes"), Description("Gets or sets the text which appears on the right/left of x-axis")]
-        public string XAxisText
+        [Category("ChartAxes"), Description("Gets or sets the text which appears on right/left of the horizontal axis")]
+        public string HorizontalAxisTitle
         {
-            get { return (string)GetValue(XAxisTextProperty); }
-            set { SetValue(XAxisTextProperty, value); }
+            get { return (string)GetValue(HorizontalAxisTitleProperty); }
+            set { SetValue(HorizontalAxisTitleProperty, value); }
         }
         /// <summary>
         /// Gets or sets the chart Title.
@@ -2522,40 +2522,40 @@ namespace ag.WPF.Chart
             RaiseEvent(e);
         }
 
-        private static void OnYAxisTextChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
+        private static void OnVerticalAxisTitleChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
             if (!(sender is Chart ch)) return;
-            ch.OnYAxisTextChanged((string)e.OldValue, (string)e.NewValue);
+            ch.OnVerticalAxisTitleChanged((string)e.OldValue, (string)e.NewValue);
         }
         /// <summary>
-        /// Invoked just before the <see cref="YAxisTextChangedEvent"/> event is raised on control
+        /// Invoked just before the <see cref="VerticalAxisTitleChangedEvent"/> event is raised on control
         /// </summary>
         /// <param name="oldValue">Old value</param>
         /// <param name="newValue">New value</param>
-        protected void OnYAxisTextChanged(string oldValue, string newValue)
+        protected void OnVerticalAxisTitleChanged(string oldValue, string newValue)
         {
             var e = new RoutedPropertyChangedEventArgs<string>(oldValue, newValue)
             {
-                RoutedEvent = YAxisTextChangedEvent
+                RoutedEvent = VerticalAxisTitleChangedEvent
             };
             RaiseEvent(e);
         }
 
-        private static void OnXAxisTextChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
+        private static void OnHorizontalAxisTitleChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
             if (!(sender is Chart ch)) return;
-            ch.OnXAxisTextChanged((string)e.OldValue, (string)e.NewValue);
+            ch.OnHorizontalAxisTitleChanged((string)e.OldValue, (string)e.NewValue);
         }
         /// <summary>
-        /// Invoked just before the <see cref="XAxisTextChangedEvent"/> event is raised on control
+        /// Invoked just before the <see cref="HorizontalAxisTitleChangedEvent"/> event is raised on control
         /// </summary>
         /// <param name="oldValue">Old value</param>
         /// <param name="newValue">New value</param>
-        protected void OnXAxisTextChanged(string oldValue, string newValue)
+        protected void OnHorizontalAxisTitleChanged(string oldValue, string newValue)
         {
             var e = new RoutedPropertyChangedEventArgs<string>(oldValue, newValue)
             {
-                RoutedEvent = XAxisTextChangedEvent
+                RoutedEvent = HorizontalAxisTitleChangedEvent
             };
             RaiseEvent(e);
         }
@@ -3190,31 +3190,31 @@ namespace ag.WPF.Chart
             RoutingStrategy.Bubble, typeof(RoutedPropertyChangedEventHandler<FontFamily>), typeof(Chart));
 
         /// <summary>
-        /// Occurs when the <see cref="YAxisText"/> property has been changed in some way
+        /// Occurs when the <see cref="VerticalAxisTitle"/> property has been changed in some way
         /// </summary>
-        public event RoutedPropertyChangedEventHandler<string> YAxisTextChanged
+        public event RoutedPropertyChangedEventHandler<string> VerticalAxisTitleChanged
         {
-            add { AddHandler(YAxisTextChangedEvent, value); }
-            remove { RemoveHandler(YAxisTextChangedEvent, value); }
+            add { AddHandler(VerticalAxisTitleChangedEvent, value); }
+            remove { RemoveHandler(VerticalAxisTitleChangedEvent, value); }
         }
         /// <summary>
-        /// Identifies the <see cref="YAxisTextChanged"/> routed event
+        /// Identifies the <see cref="VerticalAxisTitleChanged"/> routed event
         /// </summary>
-        public static readonly RoutedEvent YAxisTextChangedEvent = EventManager.RegisterRoutedEvent("YAxisTextChanged",
+        public static readonly RoutedEvent VerticalAxisTitleChangedEvent = EventManager.RegisterRoutedEvent("VerticalAxisTitleChanged",
             RoutingStrategy.Bubble, typeof(RoutedPropertyChangedEventHandler<string>), typeof(Chart));
 
         /// <summary>
-        /// Occurs when the <see cref="XAxisText"/> property has been changed in some way
+        /// Occurs when the <see cref="HorizontalAxisTitle"/> property has been changed in some way
         /// </summary>
-        public event RoutedPropertyChangedEventHandler<string> XAxisTextChanged
+        public event RoutedPropertyChangedEventHandler<string> HorizontalAxisTitleChanged
         {
-            add { AddHandler(XAxisTextChangedEvent, value); }
-            remove { RemoveHandler(XAxisTextChangedEvent, value); }
+            add { AddHandler(HorizontalAxisTitleChangedEvent, value); }
+            remove { RemoveHandler(HorizontalAxisTitleChangedEvent, value); }
         }
         /// <summary>
-        /// Identifies the <see cref="XAxisTextChanged"/> routed event
+        /// Identifies the <see cref="HorizontalAxisTitleChanged"/> routed event
         /// </summary>
-        public static readonly RoutedEvent XAxisTextChangedEvent = EventManager.RegisterRoutedEvent("XAxisTextChanged",
+        public static readonly RoutedEvent HorizontalAxisTitleChangedEvent = EventManager.RegisterRoutedEvent("HorizontalAxisTitleChanged",
             RoutingStrategy.Bubble, typeof(RoutedPropertyChangedEventHandler<string>), typeof(Chart));
 
         /// <summary>
