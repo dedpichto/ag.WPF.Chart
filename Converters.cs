@@ -229,7 +229,11 @@ namespace ag.WPF.Chart
 
             // round max to next integer
             diff = Math.Ceiling(diff);
-            var realDiff = Math.Abs(diff);
+            var pm = Math.Abs((int)diff).ToString().Length - 1;
+            var p = pm >= 3 ? pm - 1 : pm;
+            // do not increase max for integers that are equal to 10 power
+            if (diff % Math.Pow(10, p) != 0)
+                diff = Math.Sign(diff) * roundInt((int)Math.Abs(diff), (int)Math.Pow(10, pm));
 
             if (fractionPower > 0)
             {
@@ -237,18 +241,14 @@ namespace ag.WPF.Chart
             }
 
             var power = Math.Abs((int)diff).ToString().Length - 1;
-
-            var p = power >= 3 ? power - 1 : power;
-            // do not increase max for integers that are equal to 10 power
-            if (diff % Math.Pow(10, p) != 0)
-                diff = Math.Sign(diff) * roundInt((int)Math.Abs(diff), (int)Math.Pow(10, power));
+            
             // difference is alway max
             // get all available integer lines counts
             var lines = calculatedSteps(power, diff).Where(l => IsInteger(l)).OrderBy(l => l).Distinct().ToArray();
             // calculate real size for each step
             var sizes = lines.Select(s => radius / s).ToArray();
 
-            var items = sizes.Select((size, index) => new { size, index }).Where(a => a.size >= fontHeight).OrderByDescending(a => a.index);
+            var items = sizes.Select((size, index) => new { size, index }).Where(a => a.size >= fontHeight+4).OrderByDescending(a => a.index);
             if (items.Any())
             {
                 foreach (var a in items)
@@ -336,7 +336,11 @@ namespace ag.WPF.Chart
             var units = 0.0;
             // round min to prevous integer
             min = Math.Floor(min);
-            var realDiff = Math.Abs(min);
+            var pm = Math.Abs((int)min).ToString().Length - 1;
+            var p = pm >= 3 ? pm - 1 : pm;
+            // do not increase max for integers that are equal to 10 power
+            if (min % Math.Pow(10, p) != 0)
+                min = Math.Sign(min) * roundInt((int)Math.Abs(min), (int)Math.Pow(10, pm));
 
             if (fractionPower > 0)
             {
@@ -344,11 +348,7 @@ namespace ag.WPF.Chart
             }
 
             var power = Math.Abs((int)min).ToString().Length - 1;
-
-            var p = power >= 3 ? power - 1 : power;
-            // do not increase max for integers that are equal to 10 power
-            if (min % Math.Pow(10, p) != 0)
-                min = Math.Sign(min) * roundInt((int)Math.Abs(min), (int)Math.Pow(10, power));
+            
             // difference is always equal absolute value of min
             var diff = Math.Abs(min);
             // get all available integer lines counts
@@ -356,7 +356,7 @@ namespace ag.WPF.Chart
             // calculate real size for each step
             var sizes = lines.Select(s => radius / s).ToArray();
 
-            var items = sizes.Select((size, index) => new { size, index }).Where(a => a.size >= fontHeight).OrderByDescending(a => a.index);
+            var items = sizes.Select((size, index) => new { size, index }).Where(a => a.size >= fontHeight+4).OrderByDescending(a => a.index);
             if (items.Any())
             {
                 foreach (var a in items)
