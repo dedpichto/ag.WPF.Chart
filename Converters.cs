@@ -229,7 +229,7 @@ namespace ag.WPF.Chart
 
             // round max to next integer
             diff = Math.Ceiling(diff);
-            var realDiff = diff;
+            var realDiff = Math.Abs(diff);
 
             if (fractionPower > 0)
             {
@@ -255,13 +255,14 @@ namespace ag.WPF.Chart
             int lineIndex = -1;
             if (allSuitableSizes.Any())
             {
-                if (Math.Abs(realDiff) > 1)
+                if (realDiff > 1)
                 {
                     for (var i = allSuitableSizes.Length - 1; i >= 0; i--)
                     {
-                        if (IsInteger(lines[allSuitableSizes[i].index] / realDiff))
+                        if (IsInteger(diff / lines[allSuitableSizes[i].index]))
                         {
                             lineIndex = allSuitableSizes[i].index;
+                            break;
                         }
                     }
                 }
@@ -314,6 +315,7 @@ namespace ag.WPF.Chart
             var units = 0.0;
             // round min to prevous integer
             min = Math.Floor(min);
+            var realDiff = Math.Abs(min);
 
             if (fractionPower > 0)
             {
@@ -332,12 +334,35 @@ namespace ag.WPF.Chart
             var lines = calculatedSteps(power, Math.Abs(min)).Where(l => IsInteger(l)).OrderBy(l => l).Distinct().ToArray();
             // calculate real size for each step
             var sizes = lines.Select(s => radius / s).ToArray();
-            // get the largest step with real size more/equal font height
-            var item = sizes.Select((size, index) => new { size, index }).LastOrDefault(a => a.size >= fontHeight + 4);
-            if (item != null)
+
+            // get all steps with real size more/equal font height
+            var allSuitableSizes = sizes.Where(s => s >= fontHeight + 4).Select((size, index) => new { size, index }).ToArray();
+            // get largest lines count which gives integer division on diff
+            int lineIndex = -1;
+            if (allSuitableSizes.Any())
+            {
+                if (realDiff > 1)
+                {
+                    for (var i = allSuitableSizes.Length - 1; i >= 0; i--)
+                    {
+                        if (IsInteger(diff / lines[allSuitableSizes[i].index]))
+                        {
+                            lineIndex = allSuitableSizes[i].index;
+                            break;
+                        }
+                    }
+                }
+                else
+                {
+                    // in case of fraction numbers between 0 and 1 get the last index
+                    lineIndex = allSuitableSizes[allSuitableSizes.Length - 1].index;
+                }
+            }
+            //var item = sizes.Select((size, index) => new { size, index }).LastOrDefault(a => a.size >= fontHeight + 4);
+            if (lineIndex != -1)
             {
                 // change lines count to selected one
-                linesCount = (int)lines[item.index];
+                linesCount = (int)lines[lineIndex];
                 // prepare step
                 stepSize = diff / linesCount;
                 stepLength = radius / linesCount;
@@ -380,6 +405,8 @@ namespace ag.WPF.Chart
             max = Math.Ceiling(max);
             // round min to prevous integer
             min = Math.Floor(min);
+
+            var realDiff = Math.Abs(splitSides ? Math.Max(Math.Abs(max), Math.Abs(min)) : getDiff(max, min));
 
             if (fractionPower > 0)
             {
@@ -463,7 +490,7 @@ namespace ag.WPF.Chart
             {
                 tempLines = Utils.StyleRadar(chartStyle)
                    ? getLineNumbersForComplexRadar(Math.Max(powerMax, powerMin), absoluteMax, radius, fontHeight, diff, min)
-                   : getLineNumbersForCoplex(Math.Max(powerMax, powerMin), absoluteMax, radius, fontHeight, diff, min);
+                   : getLineNumbersForComplex(Math.Max(powerMax, powerMin), absoluteMax, radius, fontHeight, diff, realDiff);
                 if (tempLines != 0)
                 {
                     // change lines count to selected one
@@ -498,7 +525,7 @@ namespace ag.WPF.Chart
             }
             tempLines = Utils.StyleRadar(chartStyle)
                 ? getLineNumbersForComplexRadar(Math.Max(powerMax, powerMin), Math.Abs(diff), radius, fontHeight, diff, min)
-                : getLineNumbersForCoplex(Math.Max(powerMax, powerMin), Math.Abs(diff), radius, fontHeight, diff, min);
+                : getLineNumbersForComplex(Math.Max(powerMax, powerMin), Math.Abs(diff), radius, fontHeight, diff, realDiff);
             if (tempLines > 0)
             {
                 // change lines count to selected one
@@ -597,15 +624,43 @@ namespace ag.WPF.Chart
             return 0;
         }
 
-        private static int getLineNumbersForCoplex(int power, double max, double radius, double fontHeight, double diff, double min)
+        private static int getLineNumbersForComplex(int power, double max, double radius, double fontHeight, double diff, double realDiff)
         {
             var lines = calculatedSteps(power, max).Where(l => IsInteger(l)).OrderBy(l => l).Distinct().ToArray();
             var sizes = lines.Select(s => radius / s).ToArray();
-            var splitItem = sizes.Select((size, index) => new { size, index }).LastOrDefault(a => a.size >= fontHeight + 4);
-            if (splitItem != null)
+
+            // get all steps with real size more/equal font height
+            var allSuitableSizes = sizes.Where(s => s >= fontHeight + 4).Select((size, index) => new { size, index }).ToArray();
+            // get largest lines count which gives integer division on diff
+            int lineIndex = -1;
+            if (allSuitableSizes.Any())
             {
-                return (int)lines[splitItem.index];
+                if (realDiff > 1)
+                {
+                    for (var i = allSuitableSizes.Length - 1; i >= 0; i--)
+                    {
+                        if (IsInteger(diff / lines[allSuitableSizes[i].index]))
+                        {
+                            lineIndex = allSuitableSizes[i].index;
+                            break;
+                        }
+                    }
+                }
+                else
+                {
+                    // in case of fraction numbers between 0 and 1 get the last index
+                    lineIndex = allSuitableSizes[allSuitableSizes.Length - 1].index;
+                }
             }
+            if (lineIndex != -1)
+            {
+                return (int)lines[lineIndex];
+            }
+            //var splitItem = sizes.Select((size, index) => new { size, index }).LastOrDefault(a => a.size >= fontHeight + 4);
+            //if (splitItem != null)
+            //{
+            //    return (int)lines[splitItem.index];
+            //}
             return 0;
         }
 
@@ -4400,9 +4455,13 @@ namespace ag.WPF.Chart
                         var num = !Utils.StyleFullStacked(chartStyle)
                             ? (linesCountY - i) * maxMin / linesCountY
                             : (linesCountY - i) * 10;
-                        var number = Utils.StyleFullStacked(chartStyle) ? num.ToString(culture) : customValuesY.Length > index
-                            ? customValuesY[index++]
-                            : formatY.EndsWith("%") ? num.ToString(formatY.Substring(0, formatY.Length - 1)) + "%" : num.ToString(formatY);
+                        var number = Utils.StyleFullStacked(chartStyle) 
+                            ? num.ToString(culture) 
+                            : customValuesY.Length > index
+                                ? customValuesY[index++]
+                                : formatY.EndsWith("%") 
+                                    ? num.ToString(formatY.Substring(0, formatY.Length - 1)) + "%" 
+                                    : num.ToString(formatY);
                         if (Utils.StyleFullStacked(chartStyle))
                             number += "%";
                         var fmt = new FormattedText(number, culture, FlowDirection.LeftToRight,
@@ -4623,10 +4682,10 @@ namespace ag.WPF.Chart
                 if (!Utils.IsInteger(stepSize))
                 {
                     var fractions = Utils.GetDecimalPlaces(stepSize);
-                    if (formatX.EndsWith("%"))
-                        formatX = $"{formatX.Substring(0, formatX.Length - 1)}{culture.NumberFormat.NumberDecimalSeparator}{new string('0', fractions)}%";
+                    if (formatY.EndsWith("%"))
+                        formatY = $"{formatY.Substring(0, formatY.Length - 1)}{culture.NumberFormat.NumberDecimalSeparator}{new string('0', fractions)}%";
                     else
-                        formatX += $"{culture.NumberFormat.NumberDecimalSeparator}{new string('0', fractions)}";
+                        formatY += $"{culture.NumberFormat.NumberDecimalSeparator}{new string('0', fractions)}";
                 }
 
                 if (chartStyle == ChartStyle.FullStackedBars)
