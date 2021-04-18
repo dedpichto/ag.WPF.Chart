@@ -655,9 +655,16 @@ namespace ag.WPF.Chart
             _pathHorzLines = GetTemplateChild(ElementPathHorzLines) as Path;
             _pathVertLines = GetTemplateChild(ElementPathVertLines) as Path;
 
+            if (_canvas != null)
+            {
+                _canvas.Loaded -= Canvas_Loaded;
+            }
             _canvas = GetTemplateChild(ElementCanvas) as Canvas;
-
-            _canvas.Loaded += Canvas_Loaded;
+            if (_canvas != null)
+            {
+                _canvas.Loaded += Canvas_Loaded;
+            }
+                
             if (_pieImage != null)
             {
                 _pieImage.MouseMove -= PieImage_MouseMove;
