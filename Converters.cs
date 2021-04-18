@@ -447,7 +447,205 @@ namespace ag.WPF.Chart
             // round min to prevous integer
             min = Math.Floor(min);
 
-            var realDiff = Math.Abs(splitSides ? Math.Max(Math.Abs(max), Math.Abs(min)) : getDiff(max, min));
+            var pMax = Math.Abs((int)max).ToString().Length - 1;
+            var pMin = Math.Abs((int)min).ToString().Length - 1;
+
+            // do not increase max for integers that are equal to 10 power
+            var p = pMax >= 3 ? pMax - 1 : pMax;
+            if (max % Math.Pow(10, p) != 0)
+                max = Math.Sign(max) * roundInt((int)Math.Abs(max), (int)Math.Pow(10, pMax));
+            // do not increase max for integers that are equal to 10 power
+            p = pMin >= 3 ? pMin - 1 : pMin;
+            if (min % Math.Pow(10, p) != 0)
+                min = Math.Sign(min) * roundInt((int)Math.Abs(min), (int)Math.Pow(10, pMin));
+
+            if (fractionPower > 0)
+            {
+                max *= Math.Pow(10, fractionPower);
+                min = -Math.Abs(min * Math.Pow(10, fractionPower));
+            }
+
+            var powerMax = Math.Abs((int)max).ToString().Length - 1;
+            var powerMin = Math.Abs((int)min).ToString().Length - 1;
+
+            // store absolute values of max and min
+            var absMax = Math.Abs(max);
+            var absMin = Math.Abs(min);
+            while (!isEven(absMax) && !is5Delimited(absMax))
+                absMax++;
+            while (!isEven(absMin) && !is5Delimited(absMin))
+                absMin++;
+
+            // TODO - both should be either even or 5 dtlimited
+
+            max = Math.Sign(max) * absMax;
+            min = Math.Sign(min) * absMin;
+
+            // get absolute max
+            var absoluteMax = Math.Max(absMax, absMin);
+            double stepSize;
+            double stepLength;
+            double units;
+            double temp;
+            // store max and min difference
+            var diff = splitSides ? absoluteMax : getDiff(max, min);
+            var exit = false;
+            if (absMax < 10 && absMax > absMin)
+            {
+                linesCount = (int)absMax;
+                exit = true;
+            }
+            else if (absMin < 10 && absMin > absMax)
+            {
+                linesCount = (int)absMin;
+                exit = true;
+            }
+            if (exit)
+            {
+                // prepare step
+                stepSize = diff / linesCount;
+                stepLength = radius / linesCount;
+                // prepare units
+                units = Math.Abs(radius / diff);
+
+                // find zero point
+                temp = min;
+                while (temp < 0)
+                {
+                    temp += stepSize;
+                    zeroPoint.Point.Y -= stepSize * units;
+                    zeroPoint.Level++;
+                }
+
+                if (fractionPower > 0)
+                {
+                    var m = Math.Pow(10, fractionPower);
+                    min /= m;
+                    max /= m;
+                    units *= m;
+                    stepSize /= m;
+                }
+
+                return (max, min, linesCount, stepSize, stepLength, units, zeroPoint);
+            }
+            if (splitSides)
+            {
+                tempLines =  getLineNumbersForComplex(Math.Max(powerMax, powerMin), absoluteMax, radius, fontHeight, diff, min);
+                if (tempLines != 0)
+                {
+                    // change lines count to selected one
+                    linesCount = tempLines;
+                    //if(splitSides && )
+                    // prepare step
+                    stepSize = diff / linesCount;
+                    stepLength = radius / linesCount;
+                    // prepare units
+                    units = Math.Abs(radius / diff);
+
+                    // find zero point
+                    temp = min;
+                    while (temp < 0)
+                    {
+                        temp += stepSize;
+                        zeroPoint.Point.Y -= stepSize * units;
+                        zeroPoint.Level++;
+                    }
+
+                    if (fractionPower > 0)
+                    {
+                        var m = Math.Pow(10, fractionPower);
+                        min /= m;
+                        max /= m;
+                        units *= m;
+                        stepSize /= m;
+                    }
+
+                    return (max, min, linesCount, stepSize, stepLength, units, zeroPoint);
+                }
+            }
+            tempLines =  getLineNumbersForComplex(Math.Max(powerMax, powerMin), Math.Abs(diff), radius, fontHeight, diff, min);
+            if (tempLines > 0)
+            {
+                // change lines count to selected one
+                linesCount = tempLines;
+                //if(splitSides && )
+                // prepare step
+                stepSize = diff / linesCount;
+                stepLength = radius / linesCount;
+                // prepare units
+                units = Math.Abs(radius / diff);
+            }
+            else
+            {
+                if (Math.Abs(max) > Math.Abs(min))
+                {
+                    var sign = Math.Sign(min);
+                    var prevMin = Math.Abs(min);
+                    min = 0;
+                    linesCount--;
+                    diff = getDiff(max, min);
+                    stepSize = diff / linesCount;
+                    while (!IsInteger(stepSize) || stepSize < prevMin)
+                    {
+                        max = Math.Sign(max) * roundInt((int)Math.Abs(max), (int)Math.Pow(10, powerMax));
+                        diff = getDiff(max, min);
+                        stepSize = diff / linesCount;
+                    }
+                    linesCount++;
+                    min = sign * stepSize;
+                    stepLength = radius / linesCount;
+                    units = Math.Abs(radius / (diff + Math.Abs(min)));
+                }
+                else
+                {
+                    var sign = Math.Sign(max);
+                    var prevMax = Math.Abs(max);
+                    max = 0;
+                    linesCount--;
+                    diff = getDiff(max, min);
+                    stepSize = diff / linesCount;
+                    while (!IsInteger(stepSize) || stepSize < prevMax)
+                    {
+                        min = Math.Sign(min) * roundInt((int)Math.Abs(min), (int)Math.Pow(10, powerMin));
+                        diff = getDiff(max, min);
+                        stepSize = diff / linesCount;
+                    }
+                    linesCount++;
+                    max = sign * stepSize;
+                    stepLength = radius / linesCount;
+                    units = Math.Abs(radius / (diff + max));
+                }
+            }
+
+            // find zero point
+            temp = min;
+            while (temp < 0)
+            {
+                temp += stepSize;
+                zeroPoint.Point.Y -= stepSize * units;
+                zeroPoint.Level++;
+            }
+
+            if (fractionPower > 0)
+            {
+                var m = Math.Pow(10, fractionPower);
+                min /= m;
+                max /= m;
+                units *= m;
+                stepSize /= m;
+            }
+
+            return (max, min, linesCount, stepSize, stepLength, units, zeroPoint);
+        }
+
+        private static (double max, double min, int linesCount, double stepSize, double stepLength, double units, ZeroPoint zeroPoint) getMeasuresForComplexRadar(ChartStyle chartStyle, double max, double min, int linesCount, double radius, double fontHeight, int fractionPower, ZeroPoint zeroPoint, bool splitSides)
+        {
+            int tempLines;
+
+            // round max to next integer
+            max = Math.Ceiling(max);
+            // round min to prevous integer
+            min = Math.Floor(min);
 
             if (fractionPower > 0)
             {
@@ -531,7 +729,7 @@ namespace ag.WPF.Chart
             {
                 tempLines = Utils.StyleRadar(chartStyle)
                    ? getLineNumbersForComplexRadar(Math.Max(powerMax, powerMin), absoluteMax, radius, fontHeight, diff, min)
-                   : getLineNumbersForComplex(Math.Max(powerMax, powerMin), absoluteMax, radius, fontHeight, diff, min, realDiff);
+                   : getLineNumbersForComplex(Math.Max(powerMax, powerMin), absoluteMax, radius, fontHeight, diff, min);
                 if (tempLines != 0)
                 {
                     // change lines count to selected one
@@ -566,7 +764,7 @@ namespace ag.WPF.Chart
             }
             tempLines = Utils.StyleRadar(chartStyle)
                 ? getLineNumbersForComplexRadar(Math.Max(powerMax, powerMin), Math.Abs(diff), radius, fontHeight, diff, min)
-                : getLineNumbersForComplex(Math.Max(powerMax, powerMin), Math.Abs(diff), radius, fontHeight, diff, min, realDiff);
+                : getLineNumbersForComplex(Math.Max(powerMax, powerMin), Math.Abs(diff), radius, fontHeight, diff, min);
             if (tempLines > 0)
             {
                 // change lines count to selected one
@@ -665,7 +863,7 @@ namespace ag.WPF.Chart
             return 0;
         }
 
-        private static int getLineNumbersForComplex(int power, double max, double radius, double fontHeight, double diff, double min, double realDiff)
+        private static int getLineNumbersForComplex(int power, double max, double radius, double fontHeight, double diff, double min)
         {
             var lines = calculatedSteps(power, max).Where(l => IsInteger(l)).OrderBy(l => l).Distinct().ToArray();
             var sizes = lines.Select(s => radius / s).ToArray();
@@ -882,7 +1080,12 @@ namespace ag.WPF.Chart
             else if (maxIsZero)
                 return getMeasuresForNegative(min, linesCount, radius, fontHeight, getMaxFractionPower(values), new ZeroPoint { Point = centerPoint });
             else
-                return getMeasuresForComplex(chartStyle, max, min, linesCount, radius, fontHeight, getMaxFractionPower(values), new ZeroPoint { Point = centerPoint }, splitSides);
+            {
+                if(Utils.StyleRadar(chartStyle))
+                    return getMeasuresForComplexRadar(chartStyle, max, min, linesCount, radius, fontHeight, getMaxFractionPower(values), new ZeroPoint { Point = centerPoint }, splitSides);
+                else
+                    return getMeasuresForComplex(chartStyle, max, min, linesCount, radius, fontHeight, getMaxFractionPower(values), new ZeroPoint { Point = centerPoint }, splitSides);
+            }
         }
 
         // Return PointFs to define a star.
