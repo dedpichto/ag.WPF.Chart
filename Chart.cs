@@ -1067,46 +1067,50 @@ namespace ag.WPF.Chart
                     }
                     else
                     {
-                        rc = s.RealStockHighRects.FirstOrDefault(r => r.Contains(e.GetPosition(_canvas)));
-                        if (rc != default)
-                        {
-                            var index = s.RealStockHighRects.IndexOf(rc);
-                            if (s.Values.Count <= index)
-                            {
-                                tooltip.Content = s.Name;
-                                break;
-                            }
-                            var content = $"High\t{s.Values[index].Value.HighValue.ToString(CultureInfo.InvariantCulture)}\n" +
-                                $"Low\t{s.Values[index].Value.LowValue.ToString(CultureInfo.InvariantCulture)}\n" +
-                                $"Close\t{s.Values[index].Value.CloseValue.ToString(CultureInfo.InvariantCulture)}";
-                            if (!string.IsNullOrEmpty(s.Values[index].CustomValue))
-                                content += $"\n{s.Values[index].CustomValue}";
-                            tooltip.Content = content;
-                        }
-                        else
-                        {
-                            rc = s.RealStockLowRects.FirstOrDefault(r => r.Contains(e.GetPosition(_canvas)));
-                            if (rc != default)
-                            {
-                                var index = s.RealStockLowRects.IndexOf(rc);
-                                if (s.Values.Count <= index)
-                                {
-                                    tooltip.Content = s.Name;
-                                    break;
-                                }
-                                var content = $"High\t{s.Values[index].Value.HighValue.ToString(CultureInfo.InvariantCulture)}\n" +
-                                    $"Low\t{s.Values[index].Value.LowValue.ToString(CultureInfo.InvariantCulture)}\n" +
-                                    $"Close\t{s.Values[index].Value.CloseValue.ToString(CultureInfo.InvariantCulture)}";
-                                if (!string.IsNullOrEmpty(s.Values[index].CustomValue))
-                                    content += $"\n{s.Values[index].CustomValue}";
-                                tooltip.Content = content;
-                            }
-                            else
-                            {
-                                tooltip.Content = s.Name;
-                            }
-                        }
+                        tooltip.Content = s.Name;
                     }
+                    //else
+                    //{
+                    //    rc = s.RealStockHighRects.FirstOrDefault(r => r.Contains(e.GetPosition(_canvas)));
+                    //    if (rc != default)
+                    //    {
+                    //        var index = s.RealStockHighRects.IndexOf(rc);
+                    //        if (s.Values.Count <= index)
+                    //        {
+                    //            tooltip.Content = s.Name;
+                    //            break;
+                    //        }
+                    //        var content = $"High\t{s.Values[index].Value.HighValue.ToString(CultureInfo.InvariantCulture)}\n" +
+                    //            $"Low\t{s.Values[index].Value.LowValue.ToString(CultureInfo.InvariantCulture)}\n" +
+                    //            $"Close\t{s.Values[index].Value.CloseValue.ToString(CultureInfo.InvariantCulture)}";
+                    //        if (!string.IsNullOrEmpty(s.Values[index].CustomValue))
+                    //            content += $"\n{s.Values[index].CustomValue}";
+                    //        tooltip.Content = content;
+                    //    }
+                    //    else
+                    //    {
+                    //        rc = s.RealStockLowRects.FirstOrDefault(r => r.Contains(e.GetPosition(_canvas)));
+                    //        if (rc != default)
+                    //        {
+                    //            var index = s.RealStockLowRects.IndexOf(rc);
+                    //            if (s.Values.Count <= index)
+                    //            {
+                    //                tooltip.Content = s.Name;
+                    //                break;
+                    //            }
+                    //            var content = $"High\t{s.Values[index].Value.HighValue.ToString(CultureInfo.InvariantCulture)}\n" +
+                    //                $"Low\t{s.Values[index].Value.LowValue.ToString(CultureInfo.InvariantCulture)}\n" +
+                    //                $"Close\t{s.Values[index].Value.CloseValue.ToString(CultureInfo.InvariantCulture)}";
+                    //            if (!string.IsNullOrEmpty(s.Values[index].CustomValue))
+                    //                content += $"\n{s.Values[index].CustomValue}";
+                    //            tooltip.Content = content;
+                    //        }
+                    //        else
+                    //        {
+                    //            tooltip.Content = s.Name;
+                    //        }
+                    //    }
+                    //}
                     break;
                 default:
                     tooltip.Content = s.Name;
