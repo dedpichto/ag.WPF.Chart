@@ -1944,16 +1944,16 @@ namespace ag.WPF.Chart
             {
                 newValueNotifyCollectionChanged.CollectionChanged += chart.ItemsSource_CollectionChanged;
             }
-            chart.OnItemsSourceChanged((IEnumerable<ISeries>)e.OldValue, (IEnumerable<ISeries>)e.NewValue);
+            chart.OnItemsSourceChanged((IEnumerable)e.OldValue, (IEnumerable)e.NewValue);
         }
         /// <summary>
         /// Invoked just before the <see cref="ItemsSourceChangedEvent"/> event is raised on control
         /// </summary>
         /// <param name="oldValue">Old value</param>
         /// <param name="newValue">New value</param>
-        protected void OnItemsSourceChanged(IEnumerable<ISeries> oldValue, IEnumerable<ISeries> newValue)
+        protected void OnItemsSourceChanged(IEnumerable oldValue, IEnumerable newValue)
         {
-            var e = new RoutedPropertyChangedEventArgs<IEnumerable<ISeries>>(oldValue, newValue)
+            var e = new RoutedPropertyChangedEventArgs<IEnumerable>(oldValue, newValue)
             {
                 RoutedEvent = ItemsSourceChangedEvent
             };
@@ -2780,7 +2780,7 @@ namespace ag.WPF.Chart
         /// <summary>
         /// Occurs when the <see cref="ItemsSource"/> property has been changed in some way
         /// </summary>
-        public event RoutedPropertyChangedEventHandler<IEnumerable<ISeries>> ItemsSourceChanged
+        public event RoutedPropertyChangedEventHandler<IEnumerable> ItemsSourceChanged
         {
             add { AddHandler(ItemsSourceChangedEvent, value); }
             remove { RemoveHandler(ItemsSourceChangedEvent, value); }
@@ -2789,7 +2789,7 @@ namespace ag.WPF.Chart
         /// Identifies the <see cref="ItemsSourceChanged"/> routed event
         /// </summary>
         public static readonly RoutedEvent ItemsSourceChangedEvent = EventManager.RegisterRoutedEvent("ItemsSourceChanged",
-            RoutingStrategy.Bubble, typeof(RoutedPropertyChangedEventHandler<ObservableCollection<ISeries>>), typeof(Chart));
+            RoutingStrategy.Bubble, typeof(RoutedPropertyChangedEventHandler<IEnumerable>), typeof(Chart));
 
         /// <summary>
         /// Occurs when the <see cref="ChartBoundary"/> property has been changed in some way
