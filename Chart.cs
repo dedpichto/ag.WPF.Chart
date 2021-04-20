@@ -21,6 +21,7 @@ using ag.WPF.Chart.Annotations;
 using ag.WPF.Chart.Values;
 using ag.WPF.Chart.Series;
 using Path = System.Windows.Shapes.Path;
+using System.Collections;
 
 namespace ag.WPF.Chart
 {
@@ -619,7 +620,7 @@ namespace ag.WPF.Chart
         /// <summary>
         /// The identifier of the <see cref="ItemsSource"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty ItemsSourceProperty = DependencyProperty.Register(nameof(ItemsSource), typeof(IEnumerable<ISeries>), typeof(Chart), new FrameworkPropertyMetadata(null, OnItemsSourceChanged));
+        public static readonly DependencyProperty ItemsSourceProperty = DependencyProperty.Register(nameof(ItemsSource), typeof(IEnumerable), typeof(Chart), new FrameworkPropertyMetadata(null, OnItemsSourceChanged));
 
         #endregion
 
@@ -685,9 +686,9 @@ namespace ag.WPF.Chart
             if (ItemsSource == null) return;
             // the event is raised every time the control becomes visible
             // if all paths have been added before - just exit
-            if (!ItemsSource.SelectMany(s => s.Paths).Any(p => p != null && !(bool)p.GetValue(Statics.AddedToCanvasProperty)))
+            if (!ItemsSource.OfType<ISeries>().SelectMany(s => s.Paths).Any(p => p != null && !(bool)p.GetValue(Statics.AddedToCanvasProperty)))
                 return;
-            foreach (var series in ItemsSource)
+            foreach (var series in ItemsSource.OfType<ISeries>())
             {
                 for (var pathIndex = 0; pathIndex < series.Paths.Count(); pathIndex++)
                 {
@@ -907,7 +908,7 @@ namespace ag.WPF.Chart
                         {
                             lg.Index--;
                         }
-                        foreach (var sr in ItemsSource.Where(sc => sc.Index > series.Index).ToArray())
+                        foreach (var sr in ItemsSource.OfType<ISeries>().Where(sc => sc.Index > series.Index).ToArray())
                         {
                             sr.Index--;
                             foreach (var p in sr.Paths)
@@ -950,7 +951,7 @@ namespace ag.WPF.Chart
 
         private void PieImage_MouseMove(object sender, MouseEventArgs e)
         {
-            if (!ItemsSource.Any()) return;
+            if (!ItemsSource.OfType<ISeries>().Any()) return;
             if (!(_pieImage.ToolTip is ToolTip tooltip)) return;
             var position = e.GetPosition(_pieImage);
             if (_pieImage.Source is DrawingImage dw)
@@ -976,7 +977,7 @@ namespace ag.WPF.Chart
             tooltip.Placement = PlacementMode.Mouse;
             tooltip.HorizontalOffset = 0;
             tooltip.VerticalOffset = 0;
-            tooltip.Content = ItemsSource.First().Name;
+            tooltip.Content = ItemsSource.OfType<ISeries>().First().Name;
         }
 
         private void Series_PropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -986,7 +987,7 @@ namespace ag.WPF.Chart
                 case "Values":
                     if (sender is ISeries series)
                     {
-                        foreach (var sr in ItemsSource.Where(s => s.Index != series.Index))
+                        foreach (var sr in ItemsSource.OfType<ISeries>().Where(s => s.Index != series.Index))
                         {
                             foreach (var p in sr.Paths)
                             {
@@ -1375,7 +1376,7 @@ namespace ag.WPF.Chart
             binding = BindingOperations.GetMultiBindingExpression(_pathVertLines, Path.DataProperty);
             if (binding != null)
                 binding.UpdateTarget();
-            foreach (var series in ItemsSource)
+            foreach (var series in ItemsSource.OfType<ISeries>())
             {
                 foreach (var p in series.Paths)
                 {
@@ -1430,9 +1431,9 @@ namespace ag.WPF.Chart
         /// Gets/sets the collection of <see cref="Series"/> objects associated with chart control.
         /// </summary>
         [Category("ChartAppearance"), Description("Gets or sets the collection of Series objects associated with chart control")]
-        public IEnumerable<ISeries> ItemsSource
+        public IEnumerable ItemsSource
         {
-            get { return (IEnumerable<ISeries>)GetValue(ItemsSourceProperty); }
+            get { return (IEnumerable)GetValue(ItemsSourceProperty); }
             set { SetValue(ItemsSourceProperty, value); }
         }
         /// <summary>
