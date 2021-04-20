@@ -66,14 +66,6 @@ namespace ag.WPF.Chart.Series
         /// </summary>
         List<Point> RealPoints { get; }
         /// <summary>
-        /// Gets real coordinates of stock series high value rectangles
-        /// </summary>
-        List<Rect> RealStockHighRects { get; }
-        /// <summary>
-        /// Gets real coordinates of stock series low value rectangles
-        /// </summary>
-        List<Rect> RealStockLowRects { get; }
-        /// <summary>
         /// Gets array of series drawing paths
         /// </summary>
         Path[] Paths { get; }

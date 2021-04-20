@@ -80,23 +80,8 @@ namespace ag.WPF.Chart.Series
                 OnPropertyChanged();
             }
         }
-
-        ///// <inheritdoc />
-        //public BrushesCollection PieBrushes { get; private set; }
         /// <inheritdoc />
         public List<Rect> RealRects { get; } = new List<Rect>();
-        /// <inheritdoc />
-        public List<Rect> RealStockHighRects { get; } = new List<Rect>();
-        /// <inheritdoc />
-        public List<Rect> RealStockLowRects { get; } = new List<Rect>();
-        ///// <inheritdoc />
-        //public Path Path { get; private set; }
-        ///// <inheritdoc />
-        //public Path PositivePath { get; private set; }
-        ///// <inheritdoc />
-        //public Path NegativePath { get; private set; }
-        ///// <inheritdoc />
-        //public Path StockPath { get; private set; }
         /// <inheritdoc />
         public List<Point> RealPoints { get; } = new List<Point>();
         /// <inheritdoc />

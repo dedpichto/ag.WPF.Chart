@@ -1947,12 +1947,6 @@ namespace ag.WPF.Chart
                 case ColoredPaths.Stock:
                     currentSeries.RealRects.Clear();
                     break;
-                case ColoredPaths.Up:
-                    currentSeries.RealStockHighRects.Clear();
-                    break;
-                case ColoredPaths.Down:
-                    currentSeries.RealStockLowRects.Clear();
-                    break;
             }
 
             for (var i = 0; i < currentSeries.Values.Count; i++)
@@ -1977,6 +1971,10 @@ namespace ag.WPF.Chart
                             line = new LineGeometry(new Point(x, y1), new Point(x, y2));
                             gm.AddGeometry(line);
 
+                            y1 = centerY - currentSeries.Values[i].Value.CloseValue * units;
+                            y2 = centerY - currentSeries.Values[i].Value.OpenValue * units;
+                            var rect = new Rect(new Point(x - addition, y1), new Point(x + addition, y2));
+                            currentSeries.RealRects.Add(rect);
                             break;
                         }
                     case ColoredPaths.Up:
@@ -2036,12 +2034,6 @@ namespace ag.WPF.Chart
             {
                 case ColoredPaths.Stock:
                     currentSeries.RealRects.Clear();
-                    break;
-                case ColoredPaths.Up:
-                    currentSeries.RealStockHighRects.Clear();
-                    break;
-                case ColoredPaths.Down:
-                    currentSeries.RealStockLowRects.Clear();
                     break;
             }
 

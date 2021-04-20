@@ -1069,49 +1069,30 @@ namespace ag.WPF.Chart
                     {
                         tooltip.Content = s.Name;
                     }
-                    //else
-                    //{
-                    //    rc = s.RealStockHighRects.FirstOrDefault(r => r.Contains(e.GetPosition(_canvas)));
-                    //    if (rc != default)
-                    //    {
-                    //        var index = s.RealStockHighRects.IndexOf(rc);
-                    //        if (s.Values.Count <= index)
-                    //        {
-                    //            tooltip.Content = s.Name;
-                    //            break;
-                    //        }
-                    //        var content = $"High\t{s.Values[index].Value.HighValue.ToString(CultureInfo.InvariantCulture)}\n" +
-                    //            $"Low\t{s.Values[index].Value.LowValue.ToString(CultureInfo.InvariantCulture)}\n" +
-                    //            $"Close\t{s.Values[index].Value.CloseValue.ToString(CultureInfo.InvariantCulture)}";
-                    //        if (!string.IsNullOrEmpty(s.Values[index].CustomValue))
-                    //            content += $"\n{s.Values[index].CustomValue}";
-                    //        tooltip.Content = content;
-                    //    }
-                    //    else
-                    //    {
-                    //        rc = s.RealStockLowRects.FirstOrDefault(r => r.Contains(e.GetPosition(_canvas)));
-                    //        if (rc != default)
-                    //        {
-                    //            var index = s.RealStockLowRects.IndexOf(rc);
-                    //            if (s.Values.Count <= index)
-                    //            {
-                    //                tooltip.Content = s.Name;
-                    //                break;
-                    //            }
-                    //            var content = $"High\t{s.Values[index].Value.HighValue.ToString(CultureInfo.InvariantCulture)}\n" +
-                    //                $"Low\t{s.Values[index].Value.LowValue.ToString(CultureInfo.InvariantCulture)}\n" +
-                    //                $"Close\t{s.Values[index].Value.CloseValue.ToString(CultureInfo.InvariantCulture)}";
-                    //            if (!string.IsNullOrEmpty(s.Values[index].CustomValue))
-                    //                content += $"\n{s.Values[index].CustomValue}";
-                    //            tooltip.Content = content;
-                    //        }
-                    //        else
-                    //        {
-                    //            tooltip.Content = s.Name;
-                    //        }
-                    //    }
-                    //}
                     break;
+                case ChartStyle.OpenHighLowClose:
+                    rc = s.RealRects.FirstOrDefault(r => r.Contains(e.GetPosition(_canvas)));
+                    if (rc != default)
+                    {
+                        var index = s.RealRects.IndexOf(rc);
+                        if (s.Values.Count <= index)
+                        {
+                            tooltip.Content = s.Name;
+                            break;
+                        }
+                        var content = $"Open\t{s.Values[index].Value.OpenValue.ToString(CultureInfo.InvariantCulture)}\n" +
+                            $"High\t{s.Values[index].Value.HighValue.ToString(CultureInfo.InvariantCulture)}\n" +
+                            $"Low\t{s.Values[index].Value.LowValue.ToString(CultureInfo.InvariantCulture)}\n" +
+                            $"Close\t{s.Values[index].Value.CloseValue.ToString(CultureInfo.InvariantCulture)}";
+                        if (!string.IsNullOrEmpty(s.Values[index].CustomValue))
+                            content += $"\n{s.Values[index].CustomValue}";
+                        tooltip.Content = content;
+                    }
+                    else
+                    {
+                        tooltip.Content = s.Name;
+                    }
+                    return;
                 default:
                     tooltip.Content = s.Name;
                     break;
@@ -1130,16 +1111,8 @@ namespace ag.WPF.Chart
                 ChartStyle.RadarWithMarkers, ChartStyle.Waterfall, ChartStyle.HighLowClose, ChartStyle.OpenHighLowClose) || e.ClickCount != 2) return;
             var rc = s.RealRects.FirstOrDefault(r => r.Contains(e.GetPosition(_canvas)));
             if (rc == default)
-                rc = s.RealStockHighRects.FirstOrDefault(r => r.Contains(e.GetPosition(_canvas)));
-            if (rc == default)
-                rc = s.RealStockLowRects.FirstOrDefault(r => r.Contains(e.GetPosition(_canvas)));
-            if (rc == default)
                 return;
             var index = s.RealRects.IndexOf(rc);
-            if (index == -1)
-                index = s.RealStockHighRects.IndexOf(rc);
-            if (index == -1)
-                index = s.RealStockLowRects.IndexOf(rc);
             if (index == -1)
                 return;
             if (s.Values.Count <= index)
