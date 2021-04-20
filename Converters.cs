@@ -110,6 +110,33 @@ namespace ag.WPF.Chart
             return numbers.Select(n => GetDecimalPlaces(n)).Max();
         }
 
+        internal static (string numericPart, string literalPart) GetFormatParts(string format,CultureInfo culture)
+        {
+            if (string.IsNullOrEmpty(format))
+                return ("", "");
+            var index = -1;
+            if (char.IsDigit(format[0]) || format[0]== culture.NumberFormat.NumberDecimalSeparator[0] || format[0]== culture.NumberFormat.NumberGroupSeparator[0])
+            {
+                for (var i = 0; i < format.Length; i++)
+                {
+                    if (!char.IsDigit(format[i]) && format[i] != culture.NumberFormat.NumberDecimalSeparator[0] && format[i] != culture.NumberFormat.NumberGroupSeparator[0])
+                        break;
+                    index++;
+                }
+                return (format.Substring(0, index + 1), format.Substring(index + 1));
+            }
+            else
+            {
+                for (var i = 0; i < format.Length; i++)
+                {
+                    if (char.IsDigit(format[i])&& format[i] == culture.NumberFormat.NumberDecimalSeparator[0] || format[i] == culture.NumberFormat.NumberGroupSeparator[0])
+                        break;
+                    index++;
+                }
+                return (format.Substring(index + 1), format.Substring(0, index + 1));
+            }
+        }
+
         internal static int GetDecimalPlaces(double number)
         {
             return BitConverter.GetBytes(decimal.GetBits((decimal)number)[3])[2];
@@ -263,6 +290,7 @@ namespace ag.WPF.Chart
                     if (t == 0)
                     {
                         linesCount = (int)itemLines;
+                        break;
                     }
                 }
                 linesCount = (int)lines[items.First().index];
@@ -371,6 +399,7 @@ namespace ag.WPF.Chart
                     if (t == 0)
                     {
                         linesCount = (int)itemLines;
+                        break;
                     }
                 }
                 linesCount = (int)lines[items.First().index];
@@ -4385,7 +4414,10 @@ namespace ag.WPF.Chart
                         if (formatY.EndsWith("%"))
                             formatY = $"{formatY.Substring(0, formatY.Length - 1)}{culture.NumberFormat.NumberDecimalSeparator}{new string('0', fractions)}%";
                         else
-                            formatY += $"{culture.NumberFormat.NumberDecimalSeparator}{new string('0', fractions)}";
+                        {
+                            var (numericPart, literalPart) = Utils.GetFormatParts(formatY, culture);
+                            formatY = $"0{culture.NumberFormat.NumberDecimalSeparator}{new string('0', fractions)}" + literalPart;
+                        }
                     }
                     maxString = customValuesY.Any()
                         ? customValuesY.FirstOrDefault(c => c.Length == customValuesY.Max(v => v.Length))
@@ -4723,7 +4755,10 @@ namespace ag.WPF.Chart
                 if (formatY.EndsWith("%"))
                     formatY = $"{formatY.Substring(0, formatY.Length - 1)}{culture.NumberFormat.NumberDecimalSeparator}{new string('0', fractions)}%";
                 else
-                    formatY += $"{culture.NumberFormat.NumberDecimalSeparator}{new string('0', fractions)}";
+                {
+                    var (numericPart, literalPart) = Utils.GetFormatParts(formatY, culture);
+                    formatY = $"0{culture.NumberFormat.NumberDecimalSeparator}{new string('0', fractions)}" + literalPart;
+                }
             }
 
             switch (dir)
@@ -4967,7 +5002,10 @@ namespace ag.WPF.Chart
                     if (formatY.EndsWith("%"))
                         formatY = $"{formatY.Substring(0, formatY.Length - 1)}{culture.NumberFormat.NumberDecimalSeparator}{new string('0', fractions)}%";
                     else
-                        formatY += $"{culture.NumberFormat.NumberDecimalSeparator}{new string('0', fractions)}";
+                    {
+                        var (numericPart, literalPart) = Utils.GetFormatParts(formatY, culture);
+                        formatY = $"0{culture.NumberFormat.NumberDecimalSeparator}{new string('0', fractions)}"+ literalPart;
+                    }
                 }
 
                 if (chartStyle == ChartStyle.FullStackedBars)
@@ -6439,7 +6477,10 @@ namespace ag.WPF.Chart
                 if (format.EndsWith("%"))
                     format = $"{format.Substring(0, format.Length - 1)}{culture.NumberFormat.NumberDecimalSeparator}{new string('0', fractions)}%";
                 else
-                    format += $"{culture.NumberFormat.NumberDecimalSeparator}{new string('0', fractions)}";
+                {
+                    var (numericPart, literalPart) = Utils.GetFormatParts(format, culture);
+                    format = $"0{culture.NumberFormat.NumberDecimalSeparator}{new string('0', fractions)}" + literalPart;
+                }
             }
 
             var stepY = radius / linesCount;
