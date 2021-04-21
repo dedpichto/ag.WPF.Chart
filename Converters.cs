@@ -257,12 +257,22 @@ namespace ag.WPF.Chart
             var originalMax = max;
 
             // round max to next integer
-            max = Math.Ceiling(max);
+            if (originalMax > 1)
+            {
+                max = Math.Ceiling(max);
+            }
+            else
+            {
+                var dp = GetDecimalPlaces(originalMax);
+                max = originalMax * Math.Pow(10, dp);
+                max = roundInt((int)max, 10);
+                max /= Math.Pow(10, dp);
+            }
 
             var pm = Math.Abs((int)max).ToString().Length - 1;
             var p = pm >= 3 ? pm - 1 : pm;
             // do not increase max for integers that are equal to 10 power
-            if (max % Math.Pow(10, p) != 0)
+            if (max % Math.Pow(10, p) != 0 && originalMax > 1)
                 max = Math.Sign(max) * roundInt((int)Math.Abs(max), (int)Math.Pow(10, pm));
 
             if (fractionPower > 0 && originalMax <= 1)
@@ -369,12 +379,22 @@ namespace ag.WPF.Chart
             var originalMin = Math.Abs(min);
 
             // round min to prevous integer
-            min = Math.Floor(min);
+            if (originalMin > 1)
+            {
+                min = Math.Floor(min);
+            }
+            else
+            {
+                var dp = GetDecimalPlaces(originalMin);
+                min = Math.Sign(min) * originalMin * Math.Pow(10, dp);
+                min = Math.Sign(min) * roundInt((int)Math.Abs(min), 10);
+                min /= Math.Pow(10, dp);
+            }
 
             var pm = Math.Abs((int)min).ToString().Length - 1;
             var p = pm >= 3 ? pm - 1 : pm;
             // do not increase max for integers that are equal to 10 power
-            if (min % Math.Pow(10, p) != 0)
+            if (min % Math.Pow(10, p) != 0 && originalMin > 1)
                 min = Math.Sign(min) * roundInt((int)Math.Abs(min), (int)Math.Pow(10, pm));
 
             if (fractionPower > 0 && originalMin <= 1)
@@ -482,20 +502,40 @@ namespace ag.WPF.Chart
             var originalMin = Math.Abs(min);
 
             // round max to next integer
-            max = Math.Ceiling(max);
+            if (originalMax >1)
+            {
+                max = Math.Ceiling(max);
+            }
+            else
+            {
+                var dp = GetDecimalPlaces(originalMax);
+                max = originalMax * Math.Pow(10, dp);
+                max = roundInt((int)max, 10);
+                max /= Math.Pow(10, dp);
+            }
             // round min to prevous integer
-            min = Math.Floor(min);
+            if (originalMin > 1)
+            {
+                min = Math.Floor(min);
+            }
+            else
+            {
+                var dp = GetDecimalPlaces(originalMin);
+                min = Math.Sign(min) * originalMin * Math.Pow(10, dp);
+                min = Math.Sign(min) * roundInt((int)Math.Abs(min), 10);
+                min /= Math.Pow(10, dp);
+            }
 
             var pMax = Math.Abs((int)max).ToString().Length - 1;
             var pMin = Math.Abs((int)min).ToString().Length - 1;
 
             // do not increase max for integers that are equal to 10 power
             var p = pMax >= 3 ? pMax - 1 : pMax;
-            if (max % Math.Pow(10, p) != 0)
+            if (max % Math.Pow(10, p) != 0 && (originalMax > 1 || originalMin > 1))
                 max = Math.Sign(max) * roundInt((int)Math.Abs(max), (int)Math.Pow(10, pMax));
             // do not increase max for integers that are equal to 10 power
             p = pMin >= 3 ? pMin - 1 : pMin;
-            if (min % Math.Pow(10, p) != 0)
+            if (min % Math.Pow(10, p) != 0 && (originalMax > 1 || originalMin > 1))
                 min = Math.Sign(min) * roundInt((int)Math.Abs(min), (int)Math.Pow(10, pMin));
 
             if (fractionPower > 0 && originalMax <= 1 && originalMin <= 1)
