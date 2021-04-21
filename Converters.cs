@@ -110,12 +110,12 @@ namespace ag.WPF.Chart
             return numbers.Select(n => GetDecimalPlaces(n)).Max();
         }
 
-        internal static (string numericPart, string literalPart) GetFormatParts(string format,CultureInfo culture)
+        internal static (string numericPart, string literalPart) GetFormatParts(string format, CultureInfo culture)
         {
             if (string.IsNullOrEmpty(format))
                 return ("", "");
             var index = -1;
-            if (char.IsDigit(format[0]) || format[0]== culture.NumberFormat.NumberDecimalSeparator[0] || format[0]== culture.NumberFormat.NumberGroupSeparator[0])
+            if (char.IsDigit(format[0]) || format[0] == culture.NumberFormat.NumberDecimalSeparator[0] || format[0] == culture.NumberFormat.NumberGroupSeparator[0])
             {
                 for (var i = 0; i < format.Length; i++)
                 {
@@ -129,7 +129,7 @@ namespace ag.WPF.Chart
             {
                 for (var i = 0; i < format.Length; i++)
                 {
-                    if (char.IsDigit(format[i])&& format[i] == culture.NumberFormat.NumberDecimalSeparator[0] || format[i] == culture.NumberFormat.NumberGroupSeparator[0])
+                    if (char.IsDigit(format[i]) && format[i] == culture.NumberFormat.NumberDecimalSeparator[0] || format[i] == culture.NumberFormat.NumberGroupSeparator[0])
                         break;
                     index++;
                 }
@@ -248,30 +248,33 @@ namespace ag.WPF.Chart
             return rawValues;
         }
 
-        private static (double max, double min, int linesCount, double step, double stepLength, double units, ZeroPoint zeroPoint) getMeasuresForPositive(double diff, int linesCount, double radius, double fontHeight, int fractionPower, ZeroPoint centerPoint)
+        private static (double max, double min, int linesCount, double step, double stepLength, double units, ZeroPoint zeroPoint) getMeasuresForPositive(double max, int linesCount, double radius, double fontHeight, int fractionPower, ZeroPoint centerPoint)
         {
             var stepSize = 0.0;
             var stepLength = 0.0;
             var units = 0.0;
 
+            var originalMax = max;
+
             // round max to next integer
-            diff = Math.Ceiling(diff);
-            var pm = Math.Abs((int)diff).ToString().Length - 1;
+            max = Math.Ceiling(max);
+
+            var pm = Math.Abs((int)max).ToString().Length - 1;
             var p = pm >= 3 ? pm - 1 : pm;
             // do not increase max for integers that are equal to 10 power
-            if (diff % Math.Pow(10, p) != 0)
-                diff = Math.Sign(diff) * roundInt((int)Math.Abs(diff), (int)Math.Pow(10, pm));
+            if (max % Math.Pow(10, p) != 0)
+                max = Math.Sign(max) * roundInt((int)Math.Abs(max), (int)Math.Pow(10, pm));
 
-            if (fractionPower > 0)
+            if (fractionPower > 0 && originalMax <= 1)
             {
-                diff *= Math.Pow(10, fractionPower);
+                max *= Math.Pow(10, fractionPower);
             }
 
-            var power = Math.Abs((int)diff).ToString().Length - 1;
+            var power = Math.Abs((int)max).ToString().Length - 1;
 
             // difference is alway max
             // get all available integer lines counts
-            var lines = calculatedSteps(power, diff).Where(l => IsInteger(l)).OrderBy(l => l).Distinct().ToArray();
+            var lines = calculatedSteps(power, max).Where(l => IsInteger(l)).OrderBy(l => l).Distinct().ToArray();
             // calculate real size for each step
             var sizes = lines.Select(s => radius / s).ToArray();
 
@@ -281,8 +284,8 @@ namespace ag.WPF.Chart
                 foreach (var a in items)
                 {
                     var itemLines = lines[a.index];
-                    var sz = diff / itemLines;
-                    var t = diff;
+                    var sz = max / itemLines;
+                    var t = max;
                     while (t > 0)
                     {
                         t -= sz;
@@ -328,33 +331,33 @@ namespace ag.WPF.Chart
                 // change lines count to selected one
                 //linesCount = (int)lines[lineIndex];
                 // prepare step
-                stepSize = diff / linesCount;
+                stepSize = max / linesCount;
                 stepLength = radius / linesCount;
                 // prepare units
-                units = Math.Abs(radius / diff);
+                units = Math.Abs(radius / max);
             }
             else
             {
-                stepSize = diff / linesCount;
+                stepSize = max / linesCount;
                 while (!IsInteger(stepSize))
                 {
-                    diff = Math.Sign(diff) * roundInt((int)Math.Abs(diff), (int)Math.Pow(10, power));
-                    stepSize = diff / linesCount;
+                    max = Math.Sign(max) * roundInt((int)Math.Abs(max), (int)Math.Pow(10, power));
+                    stepSize = max / linesCount;
                 }
                 stepLength = radius / linesCount;
-                units = Math.Abs(radius / diff);
+                units = Math.Abs(radius / max);
             }
 
             // zero point Y-coordinate is stays the same and leve stays 0
 
-            if (fractionPower > 0)
+            if (fractionPower > 0 && originalMax <= 1)
             {
                 var m = Math.Pow(10, fractionPower);
-                diff /= m;
+                max /= m;
                 units *= m;
                 stepSize /= m;
             }
-            return (diff, 0, linesCount, stepSize, stepLength, units, centerPoint);
+            return (max, 0, linesCount, stepSize, stepLength, units, centerPoint);
         }
 
         private static (double max, double min, int linesCount, double stepSize, double stepLength, double units, ZeroPoint zeroPoint) getMeasuresForNegative(double min, int linesCount, double radius, double fontHeight, int fractionPower, ZeroPoint zeroPoint)
@@ -362,15 +365,19 @@ namespace ag.WPF.Chart
             var stepSize = 0.0;
             var stepLength = 0.0;
             var units = 0.0;
+
+            var originalMin = Math.Abs(min);
+
             // round min to prevous integer
             min = Math.Floor(min);
+
             var pm = Math.Abs((int)min).ToString().Length - 1;
             var p = pm >= 3 ? pm - 1 : pm;
             // do not increase max for integers that are equal to 10 power
             if (min % Math.Pow(10, p) != 0)
                 min = Math.Sign(min) * roundInt((int)Math.Abs(min), (int)Math.Pow(10, pm));
 
-            if (fractionPower > 0)
+            if (fractionPower > 0 && originalMin <= 1)
             {
                 min = -Math.Abs(min * Math.Pow(10, fractionPower));
             }
@@ -456,7 +463,7 @@ namespace ag.WPF.Chart
             zeroPoint.Point.Y -= stepSize * linesCount * units;
             zeroPoint.Level = linesCount;
 
-            if (fractionPower > 0)
+            if (fractionPower > 0 && originalMin <= 1)
             {
                 var m = Math.Pow(10, fractionPower);
                 min /= m;
@@ -470,6 +477,9 @@ namespace ag.WPF.Chart
         private static (double max, double min, int linesCount, double stepSize, double stepLength, double units, ZeroPoint zeroPoint) getMeasuresForComplex(ChartStyle chartStyle, double max, double min, int linesCount, double radius, double fontHeight, int fractionPower, ZeroPoint zeroPoint, bool splitSides)
         {
             int tempLines;
+
+            var originalMax = max;
+            var originalMin = Math.Abs(min);
 
             // round max to next integer
             max = Math.Ceiling(max);
@@ -488,7 +498,7 @@ namespace ag.WPF.Chart
             if (min % Math.Pow(10, p) != 0)
                 min = Math.Sign(min) * roundInt((int)Math.Abs(min), (int)Math.Pow(10, pMin));
 
-            if (fractionPower > 0)
+            if (fractionPower > 0 && originalMax <= 1 && originalMin <= 1)
             {
                 max *= Math.Pow(10, fractionPower);
                 min = -Math.Abs(min * Math.Pow(10, fractionPower));
@@ -546,7 +556,7 @@ namespace ag.WPF.Chart
                     zeroPoint.Level++;
                 }
 
-                if (fractionPower > 0)
+                if (fractionPower > 0 && originalMax <= 1 && originalMin <= 1)
                 {
                     var m = Math.Pow(10, fractionPower);
                     min /= m;
@@ -580,7 +590,7 @@ namespace ag.WPF.Chart
                         zeroPoint.Level++;
                     }
 
-                    if (fractionPower > 0)
+                    if (fractionPower > 0 && originalMax <= 1 && originalMin <= 1)
                     {
                         var m = Math.Pow(10, fractionPower);
                         min /= m;
@@ -655,7 +665,7 @@ namespace ag.WPF.Chart
                 zeroPoint.Level++;
             }
 
-            if (fractionPower > 0)
+            if (fractionPower > 0 && originalMax <= 1 && originalMin <= 1)
             {
                 var m = Math.Pow(10, fractionPower);
                 min /= m;
@@ -670,6 +680,9 @@ namespace ag.WPF.Chart
         private static (double max, double min, int linesCount, double stepSize, double stepLength, double units, ZeroPoint zeroPoint) getMeasuresForComplexRadar(double max, double min, int linesCount, double radius, double fontHeight, int fractionPower, ZeroPoint zeroPoint)
         {
             int tempLines;
+
+            var originalMax = max;
+            var originalMin = Math.Abs(min);
 
             // round max to next integer
             max = Math.Ceiling(max);
@@ -688,7 +701,7 @@ namespace ag.WPF.Chart
             if (min % Math.Pow(10, p) != 0)
                 min = Math.Sign(min) * roundInt((int)Math.Abs(min), (int)Math.Pow(10, pMin));
 
-            if (fractionPower > 0)
+            if (fractionPower > 0 && originalMax <= 1 && originalMin <= 1)
             {
                 max *= Math.Pow(10, fractionPower);
                 min = -Math.Abs(min * Math.Pow(10, fractionPower));
@@ -746,7 +759,7 @@ namespace ag.WPF.Chart
                     zeroPoint.Level++;
                 }
 
-                if (fractionPower > 0)
+                if (fractionPower > 0 && originalMax <= 1 && originalMin <= 1)
                 {
                     var m = Math.Pow(10, fractionPower);
                     min /= m;
@@ -826,7 +839,7 @@ namespace ag.WPF.Chart
                 zeroPoint.Level++;
             }
 
-            if (fractionPower > 0)
+            if (fractionPower > 0 && originalMax <= 1 && originalMin <= 1)
             {
                 var m = Math.Pow(10, fractionPower);
                 min /= m;
@@ -5004,7 +5017,7 @@ namespace ag.WPF.Chart
                     else
                     {
                         var (numericPart, literalPart) = Utils.GetFormatParts(formatY, culture);
-                        formatY = $"0{culture.NumberFormat.NumberDecimalSeparator}{new string('0', fractions)}"+ literalPart;
+                        formatY = $"0{culture.NumberFormat.NumberDecimalSeparator}{new string('0', fractions)}" + literalPart;
                     }
                 }
 
