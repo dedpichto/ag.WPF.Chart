@@ -502,7 +502,7 @@ namespace ag.WPF.Chart
             var originalMin = Math.Abs(min);
 
             // round max to next integer
-            if (originalMax >1)
+            if (originalMax > 1)
             {
                 max = Math.Ceiling(max);
             }
@@ -550,10 +550,12 @@ namespace ag.WPF.Chart
             // store absolute values of max and min
             var absMax = Math.Abs(max);
             var absMin = Math.Abs(min);
-            while (!isEven(absMax) && !is5Delimited(absMax))
-                absMax++;
-            while (!isEven(absMin) && !is5Delimited(absMin))
-                absMin++;
+            if (originalMax > 10)
+                while (!isEven(absMax) && !is5Delimited(absMax))
+                    absMax++;
+            if (originalMin > 10)
+                while (!isEven(absMin) && !is5Delimited(absMin))
+                    absMin++;
 
             // TODO - both should be either even or 5 dtlimited
 
@@ -725,20 +727,40 @@ namespace ag.WPF.Chart
             var originalMin = Math.Abs(min);
 
             // round max to next integer
-            max = Math.Ceiling(max);
+            if (originalMax > 1)
+            {
+                max = Math.Ceiling(max);
+            }
+            else
+            {
+                var dp = GetDecimalPlaces(originalMax);
+                max = originalMax * Math.Pow(10, dp);
+                max = roundInt((int)max, 10);
+                max /= Math.Pow(10, dp);
+            }
             // round min to prevous integer
-            min = Math.Floor(min);
+            if (originalMin > 1)
+            {
+                min = Math.Floor(min);
+            }
+            else
+            {
+                var dp = GetDecimalPlaces(originalMin);
+                min = Math.Sign(min) * originalMin * Math.Pow(10, dp);
+                min = Math.Sign(min) * roundInt((int)Math.Abs(min), 10);
+                min /= Math.Pow(10, dp);
+            }
 
             var pMax = Math.Abs((int)max).ToString().Length - 1;
             var pMin = Math.Abs((int)min).ToString().Length - 1;
 
             // do not increase max for integers that are equal to 10 power
             var p = pMax >= 3 ? pMax - 1 : pMax;
-            if (max % Math.Pow(10, p) != 0)
+            if (max % Math.Pow(10, p) != 0 && (originalMax > 1 || originalMin > 1))
                 max = Math.Sign(max) * roundInt((int)Math.Abs(max), (int)Math.Pow(10, pMax));
             // do not increase max for integers that are equal to 10 power
             p = pMin >= 3 ? pMin - 1 : pMin;
-            if (min % Math.Pow(10, p) != 0)
+            if (min % Math.Pow(10, p) != 0 && (originalMax > 1 || originalMin > 1))
                 min = Math.Sign(min) * roundInt((int)Math.Abs(min), (int)Math.Pow(10, pMin));
 
             if (fractionPower > 0 && originalMax <= 1 && originalMin <= 1)
@@ -753,10 +775,12 @@ namespace ag.WPF.Chart
             // store absolute values of max and min
             var absMax = Math.Abs(max);
             var absMin = Math.Abs(min);
-            while (!isEven(absMax) && !is5Delimited(absMax))
-                absMax++;
-            while (!isEven(absMin) && !is5Delimited(absMin))
-                absMin++;
+            if (originalMax > 10)
+                while (!isEven(absMax) && !is5Delimited(absMax))
+                    absMax++;
+            if (originalMin > 10)
+                while (!isEven(absMin) && !is5Delimited(absMin))
+                    absMin++;
 
             // TODO - both should be either even or 5 dtlimited
 
@@ -764,52 +788,51 @@ namespace ag.WPF.Chart
             min = Math.Sign(min) * absMin;
 
             // get absolute max
-            var absoluteMax = Math.Max(absMax, absMin);
             double stepSize;
             double stepLength;
             double units;
             double temp;
             // store max and min difference
             var diff = getDiff(max, min);
-            var exit = false;
-            if (absMax < 10 && absMax > absMin)
-            {
-                linesCount = (int)absMax;
-                exit = true;
-            }
-            else if (absMin < 10 && absMin > absMax)
-            {
-                linesCount = (int)absMin;
-                exit = true;
-            }
-            if (exit)
-            {
-                // prepare step
-                stepSize = diff / linesCount;
-                stepLength = radius / linesCount;
-                // prepare units
-                units = Math.Abs(radius / diff);
+            //var exit = false;
+            //if (absMax < 10 && absMax > absMin)
+            //{
+            //    linesCount = (int)absMax;
+            //    exit = true;
+            //}
+            //else if (absMin < 10 && absMin > absMax)
+            //{
+            //    linesCount = (int)absMin;
+            //    exit = true;
+            //}
+            //if (exit)
+            //{
+            //    // prepare step
+            //    stepSize = diff / linesCount;
+            //    stepLength = radius / linesCount;
+            //    // prepare units
+            //    units = Math.Abs(radius / diff);
 
-                // find zero point
-                temp = min;
-                while (temp < 0)
-                {
-                    temp += stepSize;
-                    zeroPoint.Point.Y -= stepSize * units;
-                    zeroPoint.Level++;
-                }
+            //    // find zero point
+            //    temp = min;
+            //    while (temp < 0)
+            //    {
+            //        temp += stepSize;
+            //        zeroPoint.Point.Y -= stepSize * units;
+            //        zeroPoint.Level++;
+            //    }
 
-                if (fractionPower > 0 && originalMax <= 1 && originalMin <= 1)
-                {
-                    var m = Math.Pow(10, fractionPower);
-                    min /= m;
-                    max /= m;
-                    units *= m;
-                    stepSize /= m;
-                }
+            //    if (fractionPower > 0 && originalMax <= 1 && originalMin <= 1)
+            //    {
+            //        var m = Math.Pow(10, fractionPower);
+            //        min /= m;
+            //        max /= m;
+            //        units *= m;
+            //        stepSize /= m;
+            //    }
 
-                return (max, min, linesCount, stepSize, stepLength, units, zeroPoint);
-            }
+            //    return (max, min, linesCount, stepSize, stepLength, units, zeroPoint);
+            //}
 
             if (absMax > absMin)
                 (tempLines, min) = getLineNumbersForComplexRadar(Math.Max(powerMax, powerMin), max, radius, fontHeight, diff, min);
