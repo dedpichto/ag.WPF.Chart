@@ -45,6 +45,7 @@ namespace ag.WPF.Chart
         internal static Border Border { get; } = new Border();
 
         private static readonly int[] _bases = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+        private static readonly CultureInfo _enCulture = new CultureInfo("en-US");
 
         internal static Quadrants GetQuadrant(double degrees)
         {
@@ -68,6 +69,21 @@ namespace ag.WPF.Chart
             if (degrees > 360.0)
                 return Quadrants.UpLeft;
             return Quadrants.UpRight;
+        }
+
+        private static double transformSmallFractionalNumber(double number)
+        {
+            var sign = Math.Sign(number);
+            number = Math.Abs(number);
+            var delimeter = 1;
+            while (number < 1)
+            {
+                number *= 10;
+                delimeter *= 10;
+            }
+            number = Math.Ceiling(number);
+            number /= delimeter;
+            return number * sign;
         }
 
         private static IEnumerable<double> calculatedSteps(int power, double max)
@@ -250,6 +266,8 @@ namespace ag.WPF.Chart
 
         private static (double max, double min, int linesCount, double step, double stepLength, double units, ZeroPoint zeroPoint) getMeasuresForPositive(double max, int linesCount, double radius, double fontHeight, int fractionPower, ZeroPoint centerPoint)
         {
+            if (max == 0)
+                return (0, 0, 1, 1, 1, 1, default);
             var stepSize = 0.0;
             var stepLength = 0.0;
             var units = 0.0;
@@ -263,10 +281,7 @@ namespace ag.WPF.Chart
             }
             else
             {
-                var dp = GetDecimalPlaces(originalMax);
-                max = originalMax * Math.Pow(10, dp);
-                max = roundInt((int)max, 10);
-                max /= Math.Pow(10, dp);
+                max = transformSmallFractionalNumber(max);
             }
 
             var pm = Math.Abs((int)max).ToString().Length - 1;
@@ -372,6 +387,8 @@ namespace ag.WPF.Chart
 
         private static (double max, double min, int linesCount, double stepSize, double stepLength, double units, ZeroPoint zeroPoint) getMeasuresForNegative(double min, int linesCount, double radius, double fontHeight, int fractionPower, ZeroPoint zeroPoint)
         {
+            if (min == 0)
+                return (0, 0, 1, 1, 1, 1, default);
             var stepSize = 0.0;
             var stepLength = 0.0;
             var units = 0.0;
@@ -385,10 +402,7 @@ namespace ag.WPF.Chart
             }
             else
             {
-                var dp = GetDecimalPlaces(originalMin);
-                min = Math.Sign(min) * originalMin * Math.Pow(10, dp);
-                min = Math.Sign(min) * roundInt((int)Math.Abs(min), 10);
-                min /= Math.Pow(10, dp);
+                min = transformSmallFractionalNumber(min);
             }
 
             var pm = Math.Abs((int)min).ToString().Length - 1;
@@ -508,10 +522,7 @@ namespace ag.WPF.Chart
             }
             else
             {
-                var dp = GetDecimalPlaces(originalMax);
-                max = originalMax * Math.Pow(10, dp);
-                max = roundInt((int)max, 10);
-                max /= Math.Pow(10, dp);
+                max = transformSmallFractionalNumber(max);
             }
             // round min to prevous integer
             if (originalMin > 1)
@@ -520,10 +531,7 @@ namespace ag.WPF.Chart
             }
             else
             {
-                var dp = GetDecimalPlaces(originalMin);
-                min = Math.Sign(min) * originalMin * Math.Pow(10, dp);
-                min = Math.Sign(min) * roundInt((int)Math.Abs(min), 10);
-                min /= Math.Pow(10, dp);
+                min = transformSmallFractionalNumber(min);
             }
 
             var pMax = Math.Abs((int)max).ToString().Length - 1;
@@ -733,10 +741,7 @@ namespace ag.WPF.Chart
             }
             else
             {
-                var dp = GetDecimalPlaces(originalMax);
-                max = originalMax * Math.Pow(10, dp);
-                max = roundInt((int)max, 10);
-                max /= Math.Pow(10, dp);
+                max = transformSmallFractionalNumber(max);
             }
             // round min to prevous integer
             if (originalMin > 1)
@@ -745,10 +750,7 @@ namespace ag.WPF.Chart
             }
             else
             {
-                var dp = GetDecimalPlaces(originalMin);
-                min = Math.Sign(min) * originalMin * Math.Pow(10, dp);
-                min = Math.Sign(min) * roundInt((int)Math.Abs(min), 10);
-                min /= Math.Pow(10, dp);
+                min = transformSmallFractionalNumber(min);
             }
 
             var pMax = Math.Abs((int)max).ToString().Length - 1;
@@ -1102,11 +1104,11 @@ namespace ag.WPF.Chart
             {
                 if (seriesArray.Length == 1)
                 {
-                    if (values.All(v => v > 0))
+                    if (values.All(v => v >= 0))
                     {
                         minIsZero = true;
                     }
-                    else if (values.All(v => v < 0))
+                    else if (values.All(v => v <= 0))
                     {
                         maxIsZero = true;
                     }
@@ -1132,18 +1134,19 @@ namespace ag.WPF.Chart
                         var temps = tempValues.Where(rw => rw.Index < index);
                         for (var i = 0; i < resultValues[index].Items.Count; i++)
                         {
-                            var v = (decimal)resultValues[index].Items[i].Value.PlainValue + temps.Sum(t => (decimal)t.Items[i].Value.PlainValue);
+                            var sign = Math.Sign(resultValues[index].Items[i].Value.PlainValue);
+                            var v = (decimal)resultValues[index].Items[i].Value.PlainValue + temps.Where(t => Math.Sign((decimal)t.Items[i].Value.PlainValue) == sign).Sum(t => (decimal)t.Items[i].Value.PlainValue);
                             resultValues[index].Items[i] = new PlainChartValue((double)v);
                         }
                     }
                     values = resultValues.SelectMany(a => a.Items).Select(it => it.Value.PlainValue);
                     max = values.Max();
                     min = values.Min();
-                    if (values.All(v => v > 0))
+                    if (values.All(v => v >= 0))
                     {
                         minIsZero = true;
                     }
-                    else if (values.All(v => v < 0))
+                    else if (values.All(v => v <= 0))
                     {
                         maxIsZero = true;
                     }
@@ -1153,22 +1156,22 @@ namespace ag.WPF.Chart
             {
                 values = seriesArray[0].Values.Select(v => v.Value.PlainValue);
                 (max, min) = getMaxMinForWaterfall(values.ToArray());
-                if (max > 0 && min > 0)
+                if (max >= 0 && min >= 0)
                 {
                     minIsZero = true;
                 }
-                else if (max < 0 && min < 0)
+                else if (max <= 0 && min <= 0)
                 {
                     maxIsZero = true;
                 }
             }
             else
             {
-                if (values.All(v => v > 0))
+                if (values.All(v => v >= 0))
                 {
                     minIsZero = true;
                 }
-                else if (values.All(v => v < 0))
+                else if (values.All(v => v <= 0))
                 {
                     maxIsZero = true;
                 }
@@ -2536,14 +2539,14 @@ namespace ag.WPF.Chart
                 var sign = Math.Sign(values[i].Value.PlainValue);
                 var y = height - (i * segSize + COLUMN_BAR_OFFSET);
                 var i1 = i;
-                var sumTotal = tuples.Sum(sr => Math.Abs(sr.Values[i1].Value.PlainValue));
-                var percent = Math.Abs(values[i].Value.PlainValue) / sumTotal * 100;
+                var sum = tuples.Sum(sr => Math.Abs(sr.Values[i1].Value.PlainValue));
+                var percent = Math.Abs(values[i].Value.PlainValue) / (sum != 0 ? sum : 1) * 100;
                 var segWidth = sign * stepX / 100 * percent;
 
                 var prevs = tuples.Where(s => s.Index < index)
                     .Where(s => Math.Sign(s.Values[i1].Value.PlainValue) == sign);
                 var prevSum = prevs.Sum(pvs => Math.Abs(pvs.Values[i1].Value.PlainValue));
-                var prevPerc = prevSum / sumTotal * 100;
+                var prevPerc = prevSum / (sum != 0 ? sum : 1) * 100;
                 var prevWidth = stepX / 100 * prevPerc;
                 var x = startX + sign * prevWidth;
                 var rect = new Rect(new Point(x, y), new Point(x + segWidth, y - barHeight));
@@ -2618,13 +2621,13 @@ namespace ag.WPF.Chart
                 var sign = Math.Sign(values[i].Value.PlainValue);
                 var x = i * segSize + COLUMN_BAR_OFFSET;
                 var i1 = i;
-                var sumTotal = tuples.Sum(sr => Math.Abs(sr.Values[i1].Value.PlainValue));
-                var percent = Math.Abs(values[i].Value.PlainValue) / sumTotal * 100;
+                var sum = tuples.Sum(sr => Math.Abs(sr.Values[i1].Value.PlainValue));
+                var percent = Math.Abs(values[i].Value.PlainValue) / (sum != 0 ? sum : 1) * 100;
                 var segHeight = sign * stepY / 100 * percent;
                 var prevs = tuples.Where(s => s.Index < index)
                     .Where(s => Math.Sign(s.Values[i1].Value.PlainValue) == sign);
                 var prevSum = prevs.Sum(pvs => Math.Abs(pvs.Values[i1].Value.PlainValue));
-                var prevPerc = prevSum / sumTotal * 100;
+                var prevPerc = prevSum / (sum != 0 ? sum : 1) * 100;
                 var prevHeight = stepY / 100 * prevPerc;
                 var y = startY - sign * prevHeight;
                 var rect = new Rect(new Point(x, y), new Point(x + columnWidth, y - segHeight));
@@ -2846,7 +2849,7 @@ namespace ag.WPF.Chart
                 }
                 var sum = tuples.Sum(s => Math.Abs(s.Values[i].Value.PlainValue));
                 var sign = Math.Sign(values[i].Value.PlainValue);
-                var perc = Math.Abs(values[i].Value.PlainValue) / sum * 100;
+                var perc = Math.Abs(values[i].Value.PlainValue) / (sum != 0 ? sum : 1) * 100;
                 y -= sign * perc * stepY / 100;
                 x = stepX * i;
                 currentSeries.RealPoints.Add(new Point(x, y));
@@ -2983,7 +2986,7 @@ namespace ag.WPF.Chart
                 }
                 var sum = tuples.Sum(s => Math.Abs(s.Values[i].Value.PlainValue));
                 var sign = Math.Sign(values[i].Value.PlainValue);
-                var perc = Math.Abs(values[i].Value.PlainValue) / sum * 100;
+                var perc = Math.Abs(values[i].Value.PlainValue) / (sum != 0 ? sum : 1) * 100;
 
                 y -= sign * perc * stepY / 100;
                 var x = offsetBoundary ? boundOffset + stepX * i : stepX * i;
@@ -4971,7 +4974,7 @@ namespace ag.WPF.Chart
                 || !(values[16] is string formatY))
                 return null;
 
-            if (chartStyle.In(ChartStyle.Area, ChartStyle.StackedArea, ChartStyle.FullStackedArea, ChartStyle.SlicedPie, ChartStyle.SolidPie, ChartStyle.Doughnut, ChartStyle.Radar, ChartStyle.RadarWithMarkers, ChartStyle.RadarArea, ChartStyle.SmoothArea))
+            if (chartStyle.In(ChartStyle.SlicedPie, ChartStyle.SolidPie, ChartStyle.Doughnut, ChartStyle.Radar, ChartStyle.RadarWithMarkers, ChartStyle.RadarArea, ChartStyle.SmoothArea))
                 return null;
 
             var seriesArray = seriesEnumerable.ToArray();
