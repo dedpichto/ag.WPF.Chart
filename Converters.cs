@@ -100,12 +100,12 @@ namespace ag.WPF.Chart
 
         private static bool isEven(double number)
         {
-            return number % 2 == 0;
+            return (number % 2) < double.Epsilon;
         }
 
         private static bool is5Delimited(double number)
         {
-            return number % 5 == 0;
+            return (number % 5) < double.Epsilon;
         }
 
         private static (double max, double min) getMaxMinForWaterfall(double[] values)
@@ -266,7 +266,7 @@ namespace ag.WPF.Chart
 
         private static (double max, double min, int linesCount, double step, double stepLength, double units, ZeroPoint zeroPoint) getMeasuresForPositive(double max, int linesCount, double radius, double fontHeight, int fractionPower, ZeroPoint centerPoint)
         {
-            if (max == 0 || radius <= 0)
+            if (max < double.Epsilon || radius <= 0)
                 return (0, 0, 1, 1, 1, 1, default);
             var stepSize = 0.0;
             var stepLength = 0.0;
@@ -287,7 +287,7 @@ namespace ag.WPF.Chart
             var pm = Math.Abs((int)max).ToString().Length - 1;
             var p = pm >= 3 ? pm - 1 : pm;
             // do not increase max for integers that are equal to 10 power
-            if (max % Math.Pow(10, p) != 0 && originalMax > 1)
+            if ((max % Math.Pow(10, p)) != 0 && originalMax > 1)
                 max = Math.Sign(max) * roundInt((int)Math.Abs(max), (int)Math.Pow(10, pm));
 
             if (fractionPower > 0 && originalMax <= 1)
@@ -315,7 +315,7 @@ namespace ag.WPF.Chart
                     {
                         t -= sz;
                     }
-                    if (t == 0)
+                    if (t < double.Epsilon)
                     {
                         linesCount = (int)itemLines;
                         break;
@@ -387,7 +387,7 @@ namespace ag.WPF.Chart
 
         private static (double max, double min, int linesCount, double stepSize, double stepLength, double units, ZeroPoint zeroPoint) getMeasuresForNegative(double min, int linesCount, double radius, double fontHeight, int fractionPower, ZeroPoint zeroPoint)
         {
-            if (min == 0 || radius <= 0)
+            if (min < double.Epsilon || radius <= 0)
                 return (0, 0, 1, 1, 1, 1, default);
             var stepSize = 0.0;
             var stepLength = 0.0;
@@ -408,7 +408,7 @@ namespace ag.WPF.Chart
             var pm = Math.Abs((int)min).ToString().Length - 1;
             var p = pm >= 3 ? pm - 1 : pm;
             // do not increase max for integers that are equal to 10 power
-            if (min % Math.Pow(10, p) != 0 && originalMin > 1)
+            if ((min % Math.Pow(10, p)) != 0 && originalMin > 1)
                 min = Math.Sign(min) * roundInt((int)Math.Abs(min), (int)Math.Pow(10, pm));
 
             if (fractionPower > 0 && originalMin <= 1)
@@ -437,7 +437,7 @@ namespace ag.WPF.Chart
                     {
                         t += sz;
                     }
-                    if (t == 0)
+                    if (t < double.Epsilon)
                     {
                         linesCount = (int)itemLines;
                         break;
@@ -543,11 +543,11 @@ namespace ag.WPF.Chart
 
             // do not increase max for integers that are equal to 10 power
             var p = pMax >= 3 ? pMax - 1 : pMax;
-            if (max % Math.Pow(10, p) != 0 && (originalMax > 1 || originalMin > 1))
+            if ((max % Math.Pow(10, p)) != 0 && (originalMax > 1 || originalMin > 1))
                 max = Math.Sign(max) * roundInt((int)Math.Abs(max), (int)Math.Pow(10, pMax));
             // do not increase max for integers that are equal to 10 power
             p = pMin >= 3 ? pMin - 1 : pMin;
-            if (min % Math.Pow(10, p) != 0 && (originalMax > 1 || originalMin > 1))
+            if ((min % Math.Pow(10, p)) != 0 && (originalMax > 1 || originalMin > 1))
                 min = Math.Sign(min) * roundInt((int)Math.Abs(min), (int)Math.Pow(10, pMin));
 
             if (fractionPower > 0 && originalMax <= 1 && originalMin <= 1)
@@ -765,11 +765,11 @@ namespace ag.WPF.Chart
 
             // do not increase max for integers that are equal to 10 power
             var p = pMax >= 3 ? pMax - 1 : pMax;
-            if (max % Math.Pow(10, p) != 0 && (originalMax > 1 || originalMin > 1))
+            if ((max % Math.Pow(10, p)) != 0 && (originalMax > 1 || originalMin > 1))
                 max = Math.Sign(max) * roundInt((int)Math.Abs(max), (int)Math.Pow(10, pMax));
             // do not increase max for integers that are equal to 10 power
             p = pMin >= 3 ? pMin - 1 : pMin;
-            if (min % Math.Pow(10, p) != 0 && (originalMax > 1 || originalMin > 1))
+            if ((min % Math.Pow(10, p)) != 0 && (originalMax > 1 || originalMin > 1))
                 min = Math.Sign(min) * roundInt((int)Math.Abs(min), (int)Math.Pow(10, pMin));
 
             if (fractionPower > 0 && originalMax <= 1 && originalMin <= 1)
@@ -948,7 +948,7 @@ namespace ag.WPF.Chart
                 {
                     t -= sz;
                 }
-                if (t == 0)
+                if (t < double.Epsilon)
                 {
                     linesCount = (int)itemLines;
                     break;
@@ -988,7 +988,7 @@ namespace ag.WPF.Chart
                     {
                         t += sz;
                     }
-                    if (t == 0)
+                    if (t < double.Epsilon)
                     {
                         return (int)itemLines;
                     }
@@ -1077,11 +1077,11 @@ namespace ag.WPF.Chart
 
             // do not increase max for integers that are equal to 10 power
             var p = powerMax >= 3 ? powerMax - 1 : powerMax;
-            if (max % Math.Pow(10, p) != 0)
+            if ((max % Math.Pow(10, p)) != 0)
                 max = Math.Sign(max) * roundInt((int)Math.Abs(max), (int)Math.Pow(10, powerMax));
             // do not increase max for integers that are equal to 10 power
             p = powerMin >= 3 ? powerMin - 1 : powerMin;
-            if (min % Math.Pow(10, p) != 0)
+            if ((min % Math.Pow(10, p)) != 0)
                 min = Math.Sign(min) * roundInt((int)Math.Abs(min), (int)Math.Pow(10, powerMin));
 
             if (fractionPower > 0)
