@@ -266,7 +266,7 @@ namespace ag.WPF.Chart
 
         private static (double max, double min, int linesCount, double step, double stepLength, double units, ZeroPoint zeroPoint) getMeasuresForPositive(double max, int linesCount, double radius, double fontHeight, int fractionPower, ZeroPoint centerPoint)
         {
-            if (max == 0)
+            if (max == 0 || radius <= 0)
                 return (0, 0, 1, 1, 1, 1, default);
             var stepSize = 0.0;
             var stepLength = 0.0;
@@ -387,7 +387,7 @@ namespace ag.WPF.Chart
 
         private static (double max, double min, int linesCount, double stepSize, double stepLength, double units, ZeroPoint zeroPoint) getMeasuresForNegative(double min, int linesCount, double radius, double fontHeight, int fractionPower, ZeroPoint zeroPoint)
         {
-            if (min == 0)
+            if (min == 0 || radius <= 0)
                 return (0, 0, 1, 1, 1, 1, default);
             var stepSize = 0.0;
             var stepLength = 0.0;
@@ -510,6 +510,10 @@ namespace ag.WPF.Chart
 
         private static (double max, double min, int linesCount, double stepSize, double stepLength, double units, ZeroPoint zeroPoint) getMeasuresForComplex(ChartStyle chartStyle, double max, double min, int linesCount, double radius, double fontHeight, int fractionPower, ZeroPoint zeroPoint, bool splitSides)
         {
+
+            if (radius <= 0)
+                return (0, 0, 1, 1, 1, 1, default);
+
             int tempLines;
 
             var originalMax = max;
@@ -729,6 +733,9 @@ namespace ag.WPF.Chart
 
         private static (double max, double min, int linesCount, double stepSize, double stepLength, double units, ZeroPoint zeroPoint) getMeasuresForComplexRadar(double max, double min, int linesCount, double radius, double fontHeight, int fractionPower, ZeroPoint zeroPoint)
         {
+            if (radius <= 0)
+                return (0, 0, 1, 1, 1, 1, default);
+
             int tempLines;
 
             var originalMax = max;
@@ -1035,7 +1042,8 @@ namespace ag.WPF.Chart
             // smaller multiple
             int a = number / tense * tense;
             // larger multiple
-            int b = a + tense;
+            var addition = (number % tense) > tense / 2 ? tense : tense / 2;
+            int b = a + addition;
             return b;
         }
 
@@ -2305,7 +2313,7 @@ namespace ag.WPF.Chart
                 gm.AddGeometry(rg);
                 // add values
                 if (!showValues) continue;
-                var number = !string.IsNullOrEmpty(currentSeries.Values[i].CustomValue) 
+                var number = !string.IsNullOrEmpty(currentSeries.Values[i].CustomValue)
                     ? $"{currentSeries.Values[i].Value.PlainValue.ToString(culture)} {currentSeries.Values[i].CustomValue}"
                     : currentSeries.Values[i].Value.PlainValue.ToString(culture);
                 var fmt = new FormattedText(number, culture, FlowDirection.LeftToRight,
