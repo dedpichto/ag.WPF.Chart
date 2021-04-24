@@ -6308,7 +6308,7 @@ namespace ag.WPF.Chart
                 return null;
             var sum = chartValues.Sum(p => Math.Abs(p.Value.PlainValue));
             if (format.EndsWith("%")) format = format.Substring(0, format.Length - 1);
-            var perc = Math.Abs(chartValue.Value.PlainValue) / sum * 100;
+            var perc = Math.Abs(chartValue.Value.PlainValue) / (sum != 0 ? sum : 1) * 100;
             var sectorData = $"{chartValue.Value.PlainValue.ToString(culture)} ({perc.ToString(format, culture)}%)";
             if (!string.IsNullOrEmpty(chartValue.CustomValue))
                 sectorData += $" {chartValue.CustomValue}";
@@ -6674,7 +6674,7 @@ namespace ag.WPF.Chart
             var lines = new List<LineGeometry>();
             foreach (var pt in pts)
             {
-                var addition = Math.Abs(pt.Value.PlainValue) / sum * 360.0;
+                var addition = Math.Abs(pt.Value.PlainValue) / (sum != 0 ? sum : 1) * 360.0;
                 if (currentDegrees <= 90.0 && currentDegrees > 0)
                 {
                     if (currentDegrees - addition >= 0)
@@ -6762,7 +6762,7 @@ namespace ag.WPF.Chart
                 //    combinedGeometry.Geometry2 = rectGeometry;
                 //}
 
-                var perc = Math.Abs(pt.Value.PlainValue) / sum * 100;
+                var perc = Math.Abs(pt.Value.PlainValue) / (sum != 0 ? sum : 1) * 100;
                 var sectorData = $"{pt.Value.PlainValue} ({perc.ToString(format, culture)}%)";
                 if (!string.IsNullOrEmpty(pt.CustomValue))
                     sectorData += $"\n{pt.CustomValue}";
