@@ -1923,7 +1923,7 @@ namespace ag.WPF.Chart
                 case ChartStyle.RadarArea:
                     {
                         var radius = width > height ? (height - 2 * Utils.AXIS_THICKNESS) / 2 : (width - 2 * Utils.AXIS_THICKNESS) / 2;
-                        centerPoint = new Point(radius, radius);
+                        centerPoint = width > height ? new Point((width - 2 * Utils.AXIS_THICKNESS) / 2, radius) : new Point(radius, (height - 2 * Utils.AXIS_THICKNESS) / 2);
                         if (width > height)
                             radius -= (2 * fmt.Height + 8);
                         else
@@ -6376,7 +6376,7 @@ namespace ag.WPF.Chart
                 new Typeface(fontFamily, fontStyle, fontWeight, fontStretch), fontSize, Brushes.Black, VisualTreeHelper.GetDpi(Utils.Border).PixelsPerDip);
 
             var radius = width > height ? (height - 2 * Utils.AXIS_THICKNESS) / 2 : (width - 2 * Utils.AXIS_THICKNESS) / 2;
-            var centerPoint = new Point(radius, radius);
+            var centerPoint = width > height ? new Point((width - 2 * Utils.AXIS_THICKNESS) / 2, radius) : new Point(radius, (height - 2 * Utils.AXIS_THICKNESS) / 2);
             if (width > height)
                 radius -= (2 * fmt.Height + 8);
             else
@@ -6478,7 +6478,7 @@ namespace ag.WPF.Chart
 
             var radius = width > height ? (height - 2 * Utils.AXIS_THICKNESS) / 2 : (width - 2 * Utils.AXIS_THICKNESS) / 2;
 
-            var centerPoint = new Point(radius, radius);
+            var centerPoint = width > height ? new Point((width - 2 * Utils.AXIS_THICKNESS) / 2, radius) : new Point(radius, (height - 2 * Utils.AXIS_THICKNESS) / 2);
             if (width > height)
                 radius -= (2 * fmt.Height + 8);
             else
