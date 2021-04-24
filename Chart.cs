@@ -620,7 +620,7 @@ namespace ag.WPF.Chart
         /// <summary>
         /// The identifier of the <see cref="ItemsSource"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty ItemsSourceProperty = DependencyProperty.Register(nameof(ItemsSource), typeof(IEnumerable), typeof(Chart), new FrameworkPropertyMetadata(null, OnItemsSourceChanged));
+        public static readonly DependencyProperty ItemsSourceProperty = DependencyProperty.Register(nameof(ItemsSource), typeof(IEnumerable<ISeries>), typeof(Chart), new FrameworkPropertyMetadata(null, OnItemsSourceChanged));
 
         #endregion
 
@@ -686,9 +686,9 @@ namespace ag.WPF.Chart
             if (ItemsSource == null) return;
             // the event is raised every time the control becomes visible
             // if all paths have been added before - just exit
-            if (!ItemsSource.OfType<ISeries>().SelectMany(s => s.Paths).Any(p => p != null && !(bool)p.GetValue(Statics.AddedToCanvasProperty)))
+            if (!ItemsSource.SelectMany(s => s.Paths).Any(p => p != null && !(bool)p.GetValue(Statics.AddedToCanvasProperty)))
                 return;
-            foreach (var series in ItemsSource.OfType<ISeries>())
+            foreach (var series in ItemsSource)
             {
                 for (var pathIndex = 0; pathIndex < series.Paths.Count(); pathIndex++)
                 {
@@ -908,7 +908,7 @@ namespace ag.WPF.Chart
                         {
                             lg.Index--;
                         }
-                        foreach (var sr in ItemsSource.OfType<ISeries>().Where(sc => sc.Index > series.Index).ToArray())
+                        foreach (var sr in ItemsSource.Where(sc => sc.Index > series.Index).ToArray())
                         {
                             sr.Index--;
                             foreach (var p in sr.Paths)
@@ -951,7 +951,7 @@ namespace ag.WPF.Chart
 
         private void PieImage_MouseMove(object sender, MouseEventArgs e)
         {
-            if (!ItemsSource.OfType<ISeries>().Any()) return;
+            if (!ItemsSource.Any()) return;
             if (!(_pieImage.ToolTip is ToolTip tooltip)) return;
             var position = e.GetPosition(_pieImage);
             if (_pieImage.Source is DrawingImage dw)
@@ -977,7 +977,7 @@ namespace ag.WPF.Chart
             tooltip.Placement = PlacementMode.Mouse;
             tooltip.HorizontalOffset = 0;
             tooltip.VerticalOffset = 0;
-            tooltip.Content = ItemsSource.OfType<ISeries>().First().Name;
+            tooltip.Content = ItemsSource.First().Name;
         }
 
         private void Series_PropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -987,7 +987,7 @@ namespace ag.WPF.Chart
                 case "Values":
                     if (sender is ISeries series)
                     {
-                        foreach (var sr in ItemsSource.OfType<ISeries>().Where(s => s.Index != series.Index))
+                        foreach (var sr in ItemsSource.Where(s => s.Index != series.Index))
                         {
                             foreach (var p in sr.Paths)
                             {
@@ -1376,7 +1376,7 @@ namespace ag.WPF.Chart
             binding = BindingOperations.GetMultiBindingExpression(_pathVertLines, Path.DataProperty);
             if (binding != null)
                 binding.UpdateTarget();
-            foreach (var series in ItemsSource.OfType<ISeries>())
+            foreach (var series in ItemsSource)
             {
                 foreach (var p in series.Paths)
                 {
@@ -1431,9 +1431,9 @@ namespace ag.WPF.Chart
         /// Gets/sets the collection of <see cref="Series"/> objects associated with chart control.
         /// </summary>
         [Category("ChartAppearance"), Description("Gets or sets the collection of Series objects associated with chart control")]
-        public IEnumerable ItemsSource
+        public IEnumerable<ISeries> ItemsSource
         {
-            get { return (IEnumerable)GetValue(ItemsSourceProperty); }
+            get { return (IEnumerable<ISeries>)GetValue(ItemsSourceProperty); }
             set { SetValue(ItemsSourceProperty, value); }
         }
         /// <summary>
@@ -1944,16 +1944,16 @@ namespace ag.WPF.Chart
             {
                 newValueNotifyCollectionChanged.CollectionChanged += chart.ItemsSource_CollectionChanged;
             }
-            chart.OnItemsSourceChanged((IEnumerable)e.OldValue, (IEnumerable)e.NewValue);
+            chart.OnItemsSourceChanged((IEnumerable<ISeries>)e.OldValue, (IEnumerable<ISeries>)e.NewValue);
         }
         /// <summary>
         /// Invoked just before the <see cref="ItemsSourceChangedEvent"/> event is raised on control
         /// </summary>
         /// <param name="oldValue">Old value</param>
         /// <param name="newValue">New value</param>
-        protected void OnItemsSourceChanged(IEnumerable oldValue, IEnumerable newValue)
+        protected void OnItemsSourceChanged(IEnumerable<ISeries> oldValue, IEnumerable<ISeries> newValue)
         {
-            var e = new RoutedPropertyChangedEventArgs<IEnumerable>(oldValue, newValue)
+            var e = new RoutedPropertyChangedEventArgs<IEnumerable<ISeries>>(oldValue, newValue)
             {
                 RoutedEvent = ItemsSourceChangedEvent
             };
@@ -2780,7 +2780,7 @@ namespace ag.WPF.Chart
         /// <summary>
         /// Occurs when the <see cref="ItemsSource"/> property has been changed in some way
         /// </summary>
-        public event RoutedPropertyChangedEventHandler<IEnumerable> ItemsSourceChanged
+        public event RoutedPropertyChangedEventHandler<IEnumerable<ISeries>> ItemsSourceChanged
         {
             add { AddHandler(ItemsSourceChangedEvent, value); }
             remove { RemoveHandler(ItemsSourceChangedEvent, value); }
@@ -2789,7 +2789,7 @@ namespace ag.WPF.Chart
         /// Identifies the <see cref="ItemsSourceChanged"/> routed event
         /// </summary>
         public static readonly RoutedEvent ItemsSourceChangedEvent = EventManager.RegisterRoutedEvent("ItemsSourceChanged",
-            RoutingStrategy.Bubble, typeof(RoutedPropertyChangedEventHandler<IEnumerable>), typeof(Chart));
+            RoutingStrategy.Bubble, typeof(RoutedPropertyChangedEventHandler<IEnumerable<ISeries>>), typeof(Chart));
 
         /// <summary>
         /// Occurs when the <see cref="ChartBoundary"/> property has been changed in some way
