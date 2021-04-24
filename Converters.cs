@@ -2305,7 +2305,9 @@ namespace ag.WPF.Chart
                 gm.AddGeometry(rg);
                 // add values
                 if (!showValues) continue;
-                var number = !string.IsNullOrEmpty(currentSeries.Values[i].CustomValue) ? currentSeries.Values[i].CustomValue : currentSeries.Values[i].Value.PlainValue.ToString(culture);
+                var number = !string.IsNullOrEmpty(currentSeries.Values[i].CustomValue) 
+                    ? $"{currentSeries.Values[i].Value.PlainValue.ToString(culture)} {currentSeries.Values[i].CustomValue}"
+                    : currentSeries.Values[i].Value.PlainValue.ToString(culture);
                 var fmt = new FormattedText(number, culture, FlowDirection.LeftToRight,
                     new Typeface(fontFamily, fontStyle, fontWeight, fontStretch), fontSize, Brushes.Black, VisualTreeHelper.GetDpi(Utils.Border).PixelsPerDip);
                 if (fmt.Width > rectWidth || fmt.Height > barHeight) continue;
