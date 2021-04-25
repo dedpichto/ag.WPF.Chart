@@ -1248,9 +1248,10 @@ namespace ag.WPF.Chart
             {
                 return (width / stopsX, stopsX);
             }
+            var delimeter = ticks > 1 ? ticks - 1 : 1;
             return offsetBoundary
-                ? ((width - 2 * boundOffset) / (ticks - 1), ticks)
-                : (width / (ticks - 1), ticks);
+                ? ((width - 2 * boundOffset) / delimeter, ticks)
+                : (width / delimeter, ticks);
         }
 
         internal static double BoundaryOffset(bool offsetBoundary, double width, int count)
@@ -2033,24 +2034,24 @@ namespace ag.WPF.Chart
             double stepX;
             double centerX, centerY;
             var gm = new PathGeometry();
-            //var boundOffset = Utils.BoundaryOffset(true, width, maxX);
+            var delimeter = maxX > 1 ? maxX - 1 : 1;
 
             switch (dir)
             {
                 case Directions.NorthEast:
                     centerX = Utils.AXIS_THICKNESS + boundOffset;
                     centerY = height - Utils.AXIS_THICKNESS;
-                    stepX = (width - 2 * Utils.AXIS_THICKNESS - 2 * boundOffset) / (maxX - 1);
+                    stepX = (width - 2 * Utils.AXIS_THICKNESS - 2 * boundOffset) / delimeter;
                     break;
                 case Directions.NorthEastSouthEast:
                     centerX = Utils.AXIS_THICKNESS + boundOffset;
                     centerY = height / 2;
-                    stepX = (width - 2 * Utils.AXIS_THICKNESS - 2 * boundOffset) / (maxX - 1);
+                    stepX = (width - 2 * Utils.AXIS_THICKNESS - 2 * boundOffset) / delimeter;
                     break;
                 case Directions.SouthEast:
                     centerX = Utils.AXIS_THICKNESS + boundOffset;
                     centerY = Utils.AXIS_THICKNESS;
-                    stepX = (width - 2 * Utils.AXIS_THICKNESS - 2 * boundOffset) / (maxX - 1);
+                    stepX = (width - 2 * Utils.AXIS_THICKNESS - 2 * boundOffset) / delimeter;
                     break;
                 default:
                     return null;
@@ -2123,24 +2124,24 @@ namespace ag.WPF.Chart
             double stepX;
             double centerX, centerY;
             var gm = new PathGeometry();
-            //var boundOffset = Utils.BoundaryOffset(true, width, maxX);
+            var delimeter = maxX > 1 ? maxX - 1 : 1;
 
             switch (dir)
             {
                 case Directions.NorthEast:
                     centerX = Utils.AXIS_THICKNESS + boundOffset;
                     centerY = height - Utils.AXIS_THICKNESS;
-                    stepX = (width - 2 * Utils.AXIS_THICKNESS - 2 * boundOffset) / (maxX - 1);
+                    stepX = (width - 2 * Utils.AXIS_THICKNESS - 2 * boundOffset) / delimeter;
                     break;
                 case Directions.NorthEastSouthEast:
                     centerX = Utils.AXIS_THICKNESS + boundOffset;
                     centerY = height / 2;
-                    stepX = (width - 2 * Utils.AXIS_THICKNESS - 2 * boundOffset) / (maxX - 1);
+                    stepX = (width - 2 * Utils.AXIS_THICKNESS - 2 * boundOffset) / delimeter;
                     break;
                 case Directions.SouthEast:
                     centerX = Utils.AXIS_THICKNESS + boundOffset;
                     centerY = Utils.AXIS_THICKNESS;
-                    stepX = (width - 2 * Utils.AXIS_THICKNESS - 2 * boundOffset) / (maxX - 1);
+                    stepX = (width - 2 * Utils.AXIS_THICKNESS - 2 * boundOffset) / delimeter;
                     break;
                 default:
                     return null;
@@ -2809,31 +2810,32 @@ namespace ag.WPF.Chart
             var currentSeries = series.FirstOrDefault(s => s.Index == index);
             if (currentSeries == null) return null;
 
+            var delimeter = maxX > 1 ? maxX - 1 : 1;
             switch (dir)
             {
                 case Directions.NorthEast:
                     centerY = height - Utils.AXIS_THICKNESS;
-                    stepX = (width - 2 * Utils.AXIS_THICKNESS) / (maxX - 1);
+                    stepX = (width - 2 * Utils.AXIS_THICKNESS) / delimeter;
                     stepY = (height - 2 * Utils.AXIS_THICKNESS);
                     break;
                 case Directions.NorthEastNorthWest:
                     centerY = height - Utils.AXIS_THICKNESS;
-                    stepX = (width - 2 * Utils.AXIS_THICKNESS) / 2 / (maxX - 1);
+                    stepX = (width - 2 * Utils.AXIS_THICKNESS) / 2 / delimeter;
                     stepY = (height - 2 * Utils.AXIS_THICKNESS);
                     break;
                 case Directions.NorthEastSouthEast:
                     centerY = height / 2;
-                    stepX = (width - 2 * Utils.AXIS_THICKNESS) / (maxX - 1);
+                    stepX = (width - 2 * Utils.AXIS_THICKNESS) / delimeter;
                     stepY = (height - 2 * Utils.AXIS_THICKNESS) / 2;
                     break;
                 case Directions.SouthEast:
                     centerY = Utils.AXIS_THICKNESS;
-                    stepX = (width - 2 * Utils.AXIS_THICKNESS) / (maxX - 1);
+                    stepX = (width - 2 * Utils.AXIS_THICKNESS) / delimeter;
                     stepY = height - 2 * Utils.AXIS_THICKNESS;
                     break;
                 case Directions.NorthWest:
                     centerY = Utils.AXIS_THICKNESS;
-                    stepX = (width - 2 * Utils.AXIS_THICKNESS) / (maxX - 1);
+                    stepX = (width - 2 * Utils.AXIS_THICKNESS) / delimeter;
                     stepY = height - 2 * Utils.AXIS_THICKNESS;
                     break;
                 default:
@@ -2942,7 +2944,7 @@ namespace ag.WPF.Chart
             double centerY;
             var gm = new PathGeometry();
 
-            //var boundOffset = Utils.BoundaryOffset(offsetBoundary, width, values.Count);
+            var delimeter = maxX > 1 ? maxX - 1 : 1;
 
             var currentSeries = series.FirstOrDefault(s => s.Index == index);
             if (currentSeries == null) return null;
@@ -2951,27 +2953,27 @@ namespace ag.WPF.Chart
             {
                 case Directions.NorthEast:
                     centerY = height - Utils.AXIS_THICKNESS;
-                    stepX = offsetBoundary ? (width - 2 * Utils.AXIS_THICKNESS - 2 * boundOffset) / (maxX - 1) : (width - 2 * Utils.AXIS_THICKNESS) / (maxX - 1);
+                    stepX = offsetBoundary ? (width - 2 * Utils.AXIS_THICKNESS - 2 * boundOffset) / delimeter : (width - 2 * Utils.AXIS_THICKNESS) / delimeter;
                     stepY = height - 2 * Utils.AXIS_THICKNESS;
                     break;
                 case Directions.NorthEastNorthWest:
                     centerY = height - Utils.AXIS_THICKNESS;
-                    stepX = (width - 2 * Utils.AXIS_THICKNESS) / 2 / (maxX - 1);
+                    stepX = (width - 2 * Utils.AXIS_THICKNESS) / 2 / delimeter;
                     stepY = height - 2 * Utils.AXIS_THICKNESS;
                     break;
                 case Directions.NorthEastSouthEast:
                     centerY = height / 2;
-                    stepX = offsetBoundary ? (width - 2 * Utils.AXIS_THICKNESS - 2 * boundOffset) / (maxX - 1) : (width - 2 * Utils.AXIS_THICKNESS) / (maxX - 1);
+                    stepX = offsetBoundary ? (width - 2 * Utils.AXIS_THICKNESS - 2 * boundOffset) / delimeter : (width - 2 * Utils.AXIS_THICKNESS) / delimeter;
                     stepY = (height - 2 * Utils.AXIS_THICKNESS) / 2;
                     break;
                 case Directions.SouthEast:
                     centerY = Utils.AXIS_THICKNESS;
-                    stepX = offsetBoundary ? (width - 2 * Utils.AXIS_THICKNESS - 2 * boundOffset) / (maxX - 1) : (width - 2 * Utils.AXIS_THICKNESS) / (maxX - 1);
+                    stepX = offsetBoundary ? (width - 2 * Utils.AXIS_THICKNESS - 2 * boundOffset) / delimeter : (width - 2 * Utils.AXIS_THICKNESS) / delimeter;
                     stepY = height - 2 * Utils.AXIS_THICKNESS;
                     break;
                 case Directions.NorthWest:
                     centerY = Utils.AXIS_THICKNESS;
-                    stepX = (width - 2 * Utils.AXIS_THICKNESS) / (maxX - 1);
+                    stepX = (width - 2 * Utils.AXIS_THICKNESS) / delimeter;
                     stepY = height - 2 * Utils.AXIS_THICKNESS;
                     break;
                 default:
@@ -3046,37 +3048,33 @@ namespace ag.WPF.Chart
             var currentSeries = series.FirstOrDefault(s => s.Index == index);
             if (currentSeries == null) return null;
 
+            var delimeter = maxX > 1 ? maxX - 1 : 1;
             switch (dir)
             {
                 case Directions.NorthEast:
                     centerX = Utils.AXIS_THICKNESS;
                     centerY = height - Utils.AXIS_THICKNESS;
-                    stepX = (width - 2 * Utils.AXIS_THICKNESS) / (maxX - 1);
-                    //stepY = (height - 2 * Utils.AXIS_THICKNESS) / units;
+                    stepX = (width - 2 * Utils.AXIS_THICKNESS) / delimeter;
                     break;
                 case Directions.NorthEastNorthWest:
                     centerX = width / 2;
                     centerY = height - Utils.AXIS_THICKNESS;
-                    stepX = (width - 2 * Utils.AXIS_THICKNESS) / 2 / (maxX - 1);
-                    //stepY = (height - 2 * Utils.AXIS_THICKNESS) / units;
+                    stepX = (width - 2 * Utils.AXIS_THICKNESS) / 2 / delimeter;
                     break;
                 case Directions.NorthEastSouthEast:
                     centerX = Utils.AXIS_THICKNESS;
                     centerY = height / 2;
-                    stepX = (width - 2 * Utils.AXIS_THICKNESS) / (maxX - 1);
-                    //stepY = (height - 2 * Utils.AXIS_THICKNESS) / 2 / units;
+                    stepX = (width - 2 * Utils.AXIS_THICKNESS) / delimeter;
                     break;
                 case Directions.SouthEast:
                     centerX = Utils.AXIS_THICKNESS;
                     centerY = Utils.AXIS_THICKNESS;
-                    stepX = (width - 2 * Utils.AXIS_THICKNESS) / (maxX - 1);
-                    //stepY = (height - 2 * Utils.AXIS_THICKNESS) / units;
+                    stepX = (width - 2 * Utils.AXIS_THICKNESS) / delimeter;
                     break;
                 case Directions.NorthWest:
                     centerX = width - Utils.AXIS_THICKNESS;
                     centerY = Utils.AXIS_THICKNESS;
-                    stepX = (width - 2 * Utils.AXIS_THICKNESS) / (maxX - 1);
-                    //stepY = (height - 2 * Utils.AXIS_THICKNESS) / units;
+                    stepX = (width - 2 * Utils.AXIS_THICKNESS) / delimeter;
                     break;
                 default:
                     return null;
@@ -3141,34 +3139,34 @@ namespace ag.WPF.Chart
             var currentSeries = series.FirstOrDefault(s => s.Index == index);
             if (currentSeries == null) return null;
 
-            //var boundOffset = Utils.BoundaryOffset(offsetBoundary, width, values.Count);
+            var delimeter = maxX > 1 ? maxX - 1 : 1;
 
             switch (dir)
             {
                 case Directions.NorthEast:
                     centerX = Utils.AXIS_THICKNESS + boundOffset;
                     centerY = height - Utils.AXIS_THICKNESS;
-                    stepX = offsetBoundary ? (width - 2 * Utils.AXIS_THICKNESS - 2 * boundOffset) / (maxX - 1) : (width - 2 * Utils.AXIS_THICKNESS) / (maxX - 1);
+                    stepX = offsetBoundary ? (width - 2 * Utils.AXIS_THICKNESS - 2 * boundOffset) / delimeter : (width - 2 * Utils.AXIS_THICKNESS) / delimeter;
                     break;
                 case Directions.NorthEastNorthWest:
                     centerX = width / 2;
                     centerY = height - Utils.AXIS_THICKNESS;
-                    stepX = (width - 2 * Utils.AXIS_THICKNESS) / 2 / (maxX - 1);
+                    stepX = (width - 2 * Utils.AXIS_THICKNESS) / 2 / delimeter;
                     break;
                 case Directions.NorthEastSouthEast:
                     centerX = Utils.AXIS_THICKNESS + boundOffset;
                     centerY = height / 2;
-                    stepX = offsetBoundary ? (width - 2 * Utils.AXIS_THICKNESS - 2 * boundOffset) / (maxX - 1) : (width - 2 * Utils.AXIS_THICKNESS) / (maxX - 1);
+                    stepX = offsetBoundary ? (width - 2 * Utils.AXIS_THICKNESS - 2 * boundOffset) / delimeter : (width - 2 * Utils.AXIS_THICKNESS) / delimeter;
                     break;
                 case Directions.SouthEast:
                     centerX = Utils.AXIS_THICKNESS + boundOffset;
                     centerY = Utils.AXIS_THICKNESS;
-                    stepX = offsetBoundary ? (width - 2 * Utils.AXIS_THICKNESS - 2 * boundOffset) / (maxX - 1) : (width - 2 * Utils.AXIS_THICKNESS) / (maxX - 1);
+                    stepX = offsetBoundary ? (width - 2 * Utils.AXIS_THICKNESS - 2 * boundOffset) / delimeter : (width - 2 * Utils.AXIS_THICKNESS) / delimeter;
                     break;
                 case Directions.NorthWest:
                     centerX = width - Utils.AXIS_THICKNESS;
                     centerY = Utils.AXIS_THICKNESS;
-                    stepX = (width - Utils.AXIS_THICKNESS) / (maxX - 1);
+                    stepX = (width - Utils.AXIS_THICKNESS) / delimeter;
                     break;
                 default:
                     return null;
@@ -3274,7 +3272,7 @@ namespace ag.WPF.Chart
             double centerX, centerY;
             var gm = new PathGeometry();
 
-            //var boundOffset = Utils.BoundaryOffset(offsetBoundary, width, maxX);
+            var delimeter = maxX > 1 ? maxX - 1 : 1;
 
             switch (dir)
             {
@@ -3282,30 +3280,30 @@ namespace ag.WPF.Chart
                     centerX = Utils.AXIS_THICKNESS + boundOffset;
                     centerY = height - Utils.AXIS_THICKNESS;
                     stepX = offsetBoundary
-                        ? (width - 2 * Utils.AXIS_THICKNESS - 2 * boundOffset) / (maxX - 1)
-                        : (width - 2 * Utils.AXIS_THICKNESS) / (maxX - 1);
+                        ? (width - 2 * Utils.AXIS_THICKNESS - 2 * boundOffset) / delimeter
+                        : (width - 2 * Utils.AXIS_THICKNESS) / delimeter;
                     break;
                 case Directions.NorthEastNorthWest:
                     centerX = width / 2;
                     centerY = height - Utils.AXIS_THICKNESS;
-                    stepX = (width - 2 * Utils.AXIS_THICKNESS) / 2 / (maxX - 1);
+                    stepX = (width - 2 * Utils.AXIS_THICKNESS) / 2 / delimeter;
                     break;
                 case Directions.NorthEastSouthEast:
                     centerX = Utils.AXIS_THICKNESS + boundOffset;
                     centerY = height / 2;
                     stepX = offsetBoundary
-                        ? (width - 2 * Utils.AXIS_THICKNESS - 2 * boundOffset) / (maxX - 1)
-                        : (width - 2 * Utils.AXIS_THICKNESS) / (maxX - 1);
+                        ? (width - 2 * Utils.AXIS_THICKNESS - 2 * boundOffset) / delimeter
+                        : (width - 2 * Utils.AXIS_THICKNESS) / delimeter;
                     break;
                 case Directions.SouthEast:
                     centerX = Utils.AXIS_THICKNESS + boundOffset;
                     centerY = Utils.AXIS_THICKNESS;
-                    stepX = offsetBoundary ? (width - 2 * Utils.AXIS_THICKNESS - 2 * boundOffset) / (maxX - 1) : (width - 2 * Utils.AXIS_THICKNESS) / (maxX - 1);
+                    stepX = offsetBoundary ? (width - 2 * Utils.AXIS_THICKNESS - 2 * boundOffset) / delimeter : (width - 2 * Utils.AXIS_THICKNESS) / delimeter;
                     break;
                 case Directions.NorthWest:
                     centerX = width - Utils.AXIS_THICKNESS;
                     centerY = Utils.AXIS_THICKNESS;
-                    stepX = (width - 2 * Utils.AXIS_THICKNESS) / (maxX - 1);
+                    stepX = (width - 2 * Utils.AXIS_THICKNESS) / delimeter;
                     break;
                 default:
                     return null;
@@ -3390,32 +3388,34 @@ namespace ag.WPF.Chart
 
             var gm = new PathGeometry();
 
+            var delimeter = maxX > 1 ? maxX - 1 : 1;
+
             switch (dir)
             {
                 case Directions.NorthEast:
                     centerX = Utils.AXIS_THICKNESS + boundOffset;
                     centerY = height - Utils.AXIS_THICKNESS;
-                    stepX = offsetBoundary ? (width - 2 * Utils.AXIS_THICKNESS - 2 * boundOffset) / (maxX - 1) : (width - 2 * Utils.AXIS_THICKNESS) / (maxX - 1);
+                    stepX = offsetBoundary ? (width - 2 * Utils.AXIS_THICKNESS - 2 * boundOffset) / delimeter : (width - 2 * Utils.AXIS_THICKNESS) / delimeter;
                     break;
                 case Directions.NorthEastNorthWest:
                     centerX = width / 2;
                     centerY = height - Utils.AXIS_THICKNESS;
-                    stepX = (width - 2 * Utils.AXIS_THICKNESS) / 2 / (maxX - 1);
+                    stepX = (width - 2 * Utils.AXIS_THICKNESS) / 2 / delimeter;
                     break;
                 case Directions.NorthEastSouthEast:
                     centerX = Utils.AXIS_THICKNESS + boundOffset;
                     centerY = height / 2;
-                    stepX = offsetBoundary ? (width - 2 * Utils.AXIS_THICKNESS - 2 * boundOffset) / (maxX - 1) : (width - 2 * Utils.AXIS_THICKNESS) / (maxX - 1);
+                    stepX = offsetBoundary ? (width - 2 * Utils.AXIS_THICKNESS - 2 * boundOffset) / delimeter : (width - 2 * Utils.AXIS_THICKNESS) / delimeter;
                     break;
                 case Directions.SouthEast:
                     centerX = Utils.AXIS_THICKNESS + boundOffset;
                     centerY = Utils.AXIS_THICKNESS;
-                    stepX = offsetBoundary ? (width - 2 * Utils.AXIS_THICKNESS - 2 * boundOffset) / (maxX - 1) : (width - 2 * Utils.AXIS_THICKNESS) / (maxX - 1);
+                    stepX = offsetBoundary ? (width - 2 * Utils.AXIS_THICKNESS - 2 * boundOffset) / delimeter : (width - 2 * Utils.AXIS_THICKNESS) / delimeter;
                     break;
                 case Directions.NorthWest:
                     centerX = width - Utils.AXIS_THICKNESS;
                     centerY = Utils.AXIS_THICKNESS;
-                    stepX = (width - 2 * Utils.AXIS_THICKNESS) / (maxX - 1);
+                    stepX = (width - 2 * Utils.AXIS_THICKNESS) / delimeter;
                     break;
                 default:
                     return null;
