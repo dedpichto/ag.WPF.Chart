@@ -1295,14 +1295,15 @@ namespace ag.WPF.Chart
                 ChartStyle.StackedLinesWithMarkers,
                 ChartStyle.SmoothStackedLines,
                 ChartStyle.SmoothStackedLinesWithMarkers,
-                ChartStyle.StackedArea);
+                ChartStyle.StackedArea,
+                ChartStyle.SmoothStackedArea);
         }
 
         internal static bool StyleFullStacked(ChartStyle chartStyle)
         {
             return chartStyle.In(ChartStyle.FullStackedColumns, ChartStyle.FullStackedArea,
                 ChartStyle.FullStackedLines, ChartStyle.FullStackedLinesWithMarkers,
-                ChartStyle.SmoothFullStackedLines, ChartStyle.SmoothFullStackedLinesWithMarkers);
+                ChartStyle.SmoothFullStackedLines, ChartStyle.SmoothFullStackedLinesWithMarkers, ChartStyle.SmoothFullStackedArea);
         }
 
         internal static bool OffsetBoundary(ChartBoundary boundary, ChartStyle style)
@@ -1369,6 +1370,7 @@ namespace ag.WPF.Chart
                         break;
                     }
                 case ChartStyle.StackedArea:
+                case ChartStyle.SmoothStackedArea:
                 case ChartStyle.StackedLines:
                 case ChartStyle.StackedLinesWithMarkers:
                 case ChartStyle.SmoothStackedLines:
@@ -1977,10 +1979,11 @@ namespace ag.WPF.Chart
                         break;
                     }
                 case ChartStyle.StackedArea:
+                case ChartStyle.SmoothStackedArea:
                     {
                         var units = Utils.GetUnitsForLines(seriesArray, chartStyle, dir, width, height, boundOffset, linesCountY, fmt.Height, autoAdjust, maxYConv);
                         maxX = seriesArray.Max(s => s.Values.Count);
-                        gm = drawStackedArea(width, height, maxX, units, dir, seriesArray, index, rawValues);
+                        gm = drawStackedArea(width, height, maxX, units, chartStyle, dir, seriesArray, index, rawValues);
                         break;
                     }
                 case ChartStyle.FullStackedLines:
@@ -2019,10 +2022,10 @@ namespace ag.WPF.Chart
                     }
                 case ChartStyle.FullStackedBars:
                     return drawFullStackedBars(width, height, dir, seriesArray, index, rawValues, showValues, fontFamily, fontStyle, fontWeight, fontStretch, fontSize, culture, flowDirection);
-                //break;
                 case ChartStyle.FullStackedArea:
+                case ChartStyle.SmoothFullStackedArea:
                     maxX = seriesArray.Max(s => s.Values.Count);
-                    gm = drawFullStackedArea(width, height, maxX, dir, seriesArray, index, rawValues);
+                    gm = drawFullStackedArea(width, height, maxX, dir, seriesArray, index, rawValues, chartStyle);
                     break;
             }
 
@@ -2798,13 +2801,13 @@ namespace ag.WPF.Chart
         }
 
         private PathGeometry drawFullStackedArea(double width, double height, double maxX, Directions dir,
-            ISeries[] series, int index, List<(List<IChartValue> Values, int Index)> tuples)
+            ISeries[] series, int index, List<(List<IChartValue> Values, int Index)> tuples, ChartStyle chartStyle)
         {
             var tp = tuples.FirstOrDefault(t => t.Index == index);
             if (tp == default) return null;
             var values = tp.Values;
             double stepX, stepY;
-            double centerY;
+            double centerX,centerY;
             var gm = new PathGeometry();
 
             var currentSeries = series.FirstOrDefault(s => s.Index == index);
@@ -2814,26 +2817,31 @@ namespace ag.WPF.Chart
             switch (dir)
             {
                 case Directions.NorthEast:
+                    centerX = Utils.AXIS_THICKNESS;
                     centerY = height - Utils.AXIS_THICKNESS;
                     stepX = (width - 2 * Utils.AXIS_THICKNESS) / delimeter;
                     stepY = (height - 2 * Utils.AXIS_THICKNESS);
                     break;
                 case Directions.NorthEastNorthWest:
+                    centerX = width / 2;
                     centerY = height - Utils.AXIS_THICKNESS;
                     stepX = (width - 2 * Utils.AXIS_THICKNESS) / 2 / delimeter;
                     stepY = (height - 2 * Utils.AXIS_THICKNESS);
                     break;
                 case Directions.NorthEastSouthEast:
+                    centerX = Utils.AXIS_THICKNESS;
                     centerY = height / 2;
                     stepX = (width - 2 * Utils.AXIS_THICKNESS) / delimeter;
                     stepY = (height - 2 * Utils.AXIS_THICKNESS) / 2;
                     break;
                 case Directions.SouthEast:
+                    centerX = Utils.AXIS_THICKNESS;
                     centerY = Utils.AXIS_THICKNESS;
                     stepX = (width - 2 * Utils.AXIS_THICKNESS) / delimeter;
                     stepY = height - 2 * Utils.AXIS_THICKNESS;
                     break;
                 case Directions.NorthWest:
+                    centerX = width - Utils.AXIS_THICKNESS;
                     centerY = Utils.AXIS_THICKNESS;
                     stepX = (width - 2 * Utils.AXIS_THICKNESS) / delimeter;
                     stepY = height - 2 * Utils.AXIS_THICKNESS;
@@ -2887,8 +2895,41 @@ namespace ag.WPF.Chart
                     points.Add(prevSeries.RealPoints[i]);
                 }
             }
-            var poly = new PolyLineSegment(points, true);
-            gm.Figures.Add(new PathFigure(start, new[] { poly }, true));
+
+            if (chartStyle == ChartStyle.SmoothFullStackedArea)
+            {
+                points.Insert(0, new Point(centerX, centerY));
+                points.Add(new Point(points[points.Count - 1].X, centerY));
+                var bezierSegments = interpolatePointsWithBezierCurves(points, false);
+                if (bezierSegments == null || bezierSegments.Count == 0)
+                {
+                    var poly = new PolyLineSegment(points, true);
+                    gm.Figures.Add(new PathFigure(points[0], new[] { poly }, true));
+                }
+                else
+                {
+                    var segments = bezierSegments.Select(bz => new BezierSegment
+                    {
+                        Point1 = bz.FirstControlPoint,
+                        Point2 = bz.SecondControlPoint,
+                        Point3 = bz.EndPoint
+                    }).Cast<PathSegment>().ToList();
+                    //segments.Add(new PolyLineSegment(new[] { new Point(points[points.Count - 1].X, centerY), new Point(centerX, centerY) }, true));
+                    //segments.Add(new LineSegment(new Point(points[points.Count - 1].X, centerY), true));
+                    //segments.Add(new LineSegment(new Point(centerX, centerY), true));
+                    gm.Figures.Add(new PathFigure(points[0], segments, true));
+                }
+                
+                //points.Add(new Point(points[points.Count - 1].X, centerY));
+                //var polyL = new PolyLineSegment(points, true);
+                //gm.Figures.Add(new PathFigure(start, new[] { polyL }, true));
+            }
+            else
+            {
+                var poly = new PolyLineSegment(points, true);
+                gm.Figures.Add(new PathFigure(start, new[] { poly }, true));
+            }
+
             return gm;
         }
 
@@ -3036,7 +3077,7 @@ namespace ag.WPF.Chart
             return gm;
         }
 
-        private PathGeometry drawStackedArea(double width, double height, double maxX, double units, Directions dir,
+        private PathGeometry drawStackedArea(double width, double height, double maxX, double units, ChartStyle chartStyle, Directions dir,
            ISeries[] series, int index, List<(List<IChartValue> Values, int Index)> tuples)
         {
             var tp = tuples.FirstOrDefault(t => t.Index == index);
@@ -3122,8 +3163,33 @@ namespace ag.WPF.Chart
                     x -= stepX;
                 }
             }
-            var polySegment = new PolyLineSegment(points, true);
-            gm.Figures.Add(new PathFigure(start, new[] { polySegment }, true));
+
+            if (chartStyle == ChartStyle.SmoothStackedArea)
+            {
+                points.Insert(0, new Point(centerX, centerY));
+                points.Add(new Point(points[points.Count - 1].X, centerY));
+                var bezierSegments = interpolatePointsWithBezierCurves(points, false);
+                if (bezierSegments == null || bezierSegments.Count == 0)
+                {
+                    var poly = new PolyLineSegment(points, true);
+                    gm.Figures.Add(new PathFigure(points[0], new[] { poly }, true));
+                }
+                else
+                {
+                    var segments = bezierSegments.Select(bz => new BezierSegment
+                    {
+                        Point1 = bz.FirstControlPoint,
+                        Point2 = bz.SecondControlPoint,
+                        Point3 = bz.EndPoint
+                    }).Cast<PathSegment>().ToList();
+                    gm.Figures.Add(new PathFigure(points[0], segments, true));
+                }
+            }
+            else
+            {
+                var polySegment = new PolyLineSegment(points, true);
+                gm.Figures.Add(new PathFigure(start, new[] { polySegment }, true));
+            }
             return gm;
         }
 
@@ -3213,13 +3279,13 @@ namespace ag.WPF.Chart
                 var poly = new PolyLineSegment(points, true);
                 gm.Figures.Add(new PathFigure(points[0], new[] { poly }, false));
             }
-            else if (style.In(ChartStyle.StackedArea))
-            {
-                points.Insert(0, new Point(centerX, centerY));
-                points.Add(new Point(points[points.Count - 1].X, centerY));
-                var poly = new PolyLineSegment(points, true);
-                gm.Figures.Add(new PathFigure(points[0], new[] { poly }, true));
-            }
+            //else if (style.In(ChartStyle.StackedArea))
+            //{
+            //    points.Insert(0, new Point(centerX, centerY));
+            //    points.Add(new Point(points[points.Count - 1].X, centerY));
+            //    var poly = new PolyLineSegment(points, true);
+            //    gm.Figures.Add(new PathFigure(points[0], new[] { poly }, true));
+            //}
             return gm;
         }
 
@@ -5391,7 +5457,7 @@ namespace ag.WPF.Chart
                 || !(values[15] is AxesVisibility axesVisibility))
                 return null;
 
-            if (chartStyle.In(ChartStyle.Area, ChartStyle.StackedArea, ChartStyle.FullStackedArea, ChartStyle.Radar, ChartStyle.RadarWithMarkers, ChartStyle.RadarArea, ChartStyle.SmoothArea))
+            if (chartStyle.In(ChartStyle.Area, ChartStyle.StackedArea, ChartStyle.SmoothStackedArea, ChartStyle.FullStackedArea, ChartStyle.SmoothFullStackedArea, ChartStyle.Radar, ChartStyle.RadarWithMarkers, ChartStyle.RadarArea, ChartStyle.SmoothArea))
                 return null;
 
             const double size = 4.0;
@@ -5820,7 +5886,7 @@ namespace ag.WPF.Chart
                 || !(values[12] is double maxX))
                 return null;
 
-            if (chartStyle.In(ChartStyle.Area, ChartStyle.StackedArea, ChartStyle.FullStackedArea, ChartStyle.SmoothArea))
+            if (chartStyle.In(ChartStyle.Area, ChartStyle.StackedArea, ChartStyle.SmoothStackedArea, ChartStyle.FullStackedArea, ChartStyle.SmoothFullStackedArea, ChartStyle.SmoothArea))
                 return null;
 
             var seriesArray = seriesEnumerable.ToArray();

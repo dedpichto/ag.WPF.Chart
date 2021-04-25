@@ -119,6 +119,14 @@ namespace ag.WPF.Chart
         /// </summary>
         SmoothArea,
         /// <summary>
+        /// The style represented by smooth stacked areas
+        /// </summary>
+        SmoothStackedArea,
+        /// <summary>
+        /// The style represented by 100% smooth stacked areas
+        /// </summary>
+        SmoothFullStackedArea,
+        /// <summary>
         /// The style represented by bubbles
         /// </summary>
         Bubbles,
@@ -665,7 +673,7 @@ namespace ag.WPF.Chart
             {
                 _canvas.Loaded += Canvas_Loaded;
             }
-                
+
             if (_pieImage != null)
             {
                 _pieImage.MouseMove -= PieImage_MouseMove;
