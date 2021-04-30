@@ -622,9 +622,20 @@ namespace ag.WPF.Chart
         public static readonly DependencyProperty ChartBoundaryProperty = DependencyProperty.Register(nameof(ChartBoundary), typeof(ChartBoundary), typeof(Chart),
                 new FrameworkPropertyMetadata(ChartBoundary.WithOffset, OnChartBoundaryChanged));
         /// <summary>
-        /// The identifier of the <see cref="CustomWaterfallLegendsProperty"/> dependency property.
+        /// The identifier of the <see cref="WaterfallLegendsProperty"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty CustomWaterfallLegendsProperty = DependencyProperty.RegisterAttached(nameof(CustomWaterfallLegends), typeof(IEnumerable<string>), typeof(Chart), new FrameworkPropertyMetadata(new[] { "Increase", "Decrease" }));
+        public static readonly DependencyProperty WaterfallLegendsProperty = DependencyProperty.RegisterAttached(nameof(WaterfallLegends), typeof(IEnumerable<string>), typeof(Chart),
+            new FrameworkPropertyMetadata(new[] { "Increase", "Decrease" }, null, CoerceWaterfallLegends));
+        /// <summary>
+        /// The identifier of the <see cref="HighLowCloseLegendsProperty"/> dependency property.
+        /// </summary>
+        public static readonly DependencyProperty HighLowCloseLegendsProperty = DependencyProperty.RegisterAttached(nameof(HighLowCloseLegends), typeof(IEnumerable<string>), typeof(Chart),
+            new FrameworkPropertyMetadata(new[] { "High", "Low" }, null, CoerceHighLowCloseLegends));
+        /// <summary>
+        /// The identifier of the <see cref="OpenHighLowCloseLegendsProperty"/> dependency property.
+        /// </summary>
+        public static readonly DependencyProperty OpenHighLowCloseLegendsProperty = DependencyProperty.RegisterAttached(nameof(OpenHighLowCloseLegends), typeof(IEnumerable<string>), typeof(Chart),
+            new FrameworkPropertyMetadata(new[] { "Increase", "Decrease" }, null, CoerceOpenHighLowCloseLegends));
         /// <summary>
         /// The identifier of the <see cref="ItemsSource"/> dependency property.
         /// </summary>
@@ -767,7 +778,7 @@ namespace ag.WPF.Chart
                         });
                         legend.SetBinding(VisibilityProperty, legendVisibilityBinding);
 
-                        legend.SetBinding(Legend.TextProperty, new Binding("CustomWaterfallLegends[0]") { Source = this });
+                        legend.SetBinding(Legend.TextProperty, new Binding("WaterfallLegends[0]") { Source = this });
 
                         LegendsCollection.Add(legend);
                         #endregion
@@ -792,38 +803,38 @@ namespace ag.WPF.Chart
                         legendVisibilityBinding.NotifyOnSourceUpdated = true;
                         legend.SetBinding(VisibilityProperty, legendVisibilityBinding);
 
-                        legend.SetBinding(Legend.TextProperty, new Binding("CustomWaterfallLegends[1]") { Source = this });
+                        legend.SetBinding(Legend.TextProperty, new Binding("WaterfallLegends[1]") { Source = this });
 
                         LegendsCollection.Add(legend);
                         #endregion
 
                         if (series.IsStockSeries())
                         {
-                            #region Stock legend
-                            legend = new Legend() { Index = series.Index };
+                            //#region Stock legend
+                            //legend = new Legend() { Index = series.Index };
 
-                            legend.SetBinding(Legend.LegendBackgroundProperty, new Binding("Foreground") { Source = this });
-                            legendVisibilityBinding = new MultiBinding { Converter = new LegendStockVisibilityConverter() };
-                            legendVisibilityBinding.Bindings.Add(new Binding("ChartStyle")
-                            {
-                                Source = this
-                            });
-                            legendVisibilityBinding.Bindings.Add(new Binding("Index")
-                            {
-                                Source = series
-                            });
-                            legendVisibilityBinding.Bindings.Add(new Binding("ItemsSource")
-                            {
-                                Source = this
-                            });
-                            legendVisibilityBinding.ConverterParameter = ColoredPaths.Stock;
-                            legendVisibilityBinding.NotifyOnSourceUpdated = true;
-                            legend.SetBinding(VisibilityProperty, legendVisibilityBinding);
-                            legend.Text = "Close";
-                            //legend.SetBinding(Legend.TextProperty, new Binding("CustomWaterfallLegends[1]") { Source = this });
+                            //legend.SetBinding(Legend.LegendBackgroundProperty, new Binding("Foreground") { Source = this });
+                            //legendVisibilityBinding = new MultiBinding { Converter = new LegendStockVisibilityConverter() };
+                            //legendVisibilityBinding.Bindings.Add(new Binding("ChartStyle")
+                            //{
+                            //    Source = this
+                            //});
+                            //legendVisibilityBinding.Bindings.Add(new Binding("Index")
+                            //{
+                            //    Source = series
+                            //});
+                            //legendVisibilityBinding.Bindings.Add(new Binding("ItemsSource")
+                            //{
+                            //    Source = this
+                            //});
+                            //legendVisibilityBinding.ConverterParameter = ColoredPaths.Stock;
+                            //legendVisibilityBinding.NotifyOnSourceUpdated = true;
+                            //legend.SetBinding(VisibilityProperty, legendVisibilityBinding);
+                            //legend.Text = "Close";
+                            ////legend.SetBinding(Legend.TextProperty, new Binding("WaterfallLegends[1]") { Source = this });
 
-                            LegendsCollection.Add(legend);
-                            #endregion
+                            //LegendsCollection.Add(legend);
+                            //#endregion
 
                             #region Up stock legend
                             legend = new Legend() { Index = series.Index };
@@ -845,9 +856,10 @@ namespace ag.WPF.Chart
                             legendVisibilityBinding.ConverterParameter = ColoredPaths.Up;
                             legendVisibilityBinding.NotifyOnSourceUpdated = true;
                             legend.SetBinding(VisibilityProperty, legendVisibilityBinding);
-                            legend.Text = series is HighLowCloseSeries ? "High" : "Increase";
-                            //legend.SetBinding(Legend.TextProperty, new Binding("CustomWaterfallLegends[0]") { Source = this });
-
+                            if (series is HighLowCloseSeries)
+                                legend.SetBinding(Legend.TextProperty, new Binding("HighLowCloseLegends[0]") { Source = this });
+                            else if (series is OpenHighLowCloseSeries)
+                                legend.SetBinding(Legend.TextProperty, new Binding("OpenHighLowCloseLegends[0]") { Source = this });
                             LegendsCollection.Add(legend);
                             #endregion
 
@@ -871,9 +883,10 @@ namespace ag.WPF.Chart
                             legendVisibilityBinding.ConverterParameter = ColoredPaths.Down;
                             legendVisibilityBinding.NotifyOnSourceUpdated = true;
                             legend.SetBinding(VisibilityProperty, legendVisibilityBinding);
-                            legend.Text = legend.Text = series is HighLowCloseSeries ? "Low" : "Decrease";
-                            //legend.SetBinding(Legend.TextProperty, new Binding("CustomWaterfallLegends[1]") { Source = this });
-
+                            if (series is HighLowCloseSeries)
+                                legend.SetBinding(Legend.TextProperty, new Binding("HighLowCloseLegends[1]") { Source = this });
+                            else if (series is OpenHighLowCloseSeries)
+                                legend.SetBinding(Legend.TextProperty, new Binding("OpenHighLowCloseLegends[1]") { Source = this });
                             LegendsCollection.Add(legend);
                             #endregion
                         }
@@ -1427,13 +1440,31 @@ namespace ag.WPF.Chart
 
         #region Dependency properties wrappers
         /// <summary>
+        /// Gets or sets the collection of custom legend text when <see cref="ChartStyle"/> is set to <see cref="ChartStyle.OpenHighLowClose"/>.
+        /// </summary>
+        [Category("ChartAppearance"), Description("Gets or sets the collection of custom legend text when ChartStyle is set to ChartStyle.OpenHighLowClose")]
+        public IEnumerable<string> OpenHighLowCloseLegends
+        {
+            get { return (IEnumerable<string>)GetValue(OpenHighLowCloseLegendsProperty); }
+            set { SetValue(OpenHighLowCloseLegendsProperty, value); }
+        }
+        /// <summary>
+        /// Gets or sets the collection of custom legend text when <see cref="ChartStyle"/> is set to <see cref="ChartStyle.HighLowClose"/>.
+        /// </summary>
+        [Category("ChartAppearance"), Description("Gets or sets the collection of custom legend text when ChartStyle is set to ChartStyle.HighLowClose")]
+        public IEnumerable<string> HighLowCloseLegends
+        {
+            get { return (IEnumerable<string>)GetValue(HighLowCloseLegendsProperty); }
+            set { SetValue(HighLowCloseLegendsProperty, value); }
+        }
+        /// <summary>
         /// Gets or sets the collection of custom legend text when <see cref="ChartStyle"/> is set to <see cref="ChartStyle.Waterfall"/>.
         /// </summary>
         [Category("ChartAppearance"), Description("Gets or sets the collection of custom legend text when ChartStyle is set to ChartStyle.Waterfall")]
-        public IEnumerable<string> CustomWaterfallLegends
+        public IEnumerable<string> WaterfallLegends
         {
-            get { return (IEnumerable<string>)GetValue(CustomWaterfallLegendsProperty); }
-            set { SetValue(CustomWaterfallLegendsProperty, value); }
+            get { return (IEnumerable<string>)GetValue(WaterfallLegendsProperty); }
+            set { SetValue(WaterfallLegendsProperty, value); }
         }
         /// <summary>
         /// Gets/sets the collection of <see cref="Series"/> objects associated with chart control.
@@ -1941,6 +1972,30 @@ namespace ag.WPF.Chart
         #endregion
 
         #region Callbacks
+        private static object CoerceWaterfallLegends(DependencyObject d, object value)
+        {
+            if (!(value is IEnumerable<string> legends))
+                throw new ArgumentException("WaterfallLegends must be of type IEnumerable<string>", nameof(value));
+            if (legends.Count() < 2)
+                throw new ArgumentException("WaterfallLegends must have at least two items", nameof(value));
+            return value;
+        }
+        private static object CoerceHighLowCloseLegends(DependencyObject d, object value)
+        {
+            if (!(value is IEnumerable<string> legends))
+                throw new ArgumentException("HighLowCloseLegends must be of type IEnumerable<string>", nameof(value));
+            if (legends.Count() < 2)
+                throw new ArgumentException("HighLowCloseLegends must have at least two items", nameof(value));
+            return value;
+        }
+        private static object CoerceOpenHighLowCloseLegends(DependencyObject d, object value)
+        {
+            if (!(value is IEnumerable<string> legends))
+                throw new ArgumentException("OpenHighLowCloseLegends must be of type IEnumerable<string>", nameof(value));
+            if (legends.Count() < 2)
+                throw new ArgumentException("OpenHighLowCloseLegends must have at least two items", nameof(value));
+            return value;
+        }
         private static void OnItemsSourceChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
             if (!(sender is Chart chart)) return;

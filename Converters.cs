@@ -95,7 +95,7 @@ namespace ag.WPF.Chart
             }
             foreach (var b in _bases)
                 foreach (var p in powers)
-                    yield return max / (b * (int)Math.Pow(10, p));
+                    yield return max / (b * (long)Math.Pow(10, p));
         }
 
         private static bool isEven(double number)
@@ -284,18 +284,18 @@ namespace ag.WPF.Chart
                 max = transformSmallFractionalNumber(max);
             }
 
-            var pm = Math.Abs((int)max).ToString().Length - 1;
+            var pm = Math.Abs((long)max).ToString().Length - 1;
             var p = pm >= 3 ? pm - 1 : pm;
             // do not increase max for integers that are equal to 10 power
             if ((max % Math.Pow(10, p)) != 0 && originalMax > 1)
-                max = Math.Sign(max) * roundInt((int)Math.Abs(max), (int)Math.Pow(10, pm));
+                max = Math.Sign(max) * roundInt((long)Math.Abs(max), (long)Math.Pow(10, pm));
 
             if (fractionPower > 0 && originalMax <= 1)
             {
                 max *= Math.Pow(10, fractionPower);
             }
 
-            var power = Math.Abs((int)max).ToString().Length - 1;
+            var power = Math.Abs((long)max).ToString().Length - 1;
 
             // difference is alway max
             // get all available integer lines counts
@@ -366,7 +366,7 @@ namespace ag.WPF.Chart
                 stepSize = max / linesCount;
                 while (!IsInteger(stepSize))
                 {
-                    max = Math.Sign(max) * roundInt((int)Math.Abs(max), (int)Math.Pow(10, power));
+                    max = Math.Sign(max) * roundInt((long)Math.Abs(max), (long)Math.Pow(10, power));
                     stepSize = max / linesCount;
                 }
                 stepLength = radius / linesCount;
@@ -405,18 +405,18 @@ namespace ag.WPF.Chart
                 min = transformSmallFractionalNumber(min);
             }
 
-            var pm = Math.Abs((int)min).ToString().Length - 1;
+            var pm = Math.Abs((long)min).ToString().Length - 1;
             var p = pm >= 3 ? pm - 1 : pm;
             // do not increase max for integers that are equal to 10 power
             if ((min % Math.Pow(10, p)) != 0 && originalMin > 1)
-                min = Math.Sign(min) * roundInt((int)Math.Abs(min), (int)Math.Pow(10, pm));
+                min = Math.Sign(min) * roundInt((long)Math.Abs(min), (long)Math.Pow(10, pm));
 
             if (fractionPower > 0 && originalMin <= 1)
             {
                 min = -Math.Abs(min * Math.Pow(10, fractionPower));
             }
 
-            var power = Math.Abs((int)min).ToString().Length - 1;
+            var power = Math.Abs((long)min).ToString().Length - 1;
 
             // difference is always equal absolute value of min
             var diff = Math.Abs(min);
@@ -485,7 +485,7 @@ namespace ag.WPF.Chart
                 stepSize = diff / linesCount;
                 while (!IsInteger(stepSize))
                 {
-                    min = Math.Sign(min) * roundInt((int)Math.Abs(min), (int)Math.Pow(10, power));
+                    min = Math.Sign(min) * roundInt((long)Math.Abs(min), (long)Math.Pow(10, power));
                     diff = Math.Abs(min);
                     stepSize = diff / linesCount;
                 }
@@ -538,17 +538,17 @@ namespace ag.WPF.Chart
                 min = transformSmallFractionalNumber(min);
             }
 
-            var pMax = Math.Abs((int)max).ToString().Length - 1;
-            var pMin = Math.Abs((int)min).ToString().Length - 1;
+            var pMax = Math.Abs((long)max).ToString().Length - 1;
+            var pMin = Math.Abs((long)min).ToString().Length - 1;
 
             // do not increase max for integers that are equal to 10 power
             var p = pMax >= 3 ? pMax - 1 : pMax;
             if ((max % Math.Pow(10, p)) != 0 && (originalMax > 1 || originalMin > 1))
-                max = Math.Sign(max) * roundInt((int)Math.Abs(max), (int)Math.Pow(10, pMax));
+                max = Math.Sign(max) * roundInt((long)Math.Abs(max), (long)Math.Pow(10, pMax));
             // do not increase max for integers that are equal to 10 power
             p = pMin >= 3 ? pMin - 1 : pMin;
             if ((min % Math.Pow(10, p)) != 0 && (originalMax > 1 || originalMin > 1))
-                min = Math.Sign(min) * roundInt((int)Math.Abs(min), (int)Math.Pow(10, pMin));
+                min = Math.Sign(min) * roundInt((long)Math.Abs(min), (long)Math.Pow(10, pMin));
 
             if (fractionPower > 0 && originalMax <= 1 && originalMin <= 1)
             {
@@ -556,8 +556,8 @@ namespace ag.WPF.Chart
                 min = -Math.Abs(min * Math.Pow(10, fractionPower));
             }
 
-            var powerMax = Math.Abs((int)max).ToString().Length - 1;
-            var powerMin = Math.Abs((int)min).ToString().Length - 1;
+            var powerMax = Math.Abs((long)max).ToString().Length - 1;
+            var powerMin = Math.Abs((long)min).ToString().Length - 1;
 
             // store absolute values of max and min
             var absMax = Math.Abs(max);
@@ -680,7 +680,7 @@ namespace ag.WPF.Chart
                     stepSize = diff / linesCount;
                     while (!IsInteger(stepSize) || stepSize < prevMin)
                     {
-                        max = Math.Sign(max) * roundInt((int)Math.Abs(max), (int)Math.Pow(10, powerMax));
+                        max = Math.Sign(max) * roundInt((long)Math.Abs(max), (long)Math.Pow(10, powerMax));
                         diff = getDiff(max, min);
                         stepSize = diff / linesCount;
                     }
@@ -699,7 +699,7 @@ namespace ag.WPF.Chart
                     stepSize = diff / linesCount;
                     while (!IsInteger(stepSize) || stepSize < prevMax)
                     {
-                        min = Math.Sign(min) * roundInt((int)Math.Abs(min), (int)Math.Pow(10, powerMin));
+                        min = Math.Sign(min) * roundInt((long)Math.Abs(min), (long)Math.Pow(10, powerMin));
                         diff = getDiff(max, min);
                         stepSize = diff / linesCount;
                     }
@@ -760,17 +760,17 @@ namespace ag.WPF.Chart
                 min = transformSmallFractionalNumber(min);
             }
 
-            var pMax = Math.Abs((int)max).ToString().Length - 1;
-            var pMin = Math.Abs((int)min).ToString().Length - 1;
+            var pMax = Math.Abs((long)max).ToString().Length - 1;
+            var pMin = Math.Abs((long)min).ToString().Length - 1;
 
             // do not increase max for integers that are equal to 10 power
             var p = pMax >= 3 ? pMax - 1 : pMax;
             if ((max % Math.Pow(10, p)) != 0 && (originalMax > 1 || originalMin > 1))
-                max = Math.Sign(max) * roundInt((int)Math.Abs(max), (int)Math.Pow(10, pMax));
+                max = Math.Sign(max) * roundInt((long)Math.Abs(max), (long)Math.Pow(10, pMax));
             // do not increase max for integers that are equal to 10 power
             p = pMin >= 3 ? pMin - 1 : pMin;
             if ((min % Math.Pow(10, p)) != 0 && (originalMax > 1 || originalMin > 1))
-                min = Math.Sign(min) * roundInt((int)Math.Abs(min), (int)Math.Pow(10, pMin));
+                min = Math.Sign(min) * roundInt((long)Math.Abs(min), (long)Math.Pow(10, pMin));
 
             if (fractionPower > 0 && originalMax <= 1 && originalMin <= 1)
             {
@@ -778,8 +778,8 @@ namespace ag.WPF.Chart
                 min = -Math.Abs(min * Math.Pow(10, fractionPower));
             }
 
-            var powerMax = Math.Abs((int)max).ToString().Length - 1;
-            var powerMin = Math.Abs((int)min).ToString().Length - 1;
+            var powerMax = Math.Abs((long)max).ToString().Length - 1;
+            var powerMin = Math.Abs((long)min).ToString().Length - 1;
 
             // store absolute values of max and min
             var absMax = Math.Abs(max);
@@ -872,7 +872,7 @@ namespace ag.WPF.Chart
                     stepSize = diff / linesCount;
                     while (!IsInteger(stepSize) || stepSize < prevMin)
                     {
-                        max = Math.Sign(max) * roundInt((int)Math.Abs(max), (int)Math.Pow(10, powerMax));
+                        max = Math.Sign(max) * roundInt((long)Math.Abs(max), (long)Math.Pow(10, powerMax));
                         diff = getDiff(max, min);
                         stepSize = diff / linesCount;
                     }
@@ -891,7 +891,7 @@ namespace ag.WPF.Chart
                     stepSize = diff / linesCount;
                     while (!IsInteger(stepSize) || stepSize < prevMax)
                     {
-                        min = Math.Sign(min) * roundInt((int)Math.Abs(min), (int)Math.Pow(10, powerMin));
+                        min = Math.Sign(min) * roundInt((long)Math.Abs(min), (long)Math.Pow(10, powerMin));
                         diff = getDiff(max, min);
                         stepSize = diff / linesCount;
                     }
@@ -1037,13 +1037,13 @@ namespace ag.WPF.Chart
             //return 0;
         }
 
-        private static int roundInt(int number, int tense)
+        private static long roundInt(long number, long tense)
         {
             // smaller multiple
-            int a = number / tense * tense;
+            var a = number / tense * tense;
             // larger multiple
             var addition = (number % tense) > tense / 2 ? tense : tense / 2;
-            int b = a + addition;
+            var b = a + addition;
             return b;
         }
 
@@ -1072,17 +1072,17 @@ namespace ag.WPF.Chart
                 min = -Math.Abs(min * Math.Pow(10, fractionPower));
             }
 
-            var powerMax = Math.Abs((int)max).ToString().Length - 1;
-            var powerMin = Math.Abs((int)min).ToString().Length - 1;
+            var powerMax = Math.Abs((long)max).ToString().Length - 1;
+            var powerMin = Math.Abs((long)min).ToString().Length - 1;
 
             // do not increase max for integers that are equal to 10 power
             var p = powerMax >= 3 ? powerMax - 1 : powerMax;
             if ((max % Math.Pow(10, p)) != 0)
-                max = Math.Sign(max) * roundInt((int)Math.Abs(max), (int)Math.Pow(10, powerMax));
+                max = Math.Sign(max) * roundInt((long)Math.Abs(max), (long)Math.Pow(10, powerMax));
             // do not increase max for integers that are equal to 10 power
             p = powerMin >= 3 ? powerMin - 1 : powerMin;
             if ((min % Math.Pow(10, p)) != 0)
-                min = Math.Sign(min) * roundInt((int)Math.Abs(min), (int)Math.Pow(10, powerMin));
+                min = Math.Sign(min) * roundInt((long)Math.Abs(min), (long)Math.Pow(10, powerMin));
 
             if (fractionPower > 0)
             {
