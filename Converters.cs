@@ -2807,7 +2807,7 @@ namespace ag.WPF.Chart
             if (tp == default) return null;
             var values = tp.Values;
             double stepX, stepY;
-            double centerX,centerY;
+            double centerX, centerY;
             var gm = new PathGeometry();
 
             var currentSeries = series.FirstOrDefault(s => s.Index == index);
@@ -2919,7 +2919,7 @@ namespace ag.WPF.Chart
                     //segments.Add(new LineSegment(new Point(centerX, centerY), true));
                     gm.Figures.Add(new PathFigure(points[0], segments, true));
                 }
-                
+
                 //points.Add(new Point(points[points.Count - 1].X, centerY));
                 //var polyL = new PolyLineSegment(points, true);
                 //gm.Figures.Add(new PathFigure(start, new[] { polyL }, true));
@@ -4430,7 +4430,8 @@ namespace ag.WPF.Chart
             ngm.Transform = trgr;
 
             height = ngm.Bounds.Height;
-            return height;
+            // add some extra space
+            return height + 8;
         }
         /// <summary>Converts a binding target value to the source binding values.</summary>
         /// <returns>An array of values that have been converted from the target value back to the source values.</returns>
@@ -4518,7 +4519,8 @@ namespace ag.WPF.Chart
             else
                 return 0.0;
 
-            string maxString;
+            string maxString, maxStringY, maxStringX;
+            FormattedText fmtX = null;
             var radius = 0.0;
             var centerX = 0.0;
             Point centerPoint;
@@ -4574,14 +4576,31 @@ namespace ag.WPF.Chart
                             formatY = $"0{culture.NumberFormat.NumberDecimalSeparator}{new string('0', fractions)}" + literalPart;
                         }
                     }
-                    maxString = customValuesY.Any()
-                        ? customValuesY.FirstOrDefault(c => c.Length == customValuesY.Max(v => v.Length))
-                        : max.ToString(culture).Length >= min.ToString(culture).Length ? max.ToString(formatY, culture) : min.ToString(formatY, culture);
+                    maxStringY = customValuesY.Any()
+                       ? customValuesY.FirstOrDefault(c => c.Length == customValuesY.Max(v => v.Length))
+                       : max.ToString(culture).Length >= min.ToString(culture).Length ? max.ToString(formatY, culture) : min.ToString(formatY, culture);
                 }
                 else
                 {
-                    maxString = "100%";
+                    maxStringY = "100%";
                 }
+
+                // get first horiizontal values formatted text object 
+                maxStringX = customValuesX.Any()
+                    ? customValuesX.First()
+                    : "0";
+                fmtX = new FormattedText(maxStringX, culture, FlowDirection.LeftToRight,
+                            new Typeface(fontFamily, fontStyle, fontWeight, fontStretch), fontSize, Brushes.Black, VisualTreeHelper.GetDpi(Utils.Border).PixelsPerDip)
+                {
+                    TextAlignment = TextAlignment.Right
+                };
+                var pt = new Point(0, 0);
+                var ngm = fmtX.BuildGeometry(pt);
+                var trgr = new TransformGroup();
+                trgr.Children.Add(new RotateTransform(-45, pt.X + fmtX.Width, pt.Y));
+                ngm.Transform = trgr;
+
+                maxString = maxStringY;
             }
             else
             {
@@ -4604,7 +4623,10 @@ namespace ag.WPF.Chart
             {
                 TextAlignment = TextAlignment.Right
             };
-            width = fmt.Width;
+            if (fmtX != null)
+                width = fmt.Width > fmtX.Width ? fmt.Width : fmtX.Width;
+            else
+                width = fmt.Width;
             //add some extra space
             return width + 4;
         }
