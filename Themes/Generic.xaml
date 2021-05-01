@@ -361,6 +361,7 @@
                                                 <Binding Path="HorizontalMax" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                                 <Binding Path="VerticalMax" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                                 <Binding Path="AxesLinesVisibility" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                                <Binding Path="ShowTicks" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                             </MultiBinding>
                                         </Path.Data>
                                     </Path>
@@ -465,7 +466,7 @@
                             <Setter Property="Grid.RowSpan" TargetName="LegendField" Value="3"/>
                             <Setter Property="Grid.RowSpan" TargetName="PieLegendField" Value="3"/>
                         </Trigger>
-                        <Trigger Property="ShowTicks" Value="false">
+                        <Trigger Property="ShowTicks" Value="None">
                             <Setter Property="Visibility" TargetName="PART_PathTicks" Value="Hidden"/>
                         </Trigger>
                         <Trigger Property="SecondaryLinesVisibility" Value="Vertical">

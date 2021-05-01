@@ -615,7 +615,7 @@ namespace ag.WPF.Chart
         /// The identifier of the <see cref="ShowTicks"/> dependency property.
         /// </summary>
         public static readonly DependencyProperty ShowTicksProperty = DependencyProperty.Register(nameof(ShowTicks),
-                typeof(bool), typeof(Chart), new FrameworkPropertyMetadata(true, OnShowTicksChanged));
+                typeof(AxesVisibility), typeof(Chart), new FrameworkPropertyMetadata(AxesVisibility.Both, OnShowTicksChanged));
         /// <summary>
         /// The identifier of the <see cref="ChartBoundary"/> dependency property.
         /// </summary>
@@ -1486,13 +1486,13 @@ namespace ag.WPF.Chart
             set { SetValue(ChartBoundaryProperty, value); }
         }
         /// <summary>
-        /// Specifies whether ticks are drawn on axes.
+        /// Specifies whether ticks are drawn on axes. Can be one of <see cref="AxesVisibility"/> enumeration members.
         /// </summary>
         /// <remarks>This property will have no effect if <see cref="ChartStyle"/> property is set to one of the following: <see cref="ChartStyle.SolidPie"/>, <see cref="ChartStyle.SlicedPie"/>, <see cref="ChartStyle.Doughnut"/>, <see cref="ChartStyle.Radar"/>, <see cref="ChartStyle.RadarWithMarkers"/>, <see cref="ChartStyle.RadarArea"/>.</remarks>
-        [Category("ChartAppearance"), Description("Specifies whether ticks are drawn on axes")]
-        public bool ShowTicks
+        [Category("ChartAppearance"), Description("Specifies whether ticks are drawn on axes. Can be one of AxesValuesVisibility enumeration members")]
+        public AxesVisibility ShowTicks
         {
-            get { return (bool)GetValue(ShowTicksProperty); }
+            get { return (AxesVisibility)GetValue(ShowTicksProperty); }
             set { SetValue(ShowTicksProperty, value); }
         }
         /// <summary>
@@ -2045,16 +2045,16 @@ namespace ag.WPF.Chart
         private static void OnShowTicksChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
             if (!(sender is Chart ch)) return;
-            ch.OnShowTicksChanged((bool)e.OldValue, (bool)e.NewValue);
+            ch.OnShowTicksChanged((AxesVisibility)e.OldValue, (AxesVisibility)e.NewValue);
         }
         /// <summary>
         /// Invoked just before the <see cref="ShowTicksChangedEvent"/> event is raised on control
         /// </summary>
         /// <param name="oldValue">Old value</param>
         /// <param name="newValue">New value</param>
-        protected void OnShowTicksChanged(bool oldValue, bool newValue)
+        protected void OnShowTicksChanged(AxesVisibility oldValue, AxesVisibility newValue)
         {
-            var e = new RoutedPropertyChangedEventArgs<bool>(oldValue, newValue)
+            var e = new RoutedPropertyChangedEventArgs<AxesVisibility>(oldValue, newValue)
             {
                 RoutedEvent = ShowTicksChangedEvent
             };
@@ -2871,7 +2871,7 @@ namespace ag.WPF.Chart
         /// <summary>
         /// Occurs when the <see cref="ShowTicks"/> property has been changed in some way
         /// </summary>
-        public event RoutedPropertyChangedEventHandler<bool> ShowTicksChanged
+        public event RoutedPropertyChangedEventHandler<AxesVisibility> ShowTicksChanged
         {
             add { AddHandler(ShowTicksChangedEvent, value); }
             remove { RemoveHandler(ShowTicksChangedEvent, value); }
@@ -2880,7 +2880,7 @@ namespace ag.WPF.Chart
         /// Identifies the <see cref="ShowTicksChanged"/> routed event
         /// </summary>
         public static readonly RoutedEvent ShowTicksChangedEvent = EventManager.RegisterRoutedEvent("ShowTicksChanged",
-            RoutingStrategy.Bubble, typeof(RoutedPropertyChangedEventHandler<bool>), typeof(Chart));
+            RoutingStrategy.Bubble, typeof(RoutedPropertyChangedEventHandler<AxesVisibility>), typeof(Chart));
 
         /// <summary>
         /// Occurs when the <see cref="MarkerShape"/> property has been changed in some way

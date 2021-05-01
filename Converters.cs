@@ -5478,7 +5478,8 @@ namespace ag.WPF.Chart
                 || !(values[12] is AutoAdjustmentMode autoAdjust)
                 || !(values[13] is double maxX)
                 || !(values[14] is double maxY)
-                || !(values[15] is AxesVisibility axesVisibility))
+                || !(values[15] is AxesVisibility axesVisibility)
+                || !(values[16] is AxesVisibility showTicks))
                 return null;
 
             if (chartStyle.In(ChartStyle.Area, ChartStyle.StackedArea, ChartStyle.SmoothStackedArea, ChartStyle.FullStackedArea, ChartStyle.SmoothFullStackedArea, ChartStyle.Radar, ChartStyle.RadarWithMarkers, ChartStyle.RadarArea, ChartStyle.SmoothArea))
@@ -5617,7 +5618,7 @@ namespace ag.WPF.Chart
                 case Directions.NorthEast:
                     {
                         width -= boundOffset;
-                        if (axesVisibility.In(AxesVisibility.Both, AxesVisibility.Horizontal) && chartStyle != ChartStyle.Funnel)
+                        if (axesVisibility.In(AxesVisibility.Both, AxesVisibility.Horizontal) && showTicks.In(AxesVisibility.Both, AxesVisibility.Vertical) && chartStyle != ChartStyle.Funnel)
                         {
                             var x = Utils.AXIS_THICKNESS + boundOffset;
                             if (!Utils.StyleBars(chartStyle))
@@ -5648,7 +5649,7 @@ namespace ag.WPF.Chart
                             }
                         }
 
-                        if (axesVisibility.In(AxesVisibility.Both, AxesVisibility.Vertical))
+                        if (axesVisibility.In(AxesVisibility.Both, AxesVisibility.Vertical) && showTicks.In(AxesVisibility.Both, AxesVisibility.Horizontal))
                         {
                             if (Utils.StyleBars(chartStyle))
                             {
@@ -5686,7 +5687,7 @@ namespace ag.WPF.Chart
                     {
                         if (!Utils.StyleBars(chartStyle))
                             return null;
-                        if (axesVisibility.In(AxesVisibility.Both, AxesVisibility.Horizontal))
+                        if (axesVisibility.In(AxesVisibility.Both, AxesVisibility.Horizontal) && showTicks.In(AxesVisibility.Both, AxesVisibility.Vertical))
                         {
                             xStep = chartStyle != ChartStyle.FullStackedBars ? stepLength : width / 20;
                             var x = Utils.AXIS_THICKNESS;
@@ -5700,7 +5701,7 @@ namespace ag.WPF.Chart
                             }
                         }
 
-                        if (axesVisibility.In(AxesVisibility.Both, AxesVisibility.Vertical))
+                        if (axesVisibility.In(AxesVisibility.Both, AxesVisibility.Vertical) && showTicks.In(AxesVisibility.Both, AxesVisibility.Horizontal))
                         {
                             if (autoAdjust.In(AutoAdjustmentMode.Both, AutoAdjustmentMode.Vertical))
                             {
@@ -5727,7 +5728,7 @@ namespace ag.WPF.Chart
                     {
                         if (Utils.StyleBars(chartStyle))
                             return null;
-                        if (axesVisibility.In(AxesVisibility.Both, AxesVisibility.Horizontal))
+                        if (axesVisibility.In(AxesVisibility.Both, AxesVisibility.Horizontal) && showTicks.In(AxesVisibility.Both, AxesVisibility.Vertical))
                         {
                             var x = Utils.AXIS_THICKNESS + boundOffset;
                             if (!Utils.StyleBars(chartStyle))
@@ -5758,7 +5759,7 @@ namespace ag.WPF.Chart
                             }
                         }
 
-                        if (axesVisibility.In(AxesVisibility.Both, AxesVisibility.Vertical))
+                        if (axesVisibility.In(AxesVisibility.Both, AxesVisibility.Vertical) && showTicks.In(AxesVisibility.Both, AxesVisibility.Horizontal))
                         {
                             yStep = (Utils.StyleFullStacked(chartStyle))
                                  ? height / 20
@@ -5781,7 +5782,7 @@ namespace ag.WPF.Chart
                     {
                         if (!Utils.StyleBars(chartStyle))
                             return null;
-                        if (axesVisibility.In(AxesVisibility.Both, AxesVisibility.Horizontal))
+                        if (axesVisibility.In(AxesVisibility.Both, AxesVisibility.Horizontal) && showTicks.In(AxesVisibility.Both, AxesVisibility.Vertical))
                         {
                             xStep = chartStyle != ChartStyle.FullStackedBars ? stepLength : width / 10;
                             var x = Utils.AXIS_THICKNESS;
@@ -5794,7 +5795,7 @@ namespace ag.WPF.Chart
                             }
                         }
 
-                        if (axesVisibility.In(AxesVisibility.Both, AxesVisibility.Vertical))
+                        if (axesVisibility.In(AxesVisibility.Both, AxesVisibility.Vertical) && showTicks.In(AxesVisibility.Both, AxesVisibility.Horizontal))
                         {
                             if (autoAdjust.In(AutoAdjustmentMode.Both, AutoAdjustmentMode.Vertical))
                             {
@@ -5822,7 +5823,7 @@ namespace ag.WPF.Chart
                         if (Utils.StyleBars(chartStyle))
                             return null;
                         width -= boundOffset;
-                        if (axesVisibility.In(AxesVisibility.Both, AxesVisibility.Horizontal))
+                        if (axesVisibility.In(AxesVisibility.Both, AxesVisibility.Horizontal) && showTicks.In(AxesVisibility.Both, AxesVisibility.Vertical))
                         {
                             var x = Utils.AXIS_THICKNESS + boundOffset;
 
@@ -5847,7 +5848,7 @@ namespace ag.WPF.Chart
                             }
                         }
 
-                        if (axesVisibility.In(AxesVisibility.Both, AxesVisibility.Vertical))
+                        if (axesVisibility.In(AxesVisibility.Both, AxesVisibility.Vertical) && showTicks.In(AxesVisibility.Both, AxesVisibility.Horizontal))
                         {
                             yStep = stepLength;
                             limit = linesCountY;
