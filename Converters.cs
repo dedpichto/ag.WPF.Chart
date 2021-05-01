@@ -4367,6 +4367,8 @@ namespace ag.WPF.Chart
                 if (Utils.StyleBars(chartStyle))
                 {
                     maxForBars = autoAdjust.In(AutoAdjustmentMode.Both, AutoAdjustmentMode.Horizontal) ? seriesArray.Max(s => s.Values.Count) : linesCountX;
+                    if (dir.In(Directions.NorthWest, Directions.NorthEastNorthWest))
+                        maxForBars *= -1;
                 }
                 else
                 {

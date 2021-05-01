@@ -405,8 +405,8 @@
                             </Canvas>
                             <ItemsControl x:Name="LegendField"
                                           Grid.Row="7"
-                                          Grid.Column="0"
-                                          Grid.ColumnSpan="7"
+                                          Grid.Column="1"
+                                          Grid.ColumnSpan="5"
                                           ItemsSource="{Binding LegendsCollection, RelativeSource={RelativeSource Mode=TemplatedParent}}"
                                           >
                                 <ItemsControl.ItemsPanel>
@@ -419,8 +419,8 @@
                             <ItemsControl x:Name="PieLegendField"
                                           Visibility="Collapsed"
                                           Grid.Row="7"
-                                          Grid.Column="0"
-                                          Grid.ColumnSpan="7"
+                                          Grid.Column="1"
+                                          Grid.ColumnSpan="5"
                                           ItemsSource="{Binding PieLegendsCollection, RelativeSource={RelativeSource Mode=TemplatedParent}}"
                                           >
                                 <ItemsControl.ItemsPanel>
@@ -448,22 +448,22 @@
                             <Setter Property="Grid.Row" TargetName="PieLegendField" Value="0"/>
                         </Trigger>
                         <Trigger Property="LegendAlignment" Value="Left">
-                            <Setter Property="Grid.Row" TargetName="LegendField" Value="0"/>
-                            <Setter Property="Grid.Row" TargetName="PieLegendField" Value="0"/>
+                            <Setter Property="Grid.Row" TargetName="LegendField" Value="2"/>
+                            <Setter Property="Grid.Row" TargetName="PieLegendField" Value="2"/>
                             <Setter Property="Grid.ColumnSpan" TargetName="LegendField" Value="1"/>
                             <Setter Property="Grid.ColumnSpan" TargetName="PieLegendField" Value="1"/>
-                            <Setter Property="Grid.RowSpan" TargetName="LegendField" Value="8"/>
-                            <Setter Property="Grid.RowSpan" TargetName="PieLegendField" Value="8"/>
+                            <Setter Property="Grid.RowSpan" TargetName="LegendField" Value="3"/>
+                            <Setter Property="Grid.RowSpan" TargetName="PieLegendField" Value="3"/>
                         </Trigger>
                         <Trigger Property="LegendAlignment" Value="Right">
-                            <Setter Property="Grid.Row" TargetName="LegendField" Value="0"/>
-                            <Setter Property="Grid.Row" TargetName="PieLegendField" Value="0"/>
+                            <Setter Property="Grid.Row" TargetName="LegendField" Value="2"/>
+                            <Setter Property="Grid.Row" TargetName="PieLegendField" Value="2"/>
                             <Setter Property="Grid.Column" TargetName="LegendField" Value="7"/>
                             <Setter Property="Grid.Column" TargetName="PieLegendField" Value="7"/>
                             <Setter Property="Grid.ColumnSpan" TargetName="LegendField" Value="1"/>
                             <Setter Property="Grid.ColumnSpan" TargetName="PieLegendField" Value="1"/>
-                            <Setter Property="Grid.RowSpan" TargetName="LegendField" Value="8"/>
-                            <Setter Property="Grid.RowSpan" TargetName="PieLegendField" Value="8"/>
+                            <Setter Property="Grid.RowSpan" TargetName="LegendField" Value="3"/>
+                            <Setter Property="Grid.RowSpan" TargetName="PieLegendField" Value="3"/>
                         </Trigger>
                         <Trigger Property="ShowTicks" Value="false">
                             <Setter Property="Visibility" TargetName="PART_PathTicks" Value="Hidden"/>
