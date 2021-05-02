@@ -17,7 +17,6 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using System.Windows.Xps.Packaging;
-using ag.WPF.Chart.Annotations;
 using ag.WPF.Chart.Values;
 using ag.WPF.Chart.Series;
 using Path = System.Windows.Shapes.Path;
@@ -318,8 +317,9 @@ namespace ag.WPF.Chart
     }
 
     /// <summary>
-    /// Represents custom control for creating simple 2-D charts
+    /// Represents a custom control containing axes, series, legends and other hosted content.
     /// </summary>
+
     #region Named parts
     [TemplatePart(Name = ElementCanvas, Type = typeof(Canvas))]
     [TemplatePart(Name = ElementPieImage, Type = typeof(Image))]
@@ -3459,7 +3459,6 @@ namespace ag.WPF.Chart
         /// Raises the PropertyChanged event when the property value has changed
         /// </summary>
         /// <param name="propertyName">Property name</param>
-        [NotifyPropertyChangedInvocator]
         protected virtual void OnPropertyChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));

@@ -2,41 +2,41 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:sys="clr-namespace:System;assembly=mscorlib"
-    xmlns:local="clr-namespace:ag.WPF.Chart">
+    xmlns:chart="clr-namespace:ag.WPF.Chart">
 
-    <local:AxisYGridRowConverter x:Key="AxYRowConverter"/>
-    <local:AxisXGridColumnConverter x:Key="AxisXGridColumnConverter"/>
-    <local:AxisYTextAlignmentConverter x:Key="AxisYTextAlignmentConverter"/>
-    <local:AxisXTextAlignmentConverter x:Key="AxisXTextAlignmentConverter"/>
-    <local:LegendOrientationConverter x:Key="LegendOrientationConverter"/>
-    <local:AxisTicksPathConverter x:Key="AxisTicksPathConverter"/>
-    <local:HorizontalLinesPathConverter x:Key="HorizontalLinesPathConverter"/>
-    <local:VerticalLinesPathConverter x:Key="VerticalLinesPathConverter"/>
-    <local:LegendSizeConverter x:Key="LegendSizeConverter"/>
-    <local:PieLeftConverter x:Key="PieLeftConverter"/>
-    <local:PieTopConverter x:Key="PieTopConverter"/>
-    <local:ValuesToPieSectionsConverter x:Key="ValuesToPieSectionsConverter"/>
-    <local:VerticalValuesAlignmentConverter x:Key="VerticalValuesAlignmentConverter"/>
-    <local:HorizontalValuesAlignmentConverter x:Key="HorizontalValuesAlignmentConverter"/>
-    <local:VerticalValuesColumnConverter x:Key="VerticalValuesColumnConverter"/>
-    <local:HorizontalValuesRowConverter x:Key="HorizontalValuesRowConverter"/>
-    <local:VerticalValuesConverter x:Key="VerticalValuesConverter"/>
-    <local:HorizontalValuesConverter x:Key="HorizontalValuesConverter"/>
-    <local:VerticalPlaceholderWidthConverter x:Key="VerticalPlaceholderWidthConverter"/>
-    <local:HorizontalPlaceholderHeightConverter x:Key="HorizontalPlaceholderHeightConverter"/>
-    <local:RadarAxesValuesConverter x:Key="RadarAxesValuesConverter"/>
-    <local:RadarLinesPathConverter x:Key="RadarLinesPathConverter"/>
-    <local:AxesXLinesConverter x:Key="AxesXLinesConverter"/>
-    <local:AxesYLinesConverter x:Key="AxesYLinesConverter"/>
-    <local:LegendPieVisibilityConverter x:Key="LegendPieVisibilityConverter"/>
-    <local:StarDrawingConverter x:Key="StarDrawingConverter"/>
+    <chart:AxisYGridRowConverter x:Key="AxisYGridRowConverter"/>
+    <chart:AxisXGridColumnConverter x:Key="AxisXGridColumnConverter"/>
+    <chart:AxisYTextAlignmentConverter x:Key="AxisYTextAlignmentConverter"/>
+    <chart:AxisXTextAlignmentConverter x:Key="AxisXTextAlignmentConverter"/>
+    <chart:LegendOrientationConverter x:Key="LegendOrientationConverter"/>
+    <chart:AxisTicksPathConverter x:Key="AxisTicksPathConverter"/>
+    <chart:HorizontalLinesPathConverter x:Key="HorizontalLinesPathConverter"/>
+    <chart:VerticalLinesPathConverter x:Key="VerticalLinesPathConverter"/>
+    <chart:LegendSizeConverter x:Key="LegendSizeConverter"/>
+    <chart:PieLeftConverter x:Key="PieLeftConverter"/>
+    <chart:PieTopConverter x:Key="PieTopConverter"/>
+    <chart:ValuesToPieSectionsConverter x:Key="ValuesToPieSectionsConverter"/>
+    <chart:VerticalValuesAlignmentConverter x:Key="VerticalValuesAlignmentConverter"/>
+    <chart:HorizontalValuesAlignmentConverter x:Key="HorizontalValuesAlignmentConverter"/>
+    <chart:VerticalValuesColumnConverter x:Key="VerticalValuesColumnConverter"/>
+    <chart:HorizontalValuesRowConverter x:Key="HorizontalValuesRowConverter"/>
+    <chart:VerticalValuesConverter x:Key="VerticalValuesConverter"/>
+    <chart:HorizontalValuesConverter x:Key="HorizontalValuesConverter"/>
+    <chart:VerticalPlaceholderWidthConverter x:Key="VerticalPlaceholderWidthConverter"/>
+    <chart:HorizontalPlaceholderHeightConverter x:Key="HorizontalPlaceholderHeightConverter"/>
+    <chart:RadarAxesValuesConverter x:Key="RadarAxesValuesConverter"/>
+    <chart:RadarLinesPathConverter x:Key="RadarLinesPathConverter"/>
+    <chart:AxesXLinesConverter x:Key="AxesXLinesConverter"/>
+    <chart:AxesYLinesConverter x:Key="AxesYLinesConverter"/>
+    <chart:LegendPieVisibilityConverter x:Key="LegendPieVisibilityConverter"/>
+    <chart:StarDrawingConverter x:Key="StarDrawingConverter"/>
     
-    <Style TargetType="{x:Type local:Chart}">
+    <Style TargetType="{x:Type chart:Chart}">
         <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.WindowTextBrushKey}}"/>
         <Setter Property="Background" Value="{DynamicResource {x:Static SystemColors.WindowBrushKey}}"/>
         <Setter Property="Template">
             <Setter.Value>
-                <ControlTemplate TargetType="{x:Type local:Chart}">
+                <ControlTemplate TargetType="{x:Type chart:Chart}">
                     <Border Background="{TemplateBinding Background}"
                             BorderBrush="{TemplateBinding BorderBrush}"
                             BorderThickness="{TemplateBinding BorderThickness}">
@@ -82,7 +82,7 @@
                                        Foreground="{TemplateBinding Foreground}"
                                        Text="{TemplateBinding VerticalAxisTitle}">
                                 <Grid.Row>
-                                    <MultiBinding Converter="{StaticResource AxYRowConverter}">
+                                    <MultiBinding Converter="{StaticResource AxisYGridRowConverter}">
                                         <Binding Path="ItemsSource" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                         <Binding Path="ChartStyle" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                     </MultiBinding>
@@ -412,7 +412,7 @@
                                           >
                                 <ItemsControl.ItemsPanel>
                                     <ItemsPanelTemplate>
-                                        <WrapPanel Orientation="{Binding LegendAlignment, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:Chart}, Converter={StaticResource LegendOrientationConverter}}"
+                                        <WrapPanel Orientation="{Binding LegendAlignment, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=chart:Chart}, Converter={StaticResource LegendOrientationConverter}}"
                                                    Margin="4"/>
                                     </ItemsPanelTemplate>
                                 </ItemsControl.ItemsPanel>
@@ -426,7 +426,7 @@
                                           >
                                 <ItemsControl.ItemsPanel>
                                     <ItemsPanelTemplate>
-                                        <WrapPanel Orientation="{Binding LegendAlignment, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:Chart}, Converter={StaticResource LegendOrientationConverter}}"
+                                        <WrapPanel Orientation="{Binding LegendAlignment, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=chart:Chart}, Converter={StaticResource LegendOrientationConverter}}"
                                                    Margin="4"/>
                                     </ItemsPanelTemplate>
                                 </ItemsControl.ItemsPanel>
@@ -580,8 +580,6 @@
                         <Trigger Property="ChartStyle" Value="Radar">
                             <Setter Property="Visibility" TargetName="TextYAxis" Value="Collapsed"/>
                             <Setter Property="Visibility" TargetName="TextXAxis" Value="Collapsed"/>
-                            <!--<Setter Property="Visibility" TargetName="GridSeries" Value="Collapsed"/>-->
-                            <!--<Setter Property="Visibility" TargetName="LegendField" Value="Collapsed"/>-->
                             <Setter Property="Visibility" TargetName="PART_PathXAxisValues" Value="Collapsed"/>
                             <Setter Property="Visibility" TargetName="PART_PathYAxisValues" Value="Collapsed"/>
                             <Setter Property="Visibility" TargetName="PART_VPlaceHolder" Value="Collapsed"/>
@@ -598,8 +596,6 @@
                         <Trigger Property="ChartStyle" Value="RadarWithMarkers">
                             <Setter Property="Visibility" TargetName="TextYAxis" Value="Collapsed"/>
                             <Setter Property="Visibility" TargetName="TextXAxis" Value="Collapsed"/>
-                            <!--<Setter Property="Visibility" TargetName="GridSeries" Value="Collapsed"/>-->
-                            <!--<Setter Property="Visibility" TargetName="LegendField" Value="Collapsed"/>-->
                             <Setter Property="Visibility" TargetName="PART_PathXAxisValues" Value="Collapsed"/>
                             <Setter Property="Visibility" TargetName="PART_PathYAxisValues" Value="Collapsed"/>
                             <Setter Property="Visibility" TargetName="PART_VPlaceHolder" Value="Collapsed"/>
@@ -616,8 +612,6 @@
                         <Trigger Property="ChartStyle" Value="RadarArea">
                             <Setter Property="Visibility" TargetName="TextYAxis" Value="Collapsed"/>
                             <Setter Property="Visibility" TargetName="TextXAxis" Value="Collapsed"/>
-                            <!--<Setter Property="Visibility" TargetName="GridSeries" Value="Collapsed"/>-->
-                            <!--<Setter Property="Visibility" TargetName="LegendField" Value="Collapsed"/>-->
                             <Setter Property="Visibility" TargetName="PART_PathXAxisValues" Value="Collapsed"/>
                             <Setter Property="Visibility" TargetName="PART_PathYAxisValues" Value="Collapsed"/>
                             <Setter Property="Visibility" TargetName="PART_VPlaceHolder" Value="Collapsed"/>
@@ -658,38 +652,38 @@
         </Setter>
     </Style>
 
-    <Style TargetType="{x:Type local:Legend}">
+    <Style TargetType="{x:Type chart:Legend}">
         <Setter Property="Template">
             <Setter.Value>
-                <ControlTemplate TargetType="{x:Type local:Legend}">
+                <ControlTemplate TargetType="{x:Type chart:Legend}">
                     <Border>
                         <StackPanel x:Name="stack" Orientation="Horizontal">
                             <Border x:Name="star"
                                     Margin="2"
-                                    Opacity="{Binding ChartOpacity,RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:Chart}}"
-                                    Width="{Binding LegendSize, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:Chart}, Converter={StaticResource LegendSizeConverter}}" 
-                                    Height="{Binding LegendSize, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:Chart}, Converter={StaticResource LegendSizeConverter}}" >
-                                <Path Fill="{TemplateBinding LegendBackground}" Stretch="Fill" Data="{Binding LegendShape, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:Chart}, Converter={StaticResource StarDrawingConverter}}"/>
+                                    Opacity="{Binding ChartOpacity,RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=chart:Chart}}"
+                                    Width="{Binding LegendSize, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=chart:Chart}, Converter={StaticResource LegendSizeConverter}}" 
+                                    Height="{Binding LegendSize, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=chart:Chart}, Converter={StaticResource LegendSizeConverter}}" >
+                                <Path Fill="{TemplateBinding LegendBackground}" Stretch="Fill" Data="{Binding LegendShape, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=chart:Chart}, Converter={StaticResource StarDrawingConverter}}"/>
                             </Border>
                             <!--Text block has FlowDirection explicitly set to LeftToRight in order to preserve correct string order when parent FlowDirection is set to RightToLeft-->
                             <TextBlock x:Name="LegendText" 
                                        FlowDirection="LeftToRight"
                                        Text="{TemplateBinding Text}" 
-                                       FontFamily="{Binding LegendFontFamily, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:Chart}}"
-                                       FontStyle="{Binding LegendFontStyle, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:Chart}}"
-                                       FontWeight="{Binding LegendFontWeight, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:Chart}}"
-                                       FontSize="{Binding LegendFontSize, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:Chart}}"
+                                       FontFamily="{Binding LegendFontFamily, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=chart:Chart}}"
+                                       FontStyle="{Binding LegendFontStyle, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=chart:Chart}}"
+                                       FontWeight="{Binding LegendFontWeight, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=chart:Chart}}"
+                                       FontSize="{Binding LegendFontSize, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=chart:Chart}}"
                                        VerticalAlignment="Center"
                                        Margin="2"/>
                         </StackPanel>
                     </Border>
                     <ControlTemplate.Triggers>
-                        <DataTrigger Binding="{Binding LegendAlignment, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:Chart}}" Value="Left">
+                        <DataTrigger Binding="{Binding LegendAlignment, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=chart:Chart}}" Value="Left">
                             <Setter Property="HorizontalAlignment" TargetName="star" Value="Center"/>
                             <Setter Property="HorizontalAlignment" TargetName="LegendText" Value="Center"/>
                             <Setter Property="Orientation" TargetName="stack" Value="Vertical"/>
                         </DataTrigger>
-                        <DataTrigger Binding="{Binding LegendAlignment, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:Chart}}" Value="Right">
+                        <DataTrigger Binding="{Binding LegendAlignment, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=chart:Chart}}" Value="Right">
                             <Setter Property="HorizontalAlignment" TargetName="star" Value="Center"/>
                             <Setter Property="HorizontalAlignment" TargetName="LegendText" Value="Center"/>
                             <Setter Property="Orientation" TargetName="stack" Value="Vertical"/>

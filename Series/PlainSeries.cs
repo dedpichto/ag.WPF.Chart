@@ -11,13 +11,12 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Media;
 using System.Windows.Shapes;
-using ag.WPF.Chart.Annotations;
 using ag.WPF.Chart.Values;
 
 namespace ag.WPF.Chart.Series
 {
     /// <summary>
-    /// Represents plain series object (with one value for each series point).
+    /// Represents plain series object with one value for each series point.
     /// </summary>
     public class PlainSeries : Series
     {

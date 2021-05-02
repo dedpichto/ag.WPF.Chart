@@ -1,0 +1,45 @@
+﻿<Window x:Class="Examples.ExamplesWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:uctls="clr-namespace:Examples.UserControls"
+        mc:Ignorable="d"
+        Title="Examples" Height="600" Width="1200" Loaded="Window_Loaded">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition Height="auto"/>
+        </Grid.RowDefinitions>
+        <TabControl x:Name="TabCharts">
+            <TabItem Header="Lines/Bubbles">
+                <uctls:LinesStyles x:Name="ULinesStyle"/>
+            </TabItem>
+            <TabItem Header="Columns/Bars">
+                <uctls:ColumnsBarsStyles x:Name="UColumnsBarsStyles"/>
+            </TabItem>
+            <TabItem Header="Areas">
+                <uctls:AreaStyles x:Name="UAreaStyles"/>
+            </TabItem>
+            <TabItem Header="Funnel/Pipes">
+                <uctls:FunnelPipesStyles x:Name="UFunnelPipesStyles"/>
+            </TabItem>
+            <TabItem Header="Waterfall">
+                <uctls:WaterfallStyle x:Name="UWaterfallStyle"/>
+            </TabItem>
+            <TabItem Header="Radar">
+                <uctls:RadarStyles x:Name="URadarStyle"/>
+            </TabItem>
+            <TabItem Header="Stock HLC">
+                <uctls:HLCStyle x:Name="UHLCStyle"/>
+            </TabItem>
+            <TabItem Header="Stock OHLC">
+                <uctls:OHLCStyle x:Name="UOHLCStyle"/>
+            </TabItem>
+            <TabItem Header="Without AutoAdjustment">
+                <uctls:SpaceSignal x:Name="USignals"/>
+            </TabItem>
+        </TabControl>
+        <Button Grid.Row="1" Margin="4" HorizontalAlignment="Left" Width="75" Content="Print image" Click="Button_Click"/>
+    </Grid>
+</Window>

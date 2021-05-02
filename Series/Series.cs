@@ -1,5 +1,4 @@
-﻿using ag.WPF.Chart.Annotations;
-using ag.WPF.Chart.Values;
+﻿using ag.WPF.Chart.Values;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -19,7 +18,7 @@ using System.Windows.Shapes;
 namespace ag.WPF.Chart.Series
 {
     /// <summary>
-    /// Represents the basic abstract class of series
+    /// Represents the basic abstract class of series.
     /// </summary>
     public abstract class Series : DependencyObject, ISeries
     {
@@ -188,7 +187,6 @@ namespace ag.WPF.Chart.Series
         /// </summary>
         public event PropertyChangedEventHandler PropertyChanged;
 
-        [NotifyPropertyChangedInvocator]
         private void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));

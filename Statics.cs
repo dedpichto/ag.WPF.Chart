@@ -12,7 +12,7 @@ namespace ag.WPF.Chart
     /// <summary>
     /// Represents static class with number of attached dependency properties.
     /// </summary>
-    public static class Statics
+    internal static class Statics
     {
         /// <summary>
         /// The identifier of the SectorData attached dependency property.
