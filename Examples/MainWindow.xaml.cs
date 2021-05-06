@@ -22,7 +22,7 @@ namespace Examples
     /// </summary>
     public partial class MainWindow : Window
     {
-        public List<string> WaterfallLegends { get; } = new List<string> { "Подъем", "Спуск", "Хрен знает что" };
+        public List<string> LegendsWaterfall { get; } = new List<string> { "Подъем", "Спуск", "Хрен знает что" };
         public ObservableCollection<ISeries> Series { get; } = new ObservableCollection<ISeries>();
         public List<string> CustomXTexts { get; } = new List<string>();
         public List<string> CustomYTexts { get; } = new List<string>(new string[] { "Oil", "Gas", "Electricity" });

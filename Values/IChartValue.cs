@@ -14,9 +14,9 @@
         /// </summary>
         (double PlainValue, double HighValue, double LowValue, double CloseValue, double VolumeValue, double OpenValue) Value { get; set; }
         /// <summary>
-        /// Creates copy of current object
+        /// Creates copy of current <see cref="IChartValue"/> object
         /// </summary>
-        /// <returns></returns>
+        /// <returns>A copy of current <see cref="IChartValue"/> object</returns>
         IChartValue Clone();
     }
 }

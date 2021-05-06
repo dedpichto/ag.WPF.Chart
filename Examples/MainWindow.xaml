@@ -20,7 +20,7 @@
                      ItemsSource="{Binding Series}"
                      VerticalAxisValuesFormat="0"
                      CustomXAxisValues="{Binding CustomXTexts}"
-                         WaterfallLegends="{Binding WaterfallLegends}"
+                         LegendsWaterfall="{Binding LegendsWaterfall}"
                          ChartStyle="Lines">
         </chart:Chart>
         <xctk:PropertyGrid Grid.Row="0" Grid.Column="2" SelectedObject="{Binding ElementName=chTest}" AutoGenerateProperties="True" Margin="4"/>

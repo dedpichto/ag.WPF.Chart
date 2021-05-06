@@ -43,19 +43,13 @@
                 <xctk:PropertyGrid SelectedObject="{Binding ElementName=AgChart}" AutoGenerateProperties="False" Margin="4">
                     <xctk:PropertyGrid.PropertyDefinitions>
                         <xctk:PropertyDefinition TargetProperties="MarkerShape" />
-                        <xctk:PropertyDefinition TargetProperties="AutoAdjustment" />
                         <xctk:PropertyDefinition TargetProperties="LineThickness" />
-                        <xctk:PropertyDefinition TargetProperties="VerticalMax" />
-                        <xctk:PropertyDefinition TargetProperties="HorizontalMax" />
                         <xctk:PropertyDefinition TargetProperties="ChartOpacity" />
                         <xctk:PropertyDefinition TargetProperties="HorizontalLinesCount" />
                         <xctk:PropertyDefinition TargetProperties="VerticalLinesCount" />
 
-                        <xctk:PropertyDefinition TargetProperties="SecondaryLinesVisibility" />
                         <xctk:PropertyDefinition TargetProperties="AxesLinesVisibility" />
                         <xctk:PropertyDefinition TargetProperties="AxesValuesVisibility" />
-                        <xctk:PropertyDefinition TargetProperties="VerticalAxisTitle" />
-                        <xctk:PropertyDefinition TargetProperties="HorizontalAxisTitle" />
                         <xctk:PropertyDefinition TargetProperties="AxesFontStretch" />
                         <xctk:PropertyDefinition TargetProperties="AxesFontStyle" />
                         <xctk:PropertyDefinition TargetProperties="AxesFontSize" />
