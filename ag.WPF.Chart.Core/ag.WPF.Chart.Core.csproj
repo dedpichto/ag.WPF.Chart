@@ -14,21 +14,21 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="..\Chart.cs" Link="Chart.cs" />
-    <Compile Include="..\Converters.cs" Link="Converters.cs" />
-    <Compile Include="..\Legend.cs" Link="Legend.cs" />
-    <Compile Include="..\Series\HighLowCloseSeries.cs" Link="Series\HighLowCloseSeries.cs" />
-    <Compile Include="..\Series\ISeries.cs" Link="Series\ISeries.cs" />
-    <Compile Include="..\Series\ISeriesFactory.cs" Link="Series\ISeriesFactory.cs" />
-    <Compile Include="..\Series\OpenHighLowCloseSeries.cs" Link="Series\OpenHighLowCloseSeries.cs" />
-    <Compile Include="..\Series\PlainSeries.cs" Link="Series\PlainSeries.cs" />
-    <Compile Include="..\Series\Series.cs" Link="Series\Series.cs" />
-    <Compile Include="..\Statics.cs" Link="Statics.cs" />
-    <Compile Include="..\Values\ChartValue.cs" Link="Valuess\ChartValue.cs" />
-    <Compile Include="..\Values\HighLowCloseChartValue.cs" Link="Valuess\HighLowCloseChartValue.cs" />
-    <Compile Include="..\Values\IChartValue.cs" Link="Valuess\IChartValue.cs" />
-    <Compile Include="..\Values\OpenHighLowCloseChartValue.cs" Link="Valuess\OpenHighLowCloseChartValue.cs" />
-    <Compile Include="..\Values\PlainChartValue.cs" Link="Valuess\PlainChartValue.cs" />
+    <Compile Include="..\ag.WPF.Chart.Classic\Chart.cs" Link="Chart.cs" />
+    <Compile Include="..\ag.WPF.Chart.Classic\Converters.cs" Link="Converters.cs" />
+    <Compile Include="..\ag.WPF.Chart.Classic\Legend.cs" Link="Legend.cs" />
+    <Compile Include="..\ag.WPF.Chart.Classic\Series\HighLowCloseSeries.cs" Link="Series\HighLowCloseSeries.cs" />
+    <Compile Include="..\ag.WPF.Chart.Classic\Series\ISeries.cs" Link="Series\ISeries.cs" />
+    <Compile Include="..\ag.WPF.Chart.Classic\Series\ISeriesFactory.cs" Link="Series\ISeriesFactory.cs" />
+    <Compile Include="..\ag.WPF.Chart.Classic\Series\OpenHighLowCloseSeries.cs" Link="Series\OpenHighLowCloseSeries.cs" />
+    <Compile Include="..\ag.WPF.Chart.Classic\Series\PlainSeries.cs" Link="Series\PlainSeries.cs" />
+    <Compile Include="..\ag.WPF.Chart.Classic\Series\Series.cs" Link="Series\Series.cs" />
+    <Compile Include="..\ag.WPF.Chart.Classic\Statics.cs" Link="Statics.cs" />
+    <Compile Include="..\ag.WPF.Chart.Classic\Values\ChartValue.cs" Link="Valuess\ChartValue.cs" />
+    <Compile Include="..\ag.WPF.Chart.Classic\Values\HighLowCloseChartValue.cs" Link="Valuess\HighLowCloseChartValue.cs" />
+    <Compile Include="..\ag.WPF.Chart.Classic\Values\IChartValue.cs" Link="Valuess\IChartValue.cs" />
+    <Compile Include="..\ag.WPF.Chart.Classic\Values\OpenHighLowCloseChartValue.cs" Link="Valuess\OpenHighLowCloseChartValue.cs" />
+    <Compile Include="..\ag.WPF.Chart.Classic\Values\PlainChartValue.cs" Link="Valuess\PlainChartValue.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -38,16 +38,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Page Include="..\Themes\Generic.xaml" Link="Themes\Generic.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
+    <None Include="..\ag.WPF.Chart.Classic\LICENSE" Link="LICENSE" />
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="..\LICENSE">
-      <Pack>True</Pack>
-      <PackagePath></PackagePath>
-    </None>
+    <Page Include="..\ag.WPF.Chart.Classic\Themes\Generic.xaml" Link="Themes\Generic.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
 
 </Project>
