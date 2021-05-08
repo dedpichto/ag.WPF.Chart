@@ -319,34 +319,6 @@ namespace ag.WPF.Chart
     /// <summary>
     /// Represents a custom control containing series, axes, legends and other hosted content.
     /// </summary>
-    /// <example>
-    /// This example shows how to create <see cref="Chart"/> object in XAML
-    /// <code lang="XAML">
-    /// <UserControl x:Class="Examples.UserControls.ColumnsBarsStyles"
-    ///          xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-    ///          xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    ///          xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-    ///          xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-    ///          xmlns:chart="clr-namespace:ag.WPF.Chart;assembly=ag.WPF.Chart"
-    ///          xmlns:local="clr-namespace:Examples.UserControls"
-    ///          mc:Ignorable="d" 
-    ///          d:DesignHeight="450" d:DesignWidth="800">
-    ///     <Grid>
-    ///         <chart:Chart Grid.Column="1" 
-    ///                   x:Name="AgChart"
-    ///                   Margin="4"
-    ///                   ItemsSource="{Binding Series, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=UserControl}}"
-    ///                   CustomXAxisValues="{Binding CustomXTexts, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=UserControl}}"
-    ///                   ChartStyle="Columns"
-    ///                   VerticalAxisTitle="Liters"
-    ///                   HorizontalAxisTitle="Countries"
-    ///                   Title="Alcohol per capita in liters"
-    ///                   VerticalAxisValuesFormat="0 L"
-    ///                   />
-    ///     </Grid>
-    /// </UserControl>
-    /// </code>
-    /// </example>
     ///<remarks>
     /// A <see cref="Chart"/> contains a collection of <see cref="Series.Series"/> objects, which are in <see cref="ItemsSource"/> property.
     /// <para>
