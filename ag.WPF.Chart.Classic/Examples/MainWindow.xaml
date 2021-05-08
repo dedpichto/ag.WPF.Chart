@@ -1,0 +1,29 @@
+﻿<Window x:Class="Examples.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:chart="clr-namespace:ag.WPF.Chart;assembly=ag.WPF.Chart"
+        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+        xmlns:local="clr-namespace:Examples"
+        mc:Ignorable="d"
+        DataContext="{Binding RelativeSource={RelativeSource Mode=Self}}"
+        WindowState="Maximized"
+        Title="MainWindow" Height="450" Width="800" Loaded="Window_Loaded">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition Width="0.75*"/>
+        </Grid.ColumnDefinitions>
+        <chart:Chart x:Name="chTest" Grid.Column="0" BorderThickness="1" Margin="4" Background="#FF262626" Foreground="White"
+                         Title="Sample chart" 
+                     ItemsSource="{Binding Series}"
+                     ValuesFormatY="0"
+                     CustomValuesX="{Binding CustomXTexts}"
+                         LegendsWaterfall="{Binding LegendsWaterfall}"
+                         ChartStyle="Lines">
+        </chart:Chart>
+        <xctk:PropertyGrid Grid.Row="0" Grid.Column="2" SelectedObject="{Binding ElementName=chTest}" AutoGenerateProperties="True" Margin="4"/>
+
+    </Grid>
+</Window>

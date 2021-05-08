@@ -172,15 +172,15 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Extended.Wpf.Toolkit">
-      <Version>4.0.2</Version>
-    </PackageReference>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\ag.WPF.Chart.Classic\ag.WPF.Chart.csproj">
+    <ProjectReference Include="..\ag.WPF.Chart.csproj">
       <Project>{95d1ffa0-2cb9-43a0-9e05-e10f29089877}</Project>
       <Name>ag.WPF.Chart</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Extended.Wpf.Toolkit">
+      <Version>4.0.2</Version>
+    </PackageReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
