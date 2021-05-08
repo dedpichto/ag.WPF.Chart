@@ -8,7 +8,7 @@ using System.Windows;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("ag.WPF.Chart")]
-[assembly: AssemblyDescription("Custom WPF control containing series, axes, legends and other hosted content")]
+[assembly: AssemblyDescription("Custom WPF control addressing classic .NETFramework, containing series, axes, legends, and other hosted content")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Andrey Gruber")]
 [assembly: AssemblyProduct("ag.WPF.Chart")]

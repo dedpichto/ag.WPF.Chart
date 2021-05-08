@@ -18,10 +18,10 @@
                      Margin="4" 
                      Background="#FF262626" Foreground="White"
                      ItemsSource="{Binding Series, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=UserControl}}" 
-                     CustomXAxisValues="{Binding CustomXTexts, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=UserControl}}" 
+                     CustomValuesX="{Binding CustomXTexts, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=UserControl}}" 
                      ChartStyle="OpenHighLowClose"
-                     VerticalAxisTitle="Cost"
-                     HorizontalAxisTitle="Dates"
+                     AxisTitleY="Cost"
+                     AxisTitleX="Dates"
                      Title="Open-high-low-close stock data of Chart Ltd"
                      />
         <ScrollViewer VerticalScrollBarVisibility="Visible" Grid.Column="0" Margin="4">
@@ -30,24 +30,24 @@
                     <xctk:PropertyDefinition TargetProperties="AutoAdjustment" />
                     <xctk:PropertyDefinition TargetProperties="ShowTicks" />
                     <xctk:PropertyDefinition TargetProperties="LineThickness" />
-                    <xctk:PropertyDefinition TargetProperties="VerticalMax" />
-                    <xctk:PropertyDefinition TargetProperties="HorizontalMax" />
+                    <xctk:PropertyDefinition TargetProperties="MaxY" />
+                    <xctk:PropertyDefinition TargetProperties="MaxX" />
                     <xctk:PropertyDefinition TargetProperties="ChartOpacity" />
-                    <xctk:PropertyDefinition TargetProperties="HorizontalLinesCount" />
-                    <xctk:PropertyDefinition TargetProperties="VerticalLinesCount" />
+                    <xctk:PropertyDefinition TargetProperties="SectionsY" />
+                    <xctk:PropertyDefinition TargetProperties="SectionsX" />
 
                     <xctk:PropertyDefinition TargetProperties="SecondaryLinesVisibility" />
                     <xctk:PropertyDefinition TargetProperties="AxesLinesVisibility" />
                     <xctk:PropertyDefinition TargetProperties="AxesValuesVisibility" />
-                    <xctk:PropertyDefinition TargetProperties="VerticalAxisTitle" />
-                    <xctk:PropertyDefinition TargetProperties="HorizontalAxisTitle" />
+                    <xctk:PropertyDefinition TargetProperties="AxisTitleY" />
+                    <xctk:PropertyDefinition TargetProperties="AxisTitleX" />
                     <xctk:PropertyDefinition TargetProperties="AxesFontStretch" />
                     <xctk:PropertyDefinition TargetProperties="AxesFontStyle" />
                     <xctk:PropertyDefinition TargetProperties="AxesFontSize" />
                     <xctk:PropertyDefinition TargetProperties="AxesFontWeight" />
                     <xctk:PropertyDefinition TargetProperties="AxesFontFamily" />
 
-                    <xctk:PropertyDefinition TargetProperties="VerticalAxisValuesFormat" />
+                    <xctk:PropertyDefinition TargetProperties="ValuesFormatY" />
                     <xctk:PropertyDefinition TargetProperties="HorizontalAxisValuesFormat" />
 
                     <xctk:PropertyDefinition TargetProperties="Title" />

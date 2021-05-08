@@ -18,8 +18,8 @@
         <chart:Chart x:Name="chTest" Grid.Column="0" BorderThickness="1" Margin="4" Background="#FF262626" Foreground="White"
                          Title="Sample chart" 
                      ItemsSource="{Binding Series}"
-                     VerticalAxisValuesFormat="0"
-                     CustomXAxisValues="{Binding CustomXTexts}"
+                     ValuesFormatY="0"
+                     CustomValuesX="{Binding CustomXTexts}"
                          LegendsWaterfall="{Binding LegendsWaterfall}"
                          ChartStyle="Lines">
         </chart:Chart>

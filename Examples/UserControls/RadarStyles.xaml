@@ -17,7 +17,7 @@
                      x:Name="AgChart"
                      Margin="4" 
                      ItemsSource="{Binding Series, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=UserControl}}"
-                     CustomXAxisValues="{Binding CustomXTexts, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=UserControl}}" 
+                     CustomValuesX="{Binding CustomXTexts, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=UserControl}}" 
                      ChartStyle="{Binding SelectedItem, ElementName=CboStyles}"
                      Title="NBA Stats (2020/2021)">
             <chart:Chart.Style>
@@ -45,8 +45,8 @@
                         <xctk:PropertyDefinition TargetProperties="MarkerShape" />
                         <xctk:PropertyDefinition TargetProperties="LineThickness" />
                         <xctk:PropertyDefinition TargetProperties="ChartOpacity" />
-                        <xctk:PropertyDefinition TargetProperties="HorizontalLinesCount" />
-                        <xctk:PropertyDefinition TargetProperties="VerticalLinesCount" />
+                        <xctk:PropertyDefinition TargetProperties="SectionsY" />
+                        <xctk:PropertyDefinition TargetProperties="SectionsX" />
 
                         <xctk:PropertyDefinition TargetProperties="AxesLinesVisibility" />
                         <xctk:PropertyDefinition TargetProperties="AxesValuesVisibility" />
@@ -56,7 +56,7 @@
                         <xctk:PropertyDefinition TargetProperties="AxesFontWeight" />
                         <xctk:PropertyDefinition TargetProperties="AxesFontFamily" />
 
-                        <xctk:PropertyDefinition TargetProperties="VerticalAxisValuesFormat" />
+                        <xctk:PropertyDefinition TargetProperties="ValuesFormatY" />
                         <xctk:PropertyDefinition TargetProperties="HorizontalAxisValuesFormat" />
 
                         <xctk:PropertyDefinition TargetProperties="Title" />

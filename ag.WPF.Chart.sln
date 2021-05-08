@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ag.WPF.Chart", "ag.WPF.Char
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Examples", "Examples\Examples.csproj", "{0A7CFE96-3E93-446D-9BB3-BA0FC7498B46}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ag.WPF.Chart.Core", "ag.WPF.Chart.Core\ag.WPF.Chart.Core.csproj", "{D3332ED4-9B06-4CE3-BF62-C52B0D3E23D1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{0A7CFE96-3E93-446D-9BB3-BA0FC7498B46}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0A7CFE96-3E93-446D-9BB3-BA0FC7498B46}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0A7CFE96-3E93-446D-9BB3-BA0FC7498B46}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D3332ED4-9B06-4CE3-BF62-C52B0D3E23D1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D3332ED4-9B06-4CE3-BF62-C52B0D3E23D1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D3332ED4-9B06-4CE3-BF62-C52B0D3E23D1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D3332ED4-9B06-4CE3-BF62-C52B0D3E23D1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

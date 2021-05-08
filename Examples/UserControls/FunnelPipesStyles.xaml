@@ -17,10 +17,10 @@
                      x:Name="AgChart"
                      Margin="4" 
                      ItemsSource="{Binding Series, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=UserControl}}"
-                     CustomXAxisValues="{Binding CustomXTexts, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=UserControl}}" 
+                     CustomValuesX="{Binding CustomXTexts, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=UserControl}}" 
                      ChartStyle="{Binding SelectedItem, ElementName=CboStyles}"
-                     VerticalAxisTitle=""
-                     HorizontalAxisTitle=""
+                     AxisTitleY=""
+                     AxisTitleX=""
                      Title="Total alcohol per capita in liters"
                      />
         <Grid Grid.Column="0">
@@ -37,20 +37,20 @@
                     <xctk:PropertyGrid.PropertyDefinitions>
                         <xctk:PropertyDefinition TargetProperties="ShowTicks" />
                         <xctk:PropertyDefinition TargetProperties="ChartOpacity" />
-                        <xctk:PropertyDefinition TargetProperties="HorizontalLinesCount" />
-                        <xctk:PropertyDefinition TargetProperties="VerticalLinesCount" />
+                        <xctk:PropertyDefinition TargetProperties="SectionsY" />
+                        <xctk:PropertyDefinition TargetProperties="SectionsX" />
 
                         <xctk:PropertyDefinition TargetProperties="AxesLinesVisibility" />
                         <xctk:PropertyDefinition TargetProperties="AxesValuesVisibility" />
-                        <xctk:PropertyDefinition TargetProperties="VerticalAxisTitle" />
-                        <xctk:PropertyDefinition TargetProperties="HorizontalAxisTitle" />
+                        <xctk:PropertyDefinition TargetProperties="AxisTitleY" />
+                        <xctk:PropertyDefinition TargetProperties="AxisTitleX" />
                         <xctk:PropertyDefinition TargetProperties="AxesFontStretch" />
                         <xctk:PropertyDefinition TargetProperties="AxesFontStyle" />
                         <xctk:PropertyDefinition TargetProperties="AxesFontSize" />
                         <xctk:PropertyDefinition TargetProperties="AxesFontWeight" />
                         <xctk:PropertyDefinition TargetProperties="AxesFontFamily" />
 
-                        <xctk:PropertyDefinition TargetProperties="VerticalAxisValuesFormat" />
+                        <xctk:PropertyDefinition TargetProperties="ValuesFormatY" />
                         <xctk:PropertyDefinition TargetProperties="HorizontalAxisValuesFormat" />
 
                         <xctk:PropertyDefinition TargetProperties="Title" />

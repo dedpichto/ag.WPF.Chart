@@ -1,0 +1,53 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <RootNamespace>ag.WPF.Chart</RootNamespace>
+    <Description>Custom WPF control addressing .NETCore projects, containing series, axes, legends, and other hosted content</Description>
+    <Authors>Andrey Gruber</Authors>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <PackageReleaseNotes>Initial release</PackageReleaseNotes>
+    <RepositoryUrl>https://github.com/dedpichto/ag.WPF.Chart</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/dedpichto/ag.WPF.Chart</PackageProjectUrl>
+    <PackageTags>WPF Chart Core .NETCore</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="..\Chart.cs" Link="Chart.cs" />
+    <Compile Include="..\Converters.cs" Link="Converters.cs" />
+    <Compile Include="..\Legend.cs" Link="Legend.cs" />
+    <Compile Include="..\Series\HighLowCloseSeries.cs" Link="Series\HighLowCloseSeries.cs" />
+    <Compile Include="..\Series\ISeries.cs" Link="Series\ISeries.cs" />
+    <Compile Include="..\Series\ISeriesFactory.cs" Link="Series\ISeriesFactory.cs" />
+    <Compile Include="..\Series\OpenHighLowCloseSeries.cs" Link="Series\OpenHighLowCloseSeries.cs" />
+    <Compile Include="..\Series\PlainSeries.cs" Link="Series\PlainSeries.cs" />
+    <Compile Include="..\Series\Series.cs" Link="Series\Series.cs" />
+    <Compile Include="..\Statics.cs" Link="Statics.cs" />
+    <Compile Include="..\Values\ChartValue.cs" Link="Valuess\ChartValue.cs" />
+    <Compile Include="..\Values\HighLowCloseChartValue.cs" Link="Valuess\HighLowCloseChartValue.cs" />
+    <Compile Include="..\Values\IChartValue.cs" Link="Valuess\IChartValue.cs" />
+    <Compile Include="..\Values\OpenHighLowCloseChartValue.cs" Link="Valuess\OpenHighLowCloseChartValue.cs" />
+    <Compile Include="..\Values\PlainChartValue.cs" Link="Valuess\PlainChartValue.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Series\" />
+    <Folder Include="Valuess\" />
+    <Folder Include="Themes\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Page Include="..\Themes\Generic.xaml" Link="Themes\Generic.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\LICENSE">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+  </ItemGroup>
+
+</Project>

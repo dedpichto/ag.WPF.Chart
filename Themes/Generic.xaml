@@ -80,7 +80,7 @@
                                        Grid.Column="3" 
                                        VerticalAlignment="Center" 
                                        Foreground="{TemplateBinding Foreground}"
-                                       Text="{TemplateBinding VerticalAxisTitle}">
+                                       Text="{TemplateBinding AxisTitleY}">
                                 <Grid.Row>
                                     <MultiBinding Converter="{StaticResource AxisYGridRowConverter}">
                                         <Binding Path="ItemsSource" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
@@ -99,7 +99,7 @@
                                        Grid.Row="4" 
                                        HorizontalAlignment="Center" 
                                        Foreground="{TemplateBinding Foreground}"
-                                       Text="{TemplateBinding HorizontalAxisTitle}">
+                                       Text="{TemplateBinding AxisTitleX}">
                                 <Grid.Column>
                                     <MultiBinding Converter="{StaticResource AxisXGridColumnConverter}">
                                         <Binding Path="ItemsSource" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
@@ -128,18 +128,18 @@
                                     <MultiBinding Converter="{StaticResource VerticalPlaceholderWidthConverter}">
                                         <Binding Path="ItemsSource" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                         <Binding Path="ChartStyle" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
-                                        <Binding Path="VerticalAxisValuesFormat" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                        <Binding Path="ValuesFormatY" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                         <Binding Path="AxesFontFamily" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                         <Binding Path="AxesFontSize" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                         <Binding Path="AxesFontStyle" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                         <Binding Path="AxesFontWeight" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                         <Binding Path="AxesFontStretch" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
-                                        <Binding Path="CustomYAxisValues" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                        <Binding Path="CustomValuesY" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                         <Binding Path="AutoAdjustment" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
-                                        <Binding Path="VerticalMax" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                        <Binding Path="MaxY" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                         <Binding Path="ActualHeight" ElementName="PART_Canvas"/>
-                                        <Binding Path="HorizontalLinesCount" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
-                                        <Binding Path="CustomXAxisValues" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                        <Binding Path="SectionsY" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                        <Binding Path="CustomValuesX" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                         <Binding Path="HorizontalAxisValuesFormat" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                     </MultiBinding>
                                 </Border.Width>
@@ -164,17 +164,17 @@
                                         <Binding Path="ActualHeight" ElementName="PART_Canvas"/>
                                         <Binding Path="ItemsSource" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                         <Binding Path="ChartStyle" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
-                                        <Binding Path="HorizontalLinesCount" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
-                                        <Binding Path="VerticalAxisValuesFormat" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                        <Binding Path="SectionsY" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                        <Binding Path="ValuesFormatY" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                         <Binding Path="AxesFontFamily" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                         <Binding Path="AxesFontSize" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                         <Binding Path="AxesFontStyle" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                         <Binding Path="AxesFontWeight" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                         <Binding Path="AxesFontStretch" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
-                                        <Binding Path="CustomXAxisValues" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
-                                        <Binding Path="CustomYAxisValues" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                        <Binding Path="CustomValuesX" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                        <Binding Path="CustomValuesY" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                         <Binding Path="AutoAdjustment" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
-                                        <Binding Path="VerticalMax" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                        <Binding Path="MaxY" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                         <Binding Path="FlowDirection" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                         <Binding Path="HorizontalAxisValuesFormat" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                     </MultiBinding>
@@ -198,12 +198,12 @@
                                         <Binding Path="AxesFontStyle" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                         <Binding Path="AxesFontWeight" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                         <Binding Path="AxesFontStretch" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
-                                        <Binding Path="CustomXAxisValues" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                        <Binding Path="CustomValuesX" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                         <Binding Path="AutoAdjustment" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
-                                        <Binding Path="HorizontalMax" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
-                                        <Binding Path="CustomYAxisValues" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
-                                        <Binding Path="HorizontalLinesCount" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
-                                        <Binding Path="VerticalAxisValuesFormat" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                        <Binding Path="MaxX" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                        <Binding Path="CustomValuesY" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                        <Binding Path="SectionsY" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                        <Binding Path="ValuesFormatY" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                     </MultiBinding>
                                 </Border.Height>
                             </Border>
@@ -227,20 +227,20 @@
                                         <Binding Path="ActualWidth" ElementName="PART_Canvas"/>
                                         <Binding Path="ItemsSource" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                         <Binding Path="ChartStyle" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
-                                        <Binding Path="VerticalLinesCount" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                        <Binding Path="SectionsX" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                         <Binding Path="HorizontalAxisValuesFormat" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                         <Binding Path="AxesFontFamily" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                         <Binding Path="AxesFontSize" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                         <Binding Path="AxesFontStyle" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                         <Binding Path="AxesFontWeight" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                         <Binding Path="AxesFontStretch" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
-                                        <Binding Path="CustomXAxisValues" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                        <Binding Path="CustomValuesX" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                         <Binding Path="AutoAdjustment" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
-                                        <Binding Path="HorizontalMax" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                        <Binding Path="MaxX" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                         <Binding Path="FlowDirection" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                         <Binding Path="ChartBoundary" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
-                                        <Binding Path="CustomYAxisValues" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
-                                        <Binding Path="VerticalAxisValuesFormat" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                        <Binding Path="CustomValuesY" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                        <Binding Path="ValuesFormatY" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                     </MultiBinding>
                                 </Path.Data>
                             </Path>
@@ -294,10 +294,10 @@
                                                 <Binding Path="AxesFontWeight" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                                 <Binding Path="AxesFontStretch" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                                 <Binding Path="FlowDirection" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
-                                                <Binding Path="CustomXAxisValues" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
-                                                <Binding Path="CustomYAxisValues" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
-                                                <Binding Path="HorizontalLinesCount" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
-                                                <Binding Path="VerticalAxisValuesFormat" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                                <Binding Path="CustomValuesX" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                                <Binding Path="CustomValuesY" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                                <Binding Path="SectionsY" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                                <Binding Path="ValuesFormatY" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                                 <Binding Path="AutoAdjustment" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
 
                                             </MultiBinding>
@@ -315,8 +315,8 @@
                                                 <Binding Path="AxesFontStyle" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                                 <Binding Path="AxesFontWeight" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                                 <Binding Path="AxesFontStretch" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
-                                                <Binding Path="CustomXAxisValues" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
-                                                <Binding Path="HorizontalLinesCount" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                                <Binding Path="CustomValuesX" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                                <Binding Path="SectionsY" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                                 <Binding Path="AutoAdjustment" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
 
                                             </MultiBinding>
@@ -347,8 +347,8 @@
                                             <MultiBinding Converter="{StaticResource AxisTicksPathConverter}">
                                                 <Binding ElementName="PART_Canvas" Path="ActualWidth"/>
                                                 <Binding ElementName="PART_Canvas" Path="ActualHeight"/>
-                                                <Binding Path="VerticalLinesCount" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
-                                                <Binding Path="HorizontalLinesCount" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                                <Binding Path="SectionsX" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                                <Binding Path="SectionsY" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                                 <Binding Path="ItemsSource" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                                 <Binding Path="ChartStyle" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                                 <Binding Path="ChartBoundary" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
@@ -358,8 +358,8 @@
                                                 <Binding Path="AxesFontWeight" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                                 <Binding Path="AxesFontStretch" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                                 <Binding Path="AutoAdjustment" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
-                                                <Binding Path="HorizontalMax" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
-                                                <Binding Path="VerticalMax" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                                <Binding Path="MaxX" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                                <Binding Path="MaxY" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                                 <Binding Path="AxesLinesVisibility" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                                 <Binding Path="ShowTicks" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                             </MultiBinding>
@@ -372,14 +372,14 @@
                                                 <Binding ElementName="PART_Canvas" Path="ActualHeight"/>
                                                 <Binding Path="ItemsSource" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                                 <Binding Path="ChartStyle" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
-                                                <Binding Path="HorizontalLinesCount" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                                <Binding Path="SectionsY" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                                 <Binding Path="AxesFontFamily" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                                 <Binding Path="AxesFontSize" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                                 <Binding Path="AxesFontStyle" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                                 <Binding Path="AxesFontWeight" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                                 <Binding Path="AxesFontStretch" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                                 <Binding Path="AutoAdjustment" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
-                                                <Binding Path="VerticalMax" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                                <Binding Path="MaxY" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                             </MultiBinding>
                                         </Path.Data>
                                     </Path>
@@ -390,7 +390,7 @@
                                                 <Binding ElementName="PART_Canvas" Path="ActualHeight"/>
                                                 <Binding Path="ItemsSource" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                                 <Binding Path="ChartStyle" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
-                                                <Binding Path="VerticalLinesCount" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                                <Binding Path="SectionsX" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                                 <Binding Path="ChartBoundary" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                                 <Binding Path="AxesFontFamily" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                                 <Binding Path="AxesFontSize" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
@@ -398,7 +398,7 @@
                                                 <Binding Path="AxesFontWeight" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                                 <Binding Path="AxesFontStretch" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                                 <Binding Path="AutoAdjustment" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
-                                                <Binding Path="HorizontalMax" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                                <Binding Path="MaxX" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                             </MultiBinding>
                                         </Path.Data>
                                     </Path>

@@ -516,15 +516,15 @@ namespace ag.WPF.Chart
         public static readonly DependencyProperty AxesFontStretchProperty = DependencyProperty.Register(nameof(AxesFontStretch), typeof(FontStretch), typeof(Chart),
                 new FrameworkPropertyMetadata(FontStretches.Normal, OnAxesFontStretchChanged));
         /// <summary>
-        /// The identifier of the <see cref="HorizontalAxisTitle"/> dependency property.
+        /// The identifier of the <see cref="AxisTitleX"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty HorizontalAxisTitleProperty = DependencyProperty.Register(nameof(HorizontalAxisTitle), typeof(string), typeof(Chart),
-                new FrameworkPropertyMetadata("x-Axis", OnHorizontalAxisTitleChanged));
+        public static readonly DependencyProperty AxisTitleXProperty = DependencyProperty.Register(nameof(AxisTitleX), typeof(string), typeof(Chart),
+                new FrameworkPropertyMetadata("x-Axis", OnAxisTitleXChanged));
         /// <summary>
-        /// The identifier of the <see cref="VerticalAxisTitle"/> dependency property.
+        /// The identifier of the <see cref="AxisTitleY"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty VerticalAxisTitleProperty = DependencyProperty.Register(nameof(VerticalAxisTitle), typeof(string), typeof(Chart),
-                new FrameworkPropertyMetadata("y-Axis", OnVerticalAxisTitleChanged));
+        public static readonly DependencyProperty AxisTitleYProperty = DependencyProperty.Register(nameof(AxisTitleY), typeof(string), typeof(Chart),
+                new FrameworkPropertyMetadata("y-Axis", OnAxisTitleYChanged));
         /// <summary>
         /// The identifier of the <see cref="AxesValuesVisibility"/> dependency property.
         /// </summary>
@@ -541,14 +541,14 @@ namespace ag.WPF.Chart
         public static readonly DependencyProperty SecondaryLinesVisibilityProperty = DependencyProperty.Register(nameof(SecondaryLinesVisibility), typeof(AxesVisibility), typeof(Chart),
                 new FrameworkPropertyMetadata(AxesVisibility.Both, OnSecondaryLinesVisibilityChanged));
         /// <summary>
-        /// The identifier of the <see cref="VerticalAxisValuesFormat"/> dependency property.
+        /// The identifier of the <see cref="ValuesFormatY"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty VerticalAxisValuesFormatProperty = DependencyProperty.Register(nameof(VerticalAxisValuesFormat), typeof(string), typeof(Chart),
-                new FrameworkPropertyMetadata("0", OnVerticalAxisValuesFormatChanged, CoerceFormats));
+        public static readonly DependencyProperty ValuesFormatYProperty = DependencyProperty.Register(nameof(ValuesFormatY), typeof(string), typeof(Chart),
+                new FrameworkPropertyMetadata("0", OnValuesFormatYChanged, CoerceFormats));
         /// <summary>
         /// The identifier of the <see cref="HorizontalAxisValuesFormat"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty HorizontalAxisValuesFormatProperty = DependencyProperty.Register(nameof(HorizontalAxisValuesFormat), typeof(string), typeof(Chart),
+        public static readonly DependencyProperty ValuesFormatX = DependencyProperty.Register(nameof(HorizontalAxisValuesFormat), typeof(string), typeof(Chart),
                 new FrameworkPropertyMetadata("0", OnHorizontalAxisValuesFormatChanged, CoerceFormats));
         /// <summary>
         /// The identifier of the <see cref="PiePercentsFormatProperty"/> dependency property.
@@ -556,15 +556,15 @@ namespace ag.WPF.Chart
         public static readonly DependencyProperty PiePercentsFormatProperty = DependencyProperty.Register(nameof(PiePercentsFormat), typeof(string), typeof(Chart),
                 new FrameworkPropertyMetadata("0", OnPiePercentsFormatChanged, CoerceFormats));
         /// <summary>
-        /// The identifier of the <see cref="CustomXAxisValues"/> dependency property.
+        /// The identifier of the <see cref="CustomValuesX"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty CustomXAxisValuesProperty = DependencyProperty.Register(nameof(CustomXAxisValues), typeof(IEnumerable<string>), typeof(Chart),
-                new FrameworkPropertyMetadata(null, OnCustomXAxisValuesChanged));
+        public static readonly DependencyProperty CustomValuesXProperty = DependencyProperty.Register(nameof(CustomValuesX), typeof(IEnumerable<string>), typeof(Chart),
+                new FrameworkPropertyMetadata(null, OnCustomValuesXChanged));
         /// <summary>
-        /// The identifier of the <see cref="CustomYAxisValues"/> dependency property.
+        /// The identifier of the <see cref="CustomValuesY"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty CustomYAxisValuesProperty = DependencyProperty.Register(nameof(CustomYAxisValues), typeof(IEnumerable<string>), typeof(Chart),
-                new FrameworkPropertyMetadata(null, OnCustomYAxisValuesChanged));
+        public static readonly DependencyProperty CustomValuesYProperty = DependencyProperty.Register(nameof(CustomValuesY), typeof(IEnumerable<string>), typeof(Chart),
+                new FrameworkPropertyMetadata(null, OnCustomValuesYChanged));
 
         #endregion
 
@@ -575,15 +575,15 @@ namespace ag.WPF.Chart
         public static readonly DependencyProperty MarkerShapeProperty = DependencyProperty.Register(nameof(MarkerShape), typeof(ShapeStyle), typeof(Chart),
                 new FrameworkPropertyMetadata(ShapeStyle.Rectangle, OnMarkerShapeCahnged));
         /// <summary>
-        /// The identifier of the <see cref="VerticalLinesCount"/> dependency property.
+        /// The identifier of the <see cref="SectionsX"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty VerticalLinesCountProperty = DependencyProperty.Register(nameof(VerticalLinesCount), typeof(int), typeof(Chart),
-                new FrameworkPropertyMetadata(10, OnVerticalLinesCountChanged, CoerceVerticalLinesCount));
+        public static readonly DependencyProperty SectionsXProperty = DependencyProperty.Register(nameof(SectionsX), typeof(int), typeof(Chart),
+                new FrameworkPropertyMetadata(10, OnSectionsXChanged, CoerceSectionsX));
         /// <summary>
-        /// The identifier of the <see cref="HorizontalLinesCount"/> dependency property.
+        /// The identifier of the <see cref="SectionsY"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty HorizontalLinesCountProperty = DependencyProperty.Register(nameof(HorizontalLinesCount), typeof(int), typeof(Chart),
-                new FrameworkPropertyMetadata(10, OnHorizontalLinesCountChanged, CoerceHorizontalLinesCount));
+        public static readonly DependencyProperty SectionsYProperty = DependencyProperty.Register(nameof(SectionsY), typeof(int), typeof(Chart),
+                new FrameworkPropertyMetadata(10, OnSectionsYChanged, CoerceSectionsY));
         /// <summary>
         /// The identifier of the <see cref="ShowValuesOnBarsAndColumns"/> dependency property.
         /// </summary>
@@ -600,15 +600,15 @@ namespace ag.WPF.Chart
         public static readonly DependencyProperty ChartOpacityProperty = DependencyProperty.Register(nameof(ChartOpacity), typeof(double), typeof(Chart),
                 new FrameworkPropertyMetadata(1.0, OnChartOpacityChanged, CoerceChartOpacity));
         /// <summary>
-        /// The identifier of the <see cref="HorizontalMax"/> dependency property.
+        /// The identifier of the <see cref="MaxX"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty HorizontalMaxProperty = DependencyProperty.Register(nameof(HorizontalMax), typeof(double), typeof(Chart),
-                new FrameworkPropertyMetadata(100.0, OnHorizontalMaxChanged, CoerceHorizontalMax));
+        public static readonly DependencyProperty MaxXProperty = DependencyProperty.Register(nameof(MaxX), typeof(double), typeof(Chart),
+                new FrameworkPropertyMetadata(100.0, OnMaxXChanged, CoerceMaxX));
         /// <summary>
-        /// The identifier of the <see cref="VerticalMax"/> dependency property.
+        /// The identifier of the <see cref="MaxY"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty VerticalMaxProperty = DependencyProperty.Register(nameof(VerticalMax), typeof(double), typeof(Chart),
-                new FrameworkPropertyMetadata(100.0, OnVerticalMaxChanged, CoerceVerticalMax));
+        public static readonly DependencyProperty MaxYProperty = DependencyProperty.Register(nameof(MaxY), typeof(double), typeof(Chart),
+                new FrameworkPropertyMetadata(100.0, OnMaxYChanged, CoerceMaxY));
         /// <summary>
         /// The identifier of the <see cref="LineThickness"/> dependency property.
         /// </summary>
@@ -1233,11 +1233,11 @@ namespace ag.WPF.Chart
             {
                 Source = this
             });
-            ptsBinding.Bindings.Add(new Binding("HorizontalMax")
+            ptsBinding.Bindings.Add(new Binding("MaxX")
             {
                 Source = this
             });
-            ptsBinding.Bindings.Add(new Binding("VerticalMax")
+            ptsBinding.Bindings.Add(new Binding("MaxY")
             {
                 Source = this
             });
@@ -1265,15 +1265,15 @@ namespace ag.WPF.Chart
             {
                 Source = this
             });
-            ptsBinding.Bindings.Add(new Binding("CustomXAxisValues")
+            ptsBinding.Bindings.Add(new Binding("CustomValuesX")
             {
                 Source = this
             });
-            ptsBinding.Bindings.Add(new Binding("HorizontalLinesCount")
+            ptsBinding.Bindings.Add(new Binding("SectionsY")
             {
                 Source = this
             });
-            ptsBinding.Bindings.Add(new Binding("VerticalLinesCount")
+            ptsBinding.Bindings.Add(new Binding("SectionsX")
             {
                 Source = this
             });
@@ -1581,20 +1581,20 @@ namespace ag.WPF.Chart
         /// </summary>
         /// <remarks>This property will have no effect if <see cref="AutoAdjustment"/> property is set to <see cref="AutoAdjustmentMode.Both"/>,or <see cref="AutoAdjustmentMode.Vertical"/>,or <see cref="ChartStyle"/> property is set to one of the following: <see cref="ChartStyle.SolidPie"/>, <see cref="ChartStyle.SlicedPie"/>, <see cref="ChartStyle.Doughnut"/>, <see cref="ChartStyle.Radar"/>, <see cref="ChartStyle.RadarWithMarkers"/>, <see cref="ChartStyle.RadarArea"/>.</remarks>
         [Category("ChartMeasures"), Description("Gets or sets max numeric value for vertical axis. The default value is 100")]
-        public double VerticalMax
+        public double MaxY
         {
-            get { return (double)GetValue(VerticalMaxProperty); }
-            set { SetValue(VerticalMaxProperty, value); }
+            get { return (double)GetValue(MaxYProperty); }
+            set { SetValue(MaxYProperty, value); }
         }
         /// <summary>
         /// Gets or sets max numeric value for horizontal axis. The default value is 100.
         /// </summary>
         /// <remarks>This property will have no effect if <see cref="AutoAdjustment"/> property is set to <see cref="AutoAdjustmentMode.Both"/>, or <see cref="AutoAdjustmentMode.Horizontal"/>,or <see cref="ChartStyle"/> property is set to one of the following: <see cref="ChartStyle.SolidPie"/>, <see cref="ChartStyle.SlicedPie"/>, <see cref="ChartStyle.Doughnut"/>, <see cref="ChartStyle.Radar"/>, <see cref="ChartStyle.RadarWithMarkers"/>, <see cref="ChartStyle.RadarArea"/>.</remarks>
         [Category("ChartMeasures"), Description("Gets or sets max numeric value for horizontal axis. The default value is 100")]
-        public double HorizontalMax
+        public double MaxX
         {
-            get { return (double)GetValue(HorizontalMaxProperty); }
-            set { SetValue(HorizontalMaxProperty, value); }
+            get { return (double)GetValue(MaxXProperty); }
+            set { SetValue(MaxXProperty, value); }
         }
         /// <summary>
         /// Gets or sets the thickness of the chart lines. The default value is 2.0 px.
@@ -1618,19 +1618,19 @@ namespace ag.WPF.Chart
         /// Gets or sets the custom sequence of strings to be drawn next to x-axis instead of numeric values.
         /// </summary>
         [Category("ChartAxes"), Description("Gets or sets the custom sequence of strings to be drawn next to x-axis instead of numeric values")]
-        public IEnumerable<string> CustomXAxisValues
+        public IEnumerable<string> CustomValuesX
         {
-            get { return (IEnumerable<string>)GetValue(CustomXAxisValuesProperty); }
-            set { SetValue(CustomXAxisValuesProperty, value); }
+            get { return (IEnumerable<string>)GetValue(CustomValuesXProperty); }
+            set { SetValue(CustomValuesXProperty, value); }
         }
         /// <summary>
         /// Gets or sets the custom sequence of strings to be drawn next to y-axis instead of numeric values.
         /// </summary>
         [Category("ChartAxes"), Description("Gets or sets the custom sequence of strings to be drawn next to y-axis instead of numeric values")]
-        public IEnumerable<string> CustomYAxisValues
+        public IEnumerable<string> CustomValuesY
         {
-            get { return (IEnumerable<string>)GetValue(CustomYAxisValuesProperty); }
-            set { SetValue(CustomYAxisValuesProperty, value); }
+            get { return (IEnumerable<string>)GetValue(CustomValuesYProperty); }
+            set { SetValue(CustomValuesYProperty, value); }
         }
         /// <summary>
         /// Gets or sets the visibility state of x- and y- axes numeric/custom values. Can be one of <see cref="AxesVisibility"/> enumeration members.
@@ -1793,20 +1793,20 @@ namespace ag.WPF.Chart
         /// </summary>
         /// <remarks>This property will have no effect if <see cref="ChartStyle"/> property is set to one of the following: <see cref="ChartStyle.SolidPie"/>, <see cref="ChartStyle.SlicedPie"/>, <see cref="ChartStyle.Doughnut"/>, <see cref="ChartStyle.Radar"/>, <see cref="ChartStyle.RadarWithMarkers"/>, <see cref="ChartStyle.RadarArea"/>.</remarks>
         [Category("ChartAxes"), Description("Gets or sets the text which appears on the top/bottom of the vertical axis")]
-        public string VerticalAxisTitle
+        public string AxisTitleY
         {
-            get { return (string)GetValue(VerticalAxisTitleProperty); }
-            set { SetValue(VerticalAxisTitleProperty, value); }
+            get { return (string)GetValue(AxisTitleYProperty); }
+            set { SetValue(AxisTitleYProperty, value); }
         }
         /// <summary>
         /// Gets or sets the text which appears on right/left of the horizontal axis.
         /// </summary>
         /// <remarks>This property will have no effect if <see cref="ChartStyle"/> property is set to one of the following: <see cref="ChartStyle.SolidPie"/>, <see cref="ChartStyle.SlicedPie"/>, <see cref="ChartStyle.Doughnut"/>, <see cref="ChartStyle.Radar"/>, <see cref="ChartStyle.RadarWithMarkers"/>, <see cref="ChartStyle.RadarArea"/>.</remarks>
         [Category("ChartAxes"), Description("Gets or sets the text which appears on right/left of the horizontal axis")]
-        public string HorizontalAxisTitle
+        public string AxisTitleX
         {
-            get { return (string)GetValue(HorizontalAxisTitleProperty); }
-            set { SetValue(HorizontalAxisTitleProperty, value); }
+            get { return (string)GetValue(AxisTitleXProperty); }
+            set { SetValue(AxisTitleXProperty, value); }
         }
         /// <summary>
         /// Gets or sets the chart Title.
@@ -1818,34 +1818,34 @@ namespace ag.WPF.Chart
             set { SetValue(TitleProperty, value); }
         }
         /// <summary>
-        /// Gets or sets the amount of vertical lines.
+        /// Gets or sets the amount of sections on x-axis.
         /// </summary>
         /// <remarks>This property will have no effect if <see cref="ChartStyle"/> property is set to one of the following: <see cref="ChartStyle.SolidPie"/>, <see cref="ChartStyle.SlicedPie"/>, <see cref="ChartStyle.Doughnut"/>, <see cref="ChartStyle.Radar"/>, <see cref="ChartStyle.RadarWithMarkers"/>, <see cref="ChartStyle.RadarArea"/>.</remarks>
         [Category("ChartMeasures"), Description("Gets or sets the amount of vertical lines")]
-        public int VerticalLinesCount
+        public int SectionsX
         {
-            get { return (int)GetValue(VerticalLinesCountProperty); }
-            set { SetValue(VerticalLinesCountProperty, value); }
+            get { return (int)GetValue(SectionsXProperty); }
+            set { SetValue(SectionsXProperty, value); }
         }
         /// <summary>
-        /// Gets or sets the amount of horizontal lines.
+        /// Gets or sets the amount of sections on y-axis.
         /// </summary>
         /// <remarks>This property will have no effect if <see cref="ChartStyle"/> property is set to one of the following: <see cref="ChartStyle.SolidPie"/>, <see cref="ChartStyle.SlicedPie"/>, <see cref="ChartStyle.Doughnut"/>, <see cref="ChartStyle.Radar"/>, <see cref="ChartStyle.RadarWithMarkers"/>, <see cref="ChartStyle.RadarArea"/>.</remarks>
         [Category("ChartMeasures"), Description("Gets or sets the amount of horizontal lines")]
-        public int HorizontalLinesCount
+        public int SectionsY
         {
-            get { return (int)GetValue(HorizontalLinesCountProperty); }
-            set { SetValue(HorizontalLinesCountProperty, value); }
+            get { return (int)GetValue(SectionsYProperty); }
+            set { SetValue(SectionsYProperty, value); }
         }
         /// <summary>
         /// Gets or sets the format for numeric values drawn next to the vertical axis.
         /// </summary>
         /// <remarks>This property will have no effect if <see cref="ChartStyle"/> property is set to one of the following: <see cref="ChartStyle.SolidPie"/>, <see cref="ChartStyle.SlicedPie"/>, <see cref="ChartStyle.Doughnut"/>.</remarks>
         [Category("ChartAxes"), Description("Gets or sets the format for numeric values drawn next to the vertical axis")]
-        public string VerticalAxisValuesFormat
+        public string ValuesFormatY
         {
-            get { return (string)GetValue(VerticalAxisValuesFormatProperty); }
-            set { SetValue(VerticalAxisValuesFormatProperty, value); }
+            get { return (string)GetValue(ValuesFormatYProperty); }
+            set { SetValue(ValuesFormatYProperty, value); }
         }
         /// <summary>
         /// Gets or sets the format for numeric values drawn next to the horizontal axis.
@@ -1854,8 +1854,8 @@ namespace ag.WPF.Chart
         [Category("ChartAxes"), Description("Gets or sets the format for numeric values drawn next to the horizontal axis")]
         public string HorizontalAxisValuesFormat
         {
-            get { return (string)GetValue(HorizontalAxisValuesFormatProperty); }
-            set { SetValue(HorizontalAxisValuesFormatProperty, value); }
+            get { return (string)GetValue(ValuesFormatX); }
+            set { SetValue(ValuesFormatX, value); }
         }
         /// <summary>
         /// Gets or sets the numeric format for pie percents.
@@ -2203,59 +2203,59 @@ namespace ag.WPF.Chart
             RaiseEvent(e);
         }
 
-        private static void OnCustomXAxisValuesChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
+        private static void OnCustomValuesXChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
             if (!(sender is Chart ch)) return;
-            ch.OnCustomXAxisValuesChanged((IEnumerable<string>)e.OldValue, (IEnumerable<string>)e.NewValue);
+            ch.OnCustomValuesXChanged((IEnumerable<string>)e.OldValue, (IEnumerable<string>)e.NewValue);
         }
         /// <summary>
-        /// Invoked just before the <see cref="CustomXAxisValuesChangedEvent"/> event is raised on control
+        /// Invoked just before the <see cref="CustomValuesXChangedEvent"/> event is raised on control
         /// </summary>
         /// <param name="oldValue">Old value</param>
         /// <param name="newValue">New value</param>
-        protected void OnCustomXAxisValuesChanged(IEnumerable<string> oldValue, IEnumerable<string> newValue)
+        protected void OnCustomValuesXChanged(IEnumerable<string> oldValue, IEnumerable<string> newValue)
         {
             var e = new RoutedPropertyChangedEventArgs<IEnumerable<string>>(oldValue, newValue)
             {
-                RoutedEvent = CustomXAxisValuesChangedEvent
+                RoutedEvent = CustomValuesXChangedEvent
             };
             RaiseEvent(e);
         }
 
-        private static void OnCustomYAxisValuesChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
+        private static void OnCustomValuesYChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
             if (!(sender is Chart ch)) return;
-            ch.OnCustomYAxisValuesChanged((IEnumerable<string>)e.OldValue, (IEnumerable<string>)e.NewValue);
+            ch.OnCustomValuesYChanged((IEnumerable<string>)e.OldValue, (IEnumerable<string>)e.NewValue);
         }
         /// <summary>
-        /// Invoked just before the <see cref="CustomYAxisValuesChangedEvent"/> event is raised on control
+        /// Invoked just before the <see cref="CustomValuesYChangedEvent"/> event is raised on control
         /// </summary>
         /// <param name="oldValue">Old value</param>
         /// <param name="newValue">New value</param>
-        protected void OnCustomYAxisValuesChanged(IEnumerable<string> oldValue, IEnumerable<string> newValue)
+        protected void OnCustomValuesYChanged(IEnumerable<string> oldValue, IEnumerable<string> newValue)
         {
             var e = new RoutedPropertyChangedEventArgs<IEnumerable<string>>(oldValue, newValue)
             {
-                RoutedEvent = CustomYAxisValuesChangedEvent
+                RoutedEvent = CustomValuesYChangedEvent
             };
             RaiseEvent(e);
         }
 
-        private static void OnVerticalAxisValuesFormatChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
+        private static void OnValuesFormatYChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
             if (!(sender is Chart ch)) return;
-            ch.OnVerticalAxisValuesFormatChanged((string)e.OldValue, (string)e.NewValue);
+            ch.OnValuesFormatYChanged((string)e.OldValue, (string)e.NewValue);
         }
         /// <summary>
-        /// Invoked just before the <see cref="VerticalAxisValuesFormatChangedEvent"/> event is raised on control
+        /// Invoked just before the <see cref="ValuesFormatYChangedEvent"/> event is raised on control
         /// </summary>
         /// <param name="oldValue">Old value</param>
         /// <param name="newValue">New value</param>
-        protected void OnVerticalAxisValuesFormatChanged(string oldValue, string newValue)
+        protected void OnValuesFormatYChanged(string oldValue, string newValue)
         {
             var e = new RoutedPropertyChangedEventArgs<string>(oldValue, newValue)
             {
-                RoutedEvent = VerticalAxisValuesFormatChangedEvent
+                RoutedEvent = ValuesFormatYChangedEvent
             };
             RaiseEvent(e);
         }
@@ -2626,40 +2626,40 @@ namespace ag.WPF.Chart
             RaiseEvent(e);
         }
 
-        private static void OnVerticalAxisTitleChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
+        private static void OnAxisTitleYChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
             if (!(sender is Chart ch)) return;
-            ch.OnVerticalAxisTitleChanged((string)e.OldValue, (string)e.NewValue);
+            ch.OnAxisTitleYChanged((string)e.OldValue, (string)e.NewValue);
         }
         /// <summary>
-        /// Invoked just before the <see cref="VerticalAxisTitleChangedEvent"/> event is raised on control
+        /// Invoked just before the <see cref="AxisTitleYChangedEvent"/> event is raised on control
         /// </summary>
         /// <param name="oldValue">Old value</param>
         /// <param name="newValue">New value</param>
-        protected void OnVerticalAxisTitleChanged(string oldValue, string newValue)
+        protected void OnAxisTitleYChanged(string oldValue, string newValue)
         {
             var e = new RoutedPropertyChangedEventArgs<string>(oldValue, newValue)
             {
-                RoutedEvent = VerticalAxisTitleChangedEvent
+                RoutedEvent = AxisTitleYChangedEvent
             };
             RaiseEvent(e);
         }
 
-        private static void OnHorizontalAxisTitleChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
+        private static void OnAxisTitleXChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
             if (!(sender is Chart ch)) return;
-            ch.OnHorizontalAxisTitleChanged((string)e.OldValue, (string)e.NewValue);
+            ch.OnAxisTitleXChanged((string)e.OldValue, (string)e.NewValue);
         }
         /// <summary>
-        /// Invoked just before the <see cref="HorizontalAxisTitleChangedEvent"/> event is raised on control
+        /// Invoked just before the <see cref="AxisTitleXChangedEvent"/> event is raised on control
         /// </summary>
         /// <param name="oldValue">Old value</param>
         /// <param name="newValue">New value</param>
-        protected void OnHorizontalAxisTitleChanged(string oldValue, string newValue)
+        protected void OnAxisTitleXChanged(string oldValue, string newValue)
         {
             var e = new RoutedPropertyChangedEventArgs<string>(oldValue, newValue)
             {
-                RoutedEvent = HorizontalAxisTitleChangedEvent
+                RoutedEvent = AxisTitleXChangedEvent
             };
             RaiseEvent(e);
         }
@@ -2708,50 +2708,50 @@ namespace ag.WPF.Chart
             return !(d is Chart) ? value : (double)value <= 0 ? 2.0 : value;
         }
 
-        private static void OnVerticalMaxChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
+        private static void OnMaxYChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
             if (!(sender is Chart ch)) return;
-            ch.OnVerticalMaxChanged((double)e.OldValue, (double)e.NewValue);
+            ch.OnMaxYChanged((double)e.OldValue, (double)e.NewValue);
         }
         /// <summary>
-        /// Invoked just before the <see cref="VerticalMaxChangedEvent"/> event is raised on control
+        /// Invoked just before the <see cref="MaxYChangedEvent"/> event is raised on control
         /// </summary>
         /// <param name="oldValue">Old value</param>
         /// <param name="newValue">New value</param>
-        protected void OnVerticalMaxChanged(double oldValue, double newValue)
+        protected void OnMaxYChanged(double oldValue, double newValue)
         {
             var e = new RoutedPropertyChangedEventArgs<double>(oldValue, newValue)
             {
-                RoutedEvent = VerticalMaxChangedEvent
+                RoutedEvent = MaxYChangedEvent
             };
             RaiseEvent(e);
         }
 
-        private static object CoerceVerticalMax(DependencyObject d, object value)
+        private static object CoerceMaxY(DependencyObject d, object value)
         {
             return !(d is Chart) ? value : (double)value < 0 ? 100.0 : value;
         }
 
-        private static void OnHorizontalMaxChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
+        private static void OnMaxXChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
             if (!(sender is Chart ch)) return;
-            ch.OnHorizontalMaxChanged((double)e.OldValue, (double)e.NewValue);
+            ch.OnMaxXChanged((double)e.OldValue, (double)e.NewValue);
         }
         /// <summary>
-        /// Invoked just before the <see cref="HorizontalMaxChangedEvent"/> event is raised on control
+        /// Invoked just before the <see cref="MaxXChangedEvent"/> event is raised on control
         /// </summary>
         /// <param name="oldValue">Old value</param>
         /// <param name="newValue">New value</param>
-        protected void OnHorizontalMaxChanged(double oldValue, double newValue)
+        protected void OnMaxXChanged(double oldValue, double newValue)
         {
             var e = new RoutedPropertyChangedEventArgs<double>(oldValue, newValue)
             {
-                RoutedEvent = HorizontalMaxChangedEvent
+                RoutedEvent = MaxXChangedEvent
             };
             RaiseEvent(e);
         }
 
-        private static object CoerceHorizontalMax(DependencyObject d, object value)
+        private static object CoerceMaxX(DependencyObject d, object value)
         {
             return !(d is Chart) ? value : (double)value < 0 ? 100.0 : value;
         }
@@ -2780,50 +2780,50 @@ namespace ag.WPF.Chart
             return !(d is Chart) ? value : (double)value < 0 || (double)value > 1 ? 1 : value;
         }
 
-        private static void OnHorizontalLinesCountChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
+        private static void OnSectionsYChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
             if (!(sender is Chart ch)) return;
-            ch.OnHorizontalLinesCountChanged((int)e.OldValue, (int)e.NewValue);
+            ch.OnSectionsYChanged((int)e.OldValue, (int)e.NewValue);
         }
         /// <summary>
-        /// Invoked just before the <see cref="HorizontalLinesCountChanged"/> event is raised on Chart
+        /// Invoked just before the <see cref="SectionsYChanged"/> event is raised on Chart
         /// </summary>
         /// <param name="oldValue">Old y-axis stops count</param>
         /// <param name="newValue">New y-axis stops count</param>
-        protected virtual void OnHorizontalLinesCountChanged(int oldValue, int newValue)
+        protected virtual void OnSectionsYChanged(int oldValue, int newValue)
         {
             var e = new RoutedPropertyChangedEventArgs<int>(oldValue, newValue)
             {
-                RoutedEvent = HorizontalLinesCountChangedEvent
+                RoutedEvent = SectionsYChangedEvent
             };
             RaiseEvent(e);
         }
 
-        private static object CoerceHorizontalLinesCount(DependencyObject d, object value)
+        private static object CoerceSectionsY(DependencyObject d, object value)
         {
             return !(d is Chart) ? value : (int)value <= 0 ? 10 : value;
         }
 
-        private static void OnVerticalLinesCountChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
+        private static void OnSectionsXChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
             if (!(sender is Chart ch)) return;
-            ch.OnVerticalLinesCountChanged((int)e.OldValue, (int)e.NewValue);
+            ch.OnSectionsXChanged((int)e.OldValue, (int)e.NewValue);
         }
         /// <summary>
-        /// Invoked just before the <see cref="VerticalLinesCountChanged"/> event is raised on Chart
+        /// Invoked just before the <see cref="SectionsXChanged"/> event is raised on Chart
         /// </summary>
         /// <param name="oldValue">Old x-axis stops count</param>
         /// <param name="newValue">New x-axis stops count</param>
-        protected virtual void OnVerticalLinesCountChanged(int oldValue, int newValue)
+        protected virtual void OnSectionsXChanged(int oldValue, int newValue)
         {
             var e = new RoutedPropertyChangedEventArgs<int>(oldValue, newValue)
             {
-                RoutedEvent = VerticalLinesCountChangedEvent
+                RoutedEvent = SectionsXChangedEvent
             };
             RaiseEvent(e);
         }
 
-        private static object CoerceVerticalLinesCount(DependencyObject d, object value)
+        private static object CoerceSectionsX(DependencyObject d, object value)
         {
             return !(d is Chart) ? value : (int)value <= 0 ? 10 : value;
         }
@@ -3028,45 +3028,45 @@ namespace ag.WPF.Chart
             RoutingStrategy.Bubble, typeof(RoutedPropertyChangedEventHandler<LegendSize>), typeof(Chart));
 
         /// <summary>
-        /// Occurs when the <see cref="CustomYAxisValues"/> property has been changed in some way
+        /// Occurs when the <see cref="CustomValuesY"/> property has been changed in some way
         /// </summary>
-        public event RoutedPropertyChangedEventHandler<IEnumerable<string>> CustomYAxisValuesChanged
+        public event RoutedPropertyChangedEventHandler<IEnumerable<string>> CustomValuesYChanged
         {
-            add { AddHandler(CustomYAxisValuesChangedEvent, value); }
-            remove { RemoveHandler(CustomYAxisValuesChangedEvent, value); }
+            add { AddHandler(CustomValuesYChangedEvent, value); }
+            remove { RemoveHandler(CustomValuesYChangedEvent, value); }
         }
         /// <summary>
-        /// Identifies the <see cref="CustomYAxisValuesChanged"/> routed event
+        /// Identifies the <see cref="CustomValuesYChanged"/> routed event
         /// </summary>
-        public static readonly RoutedEvent CustomYAxisValuesChangedEvent = EventManager.RegisterRoutedEvent("CustomYAxisValuesChanged",
+        public static readonly RoutedEvent CustomValuesYChangedEvent = EventManager.RegisterRoutedEvent("CustomValuesYChanged",
             RoutingStrategy.Bubble, typeof(RoutedPropertyChangedEventHandler<IEnumerable<string>>), typeof(Chart));
 
         /// <summary>
-        /// Occurs when the <see cref="CustomXAxisValues"/> property has been changed in some way
+        /// Occurs when the <see cref="CustomValuesX"/> property has been changed in some way
         /// </summary>
-        public event RoutedPropertyChangedEventHandler<IEnumerable<string>> CustomXAxisValuesChanged
+        public event RoutedPropertyChangedEventHandler<IEnumerable<string>> CustomValuesXChanged
         {
-            add { AddHandler(CustomXAxisValuesChangedEvent, value); }
-            remove { RemoveHandler(CustomXAxisValuesChangedEvent, value); }
+            add { AddHandler(CustomValuesXChangedEvent, value); }
+            remove { RemoveHandler(CustomValuesXChangedEvent, value); }
         }
         /// <summary>
-        /// Identifies the <see cref="CustomXAxisValuesChanged"/> routed event
+        /// Identifies the <see cref="CustomValuesXChanged"/> routed event
         /// </summary>
-        public static readonly RoutedEvent CustomXAxisValuesChangedEvent = EventManager.RegisterRoutedEvent("CustomXAxisValuesChanged",
+        public static readonly RoutedEvent CustomValuesXChangedEvent = EventManager.RegisterRoutedEvent("CustomValuesXChanged",
             RoutingStrategy.Bubble, typeof(RoutedPropertyChangedEventHandler<IEnumerable<string>>), typeof(Chart));
 
         /// <summary>
-        /// Occurs when the <see cref="VerticalAxisValuesFormat"/> property has been changed in some way
+        /// Occurs when the <see cref="ValuesFormatY"/> property has been changed in some way
         /// </summary>
-        public event RoutedPropertyChangedEventHandler<string> VerticalAxisValuesFormatChanged
+        public event RoutedPropertyChangedEventHandler<string> ValuesFormatYChanged
         {
-            add { AddHandler(VerticalAxisValuesFormatChangedEvent, value); }
-            remove { RemoveHandler(VerticalAxisValuesFormatChangedEvent, value); }
+            add { AddHandler(ValuesFormatYChangedEvent, value); }
+            remove { RemoveHandler(ValuesFormatYChangedEvent, value); }
         }
         /// <summary>
-        /// Identifies the <see cref="VerticalAxisValuesFormatChanged"/> routed event
+        /// Identifies the <see cref="ValuesFormatYChanged"/> routed event
         /// </summary>
-        public static readonly RoutedEvent VerticalAxisValuesFormatChangedEvent = EventManager.RegisterRoutedEvent("VerticalAxisValuesFormatChanged",
+        public static readonly RoutedEvent ValuesFormatYChangedEvent = EventManager.RegisterRoutedEvent("ValuesFormatYChanged",
             RoutingStrategy.Bubble, typeof(RoutedPropertyChangedEventHandler<string>), typeof(Chart));
 
         /// <summary>
@@ -3294,31 +3294,31 @@ namespace ag.WPF.Chart
             RoutingStrategy.Bubble, typeof(RoutedPropertyChangedEventHandler<FontFamily>), typeof(Chart));
 
         /// <summary>
-        /// Occurs when the <see cref="VerticalAxisTitle"/> property has been changed in some way
+        /// Occurs when the <see cref="AxisTitleY"/> property has been changed in some way
         /// </summary>
-        public event RoutedPropertyChangedEventHandler<string> VerticalAxisTitleChanged
+        public event RoutedPropertyChangedEventHandler<string> AxisTitleYChanged
         {
-            add { AddHandler(VerticalAxisTitleChangedEvent, value); }
-            remove { RemoveHandler(VerticalAxisTitleChangedEvent, value); }
+            add { AddHandler(AxisTitleYChangedEvent, value); }
+            remove { RemoveHandler(AxisTitleYChangedEvent, value); }
         }
         /// <summary>
-        /// Identifies the <see cref="VerticalAxisTitleChanged"/> routed event
+        /// Identifies the <see cref="AxisTitleYChanged"/> routed event
         /// </summary>
-        public static readonly RoutedEvent VerticalAxisTitleChangedEvent = EventManager.RegisterRoutedEvent("VerticalAxisTitleChanged",
+        public static readonly RoutedEvent AxisTitleYChangedEvent = EventManager.RegisterRoutedEvent("AxisTitleYChanged",
             RoutingStrategy.Bubble, typeof(RoutedPropertyChangedEventHandler<string>), typeof(Chart));
 
         /// <summary>
-        /// Occurs when the <see cref="HorizontalAxisTitle"/> property has been changed in some way
+        /// Occurs when the <see cref="AxisTitleX"/> property has been changed in some way
         /// </summary>
-        public event RoutedPropertyChangedEventHandler<string> HorizontalAxisTitleChanged
+        public event RoutedPropertyChangedEventHandler<string> AxisTitleXChanged
         {
-            add { AddHandler(HorizontalAxisTitleChangedEvent, value); }
-            remove { RemoveHandler(HorizontalAxisTitleChangedEvent, value); }
+            add { AddHandler(AxisTitleXChangedEvent, value); }
+            remove { RemoveHandler(AxisTitleXChangedEvent, value); }
         }
         /// <summary>
-        /// Identifies the <see cref="HorizontalAxisTitleChanged"/> routed event
+        /// Identifies the <see cref="AxisTitleXChanged"/> routed event
         /// </summary>
-        public static readonly RoutedEvent HorizontalAxisTitleChangedEvent = EventManager.RegisterRoutedEvent("HorizontalAxisTitleChanged",
+        public static readonly RoutedEvent AxisTitleXChangedEvent = EventManager.RegisterRoutedEvent("AxisTitleXChanged",
             RoutingStrategy.Bubble, typeof(RoutedPropertyChangedEventHandler<string>), typeof(Chart));
 
         /// <summary>
@@ -3336,31 +3336,31 @@ namespace ag.WPF.Chart
             RoutingStrategy.Bubble, typeof(RoutedPropertyChangedEventHandler<string>), typeof(Chart));
 
         /// <summary>
-        /// Occurs when the <see cref="VerticalMax"/> property has been changed in some way
+        /// Occurs when the <see cref="MaxY"/> property has been changed in some way
         /// </summary>
-        public event RoutedPropertyChangedEventHandler<double> VerticalMaxChanged
+        public event RoutedPropertyChangedEventHandler<double> MaxYChanged
         {
-            add { AddHandler(VerticalMaxChangedEvent, value); }
-            remove { RemoveHandler(VerticalMaxChangedEvent, value); }
+            add { AddHandler(MaxYChangedEvent, value); }
+            remove { RemoveHandler(MaxYChangedEvent, value); }
         }
         /// <summary>
-        /// Identifies the <see cref="VerticalMaxChanged"/> routed event
+        /// Identifies the <see cref="MaxYChanged"/> routed event
         /// </summary>
-        public static readonly RoutedEvent VerticalMaxChangedEvent = EventManager.RegisterRoutedEvent("VerticalMaxChanged",
+        public static readonly RoutedEvent MaxYChangedEvent = EventManager.RegisterRoutedEvent("MaxYChanged",
             RoutingStrategy.Bubble, typeof(RoutedPropertyChangedEventHandler<double>), typeof(Chart));
 
         /// <summary>
-        /// Occurs when the <see cref="HorizontalMax"/> property has been changed in some way
+        /// Occurs when the <see cref="MaxX"/> property has been changed in some way
         /// </summary>
-        public event RoutedPropertyChangedEventHandler<double> HorizontalMaxChanged
+        public event RoutedPropertyChangedEventHandler<double> MaxXChanged
         {
-            add { AddHandler(HorizontalMaxChangedEvent, value); }
-            remove { RemoveHandler(HorizontalMaxChangedEvent, value); }
+            add { AddHandler(MaxXChangedEvent, value); }
+            remove { RemoveHandler(MaxXChangedEvent, value); }
         }
         /// <summary>
-        /// Identifies the <see cref="HorizontalMaxChanged"/> routed event
+        /// Identifies the <see cref="MaxXChanged"/> routed event
         /// </summary>
-        public static readonly RoutedEvent HorizontalMaxChangedEvent = EventManager.RegisterRoutedEvent("HorizontalMaxChanged",
+        public static readonly RoutedEvent MaxXChangedEvent = EventManager.RegisterRoutedEvent("MaxXChanged",
             RoutingStrategy.Bubble, typeof(RoutedPropertyChangedEventHandler<double>), typeof(Chart));
 
         /// <summary>
@@ -3392,31 +3392,31 @@ namespace ag.WPF.Chart
             RoutingStrategy.Bubble, typeof(RoutedPropertyChangedEventHandler<double>), typeof(Chart));
 
         /// <summary>
-        /// Occurs when the <see cref="HorizontalLinesCount"/> property has been changed in some way
+        /// Occurs when the <see cref="SectionsY"/> property has been changed in some way
         /// </summary>
-        public event RoutedPropertyChangedEventHandler<int> HorizontalLinesCountChanged
+        public event RoutedPropertyChangedEventHandler<int> SectionsYChanged
         {
-            add { AddHandler(HorizontalLinesCountChangedEvent, value); }
-            remove { RemoveHandler(HorizontalLinesCountChangedEvent, value); }
+            add { AddHandler(SectionsYChangedEvent, value); }
+            remove { RemoveHandler(SectionsYChangedEvent, value); }
         }
         /// <summary>
-        /// Identifies the <see cref="HorizontalLinesCountChanged"/> routed event
+        /// Identifies the <see cref="SectionsYChanged"/> routed event
         /// </summary>
-        public static readonly RoutedEvent HorizontalLinesCountChangedEvent = EventManager.RegisterRoutedEvent("HorizontalLinesCountChanged",
+        public static readonly RoutedEvent SectionsYChangedEvent = EventManager.RegisterRoutedEvent("SectionsYChanged",
             RoutingStrategy.Bubble, typeof(RoutedPropertyChangedEventHandler<int>), typeof(Chart));
 
         /// <summary>
-        /// Occurs when the <see cref="VerticalLinesCount"/> property has been changed in some way
+        /// Occurs when the <see cref="SectionsX"/> property has been changed in some way
         /// </summary>
-        public event RoutedPropertyChangedEventHandler<int> VerticalLinesCountChanged
+        public event RoutedPropertyChangedEventHandler<int> SectionsXChanged
         {
-            add { AddHandler(VerticalLinesCountChangedEvent, value); }
-            remove { RemoveHandler(VerticalLinesCountChangedEvent, value); }
+            add { AddHandler(SectionsXChangedEvent, value); }
+            remove { RemoveHandler(SectionsXChangedEvent, value); }
         }
         /// <summary>
-        /// Identifies the <see cref="VerticalLinesCountChanged"/> routed event
+        /// Identifies the <see cref="SectionsXChanged"/> routed event
         /// </summary>
-        public static readonly RoutedEvent VerticalLinesCountChangedEvent = EventManager.RegisterRoutedEvent("VerticalLinesCountChanged",
+        public static readonly RoutedEvent SectionsXChangedEvent = EventManager.RegisterRoutedEvent("SectionsXChanged",
             RoutingStrategy.Bubble, typeof(RoutedPropertyChangedEventHandler<int>), typeof(Chart));
 
         /// <summary>
