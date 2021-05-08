@@ -351,3 +351,4 @@ MigrationBackup/
 
 # Any test project
 Test*/*
+*.nuspec

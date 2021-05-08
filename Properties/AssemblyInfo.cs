@@ -7,12 +7,12 @@ using System.Windows;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("WPFChart")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyTitle("ag.WPF.Chart")]
+[assembly: AssemblyDescription("Custom WPF control containing series, axes, legends and other hosted content")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("WPFChart")]
-[assembly: AssemblyCopyright("Copyright ©  2016")]
+[assembly: AssemblyCompany("Andrey Gruber")]
+[assembly: AssemblyProduct("ag.WPF.Chart")]
+[assembly: AssemblyCopyright("Copyright © Andrey Gruber 2021")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
