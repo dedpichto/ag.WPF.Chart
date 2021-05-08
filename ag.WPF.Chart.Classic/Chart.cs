@@ -1475,7 +1475,7 @@ namespace ag.WPF.Chart
             set { SetValue(LegendsWaterfallProperty, value); }
         }
         /// <summary>
-        /// Gets/sets the collection of <see cref="Series"/> objects associated with chart control.
+        /// Gets or sets the collection of <see cref="Series"/> objects associated with chart control.
         /// </summary>
         [Category("ChartAppearance"), Description("Gets or sets the collection of Series objects associated with chart control")]
         public IEnumerable<ISeries> ItemsSource
