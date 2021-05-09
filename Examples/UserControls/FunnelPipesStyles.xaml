@@ -21,7 +21,7 @@
                      ChartStyle="{Binding SelectedItem, ElementName=CboStyles}"
                      AxisTitleY=""
                      AxisTitleX=""
-                     Title="Total alcohol per capita in liters"
+                     Title="Total alcohol per capita in liters" Background="#FF094319" Foreground="#FFD8DC74"
                      />
         <Grid Grid.Column="0">
             <Grid.RowDefinitions>

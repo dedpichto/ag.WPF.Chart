@@ -1,6 +1,10 @@
 # ag.WPF.Chart
 ## A custom WPF control, containing series, axes, legends, and other hosted content.
 
+| [<img src="https://am3pap005files.storage.live.com/y4mRpL4FHZcnYnnhp6K9XK_OtiaqY-2nK8RRDT0U3nw2_2NH-1RPF1qscOpxtKuNOuCl4fHFkNs_53vhDw2qkrxximIddK8MPzFADUtlbhbqsC31AfgLEkm_pPjSBCz23AS38QfRNBO7USC3jke4LuCsD8DZ9SnZv27vxf4ktMkT0rTkPo9MxMD2KHfSS_D2o-a?width=972&height=623&cropmode=none" style="zoom:50%;" />](https://am3pap005files.storage.live.com/y4mRpL4FHZcnYnnhp6K9XK_OtiaqY-2nK8RRDT0U3nw2_2NH-1RPF1qscOpxtKuNOuCl4fHFkNs_53vhDw2qkrxximIddK8MPzFADUtlbhbqsC31AfgLEkm_pPjSBCz23AS38QfRNBO7USC3jke4LuCsD8DZ9SnZv27vxf4ktMkT0rTkPo9MxMD2KHfSS_D2o-a?width=972&height=623&cropmode=none) | [<img src="https://am3pap005files.storage.live.com/y4mAZbRE7gAwdbJ9mUH5iZ1fgzjxjvrypHOb3DzVGoTFJ4K3fg6vPGzb_6HFz3eK59PhIxVeo9LSZMy1GhnWcUiZc1GOSffJEhPw6jgkLNmBudCoXCoxb0AUEZm466MgNZ9NLWQYcAj4QIPPOMWgZFTts7Kv4SWQb0xeG8VxgU_ndXsO-GjhRBP48PGxWXVfDaO?width=972&height=623&cropmode=none" style="zoom:50%;" />](https://am3pap005files.storage.live.com/y4mAZbRE7gAwdbJ9mUH5iZ1fgzjxjvrypHOb3DzVGoTFJ4K3fg6vPGzb_6HFz3eK59PhIxVeo9LSZMy1GhnWcUiZc1GOSffJEhPw6jgkLNmBudCoXCoxb0AUEZm466MgNZ9NLWQYcAj4QIPPOMWgZFTts7Kv4SWQb0xeG8VxgU_ndXsO-GjhRBP48PGxWXVfDaO?width=972&height=623&cropmode=none) |
+| :----------------------------------------------------------: | :----------------------------------------------------------: |
+| [<img src="https://am3pap005files.storage.live.com/y4m54k6vUNZPtzUJI02-BvpegKfxp-zHOh84oojJ_3ZgTbDP6ijKC4wgMYO_krfXbhO1DWMEUkssWjfqH4cYnJrBk3WVeocaRfyVFNrTuuVQohZlDgRIi6euSjuUNV4lBwJas-yNUS47Rg5Inzgr6hllSVeH-1au5VwTz_TMHhL4shMXdDTenqIV9p9K5gNqDO_?width=972&height=623&cropmode=none" style="zoom:50%;" />](https://am3pap005files.storage.live.com/y4m54k6vUNZPtzUJI02-BvpegKfxp-zHOh84oojJ_3ZgTbDP6ijKC4wgMYO_krfXbhO1DWMEUkssWjfqH4cYnJrBk3WVeocaRfyVFNrTuuVQohZlDgRIi6euSjuUNV4lBwJas-yNUS47Rg5Inzgr6hllSVeH-1au5VwTz_TMHhL4shMXdDTenqIV9p9K5gNqDO_?width=972&height=623&cropmode=none) | [<img src="https://am3pap005files.storage.live.com/y4mFDD9m2tK3mMA6b6IEJeZOVh8IzDt_yi8YMt1w1YuVzccxW8KRad27pljtOy2UtvovuMERG-3qElfn5xtYLg4091apKdL1yBHSqQydFELjtB_m-2qBLd6CeCgxso68ZXkDjxOpw-7o6tSkzKqOOvzaUYeVYXIciMwyKJ7nzVWa3OkS3wGKTkC1ioBrmwVPAwj?width=972&height=623&cropmode=none" style="zoom:50%;" />](https://am3pap005files.storage.live.com/y4mFDD9m2tK3mMA6b6IEJeZOVh8IzDt_yi8YMt1w1YuVzccxW8KRad27pljtOy2UtvovuMERG-3qElfn5xtYLg4091apKdL1yBHSqQydFELjtB_m-2qBLd6CeCgxso68ZXkDjxOpw-7o6tSkzKqOOvzaUYeVYXIciMwyKJ7nzVWa3OkS3wGKTkC1ioBrmwVPAwj?width=972&height=623&cropmode=none) |
+
 A Chart contains a collection of Series objects, which are in ItemsSource property. The table below describes different series types and chart styles.
 
 | Series type            | Available chart styles            | Description                                                  |
@@ -41,11 +45,11 @@ A Chart contains a collection of Series objects, which are in ItemsSource proper
 | HighLowCloseSeries     | HighLowClose                      | The stock style represented by high, low, and close prices   |
 | OpenHighLowCloseSeries | OpenHighLowClose                  | The stock style represented by open, high, low, and close prices |
 
-Each Series contains a collection of ChartValue objects, which can be of type PlainChartValue, HighLowCloseChartValue, OpenHighLowCloseChartValue. 
+Although a series collection can contain an unlimited amount of series, several chart styles will display only one series at a time, i.e. the very first series in the collection. Such styles are SolidPie, SlicedPie, Doughnut, Waterfall, Funnel, HighLowClose, OpenHighLowClose.
 
 The example below shows how to create and use ag.WPF.Chart.
 
-Add ag.WPF.Chart to XAML:
+*Add ag.WPF.Chart to XAML:*
 
 ```xaml
 <Window x:Class="WpfApp4.MainWindow"
@@ -61,7 +65,7 @@ Add ag.WPF.Chart to XAML:
         <chart:Chart Margin="4" 
                      Background="#FF262626" 
                      Foreground="#D9D9D9" 
-                     chart:ChartStyle="Columns" 
+                     ChartStyle="Columns" 
                      Title="Alcohol per capita in liters" 
                      AxisTitleY="Liters" 
                      AxisTitleX="Countries" 
@@ -72,7 +76,7 @@ Add ag.WPF.Chart to XAML:
 </Window>
 ```
 
-Add some code to window:
+*Add some code to window:*
 
 ```C#
 using ag.WPF.Chart.Series;
@@ -91,11 +95,15 @@ namespace WpfApp4
         public MainWindow()
         {
             InitializeComponent();
-
+		   
+            // create sample data source
             var dsa = new AlcoholDataSource();
+            // add series to collection, providing series' name and collection of values,
+            // in our case - the simple IEnumerable<double>
             Series.Add(new PlainSeries("Beer", dsa.Select(d => d.Beer)));
             Series.Add(new PlainSeries("Wine", dsa.Select(d => d.Wine)));
             Series.Add(new PlainSeries("Spirit", dsa.Select(d => d.Spirit)));
+            // add countries names as custom values for x-axis
             CustomXTexts.AddRange(dsa.Select(d => d.Country));
         }
     }
@@ -113,6 +121,7 @@ namespace WpfApp4
     {
         public AlcoholDataSource()
         {
+            // add some sample data
             Add(new AlcoholDrinks { Country = "Australia", Total = 13.4, Beer = 5.3466, Wine = 5.025, Spirit = 3.0284 });
             Add(new AlcoholDrinks { Country = "Canada", Total = 13.8, Beer = 6.2238, Wine = 3.5328, Spirit = 4.0434 });
             Add(new AlcoholDrinks { Country = "United States", Total = 13.7, Beer = 6.439, Wine = 2.4797, Spirit = 4.7813 });
@@ -124,6 +133,6 @@ namespace WpfApp4
 }
 ```
 
-As a result you will get the following chart:
+*As a result you will get the following chart:*
 
 ![](https://am3pap005files.storage.live.com/y4mg_xxl-4GzNLmpQjQu-9hRHt6RxjZm9inNhVWMT4LMa7vXwLs6vWb-0xXSe0OFyb63PmZd_TTmGsCEIZ75l_WwEz5ajZqhSjuv7riAAlRKH3pBmH_wChavI62sQ9Qax7qubkD5uP3amORjX79292seOTeXDRicYb8V7_e6ulEESoZjSueOuyzVq4cOiVmvJg6?width=972&height=505&cropmode=none)
