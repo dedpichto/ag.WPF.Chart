@@ -54,27 +54,27 @@ namespace ag.WPF.Chart
         /// </summary>
         SmoothFullStackedLines,
         /// <summary>
-        /// The style represented by straight lines with markers at control ponts
+        /// The style represented by straight lines with markers at control points
         /// </summary>
         LinesWithMarkers,
         /// <summary>
-        /// The style represented by straight stacked lines with markers at control ponts
+        /// The style represented by straight stacked lines with markers at control points
         /// </summary>
         StackedLinesWithMarkers,
         /// <summary>
-        /// The style represented by straight 100% stacked lines with markers at control ponts
+        /// The style represented by straight 100% stacked lines with markers at control points
         /// </summary>
         FullStackedLinesWithMarkers,
         /// <summary>
-        /// The style represented by smooth lines with markers at control ponts
+        /// The style represented by smooth lines with markers at control points
         /// </summary>
         SmoothLinesWithMarkers,
         /// <summary>
-        /// The style represented by smooth stacked lines with markers at control ponts
+        /// The style represented by smooth stacked lines with markers at control points
         /// </summary>
         SmoothStackedLinesWithMarkers,
         /// <summary>
-        /// The style represented by smooth 100% stacked lines with markers at control ponts
+        /// The style represented by smooth 100% stacked lines with markers at control points
         /// </summary>
         SmoothFullStackedLinesWithMarkers,
         /// <summary>
@@ -150,7 +150,7 @@ namespace ag.WPF.Chart
         /// </summary>
         Radar,
         /// <summary>
-        /// The style represented by radar with markers at control ponts
+        /// The style represented by radar with markers at control points
         /// </summary>
         RadarWithMarkers,
         /// <summary>

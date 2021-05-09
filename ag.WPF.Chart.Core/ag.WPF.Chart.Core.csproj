@@ -6,11 +6,12 @@
     <RootNamespace>ag.WPF.Chart</RootNamespace>
     <Description>Custom WPF control addressing .NETCore projects, containing series, axes, legends, and other hosted content</Description>
     <Authors>Andrey Gruber</Authors>
-    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <PackageLicenseFile></PackageLicenseFile>
     <PackageReleaseNotes>Initial release</PackageReleaseNotes>
     <RepositoryUrl>https://github.com/dedpichto/ag.WPF.Chart</RepositoryUrl>
     <PackageProjectUrl>https://github.com/dedpichto/ag.WPF.Chart</PackageProjectUrl>
     <PackageTags>WPF Chart Core .NETCore</PackageTags>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>
 
   <ItemGroup>
@@ -35,10 +36,6 @@
     <Folder Include="Series\" />
     <Folder Include="Valuess\" />
     <Folder Include="Themes\" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="..\ag.WPF.Chart.Classic\LICENSE" Link="LICENSE" />
   </ItemGroup>
 
   <ItemGroup>

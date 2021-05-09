@@ -1,13 +1,51 @@
 # ag.WPF.Chart
 ## A custom WPF control, containing series, axes, legends, and other hosted content.
 
-A Chart contains a collection of Series objects, which are in ItemsSource property. 
-A Series may be of type PlainSeries, which consists of simple double values, associated with each series point, or stock series, such as HighLowCloseSeries, OpenHighLowCloseSeries and so on. 
+A Chart contains a collection of Series objects, which are in ItemsSource property. The table below describes different series types and chart styles.
+
+| Series type            | Available chart styles            | Description                                                  |
+| ---------------------- | --------------------------------- | ------------------------------------------------------------ |
+| PlainSeries            | Lines                             | The style represented by straight lines                      |
+|                        | StackedLines                      | The style represented by straight stacked lines              |
+|                        | FullStackedLines                  | The style represented by straight 100% stacked lines         |
+|                        | SmoothLines                       | The style represented by smooth lines                        |
+|                        | SmoothStackedLines                | The style represented by smooth stacked lines                |
+|                        | SmoothFullStackedLines            | The style represented by smooth 100% stacked lines           |
+|                        | LinesWithMarkers                  | The style represented by straight lines with markers at control points |
+|                        | StackedLinesWithMarkers           | The style represented by straight stacked lines with markers at control points |
+|                        | FullStackedLinesWithMarkers       | The style represented by straight 100% stacked lines with markers at control points |
+|                        | SmoothLinesWithMarkers            | The style represented by smooth lines with markers at control points |
+|                        | SmoothStackedLinesWithMarkers     | The style represented by smooth stacked lines with markers at control points |
+|                        | SmoothFullStackedLinesWithMarkers | The style represented by smooth 100% stacked lines with markers at control points |
+|                        | Columns                           | The style represented by columns                             |
+|                        | StackedColumns                    | The style represented by stacked columns                     |
+|                        | FullStackedColumns                | The style represented by 100% stacked columns                |
+|                        | Bars                              | The style represented by bars                                |
+|                        | StackedBars                       | The style represented by stacked bars                        |
+|                        | FullStackedBars                   | The style represented by 100% stacked bars                   |
+|                        | Area                              | The style represented by areas                               |
+|                        | StackedArea                       | The style represented by stacked areas                       |
+|                        | FullStackedArea                   | The style represented by 100% stacked areas                  |
+|                        | SmoothArea                        | The style represented by smooth areas                        |
+|                        | SmoothStackedArea                 | The style represented by smooth stacked areas                |
+|                        | SmoothFullStackedArea             | The style represented by 100% smooth stacked areas           |
+|                        | Bubbles                           | The style represented by bubbles                             |
+|                        | SolidPie                          | The style represented by solid sectors                       |
+|                        | SlicedPie                         | The style represented by sectors divided with thin lines     |
+|                        | Doughnut                          | The style represented by solid arcs                          |
+|                        | Waterfall                         | The style represented by cumulated effect of positive and negative values |
+|                        | Radar                             | The style represented by radar                               |
+|                        | RadarWithMarkers                  | The style represented by radar with markers at control points |
+|                        | RadarArea                         | The style represented by radar areas                         |
+|                        | Funnel                            | The style represented by funnel                              |
+| HighLowCloseSeries     | HighLowClose                      | The stock style represented by high, low, and close prices   |
+| OpenHighLowCloseSeries | OpenHighLowClose                  | The stock style represented by open, high, low, and close prices |
+
 Each Series contains a collection of ChartValue objects, which can be of type PlainChartValue, HighLowCloseChartValue, OpenHighLowCloseChartValue. 
 
-The following example shows how to create and use ag.WPF.Chart.
+The example below shows how to create and use ag.WPF.Chart.
 
-Add ag.WPF.Chart to XAML code:
+Add ag.WPF.Chart to XAML:
 
 ```xaml
 <Window x:Class="WpfApp4.MainWindow"
