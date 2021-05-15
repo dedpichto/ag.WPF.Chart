@@ -16,7 +16,7 @@
         <chart:Chart Grid.Column="1" 
                      x:Name="AgChart"
                      Margin="4" 
-                     ItemsSource="{Binding Series, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=UserControl}}" 
+                     SeriesSource="{Binding Series, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=UserControl}}" 
                      CustomValuesX="{Binding CustomXTexts, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=UserControl}}" 
                      ChartStyle="{Binding SelectedItem, ElementName=CboStyles}"
                      AxisTitleY="Amount"

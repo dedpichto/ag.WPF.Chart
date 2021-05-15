@@ -320,7 +320,7 @@ namespace ag.WPF.Chart
     /// Represents a custom control containing series, axes, legends and other hosted content.
     /// </summary>
     ///<remarks>
-    /// A <see cref="Chart"/> contains a collection of <see cref="Series.Series"/> objects, which are in <see cref="ItemsSource"/> property.
+    /// A <see cref="Chart"/> contains a collection of <see cref="Series.Series"/> objects, which are in <see cref="SeriesSource"/> property.
     /// <para>
     /// A <see cref="Series.Series"/> may be of type <see cref="PlainSeries"/>, which consits of simple double values, associated with each series point, or any financial series, such as <see cref="HighLowCloseSeries"/>, <see cref="OpenHighLowCloseSeries"/> and so on.
     /// </para>
@@ -645,9 +645,9 @@ namespace ag.WPF.Chart
         public static readonly DependencyProperty LegendsOpenHighLowCloseProperty = DependencyProperty.RegisterAttached(nameof(LegendsOpenHighLowClose), typeof(IEnumerable<string>), typeof(Chart),
             new FrameworkPropertyMetadata(new[] { "Increase", "Decrease" }, null, CoerceLegendsOpenHighLowClose));
         /// <summary>
-        /// The identifier of the <see cref="ItemsSource"/> dependency property.
+        /// The identifier of the <see cref="SeriesSource"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty ItemsSourceProperty = DependencyProperty.Register(nameof(ItemsSource), typeof(IEnumerable<ISeries>), typeof(Chart), new FrameworkPropertyMetadata(null, OnItemsSourceChanged));
+        public static readonly DependencyProperty SeriesSourceProperty = DependencyProperty.Register(nameof(SeriesSource), typeof(IEnumerable<ISeries>), typeof(Chart), new FrameworkPropertyMetadata(null, OnSeriesSourceChanged));
 
         #endregion
 
@@ -710,12 +710,12 @@ namespace ag.WPF.Chart
 
         private void Canvas_Loaded(object sender, RoutedEventArgs e)
         {
-            if (ItemsSource == null) return;
+            if (SeriesSource == null) return;
             // the event is raised every time the control becomes visible
             // if all paths have been added before - just exit
-            if (!ItemsSource.SelectMany(s => s.Paths).Any(p => p != null && !(bool)p.GetValue(Statics.AddedToCanvasProperty)))
+            if (!SeriesSource.SelectMany(s => s.Paths).Any(p => p != null && !(bool)p.GetValue(Statics.AddedToCanvasProperty)))
                 return;
-            foreach (var series in ItemsSource)
+            foreach (var series in SeriesSource)
             {
                 for (var pathIndex = 0; pathIndex < series.Paths.Count(); pathIndex++)
                 {
@@ -725,7 +725,7 @@ namespace ag.WPF.Chart
             }
         }
 
-        private void ItemsSource_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        private void SeriesSource_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             switch (e.Action)
             {
@@ -755,7 +755,7 @@ namespace ag.WPF.Chart
                         {
                             Source = this
                         });
-                        legendVisibilityBinding.Bindings.Add(new Binding("ItemsSource")
+                        legendVisibilityBinding.Bindings.Add(new Binding("SeriesSource")
                         {
                             Source = this
                         });
@@ -780,7 +780,7 @@ namespace ag.WPF.Chart
                         {
                             Source = series
                         });
-                        legendVisibilityBinding.Bindings.Add(new Binding("ItemsSource")
+                        legendVisibilityBinding.Bindings.Add(new Binding("SeriesSource")
                         {
                             Source = this
                         });
@@ -804,7 +804,7 @@ namespace ag.WPF.Chart
                         {
                             Source = series
                         });
-                        legendVisibilityBinding.Bindings.Add(new Binding("ItemsSource")
+                        legendVisibilityBinding.Bindings.Add(new Binding("SeriesSource")
                         {
                             Source = this
                         });
@@ -831,7 +831,7 @@ namespace ag.WPF.Chart
                             //{
                             //    Source = series
                             //});
-                            //legendVisibilityBinding.Bindings.Add(new Binding("ItemsSource")
+                            //legendVisibilityBinding.Bindings.Add(new Binding("SeriesSource")
                             //{
                             //    Source = this
                             //});
@@ -857,7 +857,7 @@ namespace ag.WPF.Chart
                             {
                                 Source = series
                             });
-                            legendVisibilityBinding.Bindings.Add(new Binding("ItemsSource")
+                            legendVisibilityBinding.Bindings.Add(new Binding("SeriesSource")
                             {
                                 Source = this
                             });
@@ -884,7 +884,7 @@ namespace ag.WPF.Chart
                             {
                                 Source = series
                             });
-                            legendVisibilityBinding.Bindings.Add(new Binding("ItemsSource")
+                            legendVisibilityBinding.Bindings.Add(new Binding("SeriesSource")
                             {
                                 Source = this
                             });
@@ -937,7 +937,7 @@ namespace ag.WPF.Chart
                         {
                             lg.Index--;
                         }
-                        foreach (var sr in ItemsSource.Where(sc => sc.Index > series.Index).ToArray())
+                        foreach (var sr in SeriesSource.Where(sc => sc.Index > series.Index).ToArray())
                         {
                             sr.Index--;
                             foreach (var p in sr.Paths)
@@ -980,7 +980,7 @@ namespace ag.WPF.Chart
 
         private void PieImage_MouseMove(object sender, MouseEventArgs e)
         {
-            if (!ItemsSource.Any()) return;
+            if (!SeriesSource.Any()) return;
             if (!(_pieImage.ToolTip is ToolTip tooltip)) return;
             var position = e.GetPosition(_pieImage);
             if (_pieImage.Source is DrawingImage dw)
@@ -1006,7 +1006,7 @@ namespace ag.WPF.Chart
             tooltip.Placement = PlacementMode.Mouse;
             tooltip.HorizontalOffset = 0;
             tooltip.VerticalOffset = 0;
-            tooltip.Content = ItemsSource.First().Name;
+            tooltip.Content = SeriesSource.First().Name;
         }
 
         private void Series_PropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -1016,7 +1016,7 @@ namespace ag.WPF.Chart
                 case "Values":
                     if (sender is ISeries series)
                     {
-                        foreach (var sr in ItemsSource.Where(s => s.Index != series.Index))
+                        foreach (var sr in SeriesSource.Where(s => s.Index != series.Index))
                         {
                             foreach (var p in sr.Paths)
                             {
@@ -1032,7 +1032,7 @@ namespace ag.WPF.Chart
                     updateBindings();
                     break;
             }
-            OnPropertyChanged("ItemsSource");
+            OnPropertyChanged("SeriesSource");
         }
 
         private void Path_MouseMove(object sender, MouseEventArgs e)
@@ -1217,7 +1217,7 @@ namespace ag.WPF.Chart
             var ptsBinding = new MultiBinding { Converter = new ValuesToPathConverter() };
             ptsBinding.Bindings.Add(new Binding("ActualWidth") { ElementName = ElementCanvas });
             ptsBinding.Bindings.Add(new Binding("ActualHeight") { ElementName = ElementCanvas });
-            ptsBinding.Bindings.Add(new Binding("ItemsSource")
+            ptsBinding.Bindings.Add(new Binding("SeriesSource")
             {
                 Source = this
             });
@@ -1405,7 +1405,7 @@ namespace ag.WPF.Chart
             binding = BindingOperations.GetMultiBindingExpression(_pathVertLines, Path.DataProperty);
             if (binding != null)
                 binding.UpdateTarget();
-            foreach (var series in ItemsSource)
+            foreach (var series in SeriesSource)
             {
                 foreach (var p in series.Paths)
                 {
@@ -1478,10 +1478,10 @@ namespace ag.WPF.Chart
         /// Gets or sets the collection of <see cref="Series"/> objects associated with chart control.
         /// </summary>
         [Category("ChartAppearance"), Description("Gets or sets the collection of Series objects associated with chart control")]
-        public IEnumerable<ISeries> ItemsSource
+        public IEnumerable<ISeries> SeriesSource
         {
-            get { return (IEnumerable<ISeries>)GetValue(ItemsSourceProperty); }
-            set { SetValue(ItemsSourceProperty, value); }
+            get { return (IEnumerable<ISeries>)GetValue(SeriesSourceProperty); }
+            set { SetValue(SeriesSourceProperty, value); }
         }
         /// <summary>
         /// Specifies whether chart boundary is started on y-axes or with offfset from y-axes./>.
@@ -1986,29 +1986,29 @@ namespace ag.WPF.Chart
                 throw new ArgumentException("LegendsOpenHighLowClose must have at least two items", nameof(value));
             return value;
         }
-        private static void OnItemsSourceChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
+        private static void OnSeriesSourceChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
             if (!(sender is Chart chart)) return;
             if (e.OldValue is INotifyCollectionChanged oldValueNotifyCollectionChanged)
             {
-                oldValueNotifyCollectionChanged.CollectionChanged -= chart.ItemsSource_CollectionChanged;
+                oldValueNotifyCollectionChanged.CollectionChanged -= chart.SeriesSource_CollectionChanged;
             }
             if (e.NewValue is INotifyCollectionChanged newValueNotifyCollectionChanged)
             {
-                newValueNotifyCollectionChanged.CollectionChanged += chart.ItemsSource_CollectionChanged;
+                newValueNotifyCollectionChanged.CollectionChanged += chart.SeriesSource_CollectionChanged;
             }
-            chart.OnItemsSourceChanged((IEnumerable<ISeries>)e.OldValue, (IEnumerable<ISeries>)e.NewValue);
+            chart.OnSeriesSourceChanged((IEnumerable<ISeries>)e.OldValue, (IEnumerable<ISeries>)e.NewValue);
         }
         /// <summary>
-        /// Invoked just before the <see cref="ItemsSourceChangedEvent"/> event is raised on control
+        /// Invoked just before the <see cref="SeriesSourceChangedEvent"/> event is raised on control
         /// </summary>
         /// <param name="oldValue">Old value</param>
         /// <param name="newValue">New value</param>
-        protected void OnItemsSourceChanged(IEnumerable<ISeries> oldValue, IEnumerable<ISeries> newValue)
+        protected void OnSeriesSourceChanged(IEnumerable<ISeries> oldValue, IEnumerable<ISeries> newValue)
         {
             var e = new RoutedPropertyChangedEventArgs<IEnumerable<ISeries>>(oldValue, newValue)
             {
-                RoutedEvent = ItemsSourceChangedEvent
+                RoutedEvent = SeriesSourceChangedEvent
             };
             RaiseEvent(e);
         }
@@ -2831,17 +2831,17 @@ namespace ag.WPF.Chart
 
         #region Routed events
         /// <summary>
-        /// Occurs when the <see cref="ItemsSource"/> property has been changed in some way
+        /// Occurs when the <see cref="SeriesSource"/> property has been changed in some way
         /// </summary>
-        public event RoutedPropertyChangedEventHandler<IEnumerable<ISeries>> ItemsSourceChanged
+        public event RoutedPropertyChangedEventHandler<IEnumerable<ISeries>> SeriesSourceChanged
         {
-            add { AddHandler(ItemsSourceChangedEvent, value); }
-            remove { RemoveHandler(ItemsSourceChangedEvent, value); }
+            add { AddHandler(SeriesSourceChangedEvent, value); }
+            remove { RemoveHandler(SeriesSourceChangedEvent, value); }
         }
         /// <summary>
-        /// Identifies the <see cref="ItemsSourceChanged"/> routed event
+        /// Identifies the <see cref="SeriesSourceChanged"/> routed event
         /// </summary>
-        public static readonly RoutedEvent ItemsSourceChangedEvent = EventManager.RegisterRoutedEvent("ItemsSourceChanged",
+        public static readonly RoutedEvent SeriesSourceChangedEvent = EventManager.RegisterRoutedEvent("SeriesSourceChanged",
             RoutingStrategy.Bubble, typeof(RoutedPropertyChangedEventHandler<IEnumerable<ISeries>>), typeof(Chart));
 
         /// <summary>

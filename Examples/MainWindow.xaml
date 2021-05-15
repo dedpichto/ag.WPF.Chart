@@ -17,7 +17,7 @@
         </Grid.ColumnDefinitions>
         <chart:Chart x:Name="chTest" Grid.Column="0" BorderThickness="1" Margin="4" Background="#FF262626" Foreground="White"
                          Title="Sample chart" 
-                     ItemsSource="{Binding Series}"
+                     SeriesSource="{Binding Series}"
                      ValuesFormatY="0"
                      CustomValuesX="{Binding CustomXTexts}"
                          LegendsWaterfall="{Binding LegendsWaterfall}"
