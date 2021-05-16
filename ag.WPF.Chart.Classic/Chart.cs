@@ -749,20 +749,20 @@ namespace ag.WPF.Chart
                         #region Main legend
                         var legend = new Legend() { Index = series.Index };
 
-                        legend.SetBinding(Legend.LegendBackgroundProperty, new Binding("MainBrush") { Source = series });
+                        legend.SetBinding(Legend.LegendBackgroundProperty, new Binding(nameof(ISeries.MainBrush)) { Source = series });
                         var legendVisibilityBinding = new MultiBinding { Converter = new LegendVisibilityConverter() };
-                        legendVisibilityBinding.Bindings.Add(new Binding("ChartStyle")
+                        legendVisibilityBinding.Bindings.Add(new Binding(nameof(ChartStyle))
                         {
                             Source = this
                         });
-                        legendVisibilityBinding.Bindings.Add(new Binding("SeriesSource")
+                        legendVisibilityBinding.Bindings.Add(new Binding(nameof(SeriesSource))
                         {
                             Source = this
                         });
                         legendVisibilityBinding.NotifyOnSourceUpdated = true;
                         legend.SetBinding(VisibilityProperty, legendVisibilityBinding);
 
-                        legend.SetBinding(Legend.TextProperty, new Binding("Name") { Source = series });
+                        legend.SetBinding(Legend.TextProperty, new Binding(nameof(ISeries.Name)) { Source = series });
 
                         LegendsCollection.Add(legend);
                         #endregion
@@ -770,17 +770,17 @@ namespace ag.WPF.Chart
                         #region Positive waterfall legend
                         legend = new Legend() { Index = series.Index };
 
-                        legend.SetBinding(Legend.LegendBackgroundProperty, new Binding("MainBrush") { Source = series });
+                        legend.SetBinding(Legend.LegendBackgroundProperty, new Binding(nameof(ISeries.MainBrush)) { Source = series });
                         legendVisibilityBinding = new MultiBinding { Converter = new LegendWaterfallVisibilityConverter() };
-                        legendVisibilityBinding.Bindings.Add(new Binding("ChartStyle")
+                        legendVisibilityBinding.Bindings.Add(new Binding(nameof(ChartStyle))
                         {
                             Source = this
                         });
-                        legendVisibilityBinding.Bindings.Add(new Binding("Index")
+                        legendVisibilityBinding.Bindings.Add(new Binding(nameof(ISeries.Index))
                         {
                             Source = series
                         });
-                        legendVisibilityBinding.Bindings.Add(new Binding("SeriesSource")
+                        legendVisibilityBinding.Bindings.Add(new Binding(nameof(SeriesSource))
                         {
                             Source = this
                         });
@@ -794,17 +794,17 @@ namespace ag.WPF.Chart
                         #region Negative waterfall legend
                         legend = new Legend() { Index = series.Index };
 
-                        legend.SetBinding(Legend.LegendBackgroundProperty, new Binding("SecondaryBrush") { Source = series });
+                        legend.SetBinding(Legend.LegendBackgroundProperty, new Binding(nameof(ISeries.SecondaryBrush)) { Source = series });
                         legendVisibilityBinding = new MultiBinding { Converter = new LegendWaterfallVisibilityConverter() };
-                        legendVisibilityBinding.Bindings.Add(new Binding("ChartStyle")
+                        legendVisibilityBinding.Bindings.Add(new Binding(nameof(ChartStyle))
                         {
                             Source = this
                         });
-                        legendVisibilityBinding.Bindings.Add(new Binding("Index")
+                        legendVisibilityBinding.Bindings.Add(new Binding(nameof(ISeries.Index))
                         {
                             Source = series
                         });
-                        legendVisibilityBinding.Bindings.Add(new Binding("SeriesSource")
+                        legendVisibilityBinding.Bindings.Add(new Binding(nameof(SeriesSource))
                         {
                             Source = this
                         });
@@ -847,17 +847,17 @@ namespace ag.WPF.Chart
                             #region Up stock legend
                             legend = new Legend() { Index = series.Index };
 
-                            legend.SetBinding(Legend.LegendBackgroundProperty, new Binding("MainBrush") { Source = series });
+                            legend.SetBinding(Legend.LegendBackgroundProperty, new Binding(nameof(ISeries.MainBrush)) { Source = series });
                             legendVisibilityBinding = new MultiBinding { Converter = new LegendStockVisibilityConverter() };
-                            legendVisibilityBinding.Bindings.Add(new Binding("ChartStyle")
+                            legendVisibilityBinding.Bindings.Add(new Binding(nameof(ChartStyle))
                             {
                                 Source = this
                             });
-                            legendVisibilityBinding.Bindings.Add(new Binding("Index")
+                            legendVisibilityBinding.Bindings.Add(new Binding(nameof(ISeries.Index))
                             {
                                 Source = series
                             });
-                            legendVisibilityBinding.Bindings.Add(new Binding("SeriesSource")
+                            legendVisibilityBinding.Bindings.Add(new Binding(nameof(SeriesSource))
                             {
                                 Source = this
                             });
@@ -874,17 +874,17 @@ namespace ag.WPF.Chart
                             #region Stock down legend
                             legend = new Legend() { Index = series.Index };
 
-                            legend.SetBinding(Legend.LegendBackgroundProperty, new Binding("SecondaryBrush") { Source = series });
+                            legend.SetBinding(Legend.LegendBackgroundProperty, new Binding(nameof(ISeries.SecondaryBrush)) { Source = series });
                             legendVisibilityBinding = new MultiBinding { Converter = new LegendStockVisibilityConverter() };
-                            legendVisibilityBinding.Bindings.Add(new Binding("ChartStyle")
+                            legendVisibilityBinding.Bindings.Add(new Binding(nameof(ChartStyle))
                             {
                                 Source = this
                             });
-                            legendVisibilityBinding.Bindings.Add(new Binding("Index")
+                            legendVisibilityBinding.Bindings.Add(new Binding(nameof(ISeries.Index))
                             {
                                 Source = series
                             });
-                            legendVisibilityBinding.Bindings.Add(new Binding("SeriesSource")
+                            legendVisibilityBinding.Bindings.Add(new Binding(nameof(SeriesSource))
                             {
                                 Source = this
                             });
@@ -1217,75 +1217,75 @@ namespace ag.WPF.Chart
             var ptsBinding = new MultiBinding { Converter = new ValuesToPathConverter() };
             ptsBinding.Bindings.Add(new Binding("ActualWidth") { ElementName = ElementCanvas });
             ptsBinding.Bindings.Add(new Binding("ActualHeight") { ElementName = ElementCanvas });
-            ptsBinding.Bindings.Add(new Binding("SeriesSource")
+            ptsBinding.Bindings.Add(new Binding(nameof(SeriesSource))
             {
                 Source = this
             });
-            ptsBinding.Bindings.Add(new Binding("ChartStyle")
+            ptsBinding.Bindings.Add(new Binding(nameof(ChartStyle))
             {
                 Source = this
             });
-            ptsBinding.Bindings.Add(new Binding("Index")
+            ptsBinding.Bindings.Add(new Binding(nameof(ISeries.Index))
             {
                 Source = series
             });
-            ptsBinding.Bindings.Add(new Binding("AutoAdjustment")
+            ptsBinding.Bindings.Add(new Binding(nameof(AutoAdjustment))
             {
                 Source = this
             });
-            ptsBinding.Bindings.Add(new Binding("MaxX")
+            ptsBinding.Bindings.Add(new Binding(nameof(MaxX))
             {
                 Source = this
             });
-            ptsBinding.Bindings.Add(new Binding("MaxY")
+            ptsBinding.Bindings.Add(new Binding(nameof(MaxY))
             {
                 Source = this
             });
-            ptsBinding.Bindings.Add(new Binding("ChartBoundary")
+            ptsBinding.Bindings.Add(new Binding(nameof(ChartBoundary))
             {
                 Source = this
             });
-            ptsBinding.Bindings.Add(new Binding("AxesFontFamily")
+            ptsBinding.Bindings.Add(new Binding(nameof(AxesFontFamily))
             {
                 Source = this
             });
-            ptsBinding.Bindings.Add(new Binding("AxesFontSize")
+            ptsBinding.Bindings.Add(new Binding(nameof(AxesFontSize))
             {
                 Source = this
             });
-            ptsBinding.Bindings.Add(new Binding("AxesFontStyle")
+            ptsBinding.Bindings.Add(new Binding(nameof(AxesFontStyle))
             {
                 Source = this
             });
-            ptsBinding.Bindings.Add(new Binding("AxesFontWeight")
+            ptsBinding.Bindings.Add(new Binding(nameof(AxesFontWeight))
             {
                 Source = this
             });
-            ptsBinding.Bindings.Add(new Binding("AxesFontStretch")
+            ptsBinding.Bindings.Add(new Binding(nameof(AxesFontStretch))
             {
                 Source = this
             });
-            ptsBinding.Bindings.Add(new Binding("CustomValuesX")
+            ptsBinding.Bindings.Add(new Binding(nameof(CustomValuesX))
             {
                 Source = this
             });
-            ptsBinding.Bindings.Add(new Binding("SectionsY")
+            ptsBinding.Bindings.Add(new Binding(nameof(SectionsY))
             {
                 Source = this
             });
-            ptsBinding.Bindings.Add(new Binding("SectionsX")
+            ptsBinding.Bindings.Add(new Binding(nameof(SectionsX))
             {
                 Source = this
             });
-            ptsBinding.Bindings.Add(new Binding("ShowValuesOnBarsAndColumns")
+            ptsBinding.Bindings.Add(new Binding(nameof(ShowValuesOnBarsAndColumns))
             {
                 Source = this
             });
-            ptsBinding.Bindings.Add(new Binding("FlowDirection")
+            ptsBinding.Bindings.Add(new Binding(nameof(FlowDirection))
             {
                 Source = this
             });
-            ptsBinding.Bindings.Add(new Binding("MarkerShape")
+            ptsBinding.Bindings.Add(new Binding(nameof(MarkerShape))
             {
                 Source = this
             });
@@ -1295,10 +1295,10 @@ namespace ag.WPF.Chart
             #endregion
 
             #region Path stroke
-            path.SetBinding(Shape.StrokeThicknessProperty, new Binding("LineThickness") { Source = this });
+            path.SetBinding(Shape.StrokeThicknessProperty, new Binding(nameof(LineThickness)) { Source = this });
 
             var strkBinding = new MultiBinding { Converter = new PathStrokeConverter() };
-            strkBinding.Bindings.Add(new Binding("ChartStyle")
+            strkBinding.Bindings.Add(new Binding(nameof(ChartStyle))
             {
                 Source = this
             });
@@ -1322,7 +1322,7 @@ namespace ag.WPF.Chart
 
             #region Path fill
             var fillBinding = new MultiBinding { Converter = new PathFillConverter() };
-            fillBinding.Bindings.Add(new Binding("ChartStyle")
+            fillBinding.Bindings.Add(new Binding(nameof(ChartStyle))
             {
                 Source = this
             });
@@ -1344,7 +1344,7 @@ namespace ag.WPF.Chart
             path.SetBinding(Shape.FillProperty, fillBinding);
             #endregion
 
-            path.SetBinding(OpacityProperty, new Binding("ChartOpacity") { Source = this });
+            path.SetBinding(OpacityProperty, new Binding(nameof(ChartOpacity)) { Source = this });
             path.MouseLeftButtonDown += Path_MouseLeftButtonDown;
             path.MouseMove += Path_MouseMove;
 
@@ -1437,8 +1437,8 @@ namespace ag.WPF.Chart
                 };
 
                 var textBinding = new MultiBinding { Converter = new PieSectionTextConverter(), ConverterParameter = v };
-                textBinding.Bindings.Add(new Binding("Values") { Source = series });
-                textBinding.Bindings.Add(new Binding("PiePercentsFormat") { Source = this });
+                textBinding.Bindings.Add(new Binding(nameof(ISeries.Values)) { Source = series });
+                textBinding.Bindings.Add(new Binding(nameof(PiePercentsFormat)) { Source = this });
                 legend.SetBinding(Legend.TextProperty, textBinding);
 
                 PieLegendsCollection.Add(legend);
