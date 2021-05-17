@@ -92,20 +92,22 @@ namespace Examples
             //Series.Add(new PlainSeries("Spirit", ds.Select(d => d.Spirit)));
             //CustomXTexts.AddRange(ds.Select(d => d.Country));
 
+            for (var i = 0; i < AllSeries.Count; i++)
+            {
+                //chTest.Series.Add(new PlainSeries($"Series {i + 1}", AllSeries[i]));
+                Series.Add(new PlainSeries($"Series {i + 1}", AllSeries[i]));
+            }
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
             //for (var i = 0; i < AllSeries.Count; i++)
             //{
             //    chTest.Series.Add(new PlainSeries($"Series {i + 1}", AllSeries[i]));
             //    //Series.Add(new PlainSeries($"Series {i + 1}", AllSeries[i]));
             //}
-        }
-
-        private void Button_Click(object sender, RoutedEventArgs e)
-        {
-            for (var i = 0; i < AllSeries.Count; i++)
-            {
-                chTest.Series.Add(new PlainSeries($"Series {i + 1}", AllSeries[i]));
-                //Series.Add(new PlainSeries($"Series {i + 1}", AllSeries[i]));
-            }
+            //Series.Insert(1, new PlainSeries("kuku", new[] { 3.5, 7.3, 8.1, 7.64, 2.8 }));
+            Series[1] = new PlainSeries("kuku", new[] { 3.5, 7.3, 8.1, 7.64, 2.8 });
         }
     }
 }

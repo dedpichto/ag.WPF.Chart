@@ -712,12 +712,13 @@ namespace ag.WPF.Chart
 
         private void Canvas_Loaded(object sender, RoutedEventArgs e)
         {
-            if (SeriesSource == null) return;
+            var actualSeries = getActualSeries();
+            if (actualSeries == null) return;
             // the event is raised every time the control becomes visible
             // if all paths have been added before - just exit
-            if (!SeriesSource.SelectMany(s => s.Paths).Any(p => p != null && !(bool)p.GetValue(Statics.AddedToCanvasProperty)))
+            if (!actualSeries.SelectMany(s => s.Paths).Any(p => p != null && !(bool)p.GetValue(Statics.AddedToCanvasProperty)))
                 return;
-            foreach (var series in SeriesSource)
+            foreach (var series in actualSeries)
             {
                 for (var pathIndex = 0; pathIndex < series.Paths.Count(); pathIndex++)
                 {
@@ -735,265 +736,26 @@ namespace ag.WPF.Chart
                     {
                         if (!(e.NewItems[0] is ISeries series)) break;
 
-                        series.Index = e.NewStartingIndex;
-                        series.PropertyChanged += Series_PropertyChanged;
-
-                        // The canvas may be nul, because OnApplyTemplate is raised only when control is currently visible
-                        // So if the control is on the tab that isn't initially visible, for example, the canvas will be null
-                        if (_canvas != null)
-                        {
-                            for (var pathIndex = 0; pathIndex < series.Paths.Length; pathIndex++)
-                            {
-                                setPathProperties(series, pathIndex);
-                            }
-                        }
-
-                        #region Main legend
-                        var legend = new Legend() { Index = series.Index };
-
-                        legend.SetBinding(Legend.LegendBackgroundProperty, new Binding(nameof(ISeries.MainBrush)) { Source = series });
-                        var legendVisibilityBinding = new MultiBinding { Converter = new LegendVisibilityConverter() };
-                        legendVisibilityBinding.Bindings.Add(new Binding(nameof(ChartStyle))
-                        {
-                            Source = this
-                        });
-                        legendVisibilityBinding.Bindings.Add(new Binding(nameof(SeriesSource))
-                        {
-                            Source = this
-                        });
-                        legendVisibilityBinding.Bindings.Add(new Binding(nameof(Series))
-                        {
-                            Source = this
-                        });
-                        legendVisibilityBinding.NotifyOnSourceUpdated = true;
-                        legend.SetBinding(VisibilityProperty, legendVisibilityBinding);
-
-                        legend.SetBinding(Legend.TextProperty, new Binding(nameof(ISeries.Name)) { Source = series });
-
-                        LegendsCollection.Add(legend);
-                        #endregion
-
-                        #region Positive waterfall legend
-                        legend = new Legend() { Index = series.Index };
-
-                        legend.SetBinding(Legend.LegendBackgroundProperty, new Binding(nameof(ISeries.MainBrush)) { Source = series });
-                        legendVisibilityBinding = new MultiBinding { Converter = new LegendWaterfallVisibilityConverter() };
-                        legendVisibilityBinding.Bindings.Add(new Binding(nameof(ChartStyle))
-                        {
-                            Source = this
-                        });
-                        legendVisibilityBinding.Bindings.Add(new Binding(nameof(ISeries.Index))
-                        {
-                            Source = series
-                        });
-                        legendVisibilityBinding.Bindings.Add(new Binding(nameof(SeriesSource))
-                        {
-                            Source = this
-                        });
-                        legendVisibilityBinding.Bindings.Add(new Binding(nameof(Series))
-                        {
-                            Source = this
-                        });
-                        legend.SetBinding(VisibilityProperty, legendVisibilityBinding);
-
-                        legend.SetBinding(Legend.TextProperty, new Binding("LegendsWaterfall[0]") { Source = this });
-
-                        LegendsCollection.Add(legend);
-                        #endregion
-
-                        #region Negative waterfall legend
-                        legend = new Legend() { Index = series.Index };
-
-                        legend.SetBinding(Legend.LegendBackgroundProperty, new Binding(nameof(ISeries.SecondaryBrush)) { Source = series });
-                        legendVisibilityBinding = new MultiBinding { Converter = new LegendWaterfallVisibilityConverter() };
-                        legendVisibilityBinding.Bindings.Add(new Binding(nameof(ChartStyle))
-                        {
-                            Source = this
-                        });
-                        legendVisibilityBinding.Bindings.Add(new Binding(nameof(ISeries.Index))
-                        {
-                            Source = series
-                        });
-                        legendVisibilityBinding.Bindings.Add(new Binding(nameof(SeriesSource))
-                        {
-                            Source = this
-                        });
-                        legendVisibilityBinding.Bindings.Add(new Binding(nameof(Series))
-                        {
-                            Source = this
-                        });
-                        legendVisibilityBinding.NotifyOnSourceUpdated = true;
-                        legend.SetBinding(VisibilityProperty, legendVisibilityBinding);
-
-                        legend.SetBinding(Legend.TextProperty, new Binding("LegendsWaterfall[1]") { Source = this });
-
-                        LegendsCollection.Add(legend);
-                        #endregion
-
-                        if (series.IsStockSeries())
-                        {
-                            //#region Stock legend
-                            //legend = new Legend() { Index = series.Index };
-
-                            //legend.SetBinding(Legend.LegendBackgroundProperty, new Binding("Foreground") { Source = this });
-                            //legendVisibilityBinding = new MultiBinding { Converter = new LegendStockVisibilityConverter() };
-                            //legendVisibilityBinding.Bindings.Add(new Binding("ChartStyle")
-                            //{
-                            //    Source = this
-                            //});
-                            //legendVisibilityBinding.Bindings.Add(new Binding("Index")
-                            //{
-                            //    Source = series
-                            //});
-                            //legendVisibilityBinding.Bindings.Add(new Binding("SeriesSource")
-                            //{
-                            //    Source = this
-                            //});
-                            //legendVisibilityBinding.ConverterParameter = ColoredPaths.Stock;
-                            //legendVisibilityBinding.NotifyOnSourceUpdated = true;
-                            //legend.SetBinding(VisibilityProperty, legendVisibilityBinding);
-                            //legend.Text = "Close";
-                            ////legend.SetBinding(Legend.TextProperty, new Binding("LegendsWaterfall[1]") { Source = this });
-
-                            //LegendsCollection.Add(legend);
-                            //#endregion
-
-                            #region Up stock legend
-                            legend = new Legend() { Index = series.Index };
-
-                            legend.SetBinding(Legend.LegendBackgroundProperty, new Binding(nameof(ISeries.MainBrush)) { Source = series });
-                            legendVisibilityBinding = new MultiBinding { Converter = new LegendStockVisibilityConverter() };
-                            legendVisibilityBinding.Bindings.Add(new Binding(nameof(ChartStyle))
-                            {
-                                Source = this
-                            });
-                            legendVisibilityBinding.Bindings.Add(new Binding(nameof(ISeries.Index))
-                            {
-                                Source = series
-                            });
-                            legendVisibilityBinding.Bindings.Add(new Binding(nameof(SeriesSource))
-                            {
-                                Source = this
-                            });
-                            legendVisibilityBinding.Bindings.Add(new Binding(nameof(Series))
-                            {
-                                Source = this
-                            });
-                            legendVisibilityBinding.ConverterParameter = ColoredPaths.Up;
-                            legendVisibilityBinding.NotifyOnSourceUpdated = true;
-                            legend.SetBinding(VisibilityProperty, legendVisibilityBinding);
-                            if (series is HighLowCloseSeries)
-                                legend.SetBinding(Legend.TextProperty, new Binding("LegendsHighLowClose[0]") { Source = this });
-                            else if (series is OpenHighLowCloseSeries)
-                                legend.SetBinding(Legend.TextProperty, new Binding("LegendsOpenHighLowClose[0]") { Source = this });
-                            LegendsCollection.Add(legend);
-                            #endregion
-
-                            #region Stock down legend
-                            legend = new Legend() { Index = series.Index };
-
-                            legend.SetBinding(Legend.LegendBackgroundProperty, new Binding(nameof(ISeries.SecondaryBrush)) { Source = series });
-                            legendVisibilityBinding = new MultiBinding { Converter = new LegendStockVisibilityConverter() };
-                            legendVisibilityBinding.Bindings.Add(new Binding(nameof(ChartStyle))
-                            {
-                                Source = this
-                            });
-                            legendVisibilityBinding.Bindings.Add(new Binding(nameof(ISeries.Index))
-                            {
-                                Source = series
-                            });
-                            legendVisibilityBinding.Bindings.Add(new Binding(nameof(SeriesSource))
-                            {
-                                Source = this
-                            });
-                            legendVisibilityBinding.Bindings.Add(new Binding(nameof(Series))
-                            {
-                                Source = this
-                            });
-                            legendVisibilityBinding.ConverterParameter = ColoredPaths.Down;
-                            legendVisibilityBinding.NotifyOnSourceUpdated = true;
-                            legend.SetBinding(VisibilityProperty, legendVisibilityBinding);
-                            if (series is HighLowCloseSeries)
-                                legend.SetBinding(Legend.TextProperty, new Binding("LegendsHighLowClose[1]") { Source = this });
-                            else if (series is OpenHighLowCloseSeries)
-                                legend.SetBinding(Legend.TextProperty, new Binding("LegendsOpenHighLowClose[1]") { Source = this });
-                            LegendsCollection.Add(legend);
-                            #endregion
-                        }
-
-                        rebuildPieLegends(series.Values, series);
-
-                        // if canvas is null, so are all other elements
-                        if (_canvas == null)
-                            return;
-
-                        updateBindings();
+                        addSeries(series, e.NewStartingIndex);
 
                         break;
+                    }
+                case NotifyCollectionChangedAction.Replace:
+                    {
+                        if (!(e.OldItems[0] is ISeries oldSeries)) break;
+
+                        removeSeries(oldSeries, false);
+
+                        if (!(e.NewItems[0] is ISeries newSeries)) break;
+
+                        addSeries(newSeries, e.OldStartingIndex, false);
+                        break; ;
                     }
                 case NotifyCollectionChangedAction.Remove:
                     {
                         if (!(e.OldItems[0] is ISeries series)) break;
 
-                        series.PropertyChanged -= Series_PropertyChanged;
-
-                        foreach (var p in series.Paths)
-                        {
-                            if (p == null) continue;
-                            p.MouseLeftButtonDown -= Path_MouseLeftButtonDown;
-                            p.MouseMove -= Path_MouseMove;
-                            var i = _canvas.Children.IndexOf(p);
-                            if (i > -1)
-                            {
-                                p.SetValue(Statics.AddedToCanvasProperty, false);
-                                _canvas.Children.RemoveAt(i);
-                            }
-                        }
-
-                        for (var i = LegendsCollection.Count - 1; i >= 0; i--)
-                        {
-                            if (((Legend)LegendsCollection[i]).Index == series.Index)
-                                LegendsCollection.RemoveAt(i);
-                        }
-                        foreach (Legend lg in LegendsCollection.Where(l => ((Legend)l).Index > series.Index).ToArray())
-                        {
-                            lg.Index--;
-                        }
-                        foreach (var sr in SeriesSource.Where(sc => sc.Index > series.Index).ToArray())
-                        {
-                            sr.Index--;
-                            foreach (var p in sr.Paths)
-                            {
-                                if (p == null) continue;
-                                var binding = BindingOperations.GetMultiBindingExpression(p, Path.DataProperty);
-                                if (binding != null)
-                                    binding.UpdateTarget();
-                            }
-                            rebuildPieLegends(sr.Values, sr);
-                        }
-
-                        if (!(bool)((Series.Series)series).GetValue(Statics.HasCustomMainBrushProperty))
-                        {
-                            for (var i = 0; i < PredefinedMainBrushes.Length; i++)
-                            {
-                                if (series.MainBrush.Equals(PredefinedMainBrushes[i].Brush))
-                                {
-                                    PredefinedMainBrushes[i].Counter--;
-                                }
-                            }
-                        }
-                        if (!(bool)((Series.Series)series).GetValue(Statics.HasCustomSecondaryBrushProperty))
-                        {
-                            for (var i = 0; i < PredefinedSecondaryBrushes.Length; i++)
-                            {
-                                if (series.SecondaryBrush.Equals(PredefinedSecondaryBrushes[i].Brush))
-                                {
-                                    PredefinedSecondaryBrushes[i].Counter--;
-                                }
-                            }
-                        }
-
-                        updateBindings();
+                        removeSeries(series);
 
                         break;
                     }
@@ -1002,7 +764,8 @@ namespace ag.WPF.Chart
 
         private void PieImage_MouseMove(object sender, MouseEventArgs e)
         {
-            if (!SeriesSource.Any()) return;
+            var actualSeries = getActualSeries();
+            if (!actualSeries.Any()) return;
             if (!(_pieImage.ToolTip is ToolTip tooltip)) return;
             var position = e.GetPosition(_pieImage);
             if (_pieImage.Source is DrawingImage dw)
@@ -1028,7 +791,7 @@ namespace ag.WPF.Chart
             tooltip.Placement = PlacementMode.Mouse;
             tooltip.HorizontalOffset = 0;
             tooltip.VerticalOffset = 0;
-            tooltip.Content = SeriesSource.First().Name;
+            tooltip.Content = actualSeries.First().Name;
         }
 
         private void Series_PropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -1038,7 +801,8 @@ namespace ag.WPF.Chart
                 case "Values":
                     if (sender is ISeries series)
                     {
-                        foreach (var sr in SeriesSource.Where(s => s.Index != series.Index))
+                        var actualSeries = getActualSeries();
+                        foreach (var sr in actualSeries.Where(s => s.Index != series.Index))
                         {
                             foreach (var p in sr.Paths)
                             {
@@ -1176,6 +940,300 @@ namespace ag.WPF.Chart
         #endregion
 
         #region Private functions
+        private IEnumerable<ISeries> getActualSeries()
+        {
+            var b = BindingOperations.GetBinding(this, SeriesSourceProperty);
+            if (b == null)
+            {
+                return Series;
+            }
+            else
+            {
+                return SeriesSource;
+            }
+        }
+
+        private void addSeries(ISeries series, int index, bool shiftIndexes = true)
+        {
+            series.Index = index;
+            series.PropertyChanged += Series_PropertyChanged;
+
+            if (shiftIndexes)
+            {
+                var actualSeries = getActualSeries();
+                foreach (var sr in actualSeries.Skip(index + 1).ToArray())
+                {
+                    sr.Index++;
+                    foreach (var p in sr.Paths)
+                    {
+                        if (p == null) continue;
+                        var binding = BindingOperations.GetMultiBindingExpression(p, Path.DataProperty);
+                        if (binding != null)
+                            binding.UpdateTarget();
+                    }
+                    rebuildPieLegends(sr.Values, sr);
+                }
+            }
+
+            // The canvas may be null, because OnApplyTemplate is raised only when control is currently visible
+            // So if the control is on the tab that isn't initially visible, for example, the canvas will be null
+            if (_canvas != null)
+            {
+                for (var pathIndex = 0; pathIndex < series.Paths.Length; pathIndex++)
+                {
+                    setPathProperties(series, pathIndex);
+                }
+            }
+
+            #region Main legend
+            var legend = new Legend() { Index = series.Index };
+
+            legend.SetBinding(Legend.LegendBackgroundProperty, new Binding(nameof(ISeries.MainBrush)) { Source = series });
+            var legendVisibilityBinding = new MultiBinding { Converter = new LegendVisibilityConverter() };
+            legendVisibilityBinding.Bindings.Add(new Binding(nameof(ChartStyle))
+            {
+                Source = this
+            });
+            legendVisibilityBinding.Bindings.Add(new Binding(nameof(SeriesSource))
+            {
+                Source = this
+            });
+            legendVisibilityBinding.Bindings.Add(new Binding(nameof(Series))
+            {
+                Source = this
+            });
+            legendVisibilityBinding.NotifyOnSourceUpdated = true;
+            legend.SetBinding(VisibilityProperty, legendVisibilityBinding);
+
+            legend.SetBinding(Legend.TextProperty, new Binding(nameof(ISeries.Name)) { Source = series });
+
+            LegendsCollection.Add(legend);
+            #endregion
+
+            #region Positive waterfall legend
+            legend = new Legend() { Index = series.Index };
+
+            legend.SetBinding(Legend.LegendBackgroundProperty, new Binding(nameof(ISeries.MainBrush)) { Source = series });
+            legendVisibilityBinding = new MultiBinding { Converter = new LegendWaterfallVisibilityConverter() };
+            legendVisibilityBinding.Bindings.Add(new Binding(nameof(ChartStyle))
+            {
+                Source = this
+            });
+            legendVisibilityBinding.Bindings.Add(new Binding(nameof(ISeries.Index))
+            {
+                Source = series
+            });
+            legendVisibilityBinding.Bindings.Add(new Binding(nameof(SeriesSource))
+            {
+                Source = this
+            });
+            legendVisibilityBinding.Bindings.Add(new Binding(nameof(Series))
+            {
+                Source = this
+            });
+            legend.SetBinding(VisibilityProperty, legendVisibilityBinding);
+
+            legend.SetBinding(Legend.TextProperty, new Binding("LegendsWaterfall[0]") { Source = this });
+
+            LegendsCollection.Add(legend);
+            #endregion
+
+            #region Negative waterfall legend
+            legend = new Legend() { Index = series.Index };
+
+            legend.SetBinding(Legend.LegendBackgroundProperty, new Binding(nameof(ISeries.SecondaryBrush)) { Source = series });
+            legendVisibilityBinding = new MultiBinding { Converter = new LegendWaterfallVisibilityConverter() };
+            legendVisibilityBinding.Bindings.Add(new Binding(nameof(ChartStyle))
+            {
+                Source = this
+            });
+            legendVisibilityBinding.Bindings.Add(new Binding(nameof(ISeries.Index))
+            {
+                Source = series
+            });
+            legendVisibilityBinding.Bindings.Add(new Binding(nameof(SeriesSource))
+            {
+                Source = this
+            });
+            legendVisibilityBinding.Bindings.Add(new Binding(nameof(Series))
+            {
+                Source = this
+            });
+            legendVisibilityBinding.NotifyOnSourceUpdated = true;
+            legend.SetBinding(VisibilityProperty, legendVisibilityBinding);
+
+            legend.SetBinding(Legend.TextProperty, new Binding("LegendsWaterfall[1]") { Source = this });
+
+            LegendsCollection.Add(legend);
+            #endregion
+
+            if (series.IsStockSeries())
+            {
+                //#region Stock legend
+                //legend = new Legend() { Index = series.Index };
+
+                //legend.SetBinding(Legend.LegendBackgroundProperty, new Binding("Foreground") { Source = this });
+                //legendVisibilityBinding = new MultiBinding { Converter = new LegendStockVisibilityConverter() };
+                //legendVisibilityBinding.Bindings.Add(new Binding("ChartStyle")
+                //{
+                //    Source = this
+                //});
+                //legendVisibilityBinding.Bindings.Add(new Binding("Index")
+                //{
+                //    Source = series
+                //});
+                //legendVisibilityBinding.Bindings.Add(new Binding("SeriesSource")
+                //{
+                //    Source = this
+                //});
+                //legendVisibilityBinding.ConverterParameter = ColoredPaths.Stock;
+                //legendVisibilityBinding.NotifyOnSourceUpdated = true;
+                //legend.SetBinding(VisibilityProperty, legendVisibilityBinding);
+                //legend.Text = "Close";
+                ////legend.SetBinding(Legend.TextProperty, new Binding("LegendsWaterfall[1]") { Source = this });
+
+                //LegendsCollection.Add(legend);
+                //#endregion
+
+                #region Up stock legend
+                legend = new Legend() { Index = series.Index };
+
+                legend.SetBinding(Legend.LegendBackgroundProperty, new Binding(nameof(ISeries.MainBrush)) { Source = series });
+                legendVisibilityBinding = new MultiBinding { Converter = new LegendStockVisibilityConverter() };
+                legendVisibilityBinding.Bindings.Add(new Binding(nameof(ChartStyle))
+                {
+                    Source = this
+                });
+                legendVisibilityBinding.Bindings.Add(new Binding(nameof(ISeries.Index))
+                {
+                    Source = series
+                });
+                legendVisibilityBinding.Bindings.Add(new Binding(nameof(SeriesSource))
+                {
+                    Source = this
+                });
+                legendVisibilityBinding.Bindings.Add(new Binding(nameof(Series))
+                {
+                    Source = this
+                });
+                legendVisibilityBinding.ConverterParameter = ColoredPaths.Up;
+                legendVisibilityBinding.NotifyOnSourceUpdated = true;
+                legend.SetBinding(VisibilityProperty, legendVisibilityBinding);
+                if (series is HighLowCloseSeries)
+                    legend.SetBinding(Legend.TextProperty, new Binding("LegendsHighLowClose[0]") { Source = this });
+                else if (series is OpenHighLowCloseSeries)
+                    legend.SetBinding(Legend.TextProperty, new Binding("LegendsOpenHighLowClose[0]") { Source = this });
+                LegendsCollection.Add(legend);
+                #endregion
+
+                #region Stock down legend
+                legend = new Legend() { Index = series.Index };
+
+                legend.SetBinding(Legend.LegendBackgroundProperty, new Binding(nameof(ISeries.SecondaryBrush)) { Source = series });
+                legendVisibilityBinding = new MultiBinding { Converter = new LegendStockVisibilityConverter() };
+                legendVisibilityBinding.Bindings.Add(new Binding(nameof(ChartStyle))
+                {
+                    Source = this
+                });
+                legendVisibilityBinding.Bindings.Add(new Binding(nameof(ISeries.Index))
+                {
+                    Source = series
+                });
+                legendVisibilityBinding.Bindings.Add(new Binding(nameof(SeriesSource))
+                {
+                    Source = this
+                });
+                legendVisibilityBinding.Bindings.Add(new Binding(nameof(Series))
+                {
+                    Source = this
+                });
+                legendVisibilityBinding.ConverterParameter = ColoredPaths.Down;
+                legendVisibilityBinding.NotifyOnSourceUpdated = true;
+                legend.SetBinding(VisibilityProperty, legendVisibilityBinding);
+                if (series is HighLowCloseSeries)
+                    legend.SetBinding(Legend.TextProperty, new Binding("LegendsHighLowClose[1]") { Source = this });
+                else if (series is OpenHighLowCloseSeries)
+                    legend.SetBinding(Legend.TextProperty, new Binding("LegendsOpenHighLowClose[1]") { Source = this });
+                LegendsCollection.Add(legend);
+                #endregion
+            }
+
+            rebuildPieLegends(series.Values, series);
+
+            // if canvas is null, so are all other elements
+            if (_canvas == null)
+                return;
+
+            updateBindings();
+        }
+
+        private void removeSeries(ISeries series, bool shiftIndexes = true)
+        {
+            series.PropertyChanged -= Series_PropertyChanged;
+
+            foreach (var p in series.Paths)
+            {
+                if (p == null) continue;
+                p.MouseLeftButtonDown -= Path_MouseLeftButtonDown;
+                p.MouseMove -= Path_MouseMove;
+                var i = _canvas.Children.IndexOf(p);
+                if (i > -1)
+                {
+                    p.SetValue(Statics.AddedToCanvasProperty, false);
+                    _canvas.Children.RemoveAt(i);
+                }
+            }
+
+            for (var i = LegendsCollection.Count - 1; i >= 0; i--)
+            {
+                if (((Legend)LegendsCollection[i]).Index == series.Index)
+                    LegendsCollection.RemoveAt(i);
+            }
+
+            if (shiftIndexes)
+            {
+                foreach (Legend lg in LegendsCollection.Where(l => ((Legend)l).Index > series.Index).ToArray())
+                {
+                    lg.Index--;
+                }
+                var actualSeries = getActualSeries();
+                foreach (var sr in actualSeries.Where(sc => sc.Index > series.Index).ToArray())
+                {
+                    sr.Index--;
+                    foreach (var p in sr.Paths)
+                    {
+                        if (p == null) continue;
+                        var binding = BindingOperations.GetMultiBindingExpression(p, Path.DataProperty);
+                        if (binding != null)
+                            binding.UpdateTarget();
+                    }
+                    rebuildPieLegends(sr.Values, sr);
+                }
+            }
+
+            if (!(bool)((Series.Series)series).GetValue(Statics.HasCustomMainBrushProperty))
+            {
+                for (var i = 0; i < PredefinedMainBrushes.Length; i++)
+                {
+                    if (series.MainBrush.Equals(PredefinedMainBrushes[i].Brush))
+                    {
+                        PredefinedMainBrushes[i].Counter--;
+                    }
+                }
+            }
+            if (!(bool)((Series.Series)series).GetValue(Statics.HasCustomSecondaryBrushProperty))
+            {
+                for (var i = 0; i < PredefinedSecondaryBrushes.Length; i++)
+                {
+                    if (series.SecondaryBrush.Equals(PredefinedSecondaryBrushes[i].Brush))
+                    {
+                        PredefinedSecondaryBrushes[i].Counter--;
+                    }
+                }
+            }
+
+            updateBindings();
+        }
 
         private void setPathProperties(ISeries series, int pathIndex)
         {
@@ -1431,7 +1489,8 @@ namespace ag.WPF.Chart
             binding = BindingOperations.GetMultiBindingExpression(_pathVertLines, Path.DataProperty);
             if (binding != null)
                 binding.UpdateTarget();
-            foreach (var series in SeriesSource)
+            var actualSeries = getActualSeries();
+            foreach (var series in actualSeries)
             {
                 foreach (var p in series.Paths)
                 {
