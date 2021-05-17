@@ -14,13 +14,12 @@ namespace ag.WPF.Chart
     /// added, removed, or when the whole list is refreshed.
     /// </summary>
     /// <typeparam name="T">The type of elements in the collection.</typeparam>
-    public class ChartItemsCollection<T> : INotifyCollectionChanged, IList<T>
+    public class ChartItemsCollection<T> : IList<T>
     {
-        private ObservableCollection<T> _innerCollection;
-        private bool _useSource;
+        private readonly ObservableCollection<T> _innerCollection;
+        private readonly bool _useSource;
 
-        /// <inheritdoc />
-        public event NotifyCollectionChangedEventHandler CollectionChanged;
+        internal event NotifyCollectionChangedEventHandler CollectionChanged;
 
         internal ChartItemsCollection()
         {
@@ -92,18 +91,6 @@ namespace ag.WPF.Chart
         {
             if (_useSource) return;
             _innerCollection.Clear();
-        }
-
-        internal void SetSource(IEnumerable<T> source)
-        {
-            _useSource = true;
-            _innerCollection.Clear();
-        }
-
-        internal void ClearSource()
-        {
-            _useSource = false;
-            _innerCollection = new ObservableCollection<T>();
         }
 
         /// <inheritdoc />
