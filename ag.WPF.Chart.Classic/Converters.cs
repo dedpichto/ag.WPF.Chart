@@ -1499,25 +1499,30 @@ namespace ag.WPF.Chart
             if (values == null
                 || !(values[0] is double width)
                 || !(values[1] is double height)
-                || !(values[2] is IEnumerable<ISeries> seriesEnumerable)
-                || !seriesEnumerable.Any()
-                || !(values[3] is ChartStyle chartStyle))
+                || !(values[4] is ChartStyle chartStyle))
                 return null;
 
-            var seriesArray = seriesEnumerable.ToArray();
+            var seriesEnumerable = values[2] as IEnumerable<ISeries>;
+            var chartSeries = values[3] as IEnumerable<ISeries>;
+
+            if ((seriesEnumerable == null || !seriesEnumerable.Any()) && (chartSeries == null || !chartSeries.Any()))
+                return null;
+
+            var seriesArray = seriesEnumerable != null && seriesEnumerable.Any() ? seriesEnumerable.ToArray() : chartSeries.ToArray();
+
             var gm = new PathGeometry();
             Directions dir;
 
-            if (seriesEnumerable.All(s => s is PlainSeries))
+            if (seriesArray.All(s => s is PlainSeries))
             {
                 if (chartStyle.In(ChartStyle.HighLowClose, ChartStyle.OpenHighLowClose))
                     return null;
                 var totalValues = chartStyle.In(ChartStyle.Waterfall)
-                    ? seriesEnumerable.First().Values.Select(v => v.Value.PlainValue)
-                    : seriesEnumerable.SelectMany(s => s.Values.Select(v => v.Value.PlainValue));
+                    ? seriesArray.First().Values.Select(v => v.Value.PlainValue)
+                    : seriesArray.SelectMany(s => s.Values.Select(v => v.Value.PlainValue));
                 dir = Utils.GetDirection(totalValues, chartStyle);
             }
-            else if (seriesEnumerable.All(s => s.IsStockSeries()))
+            else if (seriesArray.All(s => s.IsStockSeries()))
             {
                 if (!chartStyle.In(ChartStyle.HighLowClose, ChartStyle.OpenHighLowClose))
                     return null;
@@ -1528,7 +1533,7 @@ namespace ag.WPF.Chart
                 else if (chartStyle == ChartStyle.OpenHighLowClose && !(seriesArray[0] is OpenHighLowCloseSeries))
                     return null;
 
-                var totalValues = seriesEnumerable.First().Values.Select(v => (v.Value.HighValue, v.Value.LowValue));
+                var totalValues = seriesArray.First().Values.Select(v => (v.Value.HighValue, v.Value.LowValue));
                 dir = Utils.GetDirectionFinancial(totalValues, chartStyle);
             }
             else
@@ -1583,25 +1588,30 @@ namespace ag.WPF.Chart
             if (values == null
                 || !(values[0] is double width)
                 || !(values[1] is double height)
-                || !(values[2] is IEnumerable<ISeries> seriesEnumerable)
-                || !seriesEnumerable.Any()
-                || !(values[3] is ChartStyle chartStyle))
+                || !(values[4] is ChartStyle chartStyle))
                 return null;
 
-            var seriesArray = seriesEnumerable.ToArray();
+            var seriesEnumerable = values[2] as IEnumerable<ISeries>;
+            var chartSeries = values[3] as IEnumerable<ISeries>;
+
+            if ((seriesEnumerable == null || !seriesEnumerable.Any()) && (chartSeries == null || !chartSeries.Any()))
+                return null;
+
+            var seriesArray = seriesEnumerable != null && seriesEnumerable.Any() ? seriesEnumerable.ToArray() : chartSeries.ToArray();
+
             var gm = new PathGeometry();
             Directions dir;
 
-            if (seriesEnumerable.All(s => s is PlainSeries))
+            if (seriesArray.All(s => s is PlainSeries))
             {
                 if (chartStyle.In(ChartStyle.HighLowClose, ChartStyle.OpenHighLowClose))
                     return null;
                 var totalValues = chartStyle.In(ChartStyle.Waterfall)
-                    ? seriesEnumerable.First().Values.Select(v => v.Value.PlainValue)
-                    : seriesEnumerable.SelectMany(s => s.Values.Select(v => v.Value.PlainValue));
+                    ? seriesArray.First().Values.Select(v => v.Value.PlainValue)
+                    : seriesArray.SelectMany(s => s.Values.Select(v => v.Value.PlainValue));
                 dir = Utils.GetDirection(totalValues, chartStyle);
             }
-            else if (seriesEnumerable.All(s => s.IsStockSeries()))
+            else if (seriesArray.All(s => s.IsStockSeries()))
             {
                 if (!chartStyle.In(ChartStyle.HighLowClose, ChartStyle.OpenHighLowClose))
                     return null;
@@ -1613,7 +1623,7 @@ namespace ag.WPF.Chart
                 else if (chartStyle == ChartStyle.OpenHighLowClose && !(seriesArray[0] is OpenHighLowCloseSeries))
                     return null;
 
-                var totalValues = seriesEnumerable.First().Values.Select(v => (v.Value.HighValue, v.Value.LowValue));
+                var totalValues = seriesArray.First().Values.Select(v => (v.Value.HighValue, v.Value.LowValue));
                 dir = Utils.GetDirectionFinancial(totalValues, chartStyle);
             }
             else
@@ -1652,37 +1662,55 @@ namespace ag.WPF.Chart
         }
     }
 
-    /// <summary>
-    /// Defines pie legends visibility
-    /// </summary>
-    internal class LegendPieVisibilityConverter : IValueConverter
+    internal class LegendPieVisibilityConverter : IMultiValueConverter
     {
-        /// <summary>Converts a value. </summary>
-        /// <returns>A converted value. If the method returns null, the valid null value is used.</returns>
-        /// <param name="value">The value produced by the binding source.</param>
-        /// <param name="targetType">The type of the binding target property.</param>
-        /// <param name="parameter">The converter parameter to use.</param>
-        /// <param name="culture">The culture to use in the converter.</param>
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
-            if (value == null
-                || !(value is IEnumerable<ISeries> seriesEnumerable)
-                || !seriesEnumerable.Any()
-                || !seriesEnumerable.All(s => s is PlainSeries))
+            var seriesEnumerable = values[0] as IEnumerable<ISeries>;
+            var chartSeries = values[1] as IEnumerable<ISeries>;
+
+            if ((seriesEnumerable == null || !seriesEnumerable.All(s => s is PlainSeries)) && (chartSeries == null || !chartSeries.All(s => s is PlainSeries)))
                 return Visibility.Collapsed;
+
             return Visibility.Visible;
         }
-        /// <summary>Converts a value. </summary>
-        /// <returns>A converted value. If the method returns null, the valid null value is used.</returns>
-        /// <param name="value">The value that is produced by the binding target.</param>
-        /// <param name="targetType">The type to convert to.</param>
-        /// <param name="parameter">The converter parameter to use.</param>
-        /// <param name="culture">The culture to use in the converter.</param>
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+
+        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
         {
             throw new NotImplementedException();
         }
     }
+    ///// <summary>
+    ///// Defines pie legends visibility
+    ///// </summary>
+    //internal class LegendPieVisibilityConverter : IValueConverter
+    //{
+    //    /// <summary>Converts a value. </summary>
+    //    /// <returns>A converted value. If the method returns null, the valid null value is used.</returns>
+    //    /// <param name="value">The value produced by the binding source.</param>
+    //    /// <param name="targetType">The type of the binding target property.</param>
+    //    /// <param name="parameter">The converter parameter to use.</param>
+    //    /// <param name="culture">The culture to use in the converter.</param>
+    //    public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+    //    {
+    //        if (value == null
+    //            || !(value is IEnumerable<ISeries> seriesEnumerable)
+    //            || !seriesEnumerable.Any()
+    //            || !seriesEnumerable.All(s => s is PlainSeries))
+    //            return Visibility.Collapsed;
+    //        return Visibility.Visible;
+    //    }
+    //    /// <summary>Converts a value. </summary>
+    //    /// <returns>A converted value. If the method returns null, the valid null value is used.</returns>
+    //    /// <param name="value">The value that is produced by the binding target.</param>
+    //    /// <param name="targetType">The type to convert to.</param>
+    //    /// <param name="parameter">The converter parameter to use.</param>
+    //    /// <param name="culture">The culture to use in the converter.</param>
+    //    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+    //    {
+    //        throw new NotImplementedException();
+    //    }
+    //}
 
     /// <summary>
     /// Defines stock series legend visibility
@@ -1702,12 +1730,17 @@ namespace ag.WPF.Chart
                 || !chartStyle.In(ChartStyle.HighLowClose, ChartStyle.OpenHighLowClose)
                 || !(values[1] is int index)
                 || index > 0
-                || !(values[2] is IEnumerable<ISeries> seriesEnumerable)
-                || !seriesEnumerable.All(s => s.IsStockSeries())
                 || !(parameter is ColoredPaths colored))
                 return Visibility.Collapsed;
 
-            var seriesArray = seriesEnumerable.ToArray();
+            var seriesEnumerable = values[2] as IEnumerable<ISeries>;
+            var chartSeries = values[3] as IEnumerable<ISeries>;
+
+            if ((seriesEnumerable == null || !seriesEnumerable.Any()) && (chartSeries == null || !chartSeries.Any()))
+                return Visibility.Collapsed;
+
+            var seriesArray = seriesEnumerable != null && seriesEnumerable.Any() ? seriesEnumerable.ToArray() : chartSeries.ToArray();
+
             if (!seriesArray[0].Values.Any())
                 return Visibility.Collapsed;
 
@@ -1748,9 +1781,13 @@ namespace ag.WPF.Chart
                 || !(values[0] is ChartStyle chartStyle)
                 || chartStyle != ChartStyle.Waterfall
                 || !(values[1] is int index)
-                || index > 0
-                || !(values[2] is IEnumerable<ISeries> seriesEnumerable)
-                || !seriesEnumerable.All(s => s is PlainSeries))
+                || index > 0)
+                return Visibility.Collapsed;
+
+            var seriesEnumerable = values[2] as IEnumerable<ISeries>;
+            var chartSeries = values[3] as IEnumerable<ISeries>;
+
+            if ((seriesEnumerable == null || !seriesEnumerable.All(s => s is PlainSeries)) && (chartSeries == null || !chartSeries.All(s => s is PlainSeries)))
                 return Visibility.Collapsed;
 
             return Visibility.Visible;
@@ -1782,9 +1819,13 @@ namespace ag.WPF.Chart
         {
             if (values == null
                 || !(values[0] is ChartStyle chartStyle)
-                || chartStyle.In(ChartStyle.Waterfall, ChartStyle.HighLowClose, ChartStyle.OpenHighLowClose)
-                || !(values[1] is IEnumerable<ISeries> seriesEnumerable)
-                || !seriesEnumerable.All(s => s is PlainSeries))
+                || chartStyle.In(ChartStyle.Waterfall, ChartStyle.HighLowClose, ChartStyle.OpenHighLowClose))
+                return Visibility.Collapsed;
+
+            var seriesEnumerable = values[1] as IEnumerable<ISeries>;
+            var chartSeries = values[2] as IEnumerable<ISeries>;
+
+            if ((seriesEnumerable == null || !seriesEnumerable.All(s => s is PlainSeries)) && (chartSeries == null || !chartSeries.All(s => s is PlainSeries)))
                 return Visibility.Collapsed;
 
             return Visibility.Visible;
@@ -1821,8 +1862,6 @@ namespace ag.WPF.Chart
             if (values == null
                 || !(values[0] is double width)
                 || !(values[1] is double height)
-                || !(values[2] is IEnumerable<ISeries> seriesEnumerable)
-                || !seriesEnumerable.Any()
                 || !(values[3] is ChartStyle chartStyle)
                 || chartStyle.In(ChartStyle.SolidPie, ChartStyle.SlicedPie, ChartStyle.Doughnut)
                 || !(values[4] is int index)
@@ -1844,10 +1883,15 @@ namespace ag.WPF.Chart
                 || !(parameter is (int order, ColoredPaths colored)))
                 return null;
 
+            var seriesEnumerable = values[2] as IEnumerable<ISeries>;
+            var chartSeries = values[20] as IEnumerable<ISeries>;
+            if ((seriesEnumerable == null || !seriesEnumerable.Any()) && (chartSeries == null || !chartSeries.Any()))
+                return null;
+
             if (!chartStyle.In(ChartStyle.Waterfall, ChartStyle.HighLowClose, ChartStyle.OpenHighLowClose) && order > 0)
                 return null;
 
-            var seriesArray = seriesEnumerable.ToArray();
+            var seriesArray = seriesEnumerable != null && seriesEnumerable.Any() ? seriesEnumerable.ToArray() : chartSeries.ToArray();
 
             var gm = new PathGeometry();
 
@@ -1867,7 +1911,7 @@ namespace ag.WPF.Chart
                     : seriesArray.SelectMany(s => s.Values.Select(v => v.Value.PlainValue)).ToArray();
                 dir = Utils.GetDirection(totalValues, chartStyle);
             }
-            else if (seriesEnumerable.All(s => s.IsStockSeries()))
+            else if (seriesArray.All(s => s.IsStockSeries()))
             {
                 if (!chartStyle.In(ChartStyle.HighLowClose, ChartStyle.OpenHighLowClose))
                     return null;
@@ -3722,27 +3766,33 @@ namespace ag.WPF.Chart
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
             if (values == null
-                || !(values[0] is IEnumerable<ISeries> seriesEnumerable)
-                || !seriesEnumerable.Any()
-                || !(values[1] is ChartStyle chartStyle))
+                || !(values[2] is ChartStyle chartStyle))
                 return HorizontalAlignment.Right;
+
+            var seriesEnumerable = values[0] as IEnumerable<ISeries>;
+            var chartSeries = values[1] as IEnumerable<ISeries>;
+
+            if ((seriesEnumerable == null || !seriesEnumerable.Any()) && (chartSeries == null || !chartSeries.Any()))
+                return HorizontalAlignment.Right;
+
+            var seriesArray = seriesEnumerable != null && seriesEnumerable.Any() ? seriesEnumerable.ToArray() : chartSeries.ToArray();
 
             Directions dir;
 
-            if (seriesEnumerable.All(s => s is PlainSeries))
+            if (seriesArray.All(s => s is PlainSeries))
             {
                 if (chartStyle.In(ChartStyle.HighLowClose, ChartStyle.OpenHighLowClose))
                     return HorizontalAlignment.Right;
                 var totalValues = chartStyle.In(ChartStyle.Waterfall)
-                    ? seriesEnumerable.First().Values.Select(v => v.Value.PlainValue)
-                    : seriesEnumerable.SelectMany(s => s.Values.Select(v => v.Value.PlainValue));
+                    ? seriesArray.First().Values.Select(v => v.Value.PlainValue)
+                    : seriesArray.SelectMany(s => s.Values.Select(v => v.Value.PlainValue));
                 dir = Utils.GetDirection(totalValues, chartStyle);
             }
-            else if (seriesEnumerable.All(s => s.IsStockSeries()))
+            else if (seriesArray.All(s => s.IsStockSeries()))
             {
                 if (!chartStyle.In(ChartStyle.HighLowClose, ChartStyle.OpenHighLowClose))
                     return HorizontalAlignment.Right;
-                var totalValues = seriesEnumerable.First().Values.Select(v => (v.Value.HighValue, v.Value.LowValue));
+                var totalValues = seriesArray.First().Values.Select(v => (v.Value.HighValue, v.Value.LowValue));
                 dir = Utils.GetDirectionFinancial(totalValues, chartStyle);
             }
             else
@@ -3788,27 +3838,33 @@ namespace ag.WPF.Chart
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
             if (values == null
-                || !(values[0] is IEnumerable<ISeries> seriesEnumerable)
-                || !seriesEnumerable.Any()
-                || !(values[1] is ChartStyle chartStyle))
+                || !(values[2] is ChartStyle chartStyle))
                 return 2;
+
+            var seriesEnumerable = values[0] as IEnumerable<ISeries>;
+            var chartSeries = values[1] as IEnumerable<ISeries>;
+
+            if ((seriesEnumerable == null || !seriesEnumerable.Any()) && (chartSeries == null || !chartSeries.Any()))
+                return 2;
+
+            var seriesArray = seriesEnumerable != null && seriesEnumerable.Any() ? seriesEnumerable.ToArray() : chartSeries.ToArray();
 
             Directions dir;
 
-            if (seriesEnumerable.All(s => s is PlainSeries))
+            if (seriesArray.All(s => s is PlainSeries))
             {
                 if (chartStyle.In(ChartStyle.HighLowClose, ChartStyle.OpenHighLowClose))
                     return 2;
                 var totalValues = chartStyle.In(ChartStyle.Waterfall)
-                    ? seriesEnumerable.First().Values.Select(v => v.Value.PlainValue)
-                    : seriesEnumerable.SelectMany(s => s.Values.Select(v => v.Value.PlainValue));
+                    ? seriesArray.First().Values.Select(v => v.Value.PlainValue)
+                    : seriesArray.SelectMany(s => s.Values.Select(v => v.Value.PlainValue));
                 dir = Utils.GetDirection(totalValues, chartStyle);
             }
-            else if (seriesEnumerable.All(s => s.IsStockSeries()))
+            else if (seriesArray.All(s => s.IsStockSeries()))
             {
                 if (!chartStyle.In(ChartStyle.HighLowClose, ChartStyle.OpenHighLowClose))
                     return 2;
-                var totalValues = seriesEnumerable.First().Values.Select(v => (v.Value.HighValue, v.Value.LowValue));
+                var totalValues = seriesArray.First().Values.Select(v => (v.Value.HighValue, v.Value.LowValue));
                 dir = Utils.GetDirectionFinancial(totalValues, chartStyle);
             }
             else
@@ -3854,27 +3910,33 @@ namespace ag.WPF.Chart
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
             if (values == null
-                || !(values[0] is IEnumerable<ISeries> seriesEnumerable)
-                || !seriesEnumerable.Any()
-                || !(values[1] is ChartStyle chartStyle))
+                || !(values[2] is ChartStyle chartStyle))
                 return VerticalAlignment.Top;
+
+            var seriesEnumerable = values[0] as IEnumerable<ISeries>;
+            var chartSeries = values[1] as IEnumerable<ISeries>;
+
+            if ((seriesEnumerable == null || !seriesEnumerable.Any()) && (chartSeries == null || !chartSeries.Any()))
+                return VerticalAlignment.Top;
+
+            var seriesArray = seriesEnumerable != null && seriesEnumerable.Any() ? seriesEnumerable.ToArray() : chartSeries.ToArray();
 
             Directions dir;
 
-            if (seriesEnumerable.All(s => s is PlainSeries))
+            if (seriesArray.All(s => s is PlainSeries))
             {
                 if (chartStyle.In(ChartStyle.HighLowClose, ChartStyle.OpenHighLowClose))
                     return VerticalAlignment.Top;
                 var totalValues = chartStyle.In(ChartStyle.Waterfall)
-                    ? seriesEnumerable.First().Values.Select(v => v.Value.PlainValue)
-                    : seriesEnumerable.SelectMany(s => s.Values.Select(v => v.Value.PlainValue));
+                    ? seriesArray.First().Values.Select(v => v.Value.PlainValue)
+                    : seriesArray.SelectMany(s => s.Values.Select(v => v.Value.PlainValue));
                 dir = Utils.GetDirection(totalValues, chartStyle);
             }
-            else if (seriesEnumerable.All(s => s.IsStockSeries()))
+            else if (seriesArray.All(s => s.IsStockSeries()))
             {
                 if (!chartStyle.In(ChartStyle.HighLowClose, ChartStyle.OpenHighLowClose))
                     return VerticalAlignment.Top;
-                var totalValues = seriesEnumerable.First().Values.Select(v => (v.Value.HighValue, v.Value.LowValue));
+                var totalValues = seriesArray.First().Values.Select(v => (v.Value.HighValue, v.Value.LowValue));
                 dir = Utils.GetDirectionFinancial(totalValues, chartStyle);
             }
             else
@@ -3920,27 +3982,33 @@ namespace ag.WPF.Chart
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
             if (values == null
-                || !(values[0] is IEnumerable<ISeries> seriesEnumerable)
-                || !seriesEnumerable.Any()
-                || !(values[1] is ChartStyle chartStyle))
+                 || !(values[2] is ChartStyle chartStyle))
                 return 5;
+
+            var seriesEnumerable = values[0] as IEnumerable<ISeries>;
+            var chartSeries = values[1] as IEnumerable<ISeries>;
+
+            if ((seriesEnumerable == null || !seriesEnumerable.Any()) && (chartSeries == null || !chartSeries.Any()))
+                return 5;
+
+            var seriesArray = seriesEnumerable != null && seriesEnumerable.Any() ? seriesEnumerable.ToArray() : chartSeries.ToArray();
 
             Directions dir;
 
-            if (seriesEnumerable.All(s => s is PlainSeries))
+            if (seriesArray.All(s => s is PlainSeries))
             {
                 if (chartStyle.In(ChartStyle.HighLowClose, ChartStyle.OpenHighLowClose))
                     return 5;
                 var totalValues = chartStyle.In(ChartStyle.Waterfall)
-                    ? seriesEnumerable.First().Values.Select(v => v.Value.PlainValue)
-                    : seriesEnumerable.SelectMany(s => s.Values.Select(v => v.Value.PlainValue));
+                    ? seriesArray.First().Values.Select(v => v.Value.PlainValue)
+                    : seriesArray.SelectMany(s => s.Values.Select(v => v.Value.PlainValue));
                 dir = Utils.GetDirection(totalValues, chartStyle);
             }
-            else if (seriesEnumerable.All(s => s.IsStockSeries()))
+            else if (seriesArray.All(s => s.IsStockSeries()))
             {
                 if (!chartStyle.In(ChartStyle.HighLowClose, ChartStyle.OpenHighLowClose))
                     return 5;
-                var totalValues = seriesEnumerable.First().Values.Select(v => (v.Value.HighValue, v.Value.LowValue));
+                var totalValues = seriesArray.First().Values.Select(v => (v.Value.HighValue, v.Value.LowValue));
                 dir = Utils.GetDirectionFinancial(totalValues, chartStyle);
             }
             else
@@ -3986,27 +4054,33 @@ namespace ag.WPF.Chart
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
             if (values == null
-                || !(values[0] is IEnumerable<ISeries> seriesEnumerable)
-                || !seriesEnumerable.Any()
-                || !(values[1] is ChartStyle chartStyle))
+                || !(values[2] is ChartStyle chartStyle))
                 return 2;
+
+            var seriesEnumerable = values[0] as IEnumerable<ISeries>;
+            var chartSeries = values[1] as IEnumerable<ISeries>;
+
+            if ((seriesEnumerable == null || !seriesEnumerable.Any()) && (chartSeries == null || !chartSeries.Any()))
+                return 2;
+
+            var seriesArray = seriesEnumerable != null && seriesEnumerable.Any() ? seriesEnumerable.ToArray() : chartSeries.ToArray();
 
             Directions dir;
 
-            if (seriesEnumerable.All(s => s is PlainSeries))
+            if (seriesArray.All(s => s is PlainSeries))
             {
                 if (chartStyle.In(ChartStyle.HighLowClose, ChartStyle.OpenHighLowClose))
                     return 2;
                 var totalValues = chartStyle.In(ChartStyle.Waterfall)
-                    ? seriesEnumerable.First().Values.Select(v => v.Value.PlainValue)
-                    : seriesEnumerable.SelectMany(s => s.Values.Select(v => v.Value.PlainValue));
+                    ? seriesArray.First().Values.Select(v => v.Value.PlainValue)
+                    : seriesArray.SelectMany(s => s.Values.Select(v => v.Value.PlainValue));
                 dir = Utils.GetDirection(totalValues, chartStyle);
             }
-            else if (seriesEnumerable.All(s => s.IsStockSeries()))
+            else if (seriesArray.All(s => s.IsStockSeries()))
             {
                 if (!chartStyle.In(ChartStyle.HighLowClose, ChartStyle.OpenHighLowClose))
                     return 2;
-                var totalValues = seriesEnumerable.First().Values.Select(v => (v.Value.HighValue, v.Value.LowValue));
+                var totalValues = seriesArray.First().Values.Select(v => (v.Value.HighValue, v.Value.LowValue));
                 dir = Utils.GetDirectionFinancial(totalValues, chartStyle);
             }
             else
@@ -4048,27 +4122,33 @@ namespace ag.WPF.Chart
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
             if (values == null
-                || !(values[0] is IEnumerable<ISeries> seriesEnumerable)
-                || !seriesEnumerable.Any()
-                || !(values[1] is ChartStyle chartStyle))
+                || !(values[2] is ChartStyle chartStyle))
                 return 5;
+
+            var seriesEnumerable = values[0] as IEnumerable<ISeries>;
+            var chartSeries = values[1] as IEnumerable<ISeries>;
+
+            if ((seriesEnumerable == null || !seriesEnumerable.Any()) && (chartSeries == null || !chartSeries.Any()))
+                return 5;
+
+            var seriesArray = seriesEnumerable != null && seriesEnumerable.Any() ? seriesEnumerable.ToArray() : chartSeries.ToArray();
 
             Directions dir;
 
-            if (seriesEnumerable.All(s => s is PlainSeries))
+            if (seriesArray.All(s => s is PlainSeries))
             {
                 if (chartStyle.In(ChartStyle.HighLowClose, ChartStyle.OpenHighLowClose))
                     return 5;
                 var totalValues = chartStyle.In(ChartStyle.Waterfall)
-                    ? seriesEnumerable.First().Values.Select(v => v.Value.PlainValue)
-                    : seriesEnumerable.SelectMany(s => s.Values.Select(v => v.Value.PlainValue));
+                    ? seriesArray.First().Values.Select(v => v.Value.PlainValue)
+                    : seriesArray.SelectMany(s => s.Values.Select(v => v.Value.PlainValue));
                 dir = Utils.GetDirection(totalValues, chartStyle);
             }
-            else if (seriesEnumerable.All(s => s.IsStockSeries()))
+            else if (seriesArray.All(s => s.IsStockSeries()))
             {
                 if (!chartStyle.In(ChartStyle.HighLowClose, ChartStyle.OpenHighLowClose))
                     return 5;
-                var totalValues = seriesEnumerable.First().Values.Select(v => (v.Value.HighValue, v.Value.LowValue));
+                var totalValues = seriesArray.First().Values.Select(v => (v.Value.HighValue, v.Value.LowValue));
                 dir = Utils.GetDirectionFinancial(totalValues, chartStyle);
             }
             else
@@ -4111,27 +4191,33 @@ namespace ag.WPF.Chart
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
             if (values == null
-                || !(values[0] is IEnumerable<ISeries> seriesEnumerable)
-                || !seriesEnumerable.Any()
-                || !(values[1] is ChartStyle chartStyle))
+                || !(values[2] is ChartStyle chartStyle))
                 return VerticalAlignment.Bottom;
+
+            var seriesEnumerable = values[0] as IEnumerable<ISeries>;
+            var chartSeries = values[1] as IEnumerable<ISeries>;
+
+            if ((seriesEnumerable == null || !seriesEnumerable.Any()) && (chartSeries == null || !chartSeries.Any()))
+                return VerticalAlignment.Bottom;
+
+            var seriesArray = seriesEnumerable != null && seriesEnumerable.Any() ? seriesEnumerable.ToArray() : chartSeries.ToArray();
 
             Directions dir;
 
-            if (seriesEnumerable.All(s => s is PlainSeries))
+            if (seriesArray.All(s => s is PlainSeries))
             {
                 if (chartStyle.In(ChartStyle.HighLowClose, ChartStyle.OpenHighLowClose))
                     return VerticalAlignment.Bottom;
                 var totalValues = chartStyle.In(ChartStyle.Waterfall)
-                    ? seriesEnumerable.First().Values.Select(v => v.Value.PlainValue)
-                    : seriesEnumerable.SelectMany(s => s.Values.Select(v => v.Value.PlainValue));
+                    ? seriesArray.First().Values.Select(v => v.Value.PlainValue)
+                    : seriesArray.SelectMany(s => s.Values.Select(v => v.Value.PlainValue));
                 dir = Utils.GetDirection(totalValues, chartStyle);
             }
-            else if (seriesEnumerable.All(s => s.IsStockSeries()))
+            else if (seriesArray.All(s => s.IsStockSeries()))
             {
                 if (!chartStyle.In(ChartStyle.HighLowClose, ChartStyle.OpenHighLowClose))
                     return VerticalAlignment.Bottom;
-                var totalValues = seriesEnumerable.First().Values.Select(v => (v.Value.HighValue, v.Value.LowValue));
+                var totalValues = seriesArray.First().Values.Select(v => (v.Value.HighValue, v.Value.LowValue));
                 dir = Utils.GetDirectionFinancial(totalValues, chartStyle);
             }
             else
@@ -4173,27 +4259,33 @@ namespace ag.WPF.Chart
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
             if (values == null
-                || !(values[0] is IEnumerable<ISeries> seriesEnumerable)
-                || !seriesEnumerable.Any()
-                || !(values[1] is ChartStyle chartStyle))
+                || !(values[2] is ChartStyle chartStyle))
                 return HorizontalAlignment.Left;
+
+            var seriesEnumerable = values[0] as IEnumerable<ISeries>;
+            var chartSeries = values[1] as IEnumerable<ISeries>;
+
+            if ((seriesEnumerable == null || !seriesEnumerable.Any()) && (chartSeries == null || !chartSeries.Any()))
+                return HorizontalAlignment.Left;
+
+            var seriesArray = seriesEnumerable != null && seriesEnumerable.Any() ? seriesEnumerable.ToArray() : chartSeries.ToArray();
 
             Directions dir;
 
-            if (seriesEnumerable.All(s => s is PlainSeries))
+            if (seriesArray.All(s => s is PlainSeries))
             {
                 if (chartStyle.In(ChartStyle.HighLowClose, ChartStyle.OpenHighLowClose))
                     return HorizontalAlignment.Left;
                 var totalValues = chartStyle.In(ChartStyle.Waterfall)
-                    ? seriesEnumerable.First().Values.Select(v => v.Value.PlainValue)
-                    : seriesEnumerable.SelectMany(s => s.Values.Select(v => v.Value.PlainValue));
+                    ? seriesArray.First().Values.Select(v => v.Value.PlainValue)
+                    : seriesArray.SelectMany(s => s.Values.Select(v => v.Value.PlainValue));
                 dir = Utils.GetDirection(totalValues, chartStyle);
             }
-            else if (seriesEnumerable.All(s => s.IsStockSeries()))
+            else if (seriesArray.All(s => s.IsStockSeries()))
             {
                 if (!chartStyle.In(ChartStyle.HighLowClose, ChartStyle.OpenHighLowClose))
                     return HorizontalAlignment.Left;
-                var totalValues = seriesEnumerable.First().Values.Select(v => (v.Value.HighValue, v.Value.LowValue));
+                var totalValues = seriesArray.First().Values.Select(v => (v.Value.HighValue, v.Value.LowValue));
                 dir = Utils.GetDirectionFinancial(totalValues, chartStyle);
             }
             else
@@ -4333,8 +4425,6 @@ namespace ag.WPF.Chart
             var height = 8.0;
 
             if (values == null
-                || !(values[0] is IEnumerable<ISeries> seriesEnumerable)
-                || !seriesEnumerable.Any()
                 || !(values[1] is ChartStyle chartStyle)
                 || chartStyle == ChartStyle.Funnel
                 || !(values[2] is string formatX)
@@ -4349,14 +4439,21 @@ namespace ag.WPF.Chart
                 || !(values[13] is string formatY))
                 return height;
 
-            var seriesArray = seriesEnumerable.ToArray();
+            var seriesEnumerable = values[0] as IEnumerable<ISeries>;
+            var chartSeries = values[14] as IEnumerable<ISeries>;
+
+            if ((seriesEnumerable == null || !seriesEnumerable.Any()) && (chartSeries == null || !chartSeries.Any()))
+                return height;
+
+            var seriesArray = seriesEnumerable != null && seriesEnumerable.Any() ? seriesEnumerable.ToArray() : chartSeries.ToArray();
+
             var customValuesX = values[8] is IEnumerable<string> customEnumerableX ? customEnumerableX.ToArray() : new string[] { };
             var customValuesY = values[11] is IEnumerable<string> customEnumerableY ? customEnumerableY.ToArray() : new string[] { };
 
             Directions dir;
             int maxFromValues = 0, maxForBars = 0;
 
-            if (seriesEnumerable.All(s => s is PlainSeries))
+            if (seriesArray.All(s => s is PlainSeries))
             {
                 if (chartStyle.In(ChartStyle.HighLowClose, ChartStyle.OpenHighLowClose))
                     return height;
@@ -4376,7 +4473,7 @@ namespace ag.WPF.Chart
                     maxFromValues = autoAdjust.In(AutoAdjustmentMode.Both, AutoAdjustmentMode.Horizontal) ? maxV : maxX.ToString(culture).Length;
                 }
             }
-            else if (seriesEnumerable.All(s => s.IsStockSeries()))
+            else if (seriesArray.All(s => s.IsStockSeries()))
             {
                 if (!chartStyle.In(ChartStyle.HighLowClose, ChartStyle.OpenHighLowClose))
                     return height;
@@ -4461,8 +4558,6 @@ namespace ag.WPF.Chart
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
             if (values == null
-                || !(values[0] is IEnumerable<ISeries> seriesEnumerable)
-                || !seriesEnumerable.Any()
                 || !(values[1] is ChartStyle chartStyle)
                 || !(values[2] is string formatY)
                 || !(values[3] is FontFamily fontFamily)
@@ -4478,7 +4573,14 @@ namespace ag.WPF.Chart
                 return 0.0;
             var width = 28.0;
 
-            var seriesArray = seriesEnumerable.ToArray();
+            var seriesEnumerable = values[0] as IEnumerable<ISeries>;
+            var chartSeries = values[15] as IEnumerable<ISeries>;
+
+            if ((seriesEnumerable == null || !seriesEnumerable.Any()) && (chartSeries == null || !chartSeries.Any()))
+                return 0.0;
+
+            var seriesArray = seriesEnumerable != null && seriesEnumerable.Any() ? seriesEnumerable.ToArray() : chartSeries.ToArray();
+
             var customValuesY = values[8] is IEnumerable<string> customEnumerableY ? customEnumerableY.ToArray() : new string[] { };
             var customValuesX = values[13] is IEnumerable<string> customEnumerableX ? customEnumerableX.ToArray() : new string[] { };
 
@@ -4488,7 +4590,7 @@ namespace ag.WPF.Chart
             Directions dir;
             int maxForBars = 0;
 
-            if (seriesEnumerable.All(s => s is PlainSeries))
+            if (seriesArray.All(s => s is PlainSeries))
             {
                 if (chartStyle.In(ChartStyle.HighLowClose, ChartStyle.OpenHighLowClose))
                     return 0.0;
@@ -4503,7 +4605,7 @@ namespace ag.WPF.Chart
                         : linesCountY;
                 }
             }
-            else if (seriesEnumerable.All(s => s.IsStockSeries()))
+            else if (seriesArray.All(s => s.IsStockSeries()))
             {
                 if (!chartStyle.In(ChartStyle.HighLowClose, ChartStyle.OpenHighLowClose))
                     return 0.0;
@@ -4659,19 +4761,23 @@ namespace ag.WPF.Chart
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
             if (values == null
-                || !(values[2] is ChartStyle chartStyle)
-                || !(values[1] is IEnumerable<ISeries> seriesEnumerable)
-                || !seriesEnumerable.Any())
+                || !(values[2] is ChartStyle chartStyle))
                 return null;
 
-            var seriesArray = seriesEnumerable.ToArray();
+            var seriesEnumerable = values[1] as IEnumerable<ISeries>;
+            var chartSeries = values[16] as IEnumerable<ISeries>;
 
-            if (seriesEnumerable.All(s => s is PlainSeries))
+            if ((seriesEnumerable == null || !seriesEnumerable.Any()) && (chartSeries == null || !chartSeries.Any()))
+                return 0.0;
+
+            var seriesArray = seriesEnumerable != null && seriesEnumerable.Any() ? seriesEnumerable.ToArray() : chartSeries.ToArray();
+
+            if (seriesArray.All(s => s is PlainSeries))
             {
                 if (chartStyle.In(ChartStyle.HighLowClose, ChartStyle.OpenHighLowClose))
                     return null;
             }
-            else if (seriesEnumerable.All(s => s.IsStockSeries()))
+            else if (seriesArray.All(s => s.IsStockSeries()))
             {
                 if (!chartStyle.In(ChartStyle.HighLowClose, ChartStyle.OpenHighLowClose))
                     return null;
@@ -4699,7 +4805,6 @@ namespace ag.WPF.Chart
         {
             if (values == null
                 || !(values[0] is double height)
-                || !(values[1] is IEnumerable<ISeries> seriesEnumerable)
                 || !(values[5] is FontFamily fontFamily)
                 || !(values[6] is double fontSize)
                 || !(values[7] is FontStyle fontStyle)
@@ -4710,9 +4815,15 @@ namespace ag.WPF.Chart
 
             var gm = new PathGeometry();
 
-            var series = seriesEnumerable.ToArray();
+            var seriesEnumerable = values[1] as IEnumerable<ISeries>;
+            var chartSeries = values[16] as IEnumerable<ISeries>;
 
-            var ticks = series[0].Values.Count;
+            if ((seriesEnumerable == null || !seriesEnumerable.Any()) && (chartSeries == null || !chartSeries.Any()))
+                return null;
+
+            var seriesArray = seriesEnumerable != null && seriesEnumerable.Any() ? seriesEnumerable.ToArray() : chartSeries.ToArray();
+
+            var ticks = seriesArray[0].Values.Count;
 
             height -= Utils.AXIS_THICKNESS;
 
@@ -4753,7 +4864,6 @@ namespace ag.WPF.Chart
         {
             if (values == null
                 || !(values[0] is double height)
-                || !(values[1] is IEnumerable<ISeries> seriesEnumerable)
                 || !(values[2] is ChartStyle chartStyle)
                 || !(values[3] is int linesCount)
                 || !(values[15] is string formatX)
@@ -4766,7 +4876,13 @@ namespace ag.WPF.Chart
                 || !(values[14] is FlowDirection flowDir))
                 return null;
 
-            var series = seriesEnumerable.ToArray();
+            var seriesEnumerable = values[1] as IEnumerable<ISeries>;
+            var chartSeries = values[16] as IEnumerable<ISeries>;
+
+            if ((seriesEnumerable == null || !seriesEnumerable.Any()) && (chartSeries == null || !chartSeries.Any()))
+                return null;
+
+            var seriesArray = seriesEnumerable != null && seriesEnumerable.Any() ? seriesEnumerable.ToArray() : chartSeries.ToArray();
 
             var customValuesX = values[10] is IEnumerable<string> customEnumerableX ? customEnumerableX.ToArray() : new string[] { };
 
@@ -4774,11 +4890,11 @@ namespace ag.WPF.Chart
 
             height -= Utils.AXIS_THICKNESS;
 
-            var rawValues = Utils.GetPaddedSeries(series);
+            var rawValues = Utils.GetPaddedSeries(seriesArray);
 
             var ticks = rawValues.Max(rw => rw.Values.Count);
 
-            var totalValues = series.SelectMany(s => s.Values.Select(v => v.Value.PlainValue));
+            var totalValues = seriesArray.SelectMany(s => s.Values.Select(v => v.Value.PlainValue));
 
             var dir = Utils.GetDirection(totalValues, chartStyle);
 
@@ -4838,7 +4954,6 @@ namespace ag.WPF.Chart
         {
             if (values == null
                 || !(values[0] is double height)
-                || !(values[1] is IEnumerable<ISeries> seriesEnumerable)
                 || !(values[2] is ChartStyle chartStyle)
                 || !(values[3] is int linesCountY)
                 || !(values[4] is string formatY)
@@ -4854,7 +4969,14 @@ namespace ag.WPF.Chart
 
             var gm = new PathGeometry();
 
-            var seriesArray = seriesEnumerable.ToArray();
+            var seriesEnumerable = values[1] as IEnumerable<ISeries>;
+            var chartSeries = values[16] as IEnumerable<ISeries>;
+
+            if ((seriesEnumerable == null || !seriesEnumerable.Any()) && (chartSeries == null || !chartSeries.Any()))
+                return null;
+
+            var seriesArray = seriesEnumerable != null && seriesEnumerable.Any() ? seriesEnumerable.ToArray() : chartSeries.ToArray();
+
             var customValuesY = values[11] is IEnumerable<string> customEnumerableY ? customEnumerableY.ToArray() : new string[] { };
             var drawBetween = chartStyle.In(ChartStyle.Bars, ChartStyle.StackedBars, ChartStyle.FullStackedBars);
 
@@ -4862,14 +4984,14 @@ namespace ag.WPF.Chart
 
             Directions dir;
 
-            if (seriesEnumerable.All(s => s is PlainSeries))
+            if (seriesArray.All(s => s is PlainSeries))
             {
                 var totalValues = chartStyle != ChartStyle.Waterfall
                     ? seriesArray.SelectMany(s => s.Values.Select(v => v.Value.PlainValue))
                     : seriesArray[0].Values.Select(v => v.Value.PlainValue);
                 dir = Utils.GetDirection(totalValues, chartStyle);
             }
-            else if (seriesEnumerable.All(s => s.IsStockSeries()))
+            else if (seriesArray.All(s => s.IsStockSeries()))
             {
                 var totalValues = seriesArray[0].Values.Select(v => (v.Value.HighValue, v.Value.LowValue));
                 dir = Utils.GetDirectionFinancial(totalValues, chartStyle);
@@ -5056,8 +5178,6 @@ namespace ag.WPF.Chart
         {
             if (values == null
                 || !(values[0] is double width)
-                || !(values[1] is IEnumerable<ISeries> seriesEnumerable)
-                || !seriesEnumerable.Any()
                 || !(values[2] is ChartStyle chartStyle)
                 || chartStyle == ChartStyle.Funnel
                 || !(values[3] is int linesCount)
@@ -5077,7 +5197,14 @@ namespace ag.WPF.Chart
             if (chartStyle.In(ChartStyle.SlicedPie, ChartStyle.SolidPie, ChartStyle.Doughnut, ChartStyle.Radar, ChartStyle.RadarWithMarkers, ChartStyle.RadarArea))
                 return null;
 
-            var seriesArray = seriesEnumerable.ToArray();
+            var seriesEnumerable = values[1] as IEnumerable<ISeries>;
+            var chartSeries = values[17] as IEnumerable<ISeries>;
+
+            if ((seriesEnumerable == null || !seriesEnumerable.Any()) && (chartSeries == null || !chartSeries.Any()))
+                return null;
+
+            var seriesArray = seriesEnumerable != null && seriesEnumerable.Any() ? seriesEnumerable.ToArray() : chartSeries.ToArray();
+
             var drawBetween = Utils.StyleColumns(chartStyle);
             var customValuesX = values[10] is IEnumerable<string> customEnumerableX ? customEnumerableX.ToArray() : new string[] { };
             var customValuesY = values[15] is IEnumerable<string> customEnumerableY ? customEnumerableY.ToArray() : new string[] { };
@@ -5089,7 +5216,7 @@ namespace ag.WPF.Chart
             Directions dir;
             int ticks;
 
-            if (seriesEnumerable.All(s => s is PlainSeries))
+            if (seriesArray.All(s => s is PlainSeries))
             {
                 if (chartStyle.In(ChartStyle.HighLowClose, ChartStyle.OpenHighLowClose))
                     return null;
@@ -5102,7 +5229,7 @@ namespace ag.WPF.Chart
                     : new List<(List<IChartValue> Values, int Index)> { (seriesArray[0].Values.ToList(), seriesArray[0].Index) };
                 ticks = rawValues.Max(rw => rw.Values.Count);
             }
-            else if (seriesEnumerable.All(s => s.IsStockSeries()))
+            else if (seriesArray.All(s => s.IsStockSeries()))
             {
                 if (!chartStyle.In(ChartStyle.HighLowClose, ChartStyle.OpenHighLowClose))
                     return null;
@@ -5466,8 +5593,6 @@ namespace ag.WPF.Chart
                 || !(values[1] is double height)
                 || !(values[2] is int linesCountX)
                 || !(values[3] is int linesCountY)
-                || !(values[4] is IEnumerable<ISeries> seriesEnumerable)
-                || !seriesEnumerable.Any()
                 || !(values[5] is ChartStyle chartStyle)
                 || !(values[6] is ChartBoundary chartBoundary)
                 || !(values[7] is FontFamily fontFamily)
@@ -5489,22 +5614,29 @@ namespace ag.WPF.Chart
 
             double xStep, yStep;
 
-            var seriesArray = seriesEnumerable.ToArray();
+            var seriesEnumerable = values[4] as IEnumerable<ISeries>;
+            var chartSeries = values[17] as IEnumerable<ISeries>;
+
+            if ((seriesEnumerable == null || !seriesEnumerable.Any()) && (chartSeries == null || !chartSeries.Any()))
+                return null;
+
+            var seriesArray = seriesEnumerable != null && seriesEnumerable.Any() ? seriesEnumerable.ToArray() : chartSeries.ToArray();
+
             var offsetBoundary = Utils.OffsetBoundary(chartBoundary, chartStyle);
             Directions dir;
             int ticks;
 
-            if (seriesEnumerable.All(s => s is PlainSeries))
+            if (seriesArray.All(s => s is PlainSeries))
             {
                 if (chartStyle.In(ChartStyle.HighLowClose, ChartStyle.OpenHighLowClose))
                     return null;
                 var totalValues = chartStyle.In(ChartStyle.Waterfall)
                     ? seriesArray[0].Values.Select(v => v.Value.PlainValue)
-                    : seriesEnumerable.SelectMany(s => s.Values.Select(v => v.Value.PlainValue));
+                    : seriesArray.SelectMany(s => s.Values.Select(v => v.Value.PlainValue));
                 dir = Utils.GetDirection(totalValues, chartStyle);
                 ticks = seriesArray.Select(s => s.Values.Count).Max();
             }
-            else if (seriesEnumerable.All(s => s.IsStockSeries()))
+            else if (seriesArray.All(s => s.IsStockSeries()))
             {
                 if (!chartStyle.In(ChartStyle.HighLowClose, ChartStyle.OpenHighLowClose))
                     return null;
@@ -5896,8 +6028,6 @@ namespace ag.WPF.Chart
             if (values == null
                 || !(values[0] is double width)
                 || !(values[1] is double height)
-                || !(values[2] is IEnumerable<ISeries> seriesEnumerable)
-                || !seriesEnumerable.Any()
                 || !(values[3] is ChartStyle chartStyle)
                 || chartStyle == ChartStyle.Funnel
                 || !(values[4] is int linesCount)
@@ -5914,23 +6044,30 @@ namespace ag.WPF.Chart
             if (chartStyle.In(ChartStyle.Area, ChartStyle.StackedArea, ChartStyle.SmoothStackedArea, ChartStyle.FullStackedArea, ChartStyle.SmoothFullStackedArea, ChartStyle.SmoothArea))
                 return null;
 
-            var seriesArray = seriesEnumerable.ToArray();
+            var seriesEnumerable = values[2] as IEnumerable<ISeries>;
+            var chartSeries = values[13] as IEnumerable<ISeries>;
+
+            if ((seriesEnumerable == null || !seriesEnumerable.Any()) && (chartSeries == null || !chartSeries.Any()))
+                return null;
+
+            var seriesArray = seriesEnumerable != null && seriesEnumerable.Any() ? seriesEnumerable.ToArray() : chartSeries.ToArray();
+
             var offsetBoundary = Utils.OffsetBoundary(chartBoundary, chartStyle);
 
             Directions dir;
             int ticks;
 
-            if (seriesEnumerable.All(s => s is PlainSeries))
+            if (seriesArray.All(s => s is PlainSeries))
             {
                 if (chartStyle.In(ChartStyle.HighLowClose, ChartStyle.OpenHighLowClose))
                     return null;
                 var totalValues = chartStyle.In(ChartStyle.Waterfall)
-                    ? seriesEnumerable.First().Values.Select(v => v.Value.PlainValue)
-                    : seriesEnumerable.SelectMany(s => s.Values.Select(v => v.Value.PlainValue));
+                    ? seriesArray.First().Values.Select(v => v.Value.PlainValue)
+                    : seriesArray.SelectMany(s => s.Values.Select(v => v.Value.PlainValue));
                 dir = Utils.GetDirection(totalValues, chartStyle);
                 ticks = seriesArray.Select(s => s.Values.Count).Max();
             }
-            else if (seriesEnumerable.All(s => s.IsStockSeries()))
+            else if (seriesArray.All(s => s.IsStockSeries()))
             {
                 if (!chartStyle.In(ChartStyle.HighLowClose, ChartStyle.OpenHighLowClose))
                     return null;
@@ -6173,8 +6310,6 @@ namespace ag.WPF.Chart
             if (values == null
                 || !(values[0] is double width)
                 || !(values[1] is double height)
-                || !(values[2] is IEnumerable<ISeries> seriesEnumerable)
-                || !seriesEnumerable.Any()
                 || !(values[3] is ChartStyle chartStyle)
                 || chartStyle == ChartStyle.Funnel
                 || !(values[4] is int linesCount)
@@ -6187,11 +6322,18 @@ namespace ag.WPF.Chart
                 || !(values[11] is double maxY))
                 return null;
 
-            var seriesArray = seriesEnumerable.ToArray();
+            var seriesEnumerable = values[2] as IEnumerable<ISeries>;
+            var chartSeries = values[12] as IEnumerable<ISeries>;
+
+            if ((seriesEnumerable == null || !seriesEnumerable.Any()) && (chartSeries == null || !chartSeries.Any()))
+                return null;
+
+            var seriesArray = seriesEnumerable != null && seriesEnumerable.Any() ? seriesEnumerable.ToArray() : chartSeries.ToArray();
+
 
             Directions dir;
 
-            if (seriesEnumerable.All(s => s is PlainSeries))
+            if (seriesArray.All(s => s is PlainSeries))
             {
                 if (chartStyle.In(ChartStyle.HighLowClose, ChartStyle.OpenHighLowClose))
                     return null;
@@ -6200,7 +6342,7 @@ namespace ag.WPF.Chart
                    : seriesArray[0].Values.Select(v => v.Value.PlainValue);
                 dir = Utils.GetDirection(totalValues, chartStyle);
             }
-            else if (seriesEnumerable.All(s => s.IsStockSeries()))
+            else if (seriesArray.All(s => s.IsStockSeries()))
             {
                 if (!chartStyle.In(ChartStyle.HighLowClose, ChartStyle.OpenHighLowClose))
                     return null;
@@ -6444,8 +6586,6 @@ namespace ag.WPF.Chart
             if (values == null
                 || !(values[0] is double width)
                 || !(values[1] is double height)
-                || !(values[2] is IEnumerable<ISeries> seriesEnumerable)
-                || !seriesEnumerable.Any()
                 || !(values[3] is ChartStyle chartStyle)
                 || !Utils.StyleRadar(chartStyle)
                 || !(values[4] is FontFamily fontFamily)
@@ -6459,14 +6599,18 @@ namespace ag.WPF.Chart
 
             var gm = new PathGeometry();
 
-            if (!seriesEnumerable.All(s => s is PlainSeries))
+            var seriesEnumerable = values[2] as IEnumerable<ISeries>;
+            var chartSeries = values[12] as IEnumerable<ISeries>;
+
+            if ((seriesEnumerable == null || !seriesEnumerable.Any()) && (chartSeries == null || !chartSeries.Any()))
                 return null;
+
+            var seriesArray = seriesEnumerable != null && seriesEnumerable.Any() ? seriesEnumerable.ToArray() : chartSeries.ToArray();
 
             var customValues = values[9] is IEnumerable<string> customEnumerable ? customEnumerable.ToArray() : new string[] { };
 
-            var series = seriesEnumerable.ToArray();
             var currentDegrees = 0.0;
-            var pointsCount = series.Max(s => s.Values.Count);
+            var pointsCount = seriesArray.Max(s => s.Values.Count);
             var degreesStep = 360.0 / pointsCount;
 
             var maxCv = customValues.Any() ? customValues.Max(v => (v, v.Length)) : (v: "", Length: 0);
@@ -6485,7 +6629,7 @@ namespace ag.WPF.Chart
 
             var fmtY = new FormattedText("AAA", culture, FlowDirection.LeftToRight,
                     new Typeface(fontFamily, fontStyle, fontWeight, fontStretch), fontSize, Brushes.Black, VisualTreeHelper.GetDpi(Utils.Border).PixelsPerDip);
-            var (max, min, realLinesCount, stepSize, _, _, _) = Utils.GetMeasures(chartStyle, series, linesCount, radius, fmtY.Height, centerPoint);
+            var (max, min, realLinesCount, stepSize, _, _, _) = Utils.GetMeasures(chartStyle, seriesArray, linesCount, radius, fmtY.Height, centerPoint);
             linesCount = realLinesCount;
 
             var distanceStep = radius / linesCount;
@@ -6541,8 +6685,6 @@ namespace ag.WPF.Chart
             if (values == null
                 || !(values[0] is double width)
                 || !(values[1] is double height)
-                || !(values[2] is IEnumerable<ISeries> seriesEnumerable)
-                || !seriesEnumerable.Any()
                 || !(values[3] is ChartStyle chartStyle)
                 || !Utils.StyleRadar(chartStyle)
                 || !(values[4] is FontFamily fontFamily)
@@ -6557,17 +6699,23 @@ namespace ag.WPF.Chart
                 || !(values[14] is AutoAdjustmentMode autoAdjust))
                 return null;
 
-            var gm = new PathGeometry();
-            if (!seriesEnumerable.All(s => s is PlainSeries))
+            var seriesEnumerable = values[2] as IEnumerable<ISeries>;
+            var chartSeries = values[15] as IEnumerable<ISeries>;
+
+            if ((seriesEnumerable == null || !seriesEnumerable.Any()) && (chartSeries == null || !chartSeries.Any()))
                 return null;
 
-            var series = seriesEnumerable.ToArray();
+            var seriesArray = seriesEnumerable != null && seriesEnumerable.Any() ? seriesEnumerable.ToArray() : chartSeries.ToArray();
+
+            var gm = new PathGeometry();
+            if (!seriesArray.All(s => s is PlainSeries))
+                return null;
 
             var customValuesHorizontal = values[10] is IEnumerable<string> customEnumerableX ? customEnumerableX.ToArray() : new string[] { };
             var customValuesVertical = values[11] is IEnumerable<string> customEnumerableY ? customEnumerableY.ToArray() : new string[] { };
 
             var currentDegrees = 0.0;
-            var pointsCount = series.Max(s => s.Values.Count);
+            var pointsCount = seriesArray.Max(s => s.Values.Count);
             var degreesStep = 360.0 / pointsCount;
 
             var maxCv = customValuesHorizontal.Any() ? customValuesHorizontal.Max(v => (v, v.Length)) : (v: "", Length: 0);
@@ -6647,7 +6795,7 @@ namespace ag.WPF.Chart
             // draw y-axis values
             var fmtY = new FormattedText("AAA", culture, FlowDirection.LeftToRight,
                     new Typeface(fontFamily, fontStyle, fontWeight, fontStretch), fontSize, Brushes.Black, VisualTreeHelper.GetDpi(Utils.Border).PixelsPerDip);
-            var (max, min, realLinesCount, stepSize, _, _, _) = Utils.GetMeasures(chartStyle, series, linesCount, radius, fmtY.Height, centerPoint);
+            var (max, min, realLinesCount, stepSize, _, _, _) = Utils.GetMeasures(chartStyle, seriesArray, linesCount, radius, fmtY.Height, centerPoint);
             linesCount = realLinesCount;
 
             // fractional stepSize
@@ -6715,27 +6863,33 @@ namespace ag.WPF.Chart
             if (values == null
                 || !(values[0] is double width)
                 || !(values[1] is double height)
-                || !(values[2] is IEnumerable<ISeries> seriesEnumerable)
-                || !seriesEnumerable.Any()
                 || !(values[3] is Brush backgroundBrush)
                 || !(values[4] is ChartStyle chartStyle)
                 || !chartStyle.In(ChartStyle.SlicedPie, ChartStyle.SolidPie, ChartStyle.Doughnut)
                 || !(values[5] is string format))
                 return null;
 
-            if (seriesEnumerable.All(s => s is PlainSeries))
+            var seriesEnumerable = values[2] as IEnumerable<ISeries>;
+            var chartSeries = values[6] as IEnumerable<ISeries>;
+
+            if ((seriesEnumerable == null || !seriesEnumerable.Any()) && (chartSeries == null || !chartSeries.Any()))
+                return null;
+
+            var seriesArray = seriesEnumerable != null && seriesEnumerable.Any() ? seriesEnumerable.ToArray() : chartSeries.ToArray();
+
+            if (seriesArray.All(s => s is PlainSeries))
             {
                 if (chartStyle.In(ChartStyle.HighLowClose, ChartStyle.OpenHighLowClose))
                     return null;
             }
-            else if (seriesEnumerable.All(s => s.IsStockSeries()))
+            else if (seriesArray.All(s => s.IsStockSeries()))
             {
                 return null;
             }
 
             var brushIndex = 0;
             var radius = width > height ? (height - 2 * Utils.AXIS_THICKNESS) / 2 : (width - 2 * Utils.AXIS_THICKNESS) / 2;
-            var series = seriesEnumerable.First();
+            var series = seriesArray.First();
             var pts = series.Values.ToArray();
             var sum = pts.Sum(p => Math.Abs(p.Value.PlainValue));
             var currentDegrees = 90.0;

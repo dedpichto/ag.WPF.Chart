@@ -30,7 +30,7 @@
     <chart:AxesYLinesConverter x:Key="AxesYLinesConverter"/>
     <chart:LegendPieVisibilityConverter x:Key="LegendPieVisibilityConverter"/>
     <chart:StarDrawingConverter x:Key="StarDrawingConverter"/>
-    
+
     <Style TargetType="{x:Type chart:Chart}">
         <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.WindowTextBrushKey}}"/>
         <Setter Property="Background" Value="{DynamicResource {x:Static SystemColors.WindowBrushKey}}"/>
@@ -84,12 +84,14 @@
                                 <Grid.Row>
                                     <MultiBinding Converter="{StaticResource AxisYGridRowConverter}">
                                         <Binding Path="SeriesSource" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                        <Binding Path="Series" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                         <Binding Path="ChartStyle" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                     </MultiBinding>
                                 </Grid.Row>
                                 <TextBlock.HorizontalAlignment>
                                     <MultiBinding Converter="{StaticResource AxisYTextAlignmentConverter}">
                                         <Binding Path="SeriesSource" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                        <Binding Path="Series" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                         <Binding Path="ChartStyle" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                     </MultiBinding>
                                 </TextBlock.HorizontalAlignment>
@@ -103,12 +105,14 @@
                                 <Grid.Column>
                                     <MultiBinding Converter="{StaticResource AxisXGridColumnConverter}">
                                         <Binding Path="SeriesSource" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                        <Binding Path="Series" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                         <Binding Path="ChartStyle" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                     </MultiBinding>
                                 </Grid.Column>
                                 <TextBlock.VerticalAlignment>
                                     <MultiBinding Converter="{StaticResource AxisXTextAlignmentConverter}">
                                         <Binding Path="SeriesSource" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                        <Binding Path="Series" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                         <Binding Path="ChartStyle" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                     </MultiBinding>
                                 </TextBlock.VerticalAlignment>
@@ -120,8 +124,8 @@
                                 <Grid.Column>
                                     <MultiBinding Converter="{StaticResource VerticalValuesColumnConverter}">
                                         <Binding Path="SeriesSource" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                        <Binding Path="Series" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                         <Binding Path="ChartStyle" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
-
                                     </MultiBinding>
                                 </Grid.Column>
                                 <Border.Width>
@@ -141,6 +145,7 @@
                                         <Binding Path="SectionsY" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                         <Binding Path="CustomValuesX" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                         <Binding Path="HorizontalAxisValuesFormat" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                        <Binding Path="Series" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                     </MultiBinding>
                                 </Border.Width>
                             </Border>
@@ -148,15 +153,15 @@
                                 <Grid.Column>
                                     <MultiBinding Converter="{StaticResource VerticalValuesColumnConverter}">
                                         <Binding Path="SeriesSource" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                        <Binding Path="Series" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                         <Binding Path="ChartStyle" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
-
                                     </MultiBinding>
                                 </Grid.Column>
                                 <Path.HorizontalAlignment>
                                     <MultiBinding Converter="{StaticResource VerticalValuesAlignmentConverter}">
                                         <Binding Path="SeriesSource" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                        <Binding Path="Series" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                         <Binding Path="ChartStyle" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
-
                                     </MultiBinding>
                                 </Path.HorizontalAlignment>
                                 <Path.Data>
@@ -177,6 +182,7 @@
                                         <Binding Path="MaxY" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                         <Binding Path="FlowDirection" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                         <Binding Path="HorizontalAxisValuesFormat" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                        <Binding Path="Series" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                     </MultiBinding>
                                 </Path.Data>
                             </Path>
@@ -184,8 +190,8 @@
                                 <Grid.Row>
                                     <MultiBinding Converter="{StaticResource HorizontalValuesRowConverter}">
                                         <Binding Path="SeriesSource" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                        <Binding Path="Series" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                         <Binding Path="ChartStyle" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
-
                                     </MultiBinding>
                                 </Grid.Row>
                                 <Border.Height>
@@ -204,6 +210,7 @@
                                         <Binding Path="CustomValuesY" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                         <Binding Path="SectionsY" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                         <Binding Path="ValuesFormatY" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                        <Binding Path="Series" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                     </MultiBinding>
                                 </Border.Height>
                             </Border>
@@ -211,15 +218,15 @@
                                 <Grid.Row>
                                     <MultiBinding Converter="{StaticResource HorizontalValuesRowConverter}">
                                         <Binding Path="SeriesSource" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                        <Binding Path="Series" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                         <Binding Path="ChartStyle" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
-
                                     </MultiBinding>
                                 </Grid.Row>
                                 <Path.VerticalAlignment>
                                     <MultiBinding Converter="{StaticResource HorizontalValuesAlignmentConverter}">
                                         <Binding Path="SeriesSource" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                        <Binding Path="Series" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                         <Binding Path="ChartStyle" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
-
                                     </MultiBinding>
                                 </Path.VerticalAlignment>
                                 <Path.Data>
@@ -241,6 +248,7 @@
                                         <Binding Path="ChartBoundary" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                         <Binding Path="CustomValuesY" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                         <Binding Path="ValuesFormatY" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                        <Binding Path="Series" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                     </MultiBinding>
                                 </Path.Data>
                             </Path>
@@ -275,6 +283,7 @@
                                                     <Binding Path="Background" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                                     <Binding Path="ChartStyle" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                                     <Binding Path="PiePercentsFormat" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                                    <Binding Path="Series" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                                 </MultiBinding>
                                             </DrawingImage.Drawing>
                                         </DrawingImage>
@@ -299,7 +308,7 @@
                                                 <Binding Path="SectionsY" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                                 <Binding Path="ValuesFormatY" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                                 <Binding Path="AutoAdjustment" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
-
+                                                <Binding Path="Series" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                             </MultiBinding>
                                         </Path.Data>
                                     </Path>
@@ -318,7 +327,7 @@
                                                 <Binding Path="CustomValuesX" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                                 <Binding Path="SectionsY" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                                 <Binding Path="AutoAdjustment" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
-
+                                                <Binding Path="Series" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                             </MultiBinding>
                                         </Path.Data>
                                     </Path>
@@ -328,6 +337,7 @@
                                                 <Binding ElementName="PART_Canvas" Path="ActualWidth"/>
                                                 <Binding ElementName="PART_Canvas" Path="ActualHeight"/>
                                                 <Binding Path="SeriesSource" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                                <Binding Path="Series" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                                 <Binding Path="ChartStyle" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                             </MultiBinding>
                                         </Path.Data>
@@ -338,6 +348,7 @@
                                                 <Binding ElementName="PART_Canvas" Path="ActualWidth"/>
                                                 <Binding ElementName="PART_Canvas" Path="ActualHeight"/>
                                                 <Binding Path="SeriesSource" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                                <Binding Path="Series" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                                 <Binding Path="ChartStyle" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                             </MultiBinding>
                                         </Path.Data>
@@ -362,6 +373,7 @@
                                                 <Binding Path="MaxY" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                                 <Binding Path="AxesLinesVisibility" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                                 <Binding Path="ShowTicks" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                                <Binding Path="Series" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                             </MultiBinding>
                                         </Path.Data>
                                     </Path>
@@ -380,6 +392,7 @@
                                                 <Binding Path="AxesFontStretch" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                                 <Binding Path="AutoAdjustment" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                                 <Binding Path="MaxY" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                                <Binding Path="Series" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                             </MultiBinding>
                                         </Path.Data>
                                     </Path>
@@ -399,6 +412,7 @@
                                                 <Binding Path="AxesFontStretch" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                                 <Binding Path="AutoAdjustment" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                                 <Binding Path="MaxX" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                                <Binding Path="Series" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
                                             </MultiBinding>
                                         </Path.Data>
                                     </Path>
@@ -630,21 +644,42 @@
                                 <Condition Property="ShowLegend" Value="true"/>
                                 <Condition Property="ChartStyle" Value="SolidPie"/>
                             </MultiTrigger.Conditions>
-                            <Setter Property="Visibility" TargetName="PieLegendField" Value="{Binding SeriesSource, RelativeSource={RelativeSource Mode=TemplatedParent}, Converter={StaticResource LegendPieVisibilityConverter}}"/>
+                            <Setter Property="Visibility" TargetName="PieLegendField">
+                                <Setter.Value>
+                                    <MultiBinding Converter="{StaticResource LegendPieVisibilityConverter}">
+                                        <Binding Path="SeriesSource" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                        <Binding Path="Series" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                    </MultiBinding>
+                                </Setter.Value>
+                            </Setter>
                         </MultiTrigger>
                         <MultiTrigger>
                             <MultiTrigger.Conditions>
                                 <Condition Property="ShowLegend" Value="true"/>
                                 <Condition Property="ChartStyle" Value="SlicedPie"/>
                             </MultiTrigger.Conditions>
-                            <Setter Property="Visibility" TargetName="PieLegendField" Value="{Binding SeriesSource, RelativeSource={RelativeSource Mode=TemplatedParent}, Converter={StaticResource LegendPieVisibilityConverter}}"/>
+                            <Setter Property="Visibility" TargetName="PieLegendField">
+                                <Setter.Value>
+                                    <MultiBinding Converter="{StaticResource LegendPieVisibilityConverter}">
+                                        <Binding Path="SeriesSource" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                        <Binding Path="Series" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                    </MultiBinding>
+                                </Setter.Value>
+                            </Setter>
                         </MultiTrigger>
                         <MultiTrigger>
                             <MultiTrigger.Conditions>
                                 <Condition Property="ShowLegend" Value="true"/>
                                 <Condition Property="ChartStyle" Value="Doughnut"/>
                             </MultiTrigger.Conditions>
-                            <Setter Property="Visibility" TargetName="PieLegendField" Value="{Binding SeriesSource, RelativeSource={RelativeSource Mode=TemplatedParent}, Converter={StaticResource LegendPieVisibilityConverter}}"/>
+                            <Setter Property="Visibility" TargetName="PieLegendField">
+                                <Setter.Value>
+                                    <MultiBinding Converter="{StaticResource LegendPieVisibilityConverter}">
+                                        <Binding Path="SeriesSource" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                        <Binding Path="Series" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                    </MultiBinding>
+                                </Setter.Value>
+                            </Setter>
                         </MultiTrigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>

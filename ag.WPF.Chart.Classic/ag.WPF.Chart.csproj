@@ -56,6 +56,7 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ChartItemsCollection.cs" />
     <Compile Include="Series\HighLowCloseSeries.cs" />
     <Compile Include="Series\ISeries.cs" />
     <Compile Include="Series\OpenHighLowCloseSeries.cs" />

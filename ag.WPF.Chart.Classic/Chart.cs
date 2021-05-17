@@ -375,6 +375,8 @@ namespace ag.WPF.Chart
             (new SolidColorBrush(Color.FromArgb(255, 91, 155, 213)),0)
         };
 
+        private ChartItemsCollection<ISeries> _series;
+
         #region Constants
         private const string ElementCanvas = "PART_Canvas";
         private const string ElementPieImage = "PART_PieImage";
@@ -759,6 +761,10 @@ namespace ag.WPF.Chart
                         {
                             Source = this
                         });
+                        legendVisibilityBinding.Bindings.Add(new Binding(nameof(Series))
+                        {
+                            Source = this
+                        });
                         legendVisibilityBinding.NotifyOnSourceUpdated = true;
                         legend.SetBinding(VisibilityProperty, legendVisibilityBinding);
 
@@ -784,6 +790,10 @@ namespace ag.WPF.Chart
                         {
                             Source = this
                         });
+                        legendVisibilityBinding.Bindings.Add(new Binding(nameof(Series))
+                        {
+                            Source = this
+                        });
                         legend.SetBinding(VisibilityProperty, legendVisibilityBinding);
 
                         legend.SetBinding(Legend.TextProperty, new Binding("LegendsWaterfall[0]") { Source = this });
@@ -805,6 +815,10 @@ namespace ag.WPF.Chart
                             Source = series
                         });
                         legendVisibilityBinding.Bindings.Add(new Binding(nameof(SeriesSource))
+                        {
+                            Source = this
+                        });
+                        legendVisibilityBinding.Bindings.Add(new Binding(nameof(Series))
                         {
                             Source = this
                         });
@@ -861,6 +875,10 @@ namespace ag.WPF.Chart
                             {
                                 Source = this
                             });
+                            legendVisibilityBinding.Bindings.Add(new Binding(nameof(Series))
+                            {
+                                Source = this
+                            });
                             legendVisibilityBinding.ConverterParameter = ColoredPaths.Up;
                             legendVisibilityBinding.NotifyOnSourceUpdated = true;
                             legend.SetBinding(VisibilityProperty, legendVisibilityBinding);
@@ -885,6 +903,10 @@ namespace ag.WPF.Chart
                                 Source = series
                             });
                             legendVisibilityBinding.Bindings.Add(new Binding(nameof(SeriesSource))
+                            {
+                                Source = this
+                            });
+                            legendVisibilityBinding.Bindings.Add(new Binding(nameof(Series))
                             {
                                 Source = this
                             });
@@ -1289,6 +1311,10 @@ namespace ag.WPF.Chart
             {
                 Source = this
             });
+            ptsBinding.Bindings.Add(new Binding(nameof(Series))
+            {
+                Source = this
+            });
             ptsBinding.ConverterParameter = parameter;
             ptsBinding.NotifyOnSourceUpdated = true;
             path.SetBinding(Path.DataProperty, ptsBinding);
@@ -1475,13 +1501,54 @@ namespace ag.WPF.Chart
             set { SetValue(LegendsWaterfallProperty, value); }
         }
         /// <summary>
-        /// Gets or sets the collection of <see cref="Series"/> objects associated with chart control.
+        /// Gets or sets the collection of <see cref="WPF.Chart.Series"/> objects associated with chart control.
         /// </summary>
         [Category("ChartAppearance"), Description("Gets or sets the collection of Series objects associated with chart control")]
         public IEnumerable<ISeries> SeriesSource
         {
-            get { return (IEnumerable<ISeries>)GetValue(SeriesSourceProperty); }
+            get
+            {
+                var b = BindingOperations.GetBinding(this, SeriesSourceProperty);
+                if (b != null)
+                    return (IEnumerable<ISeries>)GetValue(SeriesSourceProperty);
+                else
+                    return Series;
+            }
             set { SetValue(SeriesSourceProperty, value); }
+        }
+        /// <summary>
+        /// Gets the collection of <see cref="ISeries"/> objects used to generate the content of the <see cref="Chart"/> control.
+        /// </summary>
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Content)]
+        [EditorBrowsable(EditorBrowsableState.Never), Bindable(false)]
+        public ChartItemsCollection<ISeries> Series
+        {
+            get
+            {
+                var b = BindingOperations.GetBinding(this, SeriesSourceProperty);
+                if (b == null)
+                {
+                    if (_series == null)
+                    {
+                        _series = new ChartItemsCollection<ISeries>();
+                        _series.CollectionChanged += SeriesSource_CollectionChanged;
+                    }
+                }
+                else
+                {
+                    if (SeriesSource != null)
+                        _series = new ChartItemsCollection<ISeries>(SeriesSource);
+                    else
+                    {
+                        if (_series == null)
+                        {
+                            _series = new ChartItemsCollection<ISeries>();
+                            _series.CollectionChanged += SeriesSource_CollectionChanged;
+                        }
+                    }
+                }
+                return _series;
+            }
         }
         /// <summary>
         /// Specifies whether chart boundary is started on y-axes or with offfset from y-axes./>.
@@ -1876,7 +1943,6 @@ namespace ag.WPF.Chart
         /// </summary>
         [EditorBrowsable(EditorBrowsableState.Never), Browsable(false)]
         public ObservableCollection<FrameworkElement> PieLegendsCollection => _pieLegendsCollection;
-
         #endregion
 
         #region Public methods

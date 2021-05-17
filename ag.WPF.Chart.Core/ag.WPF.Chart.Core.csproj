@@ -16,6 +16,7 @@
 
   <ItemGroup>
     <Compile Include="..\ag.WPF.Chart.Classic\Chart.cs" Link="Chart.cs" />
+    <Compile Include="..\ag.WPF.Chart.Classic\ChartItemsCollection.cs" Link="ChartItemsCollection.cs" />
     <Compile Include="..\ag.WPF.Chart.Classic\Converters.cs" Link="Converters.cs" />
     <Compile Include="..\ag.WPF.Chart.Classic\Legend.cs" Link="Legend.cs" />
     <Compile Include="..\ag.WPF.Chart.Classic\Series\HighLowCloseSeries.cs" Link="Series\HighLowCloseSeries.cs" />
