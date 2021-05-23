@@ -1101,9 +1101,9 @@ namespace ag.WPF.Chart
             var maxIsZero = false;
 
             var values = seriesArray.All(s => s is PlainSeries)
-                ? seriesArray.SelectMany(s => s.Values.Select(v => v.Value.PlainValue))
+                ? seriesArray.SelectMany(s => s.Values.Select(v => v.CompositeValue.PlainValue))
                 : seriesArray.All(s => !(s is PlainSeries))
-                    ? seriesArray[0].Values.Select(v => v.Value.HighValue).Union(seriesArray[0].Values.Select(v => v.Value.LowValue))
+                    ? seriesArray[0].Values.Select(v => v.CompositeValue.HighValue).Union(seriesArray[0].Values.Select(v => v.CompositeValue.LowValue))
                     : new double[] { 0, 0 };
             max = values.Max();
             min = values.Min();
@@ -1142,12 +1142,12 @@ namespace ag.WPF.Chart
                         var temps = tempValues.Where(rw => rw.Index < index);
                         for (var i = 0; i < resultValues[index].Items.Count; i++)
                         {
-                            var sign = Math.Sign(resultValues[index].Items[i].Value.PlainValue);
-                            var v = (decimal)resultValues[index].Items[i].Value.PlainValue + temps.Where(t => Math.Sign((decimal)t.Items[i].Value.PlainValue) == sign).Sum(t => (decimal)t.Items[i].Value.PlainValue);
+                            var sign = Math.Sign(resultValues[index].Items[i].CompositeValue.PlainValue);
+                            var v = (decimal)resultValues[index].Items[i].CompositeValue.PlainValue + temps.Where(t => Math.Sign((decimal)t.Items[i].CompositeValue.PlainValue) == sign).Sum(t => (decimal)t.Items[i].CompositeValue.PlainValue);
                             resultValues[index].Items[i] = new PlainChartValue((double)v);
                         }
                     }
-                    values = resultValues.SelectMany(a => a.Items).Select(it => it.Value.PlainValue);
+                    values = resultValues.SelectMany(a => a.Items).Select(it => it.CompositeValue.PlainValue);
                     max = values.Max();
                     min = values.Min();
                     if (values.All(v => v >= 0))
@@ -1162,7 +1162,7 @@ namespace ag.WPF.Chart
             }
             else if (chartStyle == ChartStyle.Waterfall)
             {
-                values = seriesArray[0].Values.Select(v => v.Value.PlainValue);
+                values = seriesArray[0].Values.Select(v => v.CompositeValue.PlainValue);
                 (max, min) = getMaxMinForWaterfall(values.ToArray());
                 if (max >= 0 && min >= 0)
                 {
@@ -1322,14 +1322,14 @@ namespace ag.WPF.Chart
         {
             if (!tuples.Any()) return 0;
             var result = "100.0".Length;
-            var values = tuples.SelectMany(t => t.Values).Select(v => v.Value.PlainValue);
+            var values = tuples.SelectMany(t => t.Values).Select(v => v.CompositeValue.PlainValue);
             switch (style)
             {
                 case ChartStyle.Waterfall:
                     var maxPlus = 0.0;
                     var maxMinus = 0.0;
                     var value = 0.0;
-                    values = tuples[0].Values.Select(v => v.Value.PlainValue);
+                    values = tuples[0].Values.Select(v => v.CompositeValue.PlainValue);
                     foreach (var v in values)
                     {
                         value += v;
@@ -1360,10 +1360,10 @@ namespace ag.WPF.Chart
                         {
                             for (var i = 0; i < s.Values.Count; i++)
                             {
-                                if (s.Values[i].Value.PlainValue < 0)
-                                    minusArr[i] += s.Values[i].Value.PlainValue;
+                                if (s.Values[i].CompositeValue.PlainValue < 0)
+                                    minusArr[i] += s.Values[i].CompositeValue.PlainValue;
                                 else
-                                    plusArr[i] += s.Values[i].Value.PlainValue;
+                                    plusArr[i] += s.Values[i].CompositeValue.PlainValue;
                             }
                         }
                         result = getMaxValueLength(plusArr.Max(), minusArr.Min(), getMaxFractionPower(values));
@@ -1382,9 +1382,9 @@ namespace ag.WPF.Chart
                         {
                             for (var i = 0; i < s.Values.Count; i++)
                             {
-                                arr1[i] += s.Values[i].Value.PlainValue;
-                                if (Math.Abs(arr2[i]) < Math.Abs(s.Values[i].Value.PlainValue))
-                                    arr2[i] = Math.Abs(s.Values[i].Value.PlainValue);
+                                arr1[i] += s.Values[i].CompositeValue.PlainValue;
+                                if (Math.Abs(arr2[i]) < Math.Abs(s.Values[i].CompositeValue.PlainValue))
+                                    arr2[i] = Math.Abs(s.Values[i].CompositeValue.PlainValue);
                             }
                         }
                         result = getMaxValueLength(arr2.Max(), arr1.Min(), getMaxFractionPower(values));
@@ -1397,7 +1397,7 @@ namespace ag.WPF.Chart
         internal static int GetMaxValueLengthFinancial(List<(List<IChartValue> Values, int Index)> tuples, ChartStyle style)
         {
             if (!tuples.Any()) return 0;
-            var values = tuples.SelectMany(t => t.Values).Select(v => v.Value.HighValue).Union(tuples.SelectMany(t => t.Values).Select(v => v.Value.LowValue));
+            var values = tuples.SelectMany(t => t.Values).Select(v => v.CompositeValue.HighValue).Union(tuples.SelectMany(t => t.Values).Select(v => v.CompositeValue.LowValue));
             return getMaxValueLength(values.Max(), values.Min(), getMaxFractionPower(values));
         }
 
@@ -1518,8 +1518,8 @@ namespace ag.WPF.Chart
                 if (chartStyle.In(ChartStyle.HighLowClose, ChartStyle.OpenHighLowClose))
                     return null;
                 var totalValues = chartStyle.In(ChartStyle.Waterfall)
-                    ? seriesArray.First().Values.Select(v => v.Value.PlainValue)
-                    : seriesArray.SelectMany(s => s.Values.Select(v => v.Value.PlainValue));
+                    ? seriesArray.First().Values.Select(v => v.CompositeValue.PlainValue)
+                    : seriesArray.SelectMany(s => s.Values.Select(v => v.CompositeValue.PlainValue));
                 dir = Utils.GetDirection(totalValues, chartStyle);
             }
             else if (seriesArray.All(s => s.IsStockSeries()))
@@ -1533,7 +1533,7 @@ namespace ag.WPF.Chart
                 else if (chartStyle == ChartStyle.OpenHighLowClose && !(seriesArray[0] is OpenHighLowCloseSeries))
                     return null;
 
-                var totalValues = seriesArray.First().Values.Select(v => (v.Value.HighValue, v.Value.LowValue));
+                var totalValues = seriesArray.First().Values.Select(v => (v.CompositeValue.HighValue, v.CompositeValue.LowValue));
                 dir = Utils.GetDirectionFinancial(totalValues, chartStyle);
             }
             else
@@ -1607,8 +1607,8 @@ namespace ag.WPF.Chart
                 if (chartStyle.In(ChartStyle.HighLowClose, ChartStyle.OpenHighLowClose))
                     return null;
                 var totalValues = chartStyle.In(ChartStyle.Waterfall)
-                    ? seriesArray.First().Values.Select(v => v.Value.PlainValue)
-                    : seriesArray.SelectMany(s => s.Values.Select(v => v.Value.PlainValue));
+                    ? seriesArray.First().Values.Select(v => v.CompositeValue.PlainValue)
+                    : seriesArray.SelectMany(s => s.Values.Select(v => v.CompositeValue.PlainValue));
                 dir = Utils.GetDirection(totalValues, chartStyle);
             }
             else if (seriesArray.All(s => s.IsStockSeries()))
@@ -1623,7 +1623,7 @@ namespace ag.WPF.Chart
                 else if (chartStyle == ChartStyle.OpenHighLowClose && !(seriesArray[0] is OpenHighLowCloseSeries))
                     return null;
 
-                var totalValues = seriesArray.First().Values.Select(v => (v.Value.HighValue, v.Value.LowValue));
+                var totalValues = seriesArray.First().Values.Select(v => (v.CompositeValue.HighValue, v.CompositeValue.LowValue));
                 dir = Utils.GetDirectionFinancial(totalValues, chartStyle);
             }
             else
@@ -1907,8 +1907,8 @@ namespace ag.WPF.Chart
                     return null;
                 rawValues = Utils.GetPaddedSeries(seriesArray);
                 var totalValues = chartStyle.In(ChartStyle.Waterfall)
-                    ? seriesArray[0].Values.Select(v => v.Value.PlainValue).ToArray()
-                    : seriesArray.SelectMany(s => s.Values.Select(v => v.Value.PlainValue)).ToArray();
+                    ? seriesArray[0].Values.Select(v => v.CompositeValue.PlainValue).ToArray()
+                    : seriesArray.SelectMany(s => s.Values.Select(v => v.CompositeValue.PlainValue)).ToArray();
                 dir = Utils.GetDirection(totalValues, chartStyle);
             }
             else if (seriesArray.All(s => s.IsStockSeries()))
@@ -1926,7 +1926,7 @@ namespace ag.WPF.Chart
                     return null;
                 }
                 rawValues = Utils.GetPaddedSeriesFinancial(seriesArray[0]);
-                var totalValues = seriesArray[0].Values.Select(v => (v.Value.HighValue, v.Value.LowValue));
+                var totalValues = seriesArray[0].Values.Select(v => (v.CompositeValue.HighValue, v.CompositeValue.LowValue));
                 dir = Utils.GetDirectionFinancial(totalValues, chartStyle);
             }
             else
@@ -2121,42 +2121,42 @@ namespace ag.WPF.Chart
                 {
                     case ColoredPaths.Stock:
                         {
-                            var y1 = centerY - currentSeries.Values[i].Value.HighValue * units;
-                            var y2 = currentSeries.Values[i].Value.CloseValue > currentSeries.Values[i].Value.OpenValue
-                                ? centerY - currentSeries.Values[i].Value.CloseValue * units
-                                : centerY - currentSeries.Values[i].Value.OpenValue * units;
+                            var y1 = centerY - currentSeries.Values[i].CompositeValue.HighValue * units;
+                            var y2 = currentSeries.Values[i].CompositeValue.CloseValue > currentSeries.Values[i].CompositeValue.OpenValue
+                                ? centerY - currentSeries.Values[i].CompositeValue.CloseValue * units
+                                : centerY - currentSeries.Values[i].CompositeValue.OpenValue * units;
                             var line = new LineGeometry(new Point(x, y1), new Point(x, y2));
                             gm.AddGeometry(line);
 
-                            y1 = currentSeries.Values[i].Value.CloseValue > currentSeries.Values[i].Value.OpenValue
-                                ? centerY - currentSeries.Values[i].Value.OpenValue * units
-                                : centerY - currentSeries.Values[i].Value.CloseValue * units;
-                            y2 = centerY - currentSeries.Values[i].Value.LowValue * units;
+                            y1 = currentSeries.Values[i].CompositeValue.CloseValue > currentSeries.Values[i].CompositeValue.OpenValue
+                                ? centerY - currentSeries.Values[i].CompositeValue.OpenValue * units
+                                : centerY - currentSeries.Values[i].CompositeValue.CloseValue * units;
+                            y2 = centerY - currentSeries.Values[i].CompositeValue.LowValue * units;
                             line = new LineGeometry(new Point(x, y1), new Point(x, y2));
                             gm.AddGeometry(line);
 
-                            y1 = centerY - currentSeries.Values[i].Value.CloseValue * units;
-                            y2 = centerY - currentSeries.Values[i].Value.OpenValue * units;
+                            y1 = centerY - currentSeries.Values[i].CompositeValue.CloseValue * units;
+                            y2 = centerY - currentSeries.Values[i].CompositeValue.OpenValue * units;
                             var rect = new Rect(new Point(x - addition, y1), new Point(x + addition, y2));
                             currentSeries.RealRects.Add(rect);
                             break;
                         }
                     case ColoredPaths.Up:
                         {
-                            if (currentSeries.Values[i].Value.CloseValue <= currentSeries.Values[i].Value.OpenValue)
+                            if (currentSeries.Values[i].CompositeValue.CloseValue <= currentSeries.Values[i].CompositeValue.OpenValue)
                                 break;
-                            var y1 = centerY - currentSeries.Values[i].Value.CloseValue * units;
-                            var y2 = centerY - currentSeries.Values[i].Value.OpenValue * units;
+                            var y1 = centerY - currentSeries.Values[i].CompositeValue.CloseValue * units;
+                            var y2 = centerY - currentSeries.Values[i].CompositeValue.OpenValue * units;
                             var rect = new Rect(new Point(x - addition, y1), new Point(x + addition, y2));
                             gm.AddGeometry(new RectangleGeometry(rect));
                             break;
                         }
                     case ColoredPaths.Down:
                         {
-                            if (currentSeries.Values[i].Value.OpenValue <= currentSeries.Values[i].Value.CloseValue)
+                            if (currentSeries.Values[i].CompositeValue.OpenValue <= currentSeries.Values[i].CompositeValue.CloseValue)
                                 break;
-                            var y1 = centerY - currentSeries.Values[i].Value.OpenValue * units;
-                            var y2 = centerY - currentSeries.Values[i].Value.CloseValue * units;
+                            var y1 = centerY - currentSeries.Values[i].CompositeValue.OpenValue * units;
+                            var y2 = centerY - currentSeries.Values[i].CompositeValue.CloseValue * units;
                             var rect = new Rect(new Point(x - addition, y1), new Point(x + addition, y2));
                             gm.AddGeometry(new RectangleGeometry(rect));
                             break;
@@ -2209,9 +2209,9 @@ namespace ag.WPF.Chart
                 {
                     case ColoredPaths.Stock:
                         {
-                            var y1 = centerY - currentSeries.Values[i].Value.HighValue * units;// + 2 * Utils.RECT_SIZE;
-                            var y2 = centerY - currentSeries.Values[i].Value.LowValue * units;// - 2 * Utils.RECT_SIZE;
-                            var y3 = centerY - currentSeries.Values[i].Value.CloseValue * units;
+                            var y1 = centerY - currentSeries.Values[i].CompositeValue.HighValue * units;// + 2 * Utils.RECT_SIZE;
+                            var y2 = centerY - currentSeries.Values[i].CompositeValue.LowValue * units;// - 2 * Utils.RECT_SIZE;
+                            var y3 = centerY - currentSeries.Values[i].CompositeValue.CloseValue * units;
                             var line = new LineGeometry(new Point(x, y1), new Point(x, y2));
                             gm.AddGeometry(line);
                             line = new LineGeometry(new Point(x - Utils.COLUMN_BAR_OFFSET / 2, y3), new Point(x + Utils.COLUMN_BAR_OFFSET / 2, y3));
@@ -2221,14 +2221,14 @@ namespace ag.WPF.Chart
                         }
                     case ColoredPaths.Up:
                         {
-                            var y1 = centerY - currentSeries.Values[i].Value.HighValue * units;
+                            var y1 = centerY - currentSeries.Values[i].CompositeValue.HighValue * units;
                             var line = new LineGeometry(new Point(x, y1), new Point(x + Utils.COLUMN_BAR_OFFSET / 2, y1));
                             gm.AddGeometry(line);
                             break;
                         }
                     case ColoredPaths.Down:
                         {
-                            var y1 = centerY - currentSeries.Values[i].Value.LowValue * units;
+                            var y1 = centerY - currentSeries.Values[i].CompositeValue.LowValue * units;
                             var line = new LineGeometry(new Point(x - Utils.COLUMN_BAR_OFFSET / 2, y1), new Point(x, y1));
                             gm.AddGeometry(line);
                             break;
@@ -2278,12 +2278,12 @@ namespace ag.WPF.Chart
             for (var i = 0; i < currentSeries.Values.Count; i++)
             {
                 //var drawValue = false;
-                var value = currentSeries.Values[i].Value.PlainValue;
+                var value = currentSeries.Values[i].CompositeValue.PlainValue;
                 var x = i * segSize + segSize / 16;
                 Rect rect;
                 if (value >= 0)
                 {
-                    rect = new Rect(new Point(x, y), new Point(x + columnWidth, y - currentSeries.Values[i].Value.PlainValue * stepLength));
+                    rect = new Rect(new Point(x, y), new Point(x + columnWidth, y - currentSeries.Values[i].CompositeValue.PlainValue * stepLength));
                     y -= rect.Height;
                     if (colored == ColoredPaths.Up)
                     {
@@ -2297,7 +2297,7 @@ namespace ag.WPF.Chart
                 }
                 else
                 {
-                    rect = new Rect(new Point(x, y), new Point(x + columnWidth, y + Math.Abs(currentSeries.Values[i].Value.PlainValue) * stepLength));
+                    rect = new Rect(new Point(x, y), new Point(x + columnWidth, y + Math.Abs(currentSeries.Values[i].CompositeValue.PlainValue) * stepLength));
                     y += rect.Height;
                     if (colored == ColoredPaths.Down)
                     {
@@ -2316,7 +2316,7 @@ namespace ag.WPF.Chart
                 //if (!drawValue) continue;
                 if (currentSeries.Values.Count <= i) continue;
                 if (!showValues) continue;
-                var number = !string.IsNullOrEmpty(currentSeries.Values[i].CustomValue) ? currentSeries.Values[i].CustomValue : currentSeries.Values[i].Value.PlainValue.ToString(culture);
+                var number = !string.IsNullOrEmpty(currentSeries.Values[i].CustomValue) ? currentSeries.Values[i].CustomValue : currentSeries.Values[i].CompositeValue.PlainValue.ToString(culture);
                 var fmt = new FormattedText(number, culture, FlowDirection.LeftToRight,
                     new Typeface(fontFamily, fontStyle, fontWeight, fontStretch), fontSize, Brushes.Black, VisualTreeHelper.GetDpi(Utils.Border).PixelsPerDip);
                 if (fmt.Width > rect.Width || fmt.Height > rect.Height) continue;
@@ -2334,7 +2334,7 @@ namespace ag.WPF.Chart
            FontFamily fontFamily, FontStyle fontStyle, FontWeight fontWeight, FontStretch fontStretch, double fontSize,
            CultureInfo culture, FlowDirection flowDirection)
         {
-            if (currentSeries.Values.All(v => v.Value.PlainValue <= 0))
+            if (currentSeries.Values.All(v => v.CompositeValue.PlainValue <= 0))
                 return null;
             const double FUNNEL_OFFSET = 2.0;
             var cgm = new CombinedGeometry { GeometryCombineMode = GeometryCombineMode.Exclude };
@@ -2343,16 +2343,16 @@ namespace ag.WPF.Chart
             var drawingWidth = width - Utils.AXIS_THICKNESS - COLUMN_BAR_OFFSET * 2;
             heigth -= Utils.AXIS_THICKNESS;
 
-            var maxWidth = currentSeries.Values.Where(v => v.Value.PlainValue > 0).Max(v => v.Value.PlainValue);
+            var maxWidth = currentSeries.Values.Where(v => v.CompositeValue.PlainValue > 0).Max(v => v.CompositeValue.PlainValue);
             var units = maxWidth != 0 ? drawingWidth / maxWidth : 0;
 
             var barHeight = heigth / currentSeries.Values.Count - FUNNEL_OFFSET * 2;
             currentSeries.RealRects.Clear();
             for (int i = 0, j = 1; i < currentSeries.Values.Count; i++, j += 2)
             {
-                if (currentSeries.Values[i].Value.PlainValue <= 0)
+                if (currentSeries.Values[i].CompositeValue.PlainValue <= 0)
                     continue;
-                var rectWidth = currentSeries.Values[i].Value.PlainValue * units;
+                var rectWidth = currentSeries.Values[i].CompositeValue.PlainValue * units;
                 var x = COLUMN_BAR_OFFSET + (width - rectWidth) / 2;
                 var y = j * FUNNEL_OFFSET + i * barHeight;
                 var rect = new Rect(x, y, rectWidth, barHeight);
@@ -2362,8 +2362,8 @@ namespace ag.WPF.Chart
                 // add values
                 if (!showValues) continue;
                 var number = !string.IsNullOrEmpty(currentSeries.Values[i].CustomValue)
-                    ? $"{currentSeries.Values[i].Value.PlainValue.ToString(culture)} {currentSeries.Values[i].CustomValue}"
-                    : currentSeries.Values[i].Value.PlainValue.ToString(culture);
+                    ? $"{currentSeries.Values[i].CompositeValue.PlainValue.ToString(culture)} {currentSeries.Values[i].CustomValue}"
+                    : currentSeries.Values[i].CompositeValue.PlainValue.ToString(culture);
                 var fmt = new FormattedText(number, culture, FlowDirection.LeftToRight,
                     new Typeface(fontFamily, fontStyle, fontWeight, fontStretch), fontSize, Brushes.Black, VisualTreeHelper.GetDpi(Utils.Border).PixelsPerDip);
                 if (fmt.Width > rectWidth || fmt.Height > barHeight) continue;
@@ -2455,13 +2455,13 @@ namespace ag.WPF.Chart
             for (var i = 0; i < currentSeries.Values.Count; i++)
             {
                 var y = heigth - (i * segSize + COLUMN_BAR_OFFSET + index * barHeight);
-                var rect = new Rect(new Point(startX, y), new Point(startX + currentSeries.Values[i].Value.PlainValue * units, y - barHeight));
+                var rect = new Rect(new Point(startX, y), new Point(startX + currentSeries.Values[i].CompositeValue.PlainValue * units, y - barHeight));
                 var rg = new RectangleGeometry(rect);
                 currentSeries.RealRects.Add(rect);
                 gm.AddGeometry(rg);
                 // add values
                 if (!showValues) continue;
-                var number = !string.IsNullOrEmpty(currentSeries.Values[i].CustomValue) ? currentSeries.Values[i].CustomValue : currentSeries.Values[i].Value.PlainValue.ToString(culture);
+                var number = !string.IsNullOrEmpty(currentSeries.Values[i].CustomValue) ? currentSeries.Values[i].CustomValue : currentSeries.Values[i].CompositeValue.PlainValue.ToString(culture);
                 var fmt = new FormattedText(number, culture, FlowDirection.LeftToRight,
                     new Typeface(fontFamily, fontStyle, fontWeight, fontStretch), fontSize, Brushes.Black, VisualTreeHelper.GetDpi(Utils.Border).PixelsPerDip);
                 if (fmt.Width > rect.Width || fmt.Height > rect.Height) continue;
@@ -2522,18 +2522,18 @@ namespace ag.WPF.Chart
                 {
                     var i1 = i;
                     var prevsTuples =
-                        tuples.Where(t => t.Index < index && Math.Sign(t.Values[i1].Value.PlainValue) == Math.Sign(values[i1].Value.PlainValue));
-                    x += prevsTuples.Sum(sr => sr.Values[i].Value.PlainValue * units);
+                        tuples.Where(t => t.Index < index && Math.Sign(t.Values[i1].CompositeValue.PlainValue) == Math.Sign(values[i1].CompositeValue.PlainValue));
+                    x += prevsTuples.Sum(sr => sr.Values[i].CompositeValue.PlainValue * units);
                 }
                 var y = height - (i * segSize + COLUMN_BAR_OFFSET);
-                var rect = new Rect(new Point(x, y), new Point(x + values[i].Value.PlainValue * units, y - barHeight));
+                var rect = new Rect(new Point(x, y), new Point(x + values[i].CompositeValue.PlainValue * units, y - barHeight));
                 var rg = new RectangleGeometry(rect);
                 currentSeries.RealRects.Add(rect);
                 gm.AddGeometry(rg);
                 // add values
                 if (currentSeries.Values.Count <= i) continue;
                 if (!showValues) continue;
-                var number = !string.IsNullOrEmpty(currentSeries.Values[i].CustomValue) ? currentSeries.Values[i].CustomValue : currentSeries.Values[i].Value.PlainValue.ToString(culture);
+                var number = !string.IsNullOrEmpty(currentSeries.Values[i].CustomValue) ? currentSeries.Values[i].CustomValue : currentSeries.Values[i].CompositeValue.PlainValue.ToString(culture);
                 var fmt = new FormattedText(number, culture, FlowDirection.LeftToRight,
                     new Typeface(fontFamily, fontStyle, fontWeight, fontStretch), fontSize, Brushes.Black, VisualTreeHelper.GetDpi(Utils.Border).PixelsPerDip);
                 if (fmt.Width > rect.Width || fmt.Height > rect.Height) continue;
@@ -2594,16 +2594,16 @@ namespace ag.WPF.Chart
             currentSeries.RealRects.Clear();
             for (var i = 0; i < values.Count; i++)
             {
-                var sign = Math.Sign(values[i].Value.PlainValue);
+                var sign = Math.Sign(values[i].CompositeValue.PlainValue);
                 var y = height - (i * segSize + COLUMN_BAR_OFFSET);
                 var i1 = i;
-                var sum = tuples.Sum(sr => Math.Abs(sr.Values[i1].Value.PlainValue));
-                var percent = Math.Abs(values[i].Value.PlainValue) / (sum != 0 ? sum : 1) * 100;
+                var sum = tuples.Sum(sr => Math.Abs(sr.Values[i1].CompositeValue.PlainValue));
+                var percent = Math.Abs(values[i].CompositeValue.PlainValue) / (sum != 0 ? sum : 1) * 100;
                 var segWidth = sign * stepX / 100 * percent;
 
                 var prevs = tuples.Where(s => s.Index < index)
-                    .Where(s => Math.Sign(s.Values[i1].Value.PlainValue) == sign);
-                var prevSum = prevs.Sum(pvs => Math.Abs(pvs.Values[i1].Value.PlainValue));
+                    .Where(s => Math.Sign(s.Values[i1].CompositeValue.PlainValue) == sign);
+                var prevSum = prevs.Sum(pvs => Math.Abs(pvs.Values[i1].CompositeValue.PlainValue));
                 var prevPerc = prevSum / (sum != 0 ? sum : 1) * 100;
                 var prevWidth = stepX / 100 * prevPerc;
                 var x = startX + sign * prevWidth;
@@ -2614,7 +2614,7 @@ namespace ag.WPF.Chart
                 // add values
                 if (currentSeries.Values.Count <= i) continue;
                 if (!showValues) continue;
-                var number = !string.IsNullOrEmpty(currentSeries.Values[i].CustomValue) ? currentSeries.Values[i].CustomValue : currentSeries.Values[i].Value.PlainValue.ToString(culture);
+                var number = !string.IsNullOrEmpty(currentSeries.Values[i].CustomValue) ? currentSeries.Values[i].CustomValue : currentSeries.Values[i].CompositeValue.PlainValue.ToString(culture);
                 var fmt = new FormattedText(number, culture, FlowDirection.LeftToRight,
                     new Typeface(fontFamily, fontStyle, fontWeight, fontStretch), fontSize, Brushes.Black, VisualTreeHelper.GetDpi(Utils.Border).PixelsPerDip);
                 if (fmt.Width > rect.Width || fmt.Height > rect.Height) continue;
@@ -2676,15 +2676,15 @@ namespace ag.WPF.Chart
             currentSeries.RealRects.Clear();
             for (var i = 0; i < values.Count; i++)
             {
-                var sign = Math.Sign(values[i].Value.PlainValue);
+                var sign = Math.Sign(values[i].CompositeValue.PlainValue);
                 var x = i * segSize + COLUMN_BAR_OFFSET;
                 var i1 = i;
-                var sum = tuples.Sum(sr => Math.Abs(sr.Values[i1].Value.PlainValue));
-                var percent = Math.Abs(values[i].Value.PlainValue) / (sum != 0 ? sum : 1) * 100;
+                var sum = tuples.Sum(sr => Math.Abs(sr.Values[i1].CompositeValue.PlainValue));
+                var percent = Math.Abs(values[i].CompositeValue.PlainValue) / (sum != 0 ? sum : 1) * 100;
                 var segHeight = sign * stepY / 100 * percent;
                 var prevs = tuples.Where(s => s.Index < index)
-                    .Where(s => Math.Sign(s.Values[i1].Value.PlainValue) == sign);
-                var prevSum = prevs.Sum(pvs => Math.Abs(pvs.Values[i1].Value.PlainValue));
+                    .Where(s => Math.Sign(s.Values[i1].CompositeValue.PlainValue) == sign);
+                var prevSum = prevs.Sum(pvs => Math.Abs(pvs.Values[i1].CompositeValue.PlainValue));
                 var prevPerc = prevSum / (sum != 0 ? sum : 1) * 100;
                 var prevHeight = stepY / 100 * prevPerc;
                 var y = startY - sign * prevHeight;
@@ -2695,7 +2695,7 @@ namespace ag.WPF.Chart
                 // add values
                 if (currentSeries.Values.Count <= i) continue;
                 if (!showValues) continue;
-                var number = !string.IsNullOrEmpty(currentSeries.Values[i].CustomValue) ? currentSeries.Values[i].CustomValue : currentSeries.Values[i].Value.PlainValue.ToString(culture);
+                var number = !string.IsNullOrEmpty(currentSeries.Values[i].CustomValue) ? currentSeries.Values[i].CustomValue : currentSeries.Values[i].CompositeValue.PlainValue.ToString(culture);
                 var fmt = new FormattedText(number, culture, FlowDirection.LeftToRight,
                     new Typeface(fontFamily, fontStyle, fontWeight, fontStretch), fontSize, Brushes.Black, VisualTreeHelper.GetDpi(Utils.Border).PixelsPerDip);
                 if (fmt.Width > rect.Width || fmt.Height > rect.Height) continue;
@@ -2759,17 +2759,17 @@ namespace ag.WPF.Chart
                     var i1 = i;
                     var prevs =
                         tuples.Where(
-                            s => s.Index < index && Math.Sign(s.Values[i1].Value.PlainValue) == Math.Sign(values[i1].Value.PlainValue));
-                    y -= prevs.Sum(sr => sr.Values[i].Value.PlainValue * units);
+                            s => s.Index < index && Math.Sign(s.Values[i1].CompositeValue.PlainValue) == Math.Sign(values[i1].CompositeValue.PlainValue));
+                    y -= prevs.Sum(sr => sr.Values[i].CompositeValue.PlainValue * units);
                 }
-                var rect = new Rect(new Point(x, y), new Point(x + columnWidth, y - values[i].Value.PlainValue * units));
+                var rect = new Rect(new Point(x, y), new Point(x + columnWidth, y - values[i].CompositeValue.PlainValue * units));
                 var rg = new RectangleGeometry(rect);
                 currentSeries.RealRects.Add(rect);
                 gm.AddGeometry(rg);
                 // add values
                 if (currentSeries.Values.Count <= i) continue;
                 if (!showValues) continue;
-                var number = !string.IsNullOrEmpty(currentSeries.Values[i].CustomValue) ? currentSeries.Values[i].CustomValue : currentSeries.Values[i].Value.PlainValue.ToString(culture);
+                var number = !string.IsNullOrEmpty(currentSeries.Values[i].CustomValue) ? currentSeries.Values[i].CustomValue : currentSeries.Values[i].CompositeValue.PlainValue.ToString(culture);
                 var fmt = new FormattedText(number, culture, FlowDirection.LeftToRight,
                     new Typeface(fontFamily, fontStyle, fontWeight, fontStretch), fontSize, Brushes.Black, VisualTreeHelper.GetDpi(Utils.Border).PixelsPerDip);
                 if (fmt.Width > rect.Width || fmt.Height > rect.Height) continue;
@@ -2825,13 +2825,13 @@ namespace ag.WPF.Chart
             for (var i = 0; i < currentSeries.Values.Count; i++)
             {
                 var x = i * segSize + COLUMN_BAR_OFFSET + index * columnWidth;
-                var rect = new Rect(new Point(x, startY), new Point(x + columnWidth, startY - currentSeries.Values[i].Value.PlainValue * units));
+                var rect = new Rect(new Point(x, startY), new Point(x + columnWidth, startY - currentSeries.Values[i].CompositeValue.PlainValue * units));
                 var rg = new RectangleGeometry(rect);
                 currentSeries.RealRects.Add(rect);
                 gm.AddGeometry(rg);
                 // add values
                 if (!showValues) continue;
-                var number = !string.IsNullOrEmpty(currentSeries.Values[i].CustomValue) ? currentSeries.Values[i].CustomValue : currentSeries.Values[i].Value.PlainValue.ToString(culture);
+                var number = !string.IsNullOrEmpty(currentSeries.Values[i].CustomValue) ? currentSeries.Values[i].CustomValue : currentSeries.Values[i].CompositeValue.PlainValue.ToString(culture);
                 var fmt = new FormattedText(number, culture, FlowDirection.LeftToRight,
                     new Typeface(fontFamily, fontStyle, fontWeight, fontStretch), fontSize, Brushes.Black, VisualTreeHelper.GetDpi(Utils.Border).PixelsPerDip);
                 if (fmt.Width > rect.Width || fmt.Height > rect.Height) continue;
@@ -2911,9 +2911,9 @@ namespace ag.WPF.Chart
                     if (prevSeries == null) return null;
                     y = prevSeries.RealPoints[i].Y;
                 }
-                var sum = tuples.Sum(s => Math.Abs(s.Values[i].Value.PlainValue));
-                var sign = Math.Sign(values[i].Value.PlainValue);
-                var perc = Math.Abs(values[i].Value.PlainValue) / (sum != 0 ? sum : 1) * 100;
+                var sum = tuples.Sum(s => Math.Abs(s.Values[i].CompositeValue.PlainValue));
+                var sign = Math.Sign(values[i].CompositeValue.PlainValue);
+                var perc = Math.Abs(values[i].CompositeValue.PlainValue) / (sum != 0 ? sum : 1) * 100;
                 y -= sign * perc * stepY / 100;
                 x = stepX * i;
                 currentSeries.RealPoints.Add(new Point(x, y));
@@ -3081,9 +3081,9 @@ namespace ag.WPF.Chart
                     if (prevSeries == null) return null;
                     y = prevSeries.RealPoints[i].Y;
                 }
-                var sum = tuples.Sum(s => Math.Abs(s.Values[i].Value.PlainValue));
-                var sign = Math.Sign(values[i].Value.PlainValue);
-                var perc = Math.Abs(values[i].Value.PlainValue) / (sum != 0 ? sum : 1) * 100;
+                var sum = tuples.Sum(s => Math.Abs(s.Values[i].CompositeValue.PlainValue));
+                var sign = Math.Sign(values[i].CompositeValue.PlainValue);
+                var perc = Math.Abs(values[i].CompositeValue.PlainValue) / (sum != 0 ? sum : 1) * 100;
 
                 y -= sign * perc * stepY / 100;
                 var x = offsetBoundary ? boundOffset + stepX * i : stepX * i;
@@ -3171,18 +3171,18 @@ namespace ag.WPF.Chart
             if (index > 0)
             {
                 var prevs = tuples.Where(s => s.Index < index);
-                var sum = prevs.Sum(sr => sr.Values[0].Value.PlainValue);
+                var sum = prevs.Sum(sr => sr.Values[0].CompositeValue.PlainValue);
                 y -= sum * units;
             }
             var start = new Point(x, y);
             for (var i = 0; i < values.Count; i++)
             {
                 x = centerX + i * stepX;
-                y = centerY - values[i].Value.PlainValue * units;
+                y = centerY - values[i].CompositeValue.PlainValue * units;
                 if (index > 0)
                 {
                     var prevs = tuples.Where(s => s.Index < index);
-                    var sum = prevs.Sum(sr => sr.Values[i].Value.PlainValue);
+                    var sum = prevs.Sum(sr => sr.Values[i].CompositeValue.PlainValue);
                     y -= sum * units;
                 }
                 points.Add(new Point(x, y));
@@ -3201,7 +3201,7 @@ namespace ag.WPF.Chart
                 for (var i = values.Count - 1; i >= 0; i--)
                 {
                     y = centerY;
-                    var sum = prevs.Sum(sr => sr.Values[i].Value.PlainValue);
+                    var sum = prevs.Sum(sr => sr.Values[i].CompositeValue.PlainValue);
                     y -= sum * units;
                     points.Add(new Point(x, y));
                     x -= stepX;
@@ -3288,11 +3288,11 @@ namespace ag.WPF.Chart
             for (var i = 0; i < values.Count; i++)
             {
                 var x = centerX + i * stepX;
-                var y = centerY - values[i].Value.PlainValue * units;
+                var y = centerY - values[i].CompositeValue.PlainValue * units;
                 if (index > 0)
                 {
                     var prevs = tuples.Where(s => s.Index < index);
-                    var sum = prevs.Sum(sr => sr.Values[i].Value.PlainValue);
+                    var sum = prevs.Sum(sr => sr.Values[i].CompositeValue.PlainValue);
                     y -= sum * units;
                 }
                 points.Add(new Point(x, y));
@@ -3339,7 +3339,7 @@ namespace ag.WPF.Chart
             var currentSeries = series.FirstOrDefault(s => s.Index == index);
             if (currentSeries == null) return null;
             var maxLength = series.Max(s => s.Values.Count);
-            var values = currentSeries.Values.Select(v => v.Value.PlainValue).ToArray();
+            var values = currentSeries.Values.Select(v => v.CompositeValue.PlainValue).ToArray();
 
             var gm = new PathGeometry();
             currentSeries.RealRects.Clear();
@@ -3424,7 +3424,7 @@ namespace ag.WPF.Chart
             for (var i = 0; i < currentSeries.Values.Count; i++)
             {
                 var x = centerX + i * stepX;
-                var y = centerY - currentSeries.Values[i].Value.PlainValue * units;
+                var y = centerY - currentSeries.Values[i].CompositeValue.PlainValue * units;
 
                 points.Add(new Point(x, y));
                 if (!style.In(ChartStyle.LinesWithMarkers, ChartStyle.SmoothLinesWithMarkers)) continue;
@@ -3535,7 +3535,7 @@ namespace ag.WPF.Chart
             for (var i = 0; i < currentSeries.Values.Count; i++)
             {
                 var x = centerX + i * stepX;
-                var y = centerY - currentSeries.Values[i].Value.PlainValue * units;
+                var y = centerY - currentSeries.Values[i].CompositeValue.PlainValue * units;
 
                 var es = new EllipseGeometry(new Point(x, y), segSize, segSize);
                 gm.AddGeometry(es);
@@ -3784,15 +3784,15 @@ namespace ag.WPF.Chart
                 if (chartStyle.In(ChartStyle.HighLowClose, ChartStyle.OpenHighLowClose))
                     return HorizontalAlignment.Right;
                 var totalValues = chartStyle.In(ChartStyle.Waterfall)
-                    ? seriesArray.First().Values.Select(v => v.Value.PlainValue)
-                    : seriesArray.SelectMany(s => s.Values.Select(v => v.Value.PlainValue));
+                    ? seriesArray.First().Values.Select(v => v.CompositeValue.PlainValue)
+                    : seriesArray.SelectMany(s => s.Values.Select(v => v.CompositeValue.PlainValue));
                 dir = Utils.GetDirection(totalValues, chartStyle);
             }
             else if (seriesArray.All(s => s.IsStockSeries()))
             {
                 if (!chartStyle.In(ChartStyle.HighLowClose, ChartStyle.OpenHighLowClose))
                     return HorizontalAlignment.Right;
-                var totalValues = seriesArray.First().Values.Select(v => (v.Value.HighValue, v.Value.LowValue));
+                var totalValues = seriesArray.First().Values.Select(v => (v.CompositeValue.HighValue, v.CompositeValue.LowValue));
                 dir = Utils.GetDirectionFinancial(totalValues, chartStyle);
             }
             else
@@ -3856,15 +3856,15 @@ namespace ag.WPF.Chart
                 if (chartStyle.In(ChartStyle.HighLowClose, ChartStyle.OpenHighLowClose))
                     return 2;
                 var totalValues = chartStyle.In(ChartStyle.Waterfall)
-                    ? seriesArray.First().Values.Select(v => v.Value.PlainValue)
-                    : seriesArray.SelectMany(s => s.Values.Select(v => v.Value.PlainValue));
+                    ? seriesArray.First().Values.Select(v => v.CompositeValue.PlainValue)
+                    : seriesArray.SelectMany(s => s.Values.Select(v => v.CompositeValue.PlainValue));
                 dir = Utils.GetDirection(totalValues, chartStyle);
             }
             else if (seriesArray.All(s => s.IsStockSeries()))
             {
                 if (!chartStyle.In(ChartStyle.HighLowClose, ChartStyle.OpenHighLowClose))
                     return 2;
-                var totalValues = seriesArray.First().Values.Select(v => (v.Value.HighValue, v.Value.LowValue));
+                var totalValues = seriesArray.First().Values.Select(v => (v.CompositeValue.HighValue, v.CompositeValue.LowValue));
                 dir = Utils.GetDirectionFinancial(totalValues, chartStyle);
             }
             else
@@ -3928,15 +3928,15 @@ namespace ag.WPF.Chart
                 if (chartStyle.In(ChartStyle.HighLowClose, ChartStyle.OpenHighLowClose))
                     return VerticalAlignment.Top;
                 var totalValues = chartStyle.In(ChartStyle.Waterfall)
-                    ? seriesArray.First().Values.Select(v => v.Value.PlainValue)
-                    : seriesArray.SelectMany(s => s.Values.Select(v => v.Value.PlainValue));
+                    ? seriesArray.First().Values.Select(v => v.CompositeValue.PlainValue)
+                    : seriesArray.SelectMany(s => s.Values.Select(v => v.CompositeValue.PlainValue));
                 dir = Utils.GetDirection(totalValues, chartStyle);
             }
             else if (seriesArray.All(s => s.IsStockSeries()))
             {
                 if (!chartStyle.In(ChartStyle.HighLowClose, ChartStyle.OpenHighLowClose))
                     return VerticalAlignment.Top;
-                var totalValues = seriesArray.First().Values.Select(v => (v.Value.HighValue, v.Value.LowValue));
+                var totalValues = seriesArray.First().Values.Select(v => (v.CompositeValue.HighValue, v.CompositeValue.LowValue));
                 dir = Utils.GetDirectionFinancial(totalValues, chartStyle);
             }
             else
@@ -4000,15 +4000,15 @@ namespace ag.WPF.Chart
                 if (chartStyle.In(ChartStyle.HighLowClose, ChartStyle.OpenHighLowClose))
                     return 5;
                 var totalValues = chartStyle.In(ChartStyle.Waterfall)
-                    ? seriesArray.First().Values.Select(v => v.Value.PlainValue)
-                    : seriesArray.SelectMany(s => s.Values.Select(v => v.Value.PlainValue));
+                    ? seriesArray.First().Values.Select(v => v.CompositeValue.PlainValue)
+                    : seriesArray.SelectMany(s => s.Values.Select(v => v.CompositeValue.PlainValue));
                 dir = Utils.GetDirection(totalValues, chartStyle);
             }
             else if (seriesArray.All(s => s.IsStockSeries()))
             {
                 if (!chartStyle.In(ChartStyle.HighLowClose, ChartStyle.OpenHighLowClose))
                     return 5;
-                var totalValues = seriesArray.First().Values.Select(v => (v.Value.HighValue, v.Value.LowValue));
+                var totalValues = seriesArray.First().Values.Select(v => (v.CompositeValue.HighValue, v.CompositeValue.LowValue));
                 dir = Utils.GetDirectionFinancial(totalValues, chartStyle);
             }
             else
@@ -4072,15 +4072,15 @@ namespace ag.WPF.Chart
                 if (chartStyle.In(ChartStyle.HighLowClose, ChartStyle.OpenHighLowClose))
                     return 2;
                 var totalValues = chartStyle.In(ChartStyle.Waterfall)
-                    ? seriesArray.First().Values.Select(v => v.Value.PlainValue)
-                    : seriesArray.SelectMany(s => s.Values.Select(v => v.Value.PlainValue));
+                    ? seriesArray.First().Values.Select(v => v.CompositeValue.PlainValue)
+                    : seriesArray.SelectMany(s => s.Values.Select(v => v.CompositeValue.PlainValue));
                 dir = Utils.GetDirection(totalValues, chartStyle);
             }
             else if (seriesArray.All(s => s.IsStockSeries()))
             {
                 if (!chartStyle.In(ChartStyle.HighLowClose, ChartStyle.OpenHighLowClose))
                     return 2;
-                var totalValues = seriesArray.First().Values.Select(v => (v.Value.HighValue, v.Value.LowValue));
+                var totalValues = seriesArray.First().Values.Select(v => (v.CompositeValue.HighValue, v.CompositeValue.LowValue));
                 dir = Utils.GetDirectionFinancial(totalValues, chartStyle);
             }
             else
@@ -4140,15 +4140,15 @@ namespace ag.WPF.Chart
                 if (chartStyle.In(ChartStyle.HighLowClose, ChartStyle.OpenHighLowClose))
                     return 5;
                 var totalValues = chartStyle.In(ChartStyle.Waterfall)
-                    ? seriesArray.First().Values.Select(v => v.Value.PlainValue)
-                    : seriesArray.SelectMany(s => s.Values.Select(v => v.Value.PlainValue));
+                    ? seriesArray.First().Values.Select(v => v.CompositeValue.PlainValue)
+                    : seriesArray.SelectMany(s => s.Values.Select(v => v.CompositeValue.PlainValue));
                 dir = Utils.GetDirection(totalValues, chartStyle);
             }
             else if (seriesArray.All(s => s.IsStockSeries()))
             {
                 if (!chartStyle.In(ChartStyle.HighLowClose, ChartStyle.OpenHighLowClose))
                     return 5;
-                var totalValues = seriesArray.First().Values.Select(v => (v.Value.HighValue, v.Value.LowValue));
+                var totalValues = seriesArray.First().Values.Select(v => (v.CompositeValue.HighValue, v.CompositeValue.LowValue));
                 dir = Utils.GetDirectionFinancial(totalValues, chartStyle);
             }
             else
@@ -4209,15 +4209,15 @@ namespace ag.WPF.Chart
                 if (chartStyle.In(ChartStyle.HighLowClose, ChartStyle.OpenHighLowClose))
                     return VerticalAlignment.Bottom;
                 var totalValues = chartStyle.In(ChartStyle.Waterfall)
-                    ? seriesArray.First().Values.Select(v => v.Value.PlainValue)
-                    : seriesArray.SelectMany(s => s.Values.Select(v => v.Value.PlainValue));
+                    ? seriesArray.First().Values.Select(v => v.CompositeValue.PlainValue)
+                    : seriesArray.SelectMany(s => s.Values.Select(v => v.CompositeValue.PlainValue));
                 dir = Utils.GetDirection(totalValues, chartStyle);
             }
             else if (seriesArray.All(s => s.IsStockSeries()))
             {
                 if (!chartStyle.In(ChartStyle.HighLowClose, ChartStyle.OpenHighLowClose))
                     return VerticalAlignment.Bottom;
-                var totalValues = seriesArray.First().Values.Select(v => (v.Value.HighValue, v.Value.LowValue));
+                var totalValues = seriesArray.First().Values.Select(v => (v.CompositeValue.HighValue, v.CompositeValue.LowValue));
                 dir = Utils.GetDirectionFinancial(totalValues, chartStyle);
             }
             else
@@ -4277,15 +4277,15 @@ namespace ag.WPF.Chart
                 if (chartStyle.In(ChartStyle.HighLowClose, ChartStyle.OpenHighLowClose))
                     return HorizontalAlignment.Left;
                 var totalValues = chartStyle.In(ChartStyle.Waterfall)
-                    ? seriesArray.First().Values.Select(v => v.Value.PlainValue)
-                    : seriesArray.SelectMany(s => s.Values.Select(v => v.Value.PlainValue));
+                    ? seriesArray.First().Values.Select(v => v.CompositeValue.PlainValue)
+                    : seriesArray.SelectMany(s => s.Values.Select(v => v.CompositeValue.PlainValue));
                 dir = Utils.GetDirection(totalValues, chartStyle);
             }
             else if (seriesArray.All(s => s.IsStockSeries()))
             {
                 if (!chartStyle.In(ChartStyle.HighLowClose, ChartStyle.OpenHighLowClose))
                     return HorizontalAlignment.Left;
-                var totalValues = seriesArray.First().Values.Select(v => (v.Value.HighValue, v.Value.LowValue));
+                var totalValues = seriesArray.First().Values.Select(v => (v.CompositeValue.HighValue, v.CompositeValue.LowValue));
                 dir = Utils.GetDirectionFinancial(totalValues, chartStyle);
             }
             else
@@ -4458,8 +4458,8 @@ namespace ag.WPF.Chart
                 if (chartStyle.In(ChartStyle.HighLowClose, ChartStyle.OpenHighLowClose))
                     return height;
                 var totalValues = chartStyle != ChartStyle.Waterfall
-                    ? seriesArray.SelectMany(s => s.Values.Select(v => v.Value.PlainValue))
-                    : seriesArray[0].Values.Select(v => v.Value.PlainValue);
+                    ? seriesArray.SelectMany(s => s.Values.Select(v => v.CompositeValue.PlainValue))
+                    : seriesArray[0].Values.Select(v => v.CompositeValue.PlainValue);
                 dir = Utils.GetDirection(totalValues, chartStyle);
                 if (Utils.StyleBars(chartStyle))
                 {
@@ -4485,7 +4485,7 @@ namespace ag.WPF.Chart
                 else if (chartStyle == ChartStyle.OpenHighLowClose && !(seriesArray[0] is OpenHighLowCloseSeries))
                     return height;
 
-                var totalValues = seriesArray[0].Values.Select(v => (v.Value.HighValue, v.Value.LowValue));
+                var totalValues = seriesArray[0].Values.Select(v => (v.CompositeValue.HighValue, v.CompositeValue.LowValue));
                 dir = Utils.GetDirectionFinancial(totalValues, chartStyle);
                 maxFromValues = autoAdjust.In(AutoAdjustmentMode.Both, AutoAdjustmentMode.Vertical) ? seriesArray[0].Values.Count.ToString(culture).Length : maxX.ToString(culture).Length;
             }
@@ -4595,8 +4595,8 @@ namespace ag.WPF.Chart
                 if (chartStyle.In(ChartStyle.HighLowClose, ChartStyle.OpenHighLowClose))
                     return 0.0;
                 var totalValues = chartStyle != ChartStyle.Waterfall
-                    ? seriesArray.SelectMany(s => s.Values.Select(v => v.Value.PlainValue))
-                    : seriesArray[0].Values.Select(v => v.Value.PlainValue);
+                    ? seriesArray.SelectMany(s => s.Values.Select(v => v.CompositeValue.PlainValue))
+                    : seriesArray[0].Values.Select(v => v.CompositeValue.PlainValue);
                 dir = Utils.GetDirection(totalValues, chartStyle);
                 if (Utils.StyleBars(chartStyle))
                 {
@@ -4617,7 +4617,7 @@ namespace ag.WPF.Chart
                 else if (chartStyle == ChartStyle.OpenHighLowClose && !(seriesArray[0] is OpenHighLowCloseSeries))
                     return 0.0;
 
-                var totalValues = seriesArray[0].Values.Select(v => (v.Value.HighValue, v.Value.LowValue));
+                var totalValues = seriesArray[0].Values.Select(v => (v.CompositeValue.HighValue, v.CompositeValue.LowValue));
                 dir = Utils.GetDirectionFinancial(totalValues, chartStyle);
             }
             else
@@ -4894,7 +4894,7 @@ namespace ag.WPF.Chart
 
             var ticks = rawValues.Max(rw => rw.Values.Count);
 
-            var totalValues = seriesArray.SelectMany(s => s.Values.Select(v => v.Value.PlainValue));
+            var totalValues = seriesArray.SelectMany(s => s.Values.Select(v => v.CompositeValue.PlainValue));
 
             var dir = Utils.GetDirection(totalValues, chartStyle);
 
@@ -4987,13 +4987,13 @@ namespace ag.WPF.Chart
             if (seriesArray.All(s => s is PlainSeries))
             {
                 var totalValues = chartStyle != ChartStyle.Waterfall
-                    ? seriesArray.SelectMany(s => s.Values.Select(v => v.Value.PlainValue))
-                    : seriesArray[0].Values.Select(v => v.Value.PlainValue);
+                    ? seriesArray.SelectMany(s => s.Values.Select(v => v.CompositeValue.PlainValue))
+                    : seriesArray[0].Values.Select(v => v.CompositeValue.PlainValue);
                 dir = Utils.GetDirection(totalValues, chartStyle);
             }
             else if (seriesArray.All(s => s.IsStockSeries()))
             {
-                var totalValues = seriesArray[0].Values.Select(v => (v.Value.HighValue, v.Value.LowValue));
+                var totalValues = seriesArray[0].Values.Select(v => (v.CompositeValue.HighValue, v.CompositeValue.LowValue));
                 dir = Utils.GetDirectionFinancial(totalValues, chartStyle);
             }
             else
@@ -5221,8 +5221,8 @@ namespace ag.WPF.Chart
                 if (chartStyle.In(ChartStyle.HighLowClose, ChartStyle.OpenHighLowClose))
                     return null;
                 var totalValues = chartStyle != ChartStyle.Waterfall
-                    ? seriesArray.SelectMany(s => s.Values.Select(v => v.Value.PlainValue))
-                    : seriesArray[0].Values.Select(v => v.Value.PlainValue);
+                    ? seriesArray.SelectMany(s => s.Values.Select(v => v.CompositeValue.PlainValue))
+                    : seriesArray[0].Values.Select(v => v.CompositeValue.PlainValue);
                 dir = Utils.GetDirection(totalValues, chartStyle);
                 var rawValues = chartStyle != ChartStyle.Waterfall
                     ? Utils.GetPaddedSeries(seriesArray)
@@ -5241,7 +5241,7 @@ namespace ag.WPF.Chart
                 else if (chartStyle == ChartStyle.OpenHighLowClose && !(seriesArray[0] is OpenHighLowCloseSeries))
                     return null;
 
-                var totalValues = seriesArray[0].Values.Select(v => (v.Value.HighValue, v.Value.LowValue));
+                var totalValues = seriesArray[0].Values.Select(v => (v.CompositeValue.HighValue, v.CompositeValue.LowValue));
                 dir = Utils.GetDirectionFinancial(totalValues, chartStyle);
                 var rawValues = Utils.GetPaddedSeriesFinancial(seriesArray[0]);
                 ticks = rawValues.Max(rw => rw.Values.Count);
@@ -5631,8 +5631,8 @@ namespace ag.WPF.Chart
                 if (chartStyle.In(ChartStyle.HighLowClose, ChartStyle.OpenHighLowClose))
                     return null;
                 var totalValues = chartStyle.In(ChartStyle.Waterfall)
-                    ? seriesArray[0].Values.Select(v => v.Value.PlainValue)
-                    : seriesArray.SelectMany(s => s.Values.Select(v => v.Value.PlainValue));
+                    ? seriesArray[0].Values.Select(v => v.CompositeValue.PlainValue)
+                    : seriesArray.SelectMany(s => s.Values.Select(v => v.CompositeValue.PlainValue));
                 dir = Utils.GetDirection(totalValues, chartStyle);
                 ticks = seriesArray.Select(s => s.Values.Count).Max();
             }
@@ -5648,7 +5648,7 @@ namespace ag.WPF.Chart
                 else if (chartStyle == ChartStyle.OpenHighLowClose && !(seriesArray[0] is OpenHighLowCloseSeries))
                     return null;
 
-                var totalValues = seriesArray[0].Values.Select(v => (v.Value.HighValue, v.Value.LowValue));
+                var totalValues = seriesArray[0].Values.Select(v => (v.CompositeValue.HighValue, v.CompositeValue.LowValue));
                 dir = Utils.GetDirectionFinancial(totalValues, chartStyle);
                 ticks = seriesArray[0].Values.Count;
             }
@@ -6062,8 +6062,8 @@ namespace ag.WPF.Chart
                 if (chartStyle.In(ChartStyle.HighLowClose, ChartStyle.OpenHighLowClose))
                     return null;
                 var totalValues = chartStyle.In(ChartStyle.Waterfall)
-                    ? seriesArray.First().Values.Select(v => v.Value.PlainValue)
-                    : seriesArray.SelectMany(s => s.Values.Select(v => v.Value.PlainValue));
+                    ? seriesArray.First().Values.Select(v => v.CompositeValue.PlainValue)
+                    : seriesArray.SelectMany(s => s.Values.Select(v => v.CompositeValue.PlainValue));
                 dir = Utils.GetDirection(totalValues, chartStyle);
                 ticks = seriesArray.Select(s => s.Values.Count).Max();
             }
@@ -6079,7 +6079,7 @@ namespace ag.WPF.Chart
                 else if (chartStyle == ChartStyle.OpenHighLowClose && !(seriesArray[0] is OpenHighLowCloseSeries))
                     return null;
 
-                var totalValues = seriesArray[0].Values.Select(v => (v.Value.HighValue, v.Value.LowValue));
+                var totalValues = seriesArray[0].Values.Select(v => (v.CompositeValue.HighValue, v.CompositeValue.LowValue));
                 dir = Utils.GetDirectionFinancial(totalValues, chartStyle);
                 ticks = seriesArray[0].Values.Count;
             }
@@ -6338,8 +6338,8 @@ namespace ag.WPF.Chart
                 if (chartStyle.In(ChartStyle.HighLowClose, ChartStyle.OpenHighLowClose))
                     return null;
                 var totalValues = chartStyle != ChartStyle.Waterfall
-                   ? seriesArray.SelectMany(s => s.Values.Select(v => v.Value.PlainValue))
-                   : seriesArray[0].Values.Select(v => v.Value.PlainValue);
+                   ? seriesArray.SelectMany(s => s.Values.Select(v => v.CompositeValue.PlainValue))
+                   : seriesArray[0].Values.Select(v => v.CompositeValue.PlainValue);
                 dir = Utils.GetDirection(totalValues, chartStyle);
             }
             else if (seriesArray.All(s => s.IsStockSeries()))
@@ -6354,7 +6354,7 @@ namespace ag.WPF.Chart
                 else if (chartStyle == ChartStyle.OpenHighLowClose && !(seriesArray[0] is OpenHighLowCloseSeries))
                     return null;
 
-                var totalValues = seriesArray[0].Values.Select(v => (v.Value.HighValue, v.Value.LowValue));
+                var totalValues = seriesArray[0].Values.Select(v => (v.CompositeValue.HighValue, v.CompositeValue.LowValue));
                 dir = Utils.GetDirectionFinancial(totalValues, chartStyle);
             }
             else
@@ -6549,10 +6549,10 @@ namespace ag.WPF.Chart
                 || !(values[1] is string format)
                 || !(parameter is IChartValue chartValue))
                 return null;
-            var sum = chartValues.Sum(p => Math.Abs(p.Value.PlainValue));
+            var sum = chartValues.Sum(p => Math.Abs(p.CompositeValue.PlainValue));
             if (format.EndsWith("%")) format = format.Substring(0, format.Length - 1);
-            var perc = Math.Abs(chartValue.Value.PlainValue) / (sum != 0 ? sum : 1) * 100;
-            var sectorData = $"{chartValue.Value.PlainValue.ToString(culture)} ({perc.ToString(format, culture)}%)";
+            var perc = Math.Abs(chartValue.CompositeValue.PlainValue) / (sum != 0 ? sum : 1) * 100;
+            var sectorData = $"{chartValue.CompositeValue.PlainValue.ToString(culture)} ({perc.ToString(format, culture)}%)";
             if (!string.IsNullOrEmpty(chartValue.CustomValue))
                 sectorData += $" {chartValue.CustomValue}";
             return sectorData;
@@ -6891,7 +6891,7 @@ namespace ag.WPF.Chart
             var radius = width > height ? (height - 2 * Utils.AXIS_THICKNESS) / 2 : (width - 2 * Utils.AXIS_THICKNESS) / 2;
             var series = seriesArray.First();
             var pts = series.Values.ToArray();
-            var sum = pts.Sum(p => Math.Abs(p.Value.PlainValue));
+            var sum = pts.Sum(p => Math.Abs(p.CompositeValue.PlainValue));
             var currentDegrees = 90.0;
             var startPoint = new Point(radius, radius);
             var xBeg = radius;
@@ -6902,7 +6902,7 @@ namespace ag.WPF.Chart
             if (format.EndsWith("%")) format = format.Substring(0, format.Length - 1);
             if (pts.Length == 1)
             {
-                var sectorData = $"{pts[0].Value.PlainValue} ({100.ToString(format, culture)}%)";
+                var sectorData = $"{pts[0].CompositeValue.PlainValue} ({100.ToString(format, culture)}%)";
                 if (!string.IsNullOrEmpty(pts[0].CustomValue))
                     sectorData += $"\n{pts[0].CustomValue}";
                 var ellipseGeometry = new EllipseGeometry(new Rect(new Point(0, 0), new Point(radius * 2, radius * 2)));
@@ -6929,7 +6929,7 @@ namespace ag.WPF.Chart
             var lines = new List<LineGeometry>();
             foreach (var pt in pts)
             {
-                var addition = Math.Abs(pt.Value.PlainValue) / (sum != 0 ? sum : 1) * 360.0;
+                var addition = Math.Abs(pt.CompositeValue.PlainValue) / (sum != 0 ? sum : 1) * 360.0;
                 if (currentDegrees <= 90.0 && currentDegrees > 0)
                 {
                     if (currentDegrees - addition >= 0)
@@ -7017,8 +7017,8 @@ namespace ag.WPF.Chart
                 //    combinedGeometry.Geometry2 = rectGeometry;
                 //}
 
-                var perc = Math.Abs(pt.Value.PlainValue) / (sum != 0 ? sum : 1) * 100;
-                var sectorData = $"{pt.Value.PlainValue} ({perc.ToString(format, culture)}%)";
+                var perc = Math.Abs(pt.CompositeValue.PlainValue) / (sum != 0 ? sum : 1) * 100;
+                var sectorData = $"{pt.CompositeValue.PlainValue} ({perc.ToString(format, culture)}%)";
                 if (!string.IsNullOrEmpty(pt.CustomValue))
                     sectorData += $"\n{pt.CustomValue}";
                 combinedGeometry.SetValue(Statics.SectorDataProperty, sectorData);

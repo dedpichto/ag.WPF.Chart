@@ -15,10 +15,18 @@ namespace ag.WPF.Chart.Values
         /// <summary>
         /// Initializes a new instance of PlainChartValue object
         /// </summary>
+        public PlainChartValue()
+        {
+            CompositeValue = new ValuesStruct();
+        }
+        /// <summary>
+        /// Initializes a new instance of PlainChartValue object
+        /// </summary>
         /// <param name="plainValue">Current value</param>
         public PlainChartValue(double plainValue)
         {
-            Value = (plainValue, 0, 0, 0, 0, 0);
+            CompositeValue = new ValuesStruct();
+            CompositeValue.PlainValue = plainValue;
         }
 
         /// <summary>

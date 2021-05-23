@@ -31,6 +31,7 @@
     <Compile Include="..\ag.WPF.Chart.Classic\Values\IChartValue.cs" Link="Valuess\IChartValue.cs" />
     <Compile Include="..\ag.WPF.Chart.Classic\Values\OpenHighLowCloseChartValue.cs" Link="Valuess\OpenHighLowCloseChartValue.cs" />
     <Compile Include="..\ag.WPF.Chart.Classic\Values\PlainChartValue.cs" Link="Valuess\PlainChartValue.cs" />
+    <Compile Include="..\ag.WPF.Chart.Classic\Values\ValuesStruct.cs" Link="Valuess\ValuesStruct.cs" />
   </ItemGroup>
 
   <ItemGroup>

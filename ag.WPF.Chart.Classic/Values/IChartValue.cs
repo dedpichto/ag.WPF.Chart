@@ -12,7 +12,7 @@
         /// <summary>
         /// Gets or sets current numeric value
         /// </summary>
-        (double PlainValue, double HighValue, double LowValue, double CloseValue, double VolumeValue, double OpenValue) Value { get; set; }
+        ValuesStruct CompositeValue { get; set; }
         /// <summary>
         /// Creates copy of current <see cref="IChartValue"/> object
         /// </summary>

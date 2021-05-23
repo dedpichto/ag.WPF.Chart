@@ -854,7 +854,7 @@ namespace ag.WPF.Chart
                             tooltip.Content = s.Name;
                             break;
                         }
-                        var content = $"{s.Name}\n{s.Values[index].Value.PlainValue.ToString(CultureInfo.InvariantCulture)}";
+                        var content = $"{s.Name}\n{s.Values[index].CompositeValue.PlainValue.ToString(CultureInfo.InvariantCulture)}";
                         if (!string.IsNullOrEmpty(s.Values[index].CustomValue))
                             content += $"\n{s.Values[index].CustomValue}";
                         tooltip.Content = content;
@@ -874,9 +874,9 @@ namespace ag.WPF.Chart
                             tooltip.Content = s.Name;
                             break;
                         }
-                        var content = $"High\t{s.Values[index].Value.HighValue.ToString(CultureInfo.InvariantCulture)}\n" +
-                            $"Low\t{s.Values[index].Value.LowValue.ToString(CultureInfo.InvariantCulture)}\n" +
-                            $"Close\t{s.Values[index].Value.CloseValue.ToString(CultureInfo.InvariantCulture)}";
+                        var content = $"High\t{s.Values[index].CompositeValue.HighValue.ToString(CultureInfo.InvariantCulture)}\n" +
+                            $"Low\t{s.Values[index].CompositeValue.LowValue.ToString(CultureInfo.InvariantCulture)}\n" +
+                            $"Close\t{s.Values[index].CompositeValue.CloseValue.ToString(CultureInfo.InvariantCulture)}";
                         if (!string.IsNullOrEmpty(s.Values[index].CustomValue))
                             content += $"\n{s.Values[index].CustomValue}";
                         tooltip.Content = content;
@@ -896,10 +896,10 @@ namespace ag.WPF.Chart
                             tooltip.Content = s.Name;
                             break;
                         }
-                        var content = $"Open\t{s.Values[index].Value.OpenValue.ToString(CultureInfo.InvariantCulture)}\n" +
-                            $"High\t{s.Values[index].Value.HighValue.ToString(CultureInfo.InvariantCulture)}\n" +
-                            $"Low\t{s.Values[index].Value.LowValue.ToString(CultureInfo.InvariantCulture)}\n" +
-                            $"Close\t{s.Values[index].Value.CloseValue.ToString(CultureInfo.InvariantCulture)}";
+                        var content = $"Open\t{s.Values[index].CompositeValue.OpenValue.ToString(CultureInfo.InvariantCulture)}\n" +
+                            $"High\t{s.Values[index].CompositeValue.HighValue.ToString(CultureInfo.InvariantCulture)}\n" +
+                            $"Low\t{s.Values[index].CompositeValue.LowValue.ToString(CultureInfo.InvariantCulture)}\n" +
+                            $"Close\t{s.Values[index].CompositeValue.CloseValue.ToString(CultureInfo.InvariantCulture)}";
                         if (!string.IsNullOrEmpty(s.Values[index].CustomValue))
                             content += $"\n{s.Values[index].CustomValue}";
                         tooltip.Content = content;
