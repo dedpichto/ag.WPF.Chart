@@ -32,10 +32,13 @@ namespace ag.WPF.Chart.Series
         /// <summary>
         /// Gets the collection of <see cref="IChartValue"/> objects associated with current series.
         /// </summary>
-        ObservableCollection<IChartValue> Values { get; }
+        ChartItemsCollection<IChartValue> Values { get; }
+        /// <summary>
+        /// Gets or sets the collection of <see cref="IChartValue"/> objects associated with chart control.
+        /// </summary>
+        IEnumerable<IChartValue> ValuesSource { get; set; }
         /// <summary>
         /// Gets real coordinates of series rectangles.
-        /// 
         /// </summary>
         List<Rect> RealRects { get; }
         /// <summary>

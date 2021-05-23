@@ -66,10 +66,11 @@
     <Compile Include="Legend.cs" />
     <Compile Include="Series\PlainSeries.cs" />
     <Compile Include="Values\HighLowCloseChartValue.cs" />
+    <Compile Include="Values\IChartCompositeValue.cs" />
     <Compile Include="Values\IChartValue.cs" />
     <Compile Include="Values\OpenHighLowCloseChartValue.cs" />
     <Compile Include="Values\PlainChartValue.cs" />
-    <Compile Include="Values\ValuesStruct.cs" />
+    <Compile Include="Values\ChartCompositeValue.cs" />
     <Page Include="Themes\Generic.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

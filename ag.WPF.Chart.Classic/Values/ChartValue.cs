@@ -13,21 +13,19 @@ namespace ag.WPF.Chart.Values
     public abstract class ChartValue : DependencyObject, IChartValue
     {
         #region Dependency properties
-        ///// <summary>
-        ///// The identifier of the <see cref="Values"/> dependency property.
-        ///// </summary>
-        //public static readonly DependencyProperty ValuesProperty = DependencyProperty.Register(nameof(Values), typeof(ValuesStruct), typeof(ChartValue), new FrameworkPropertyMetadata(new ValuesStruct()));
-        //#endregion
+        /// <summary>
+        /// The identifier of the <see cref="CompositeValue"/> dependency property.
+        /// </summary>
+        public static readonly DependencyProperty CompositeValueProperty = DependencyProperty.Register(nameof(CompositeValue), typeof(IChartCompositeValue), typeof(ChartValue), new FrameworkPropertyMetadata(null));
+        #endregion
 
-        //#region Public properties
-        ///// <inheritdoc />
-        //public ValuesStruct Values 
-        //{
-        //    get { return (ValuesStruct)GetValue(ValuesProperty); }
-        //    set { SetValue(ValuesProperty, value); }
-        //}
+        #region Public properties
         /// <inheritdoc />
-        public ValuesStruct CompositeValue { get; set; }
+        public IChartCompositeValue CompositeValue
+        {
+            get { return (IChartCompositeValue)GetValue(CompositeValueProperty); }
+            set { SetValue(CompositeValueProperty, value); }
+        }
         /// <inheritdoc />
         public string CustomValue { get; set; }
         /// <inheritdoc />

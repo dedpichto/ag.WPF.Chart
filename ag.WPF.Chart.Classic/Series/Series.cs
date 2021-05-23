@@ -27,14 +27,61 @@ namespace ag.WPF.Chart.Series
         private Brush _secondaryBrush;
         private string _name;
         private int _index;
-        private readonly ObservableCollection<IChartValue> _values = new ObservableCollection<IChartValue>();
+        private ChartItemsCollection<IChartValue> _values = new ChartItemsCollection<IChartValue>();
+        #endregion
+
+        #region Dependency properties
+        /// <summary>
+        /// The identifier of the <see cref="ValuesSource"/> dependency property.
+        /// </summary>
+        public static readonly DependencyProperty ValuesSourceProperty = DependencyProperty.Register(nameof(ValuesSource), typeof(IEnumerable<IChartValue>), typeof(Series), new FrameworkPropertyMetadata(null));
         #endregion
 
         #region Public properties
         /// <inheritdoc />
-        public ObservableCollection<IChartValue> Values
+        public IEnumerable<IChartValue> ValuesSource
         {
-            get { return _values; }
+            get
+            {
+                var b = BindingOperations.GetBinding(this, ValuesSourceProperty);
+                if (b != null)
+                    return (IEnumerable<IChartValue>)GetValue(ValuesSourceProperty);
+                else
+                    return Values;
+            }            
+            set { SetValue(ValuesSourceProperty, value); }
+        }
+        /// <inheritdoc />
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Content)]
+        [EditorBrowsable(EditorBrowsableState.Never), Bindable(false)]
+        public ChartItemsCollection<IChartValue> Values
+        {
+            get 
+            {
+                var b = BindingOperations.GetBinding(this, ValuesSourceProperty);
+                if (b == null)
+                {
+                    if (_values == null)
+                    {
+                        _values = new ChartItemsCollection<IChartValue>();
+                        _values.CollectionChanged += values_CollectionChanged;
+                    }
+                }
+                else
+                {
+                    if (ValuesSource != null)
+                        _values = new ChartItemsCollection<IChartValue>(ValuesSource);
+                    else
+                    {
+                        if (_values == null)
+                        {
+                            _values = new ChartItemsCollection<IChartValue>();
+                            _values.CollectionChanged += values_CollectionChanged;
+                        }
+                    }
+                }
+                return _values;
+            }
         }
         /// <inheritdoc />
         public Brush MainBrush

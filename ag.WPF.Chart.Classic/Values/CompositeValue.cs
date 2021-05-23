@@ -9,7 +9,7 @@ namespace ag.WPF.Chart.Values
     /// <summary>
     /// Represents various values
     /// </summary>
-    public class ValuesStruct
+    public class CompositeValue
     {
         /// <summary>
         /// Gets or sets PlainValue

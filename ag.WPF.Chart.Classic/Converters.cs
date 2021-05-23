@@ -4768,7 +4768,7 @@ namespace ag.WPF.Chart
             var chartSeries = values[16] as IEnumerable<ISeries>;
 
             if ((seriesEnumerable == null || !seriesEnumerable.Any()) && (chartSeries == null || !chartSeries.Any()))
-                return 0.0;
+                return null;
 
             var seriesArray = seriesEnumerable != null && seriesEnumerable.Any() ? seriesEnumerable.ToArray() : chartSeries.ToArray();
 

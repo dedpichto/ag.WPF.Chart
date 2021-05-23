@@ -17,7 +17,7 @@ namespace ag.WPF.Chart.Values
         /// </summary>
         public HighLowCloseChartValue()
         {
-            CompositeValue = new ValuesStruct();
+            CompositeValue = new ChartCompositeValue();
         }
         /// <summary>
         /// Initializes a new instance of HighLowCloseChartValue object
@@ -27,10 +27,12 @@ namespace ag.WPF.Chart.Values
         /// <param name="closeValue">Close value</param>
         public HighLowCloseChartValue(double highValue, double lowValue, double closeValue)
         {
-            CompositeValue = new ValuesStruct();
-            CompositeValue.HighValue = highValue;
-            CompositeValue.LowValue = lowValue;
-            CompositeValue.CloseValue = closeValue;
+            CompositeValue = new ChartCompositeValue
+            {
+                HighValue = highValue,
+                LowValue = lowValue,
+                CloseValue = closeValue
+            };
         }
         #endregion
 

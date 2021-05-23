@@ -21,6 +21,7 @@ using ag.WPF.Chart.Values;
 using ag.WPF.Chart.Series;
 using Path = System.Windows.Shapes.Path;
 using System.Collections;
+using System.Windows.Markup;
 
 namespace ag.WPF.Chart
 {
@@ -344,7 +345,6 @@ namespace ag.WPF.Chart
     [TemplatePart(Name = ElementPathVertLines, Type = typeof(Path))]
 
     #endregion
-
     public class Chart : Control, INotifyPropertyChanged
     {
         private (Brush Brush, int Counter)[] PredefinedMainBrushes { get; } =
@@ -1508,13 +1508,13 @@ namespace ag.WPF.Chart
             }
         }
 
-        private void rebuildPieLegends(ObservableCollection<IChartValue> values, ISeries series)
+        private void rebuildPieLegends(IEnumerable<IChartValue> values, ISeries series)
         {
             if (series.Index > 0) return;
             PieLegendsCollection.Clear();
-            for (int i = 0, brushIndex = 0; i < values.Count; i++)
+            for (int i = 0, brushIndex = 0; i < values.Count(); i++)
             {
-                var v = values[i];
+                var v = values.First();
                 if (brushIndex == PredefinedMainBrushes.Length) brushIndex = 0;
                 var legend = new Legend
                 {
