@@ -1596,7 +1596,12 @@ namespace ag.WPF.Chart
                 else
                 {
                     if (SeriesSource != null)
+                    {
+                        if (_seriesItems != null)
+                            _seriesItems.CollectionChanged -= SeriesSource_CollectionChanged;
                         _seriesItems = new ChartItemsCollection<ISeries>(SeriesSource);
+                        _seriesItems.CollectionChanged += SeriesSource_CollectionChanged;
+                    }
                     else
                     {
                         if (_seriesItems == null)

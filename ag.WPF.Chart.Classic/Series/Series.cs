@@ -59,25 +59,13 @@ namespace ag.WPF.Chart.Series
             get 
             {
                 var b = BindingOperations.GetBinding(this, ValuesSourceProperty);
-                if (b == null)
-                {
-                    if (_values == null)
-                    {
-                        _values = new ChartItemsCollection<IChartValue>();
-                        _values.CollectionChanged += values_CollectionChanged;
-                    }
-                }
-                else
+                if (b != null)
                 {
                     if (ValuesSource != null)
-                        _values = new ChartItemsCollection<IChartValue>(ValuesSource);
-                    else
                     {
-                        if (_values == null)
-                        {
-                            _values = new ChartItemsCollection<IChartValue>();
-                            _values.CollectionChanged += values_CollectionChanged;
-                        }
+                        _values.CollectionChanged -= values_CollectionChanged;
+                        _values = new ChartItemsCollection<IChartValue>(ValuesSource);
+                        _values.CollectionChanged += values_CollectionChanged;
                     }
                 }
                 return _values;
