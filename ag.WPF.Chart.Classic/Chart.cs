@@ -375,7 +375,7 @@ namespace ag.WPF.Chart
             (new SolidColorBrush(Color.FromArgb(255, 91, 155, 213)),0)
         };
 
-        private ChartItemsCollection<ISeries> _series;
+        private ChartItemsCollection<ISeries> _seriesItems;
 
         #region Constants
         private const string ElementCanvas = "PART_Canvas";
@@ -945,7 +945,7 @@ namespace ag.WPF.Chart
             var b = BindingOperations.GetBinding(this, SeriesSourceProperty);
             if (b == null)
             {
-                return Series;
+                return SeriesItems;
             }
             else
             {
@@ -998,7 +998,7 @@ namespace ag.WPF.Chart
             {
                 Source = this
             });
-            legendVisibilityBinding.Bindings.Add(new Binding(nameof(Series))
+            legendVisibilityBinding.Bindings.Add(new Binding(nameof(SeriesItems))
             {
                 Source = this
             });
@@ -1027,7 +1027,7 @@ namespace ag.WPF.Chart
             {
                 Source = this
             });
-            legendVisibilityBinding.Bindings.Add(new Binding(nameof(Series))
+            legendVisibilityBinding.Bindings.Add(new Binding(nameof(SeriesItems))
             {
                 Source = this
             });
@@ -1055,7 +1055,7 @@ namespace ag.WPF.Chart
             {
                 Source = this
             });
-            legendVisibilityBinding.Bindings.Add(new Binding(nameof(Series))
+            legendVisibilityBinding.Bindings.Add(new Binding(nameof(SeriesItems))
             {
                 Source = this
             });
@@ -1112,7 +1112,7 @@ namespace ag.WPF.Chart
                 {
                     Source = this
                 });
-                legendVisibilityBinding.Bindings.Add(new Binding(nameof(Series))
+                legendVisibilityBinding.Bindings.Add(new Binding(nameof(SeriesItems))
                 {
                     Source = this
                 });
@@ -1143,7 +1143,7 @@ namespace ag.WPF.Chart
                 {
                     Source = this
                 });
-                legendVisibilityBinding.Bindings.Add(new Binding(nameof(Series))
+                legendVisibilityBinding.Bindings.Add(new Binding(nameof(SeriesItems))
                 {
                     Source = this
                 });
@@ -1369,7 +1369,7 @@ namespace ag.WPF.Chart
             {
                 Source = this
             });
-            ptsBinding.Bindings.Add(new Binding(nameof(Series))
+            ptsBinding.Bindings.Add(new Binding(nameof(SeriesItems))
             {
                 Source = this
             });
@@ -1571,7 +1571,7 @@ namespace ag.WPF.Chart
                 if (b != null)
                     return (IEnumerable<ISeries>)GetValue(SeriesSourceProperty);
                 else
-                    return Series;
+                    return SeriesItems;
             }
             set { SetValue(SeriesSourceProperty, value); }
         }
@@ -1580,33 +1580,33 @@ namespace ag.WPF.Chart
         /// </summary>
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Content)]
         [EditorBrowsable(EditorBrowsableState.Never), Bindable(false)]
-        public ChartItemsCollection<ISeries> Series
+        public ChartItemsCollection<ISeries> SeriesItems
         {
             get
             {
                 var b = BindingOperations.GetBinding(this, SeriesSourceProperty);
                 if (b == null)
                 {
-                    if (_series == null)
+                    if (_seriesItems == null)
                     {
-                        _series = new ChartItemsCollection<ISeries>();
-                        _series.CollectionChanged += SeriesSource_CollectionChanged;
+                        _seriesItems = new ChartItemsCollection<ISeries>();
+                        _seriesItems.CollectionChanged += SeriesSource_CollectionChanged;
                     }
                 }
                 else
                 {
                     if (SeriesSource != null)
-                        _series = new ChartItemsCollection<ISeries>(SeriesSource);
+                        _seriesItems = new ChartItemsCollection<ISeries>(SeriesSource);
                     else
                     {
-                        if (_series == null)
+                        if (_seriesItems == null)
                         {
-                            _series = new ChartItemsCollection<ISeries>();
-                            _series.CollectionChanged += SeriesSource_CollectionChanged;
+                            _seriesItems = new ChartItemsCollection<ISeries>();
+                            _seriesItems.CollectionChanged += SeriesSource_CollectionChanged;
                         }
                     }
                 }
-                return _series;
+                return _seriesItems;
             }
         }
         /// <summary>
