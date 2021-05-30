@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
+﻿using System.Windows;
 
 namespace ag.WPF.Chart.Values
 {
@@ -38,40 +33,40 @@ namespace ag.WPF.Chart.Values
         public static readonly DependencyProperty VolumeValueProperty = DependencyProperty.Register(nameof(VolumeValue), typeof(double), typeof(ChartCompositeValue));
 
         /// <inheritdoc />
-        public double PlainValue 
+        public double PlainValue
         {
-            get { return (double)GetValue(PlainValueProperty); }
-            set { SetValue(PlainValueProperty, value); }
+            get => (double)GetValue(PlainValueProperty);
+            set => SetValue(PlainValueProperty, value);
         }
         /// <inheritdoc />
         public double OpenValue
         {
-            get { return (double)GetValue(OpenValueProperty); }
-            set { SetValue(OpenValueProperty, value); }
+            get => (double)GetValue(OpenValueProperty);
+            set => SetValue(OpenValueProperty, value);
         }
         /// <inheritdoc />
         public double CloseValue
         {
-            get { return (double)GetValue(CloseValueProperty); }
-            set { SetValue(CloseValueProperty, value); }
+            get => (double)GetValue(CloseValueProperty);
+            set => SetValue(CloseValueProperty, value);
         }
         /// <inheritdoc />
         public double HighValue
         {
-            get { return (double)GetValue(HighValueProperty); }
-            set { SetValue(HighValueProperty, value); }
+            get => (double)GetValue(HighValueProperty);
+            set => SetValue(HighValueProperty, value);
         }
         /// <inheritdoc />
         public double LowValue
         {
-            get { return (double)GetValue(LowValueProperty); }
-            set { SetValue(LowValueProperty, value); }
+            get => (double)GetValue(LowValueProperty);
+            set => SetValue(LowValueProperty, value);
         }
         /// <inheritdoc />
         public double VolumeValue
         {
-            get { return (double)GetValue(VolumeValueProperty); }
-            set { SetValue(VolumeValueProperty, value); }
+            get => (double)GetValue(VolumeValueProperty);
+            set => SetValue(VolumeValueProperty, value);
         }
     }
 }

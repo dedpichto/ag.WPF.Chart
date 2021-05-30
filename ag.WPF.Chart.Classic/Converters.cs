@@ -1,5 +1,5 @@
-﻿using ag.WPF.Chart.Values;
-using ag.WPF.Chart.Series;
+﻿using ag.WPF.Chart.Series;
+using ag.WPF.Chart.Values;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -8,7 +8,6 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Media;
-using System.Windows.Shapes;
 
 namespace ag.WPF.Chart
 {
@@ -45,7 +44,6 @@ namespace ag.WPF.Chart
         internal static Border Border { get; } = new Border();
 
         private static readonly int[] _bases = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
-        private static readonly CultureInfo _enCulture = new CultureInfo("en-US");
 
         internal static Quadrants GetQuadrant(double degrees)
         {
@@ -158,7 +156,7 @@ namespace ag.WPF.Chart
             return BitConverter.GetBytes(decimal.GetBits((decimal)number)[3])[2];
         }
 
-        internal static double GetUnitsForBars(ISeries[] series, ChartStyle chartStyle, Directions dir, double width, double height, double boundOffset, int linesCountX, double formatHeight, bool autoAdjust, double maxX)
+        internal static double GetUnitsForBars(ISeries[] series, ChartStyle chartStyle, Directions dir, double width, int linesCountX, double formatHeight, bool autoAdjust, double maxX)
         {
             var centerX = 0.0;
             var radius = 0.0;
@@ -168,22 +166,22 @@ namespace ag.WPF.Chart
                 case Directions.NorthEast:
                 case Directions.NorthWest:
                 case Directions.SouthEast:
-                    centerX = Utils.AXIS_THICKNESS;
-                    radius = width - Utils.AXIS_THICKNESS;
+                    centerX = AXIS_THICKNESS;
+                    radius = width - AXIS_THICKNESS;
                     break;
                 case Directions.NorthEastNorthWest:
-                    centerX = Utils.AXIS_THICKNESS;
-                    radius = (width - Utils.AXIS_THICKNESS) / 2;
+                    centerX = AXIS_THICKNESS;
+                    radius = (width - AXIS_THICKNESS) / 2;
                     break;
                 case Directions.NorthEastSouthEast:
-                    centerX = Utils.AXIS_THICKNESS;
-                    radius = width - Utils.AXIS_THICKNESS;
+                    centerX = AXIS_THICKNESS;
+                    radius = width - AXIS_THICKNESS;
                     break;
             }
             if (!autoAdjust)
                 return radius / maxX;
             var centerPoint = new Point(centerX, radius);
-            var (_, _, _, _, _, units, _) = Utils.GetMeasures(
+            var (_, _, _, _, _, units, _) = GetMeasures(
                chartStyle,
                series,
                linesCountX,
@@ -204,22 +202,22 @@ namespace ag.WPF.Chart
                 case Directions.NorthEast:
                 case Directions.NorthWest:
                 case Directions.SouthEast:
-                    centerX = Utils.AXIS_THICKNESS + boundOffset;
-                    radius = height - Utils.AXIS_THICKNESS;
+                    centerX = AXIS_THICKNESS + boundOffset;
+                    radius = height - AXIS_THICKNESS;
                     break;
                 case Directions.NorthEastNorthWest:
                     centerX = width / 2;
-                    radius = height - Utils.AXIS_THICKNESS;
+                    radius = height - AXIS_THICKNESS;
                     break;
                 case Directions.NorthEastSouthEast:
-                    centerX = Utils.AXIS_THICKNESS + boundOffset;
-                    radius = (height - Utils.AXIS_THICKNESS) / 2;
+                    centerX = AXIS_THICKNESS + boundOffset;
+                    radius = (height - AXIS_THICKNESS) / 2;
                     break;
             }
             if (!autoAdjust.In(AutoAdjustmentMode.Both, AutoAdjustmentMode.Vertical))
                 return radius / maxY;
             var centerPoint = new Point(centerX, radius);
-            var (_, _, _, _, _, units, _) = Utils.GetMeasures(
+            var (_, _, _, _, _, units, _) = GetMeasures(
                chartStyle,
                series,
                linesCountY,
@@ -275,14 +273,7 @@ namespace ag.WPF.Chart
             var originalMax = max;
 
             // round max to next integer
-            if (originalMax > 1)
-            {
-                max = Math.Ceiling(max);
-            }
-            else
-            {
-                max = transformSmallFractionalNumber(max);
-            }
+            max = originalMax > 1 ? Math.Ceiling(max) : transformSmallFractionalNumber(max);
 
             var pm = Math.Abs((long)max).ToString().Length - 1;
             var p = pm >= 3 ? pm - 1 : pm;
@@ -396,14 +387,7 @@ namespace ag.WPF.Chart
             var originalMin = Math.Abs(min);
 
             // round min to prevous integer
-            if (originalMin > 1)
-            {
-                min = Math.Floor(min);
-            }
-            else
-            {
-                min = transformSmallFractionalNumber(min);
-            }
+            min = originalMin > 1 ? Math.Floor(min) : transformSmallFractionalNumber(min);
 
             var pm = Math.Abs((long)min).ToString().Length - 1;
             var p = pm >= 3 ? pm - 1 : pm;
@@ -508,7 +492,7 @@ namespace ag.WPF.Chart
             return (0, min, linesCount, stepSize, stepLength, units, zeroPoint);
         }
 
-        private static (double max, double min, int linesCount, double stepSize, double stepLength, double units, ZeroPoint zeroPoint) getMeasuresForComplex(ChartStyle chartStyle, double max, double min, int linesCount, double radius, double fontHeight, int fractionPower, ZeroPoint zeroPoint, bool splitSides)
+        private static (double max, double min, int linesCount, double stepSize, double stepLength, double units, ZeroPoint zeroPoint) getMeasuresForComplex(double max, double min, int linesCount, double radius, double fontHeight, int fractionPower, ZeroPoint zeroPoint, bool splitSides)
         {
 
             if (radius <= 0)
@@ -520,23 +504,9 @@ namespace ag.WPF.Chart
             var originalMin = Math.Abs(min);
 
             // round max to next integer
-            if (originalMax > 1)
-            {
-                max = Math.Ceiling(max);
-            }
-            else
-            {
-                max = transformSmallFractionalNumber(max);
-            }
+            max = originalMax > 1 ? Math.Ceiling(max) : transformSmallFractionalNumber(max);
             // round min to prevous integer
-            if (originalMin > 1)
-            {
-                min = Math.Floor(min);
-            }
-            else
-            {
-                min = transformSmallFractionalNumber(min);
-            }
+            min = originalMin > 1 ? Math.Floor(min) : transformSmallFractionalNumber(min);
 
             var pMax = Math.Abs((long)max).ToString().Length - 1;
             var pMin = Math.Abs((long)min).ToString().Length - 1;
@@ -742,23 +712,9 @@ namespace ag.WPF.Chart
             var originalMin = Math.Abs(min);
 
             // round max to next integer
-            if (originalMax > 1)
-            {
-                max = Math.Ceiling(max);
-            }
-            else
-            {
-                max = transformSmallFractionalNumber(max);
-            }
+            max = originalMax > 1 ? Math.Ceiling(max) : transformSmallFractionalNumber(max);
             // round min to prevous integer
-            if (originalMin > 1)
-            {
-                min = Math.Floor(min);
-            }
-            else
-            {
-                min = transformSmallFractionalNumber(min);
-            }
+            min = originalMin > 1 ? Math.Floor(min) : transformSmallFractionalNumber(min);
 
             var pMax = Math.Abs((long)max).ToString().Length - 1;
             var pMin = Math.Abs((long)min).ToString().Length - 1;
@@ -1191,10 +1147,10 @@ namespace ag.WPF.Chart
                 return getMeasuresForNegative(min, linesCount, radius, fontHeight, getMaxFractionPower(values), new ZeroPoint { Point = centerPoint });
             else
             {
-                if (Utils.StyleRadar(chartStyle))
+                if (StyleRadar(chartStyle))
                     return getMeasuresForComplexRadar(max, min, linesCount, radius, fontHeight, getMaxFractionPower(values), new ZeroPoint { Point = centerPoint });
                 else
-                    return getMeasuresForComplex(chartStyle, max, min, linesCount, radius, fontHeight, getMaxFractionPower(values), new ZeroPoint { Point = centerPoint }, splitSides);
+                    return getMeasuresForComplex(max, min, linesCount, radius, fontHeight, getMaxFractionPower(values), new ZeroPoint { Point = centerPoint }, splitSides);
             }
         }
 
@@ -1394,7 +1350,7 @@ namespace ag.WPF.Chart
             return result;
         }
 
-        internal static int GetMaxValueLengthFinancial(List<(List<IChartValue> Values, int Index)> tuples, ChartStyle style)
+        internal static int GetMaxValueLengthFinancial(List<(List<IChartValue> Values, int Index)> tuples)
         {
             if (!tuples.Any()) return 0;
             var values = tuples.SelectMany(t => t.Values).Select(v => v.CompositeValue.HighValue).Union(tuples.SelectMany(t => t.Values).Select(v => v.CompositeValue.LowValue));
@@ -1439,7 +1395,7 @@ namespace ag.WPF.Chart
                 : Directions.NorthEastSouthEast;
         }
 
-        internal static Directions GetDirectionFinancial(IEnumerable<(double High, double Low)> totalValues, ChartStyle style)
+        internal static Directions GetDirectionFinancial(IEnumerable<(double High, double Low)> totalValues)
         {
             if (totalValues.All(v => v.High >= 0 && v.Low >= 0))
                 return Directions.NorthEast;
@@ -1534,7 +1490,7 @@ namespace ag.WPF.Chart
                     return null;
 
                 var totalValues = seriesArray.First().Values.Select(v => (v.CompositeValue.HighValue, v.CompositeValue.LowValue));
-                dir = Utils.GetDirectionFinancial(totalValues, chartStyle);
+                dir = Utils.GetDirectionFinancial(totalValues);
             }
             else
                 return null;
@@ -1624,7 +1580,7 @@ namespace ag.WPF.Chart
                     return null;
 
                 var totalValues = seriesArray.First().Values.Select(v => (v.CompositeValue.HighValue, v.CompositeValue.LowValue));
-                dir = Utils.GetDirectionFinancial(totalValues, chartStyle);
+                dir = Utils.GetDirectionFinancial(totalValues);
             }
             else
                 return null;
@@ -1927,7 +1883,7 @@ namespace ag.WPF.Chart
                 }
                 rawValues = Utils.GetPaddedSeriesFinancial(seriesArray[0]);
                 var totalValues = seriesArray[0].Values.Select(v => (v.CompositeValue.HighValue, v.CompositeValue.LowValue));
-                dir = Utils.GetDirectionFinancial(totalValues, chartStyle);
+                dir = Utils.GetDirectionFinancial(totalValues);
             }
             else
                 return null;
@@ -2054,13 +2010,13 @@ namespace ag.WPF.Chart
                 //break;
                 case ChartStyle.Bars:
                     {
-                        var units = getUnitsForBars(seriesArray, chartStyle, dir, width, height, boundOffset, linesCountX, fmt.Height, autoAdjust, maxXConv);
+                        var units = getUnitsForBars(seriesArray, chartStyle, dir, width, linesCountX, fmt.Height, autoAdjust, maxXConv);
                         return drawBars(width, height, units, dir, seriesArray, index, showValues, fontFamily, fontStyle, fontWeight, fontStretch, fontSize, culture, flowDirection);
                         //break;
                     }
                 case ChartStyle.StackedBars:
                     {
-                        var units = getUnitsForBars(seriesArray, chartStyle, dir, width, height, boundOffset, linesCountX, fmt.Height, autoAdjust, maxXConv);
+                        var units = getUnitsForBars(seriesArray, chartStyle, dir, width, linesCountX, fmt.Height, autoAdjust, maxXConv);
                         return drawStackedBars(width, height, units, dir, seriesArray, index, rawValues, showValues, fontFamily, fontStyle, fontWeight, fontStretch, fontSize, culture, flowDirection);
                         //break;
                     }
@@ -2378,7 +2334,7 @@ namespace ag.WPF.Chart
             return cgm;
         }
 
-        private double getUnitsForBars(ISeries[] series, ChartStyle chartStyle, Directions dir, double width, double height, double boundOffset, int linesCountX, double formatHeight, AutoAdjustmentMode autoAdjust, double maxX)
+        private double getUnitsForBars(ISeries[] series, ChartStyle chartStyle, Directions dir, double width, int linesCountX, double formatHeight, AutoAdjustmentMode autoAdjust, double maxX)
         {
             var centerX = 0.0;
             var radius = 0.0;
@@ -3793,7 +3749,7 @@ namespace ag.WPF.Chart
                 if (!chartStyle.In(ChartStyle.HighLowClose, ChartStyle.OpenHighLowClose))
                     return HorizontalAlignment.Right;
                 var totalValues = seriesArray.First().Values.Select(v => (v.CompositeValue.HighValue, v.CompositeValue.LowValue));
-                dir = Utils.GetDirectionFinancial(totalValues, chartStyle);
+                dir = Utils.GetDirectionFinancial(totalValues);
             }
             else
                 return HorizontalAlignment.Right;
@@ -3865,7 +3821,7 @@ namespace ag.WPF.Chart
                 if (!chartStyle.In(ChartStyle.HighLowClose, ChartStyle.OpenHighLowClose))
                     return 2;
                 var totalValues = seriesArray.First().Values.Select(v => (v.CompositeValue.HighValue, v.CompositeValue.LowValue));
-                dir = Utils.GetDirectionFinancial(totalValues, chartStyle);
+                dir = Utils.GetDirectionFinancial(totalValues);
             }
             else
                 return 2;
@@ -3937,7 +3893,7 @@ namespace ag.WPF.Chart
                 if (!chartStyle.In(ChartStyle.HighLowClose, ChartStyle.OpenHighLowClose))
                     return VerticalAlignment.Top;
                 var totalValues = seriesArray.First().Values.Select(v => (v.CompositeValue.HighValue, v.CompositeValue.LowValue));
-                dir = Utils.GetDirectionFinancial(totalValues, chartStyle);
+                dir = Utils.GetDirectionFinancial(totalValues);
             }
             else
                 return VerticalAlignment.Top;
@@ -4009,7 +3965,7 @@ namespace ag.WPF.Chart
                 if (!chartStyle.In(ChartStyle.HighLowClose, ChartStyle.OpenHighLowClose))
                     return 5;
                 var totalValues = seriesArray.First().Values.Select(v => (v.CompositeValue.HighValue, v.CompositeValue.LowValue));
-                dir = Utils.GetDirectionFinancial(totalValues, chartStyle);
+                dir = Utils.GetDirectionFinancial(totalValues);
             }
             else
                 return 5;
@@ -4081,7 +4037,7 @@ namespace ag.WPF.Chart
                 if (!chartStyle.In(ChartStyle.HighLowClose, ChartStyle.OpenHighLowClose))
                     return 2;
                 var totalValues = seriesArray.First().Values.Select(v => (v.CompositeValue.HighValue, v.CompositeValue.LowValue));
-                dir = Utils.GetDirectionFinancial(totalValues, chartStyle);
+                dir = Utils.GetDirectionFinancial(totalValues);
             }
             else
                 return 2;
@@ -4149,7 +4105,7 @@ namespace ag.WPF.Chart
                 if (!chartStyle.In(ChartStyle.HighLowClose, ChartStyle.OpenHighLowClose))
                     return 5;
                 var totalValues = seriesArray.First().Values.Select(v => (v.CompositeValue.HighValue, v.CompositeValue.LowValue));
-                dir = Utils.GetDirectionFinancial(totalValues, chartStyle);
+                dir = Utils.GetDirectionFinancial(totalValues);
             }
             else
                 return 5;
@@ -4218,7 +4174,7 @@ namespace ag.WPF.Chart
                 if (!chartStyle.In(ChartStyle.HighLowClose, ChartStyle.OpenHighLowClose))
                     return VerticalAlignment.Bottom;
                 var totalValues = seriesArray.First().Values.Select(v => (v.CompositeValue.HighValue, v.CompositeValue.LowValue));
-                dir = Utils.GetDirectionFinancial(totalValues, chartStyle);
+                dir = Utils.GetDirectionFinancial(totalValues);
             }
             else
                 return VerticalAlignment.Bottom;
@@ -4286,7 +4242,7 @@ namespace ag.WPF.Chart
                 if (!chartStyle.In(ChartStyle.HighLowClose, ChartStyle.OpenHighLowClose))
                     return HorizontalAlignment.Left;
                 var totalValues = seriesArray.First().Values.Select(v => (v.CompositeValue.HighValue, v.CompositeValue.LowValue));
-                dir = Utils.GetDirectionFinancial(totalValues, chartStyle);
+                dir = Utils.GetDirectionFinancial(totalValues);
             }
             else
                 return HorizontalAlignment.Left;
@@ -4486,7 +4442,7 @@ namespace ag.WPF.Chart
                     return height;
 
                 var totalValues = seriesArray[0].Values.Select(v => (v.CompositeValue.HighValue, v.CompositeValue.LowValue));
-                dir = Utils.GetDirectionFinancial(totalValues, chartStyle);
+                dir = Utils.GetDirectionFinancial(totalValues);
                 maxFromValues = autoAdjust.In(AutoAdjustmentMode.Both, AutoAdjustmentMode.Vertical) ? seriesArray[0].Values.Count.ToString(culture).Length : maxX.ToString(culture).Length;
             }
             else
@@ -4618,7 +4574,7 @@ namespace ag.WPF.Chart
                     return 0.0;
 
                 var totalValues = seriesArray[0].Values.Select(v => (v.CompositeValue.HighValue, v.CompositeValue.LowValue));
-                dir = Utils.GetDirectionFinancial(totalValues, chartStyle);
+                dir = Utils.GetDirectionFinancial(totalValues);
             }
             else
                 return 0.0;
@@ -4994,7 +4950,7 @@ namespace ag.WPF.Chart
             else if (seriesArray.All(s => s.IsStockSeries()))
             {
                 var totalValues = seriesArray[0].Values.Select(v => (v.CompositeValue.HighValue, v.CompositeValue.LowValue));
-                dir = Utils.GetDirectionFinancial(totalValues, chartStyle);
+                dir = Utils.GetDirectionFinancial(totalValues);
             }
             else
                 return null;
@@ -5242,7 +5198,7 @@ namespace ag.WPF.Chart
                     return null;
 
                 var totalValues = seriesArray[0].Values.Select(v => (v.CompositeValue.HighValue, v.CompositeValue.LowValue));
-                dir = Utils.GetDirectionFinancial(totalValues, chartStyle);
+                dir = Utils.GetDirectionFinancial(totalValues);
                 var rawValues = Utils.GetPaddedSeriesFinancial(seriesArray[0]);
                 ticks = rawValues.Max(rw => rw.Values.Count);
             }
@@ -5649,7 +5605,7 @@ namespace ag.WPF.Chart
                     return null;
 
                 var totalValues = seriesArray[0].Values.Select(v => (v.CompositeValue.HighValue, v.CompositeValue.LowValue));
-                dir = Utils.GetDirectionFinancial(totalValues, chartStyle);
+                dir = Utils.GetDirectionFinancial(totalValues);
                 ticks = seriesArray[0].Values.Count;
             }
             else
@@ -6080,7 +6036,7 @@ namespace ag.WPF.Chart
                     return null;
 
                 var totalValues = seriesArray[0].Values.Select(v => (v.CompositeValue.HighValue, v.CompositeValue.LowValue));
-                dir = Utils.GetDirectionFinancial(totalValues, chartStyle);
+                dir = Utils.GetDirectionFinancial(totalValues);
                 ticks = seriesArray[0].Values.Count;
             }
             else
@@ -6355,7 +6311,7 @@ namespace ag.WPF.Chart
                     return null;
 
                 var totalValues = seriesArray[0].Values.Select(v => (v.CompositeValue.HighValue, v.CompositeValue.LowValue));
-                dir = Utils.GetDirectionFinancial(totalValues, chartStyle);
+                dir = Utils.GetDirectionFinancial(totalValues);
             }
             else
                 return null;

@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ag.WPF.Chart
 {
@@ -24,22 +20,22 @@ namespace ag.WPF.Chart
         internal ChartItemsCollection()
         {
             if (_innerCollection != null)
-                _innerCollection.CollectionChanged -= _innerCollection_CollectionChanged;
+                _innerCollection.CollectionChanged -= innerCollection_CollectionChanged;
             _useSource = false;
             _innerCollection = new ObservableCollection<T>();
-            _innerCollection.CollectionChanged += _innerCollection_CollectionChanged;
+            _innerCollection.CollectionChanged += innerCollection_CollectionChanged;
         }
 
         internal ChartItemsCollection(IEnumerable<T> source)
         {
             if (_innerCollection != null)
-                _innerCollection.CollectionChanged -= _innerCollection_CollectionChanged;
+                _innerCollection.CollectionChanged -= innerCollection_CollectionChanged;
             _useSource = true;
             _innerCollection = new ObservableCollection<T>(source);
-            _innerCollection.CollectionChanged += _innerCollection_CollectionChanged;
+            _innerCollection.CollectionChanged += innerCollection_CollectionChanged;
         }
 
-        private void _innerCollection_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        private void innerCollection_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             if (_useSource) return;
             CollectionChanged?.Invoke(sender, e);
@@ -64,8 +60,7 @@ namespace ag.WPF.Chart
         /// <inheritdoc />
         public bool Remove(T item)
         {
-            if (_useSource) return false;
-            return _innerCollection.Remove(item);
+            return !_useSource && _innerCollection.Remove(item);
         }
 
         /// <inheritdoc />

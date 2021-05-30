@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace ag.WPF.Chart.Values
+﻿namespace ag.WPF.Chart.Values
 {
     /// <summary>
     /// Represents stock value object (with open, high, low, and close values).

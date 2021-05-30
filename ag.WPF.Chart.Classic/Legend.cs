@@ -1,12 +1,11 @@
-﻿using ag.WPF.Chart.Series;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 
 namespace ag.WPF.Chart
 {
-    
+
     /// <summary>
     /// Represents series legend
     /// </summary>
@@ -35,16 +34,16 @@ namespace ag.WPF.Chart
         /// </summary>
         public Brush LegendBackground
         {
-            get { return (Brush)GetValue(LegendBackgroundProperty); }
-            set { SetValue(LegendBackgroundProperty, value); }
+            get => (Brush)GetValue(LegendBackgroundProperty);
+            set => SetValue(LegendBackgroundProperty, value);
         }
         /// <summary>
         /// Gets or sets legend text
         /// </summary>
         public string Text
         {
-            get { return (string)GetValue(TextProperty); }
-            set { SetValue(TextProperty, value); }
+            get => (string)GetValue(TextProperty);
+            set => SetValue(TextProperty, value);
         }
 
         internal int Index { get; set; }

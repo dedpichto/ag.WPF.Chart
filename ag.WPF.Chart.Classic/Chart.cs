@@ -1,4 +1,6 @@
-﻿using System;
+﻿using ag.WPF.Chart.Series;
+using ag.WPF.Chart.Values;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
@@ -11,17 +13,12 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using System.Windows.Xps.Packaging;
-using ag.WPF.Chart.Values;
-using ag.WPF.Chart.Series;
 using Path = System.Windows.Shapes.Path;
-using System.Collections;
-using System.Windows.Markup;
 
 namespace ag.WPF.Chart
 {
@@ -1538,8 +1535,8 @@ namespace ag.WPF.Chart
         [Category("ChartLegend"), Description("Gets or sets the collection of custom legend text when ChartStyle is set to ChartStyle.OpenHighLowClose")]
         public IEnumerable<string> LegendsOpenHighLowClose
         {
-            get { return (IEnumerable<string>)GetValue(LegendsOpenHighLowCloseProperty); }
-            set { SetValue(LegendsOpenHighLowCloseProperty, value); }
+            get => (IEnumerable<string>)GetValue(LegendsOpenHighLowCloseProperty);
+            set => SetValue(LegendsOpenHighLowCloseProperty, value);
         }
         /// <summary>
         /// Gets or sets the collection of custom legend text when <see cref="ChartStyle"/> is set to <see cref="ChartStyle.HighLowClose"/>.
@@ -1547,8 +1544,8 @@ namespace ag.WPF.Chart
         [Category("ChartLegend"), Description("Gets or sets the collection of custom legend text when ChartStyle is set to ChartStyle.HighLowClose")]
         public IEnumerable<string> LegendsHighLowClose
         {
-            get { return (IEnumerable<string>)GetValue(LegendsHighLowCloseProperty); }
-            set { SetValue(LegendsHighLowCloseProperty, value); }
+            get => (IEnumerable<string>)GetValue(LegendsHighLowCloseProperty);
+            set => SetValue(LegendsHighLowCloseProperty, value);
         }
         /// <summary>
         /// Gets or sets the collection of custom legend text when <see cref="ChartStyle"/> is set to <see cref="ChartStyle.Waterfall"/>.
@@ -1556,8 +1553,8 @@ namespace ag.WPF.Chart
         [Category("ChartLegend"), Description("Gets or sets the collection of custom legend text when ChartStyle is set to ChartStyle.Waterfall")]
         public IEnumerable<string> LegendsWaterfall
         {
-            get { return (IEnumerable<string>)GetValue(LegendsWaterfallProperty); }
-            set { SetValue(LegendsWaterfallProperty, value); }
+            get => (IEnumerable<string>)GetValue(LegendsWaterfallProperty);
+            set => SetValue(LegendsWaterfallProperty, value);
         }
         /// <summary>
         /// Gets or sets the collection of <see cref="WPF.Chart.Series"/> objects associated with chart control.
@@ -1573,7 +1570,7 @@ namespace ag.WPF.Chart
                 else
                     return SeriesItems;
             }
-            set { SetValue(SeriesSourceProperty, value); }
+            set => SetValue(SeriesSourceProperty, value);
         }
         /// <summary>
         /// Gets the collection of <see cref="ISeries"/> objects used to generate the content of the <see cref="Chart"/> control.
@@ -1621,8 +1618,8 @@ namespace ag.WPF.Chart
         [Category("ChartAppearance"), Description("Specifies whether chart boundary is started on y-axes or with offfset from y-axes")]
         public ChartBoundary ChartBoundary
         {
-            get { return (ChartBoundary)GetValue(ChartBoundaryProperty); }
-            set { SetValue(ChartBoundaryProperty, value); }
+            get => (ChartBoundary)GetValue(ChartBoundaryProperty);
+            set => SetValue(ChartBoundaryProperty, value);
         }
         /// <summary>
         /// Specifies whether ticks are drawn on axes. Can be one of <see cref="AxesVisibility"/> enumeration members.
@@ -1631,8 +1628,8 @@ namespace ag.WPF.Chart
         [Category("ChartAppearance"), Description("Specifies whether ticks are drawn on axes. Can be one of AxesValuesVisibility enumeration members")]
         public AxesVisibility ShowTicks
         {
-            get { return (AxesVisibility)GetValue(ShowTicksProperty); }
-            set { SetValue(ShowTicksProperty, value); }
+            get => (AxesVisibility)GetValue(ShowTicksProperty);
+            set => SetValue(ShowTicksProperty, value);
         }
         /// <summary>
         /// Gets or sets the chart legend's font family.
@@ -1640,8 +1637,8 @@ namespace ag.WPF.Chart
         [Category("ChartLegend"), Description("Gets or sets the chart legend's font family")]
         public FontFamily LegendFontFamily
         {
-            get { return (FontFamily)GetValue(LegendFontFamilyProperty); }
-            set { SetValue(LegendFontFamilyProperty, value); }
+            get => (FontFamily)GetValue(LegendFontFamilyProperty);
+            set => SetValue(LegendFontFamilyProperty, value);
         }
         /// <summary>
         /// Gets or sets the chart legend's font wweight.
@@ -1649,8 +1646,8 @@ namespace ag.WPF.Chart
         [Category("ChartLegend"), Description("Gets or sets the chart legend's font wweight")]
         public FontWeight LegendFontWeight
         {
-            get { return (FontWeight)GetValue(LegendFontWeightProperty); }
-            set { SetValue(LegendFontWeightProperty, value); }
+            get => (FontWeight)GetValue(LegendFontWeightProperty);
+            set => SetValue(LegendFontWeightProperty, value);
         }
         /// <summary>
         /// Gets or sets the chart legend's font style.
@@ -1658,8 +1655,8 @@ namespace ag.WPF.Chart
         [Category("ChartLegend"), Description("Gets or sets the chart legend's font style")]
         public FontStyle LegendFontStyle
         {
-            get { return (FontStyle)GetValue(LegendFontStyleProperty); }
-            set { SetValue(LegendFontStyleProperty, value); }
+            get => (FontStyle)GetValue(LegendFontStyleProperty);
+            set => SetValue(LegendFontStyleProperty, value);
         }
         /// <summary>
         /// Gets or sets the chart legend's font size.
@@ -1667,8 +1664,8 @@ namespace ag.WPF.Chart
         [Category("ChartLegend"), Description("Gets or sets the chart legend's font size")]
         public double LegendFontSize
         {
-            get { return (double)GetValue(LegendFontSizeProperty); }
-            set { SetValue(LegendFontSizeProperty, value); }
+            get => (double)GetValue(LegendFontSizeProperty);
+            set => SetValue(LegendFontSizeProperty, value);
         }
         /// <summary>
         /// Gets or sets the shape of the chart legend. Can be one of <see cref="LegendShape"/> enumeration members.
@@ -1676,8 +1673,8 @@ namespace ag.WPF.Chart
         [Category("ChartLegend"), Description("Gets or sets the shape of the chart legend. Can be one of LegendShape enumeration members")]
         public ShapeStyle LegendShape
         {
-            get { return (ShapeStyle)GetValue(LegendShapeProperty); }
-            set { SetValue(LegendShapeProperty, value); }
+            get => (ShapeStyle)GetValue(LegendShapeProperty);
+            set => SetValue(LegendShapeProperty, value);
         }
         /// <summary>
         /// Gets or sets the size of the chart legend. Can be one of <see cref="LegendSize"/> enumeration members.
@@ -1685,8 +1682,8 @@ namespace ag.WPF.Chart
         [Category("ChartLegend"), Description("Gets or sets the size of the chart legend. Can be one of LegendSize enumeration members")]
         public LegendSize LegendSize
         {
-            get { return (LegendSize)GetValue(LegendSizeProperty); }
-            set { SetValue(LegendSizeProperty, value); }
+            get => (LegendSize)GetValue(LegendSizeProperty);
+            set => SetValue(LegendSizeProperty, value);
         }
         /// <summary>
         /// Specifies whether control will automatically adjust its max x- and y- values or they should be set explicitly.
@@ -1695,8 +1692,8 @@ namespace ag.WPF.Chart
         [Category("ChartAppearance"), Description("Specifies whether control will automatically adjust its max x- and y- values or they should be set explicitly")]
         public AutoAdjustmentMode AutoAdjustment
         {
-            get { return (AutoAdjustmentMode)GetValue(AutoAdjustmentProperty); }
-            set { SetValue(AutoAdjustmentProperty, value); }
+            get => (AutoAdjustmentMode)GetValue(AutoAdjustmentProperty);
+            set => SetValue(AutoAdjustmentProperty, value);
         }
         /// <summary>
         /// Gets or sets the shape of chart series markers.
@@ -1704,8 +1701,8 @@ namespace ag.WPF.Chart
         [Category("ChartAppearance"), Description("Gets or sets the shape of chart series markers")]
         public ShapeStyle MarkerShape
         {
-            get { return (ShapeStyle)GetValue(MarkerShapeProperty); }
-            set { SetValue(MarkerShapeProperty, value); }
+            get => (ShapeStyle)GetValue(MarkerShapeProperty);
+            set => SetValue(MarkerShapeProperty, value);
         }
         /// <summary>
         /// Gets or sets max numeric value for vertical axis. The default value is 100.
@@ -1714,8 +1711,8 @@ namespace ag.WPF.Chart
         [Category("ChartMeasures"), Description("Gets or sets max numeric value for vertical axis. The default value is 100")]
         public double MaxY
         {
-            get { return (double)GetValue(MaxYProperty); }
-            set { SetValue(MaxYProperty, value); }
+            get => (double)GetValue(MaxYProperty);
+            set => SetValue(MaxYProperty, value);
         }
         /// <summary>
         /// Gets or sets max numeric value for horizontal axis. The default value is 100.
@@ -1724,8 +1721,8 @@ namespace ag.WPF.Chart
         [Category("ChartMeasures"), Description("Gets or sets max numeric value for horizontal axis. The default value is 100")]
         public double MaxX
         {
-            get { return (double)GetValue(MaxXProperty); }
-            set { SetValue(MaxXProperty, value); }
+            get => (double)GetValue(MaxXProperty);
+            set => SetValue(MaxXProperty, value);
         }
         /// <summary>
         /// Gets or sets the thickness of the chart lines. The default value is 2.0 px.
@@ -1733,8 +1730,8 @@ namespace ag.WPF.Chart
         [Category("ChartAppearance"), Description("Gets or sets the thickness of the chart lines. The default value is 2.0 px")]
         public double LineThickness
         {
-            get { return (double)GetValue(LineThicknessProperty); }
-            set { SetValue(LineThicknessProperty, value); }
+            get => (double)GetValue(LineThicknessProperty);
+            set => SetValue(LineThicknessProperty, value);
         }
         /// <summary>
         /// Gets or set the chart opacity in range of 0.0 (fully transparent) to 1.0 (fully opaque).
@@ -1742,8 +1739,8 @@ namespace ag.WPF.Chart
         [Category("ChartAppearance"), Description("Gets or set the chart opacity in range of 0.0 (fully transparent) to 1.0 (fully opaque)")]
         public double ChartOpacity
         {
-            get { return (double)GetValue(ChartOpacityProperty); }
-            set { SetValue(ChartOpacityProperty, value); }
+            get => (double)GetValue(ChartOpacityProperty);
+            set => SetValue(ChartOpacityProperty, value);
         }
         /// <summary>
         /// Gets or sets the custom sequence of strings to be drawn next to x-axis instead of numeric values.
@@ -1751,8 +1748,8 @@ namespace ag.WPF.Chart
         [Category("ChartAxes"), Description("Gets or sets the custom sequence of strings to be drawn next to x-axis instead of numeric values")]
         public IEnumerable<string> CustomValuesX
         {
-            get { return (IEnumerable<string>)GetValue(CustomValuesXProperty); }
-            set { SetValue(CustomValuesXProperty, value); }
+            get => (IEnumerable<string>)GetValue(CustomValuesXProperty);
+            set => SetValue(CustomValuesXProperty, value);
         }
         /// <summary>
         /// Gets or sets the custom sequence of strings to be drawn next to y-axis instead of numeric values.
@@ -1760,8 +1757,8 @@ namespace ag.WPF.Chart
         [Category("ChartAxes"), Description("Gets or sets the custom sequence of strings to be drawn next to y-axis instead of numeric values")]
         public IEnumerable<string> CustomValuesY
         {
-            get { return (IEnumerable<string>)GetValue(CustomValuesYProperty); }
-            set { SetValue(CustomValuesYProperty, value); }
+            get => (IEnumerable<string>)GetValue(CustomValuesYProperty);
+            set => SetValue(CustomValuesYProperty, value);
         }
         /// <summary>
         /// Gets or sets the visibility state of x- and y- axes numeric/custom values. Can be one of <see cref="AxesVisibility"/> enumeration members.
@@ -1770,8 +1767,8 @@ namespace ag.WPF.Chart
         [Category("ChartAxes"), Description("Gets or sets the visibility state of x- and y- axes numeric/custom values. Can be one of AxesValuesVisibility enumeration members")]
         public AxesVisibility AxesValuesVisibility
         {
-            get { return (AxesVisibility)GetValue(AxesValuesVisibilityProperty); }
-            set { SetValue(AxesValuesVisibilityProperty, value); }
+            get => (AxesVisibility)GetValue(AxesValuesVisibilityProperty);
+            set => SetValue(AxesValuesVisibilityProperty, value);
         }
         /// <summary>
         /// Gets or sets the visibility state of x- and y- axes lines. Can be one of <see cref="AxesVisibility"/> enumeration members.
@@ -1780,8 +1777,8 @@ namespace ag.WPF.Chart
         [Category("ChartAxes"), Description("Gets or sets the visibility state of x- and y- axes lines. Can be one of AxesValuesVisibility enumeration members")]
         public AxesVisibility AxesLinesVisibility
         {
-            get { return (AxesVisibility)GetValue(AxesLinesVisibilityProperty); }
-            set { SetValue(AxesLinesVisibilityProperty, value); }
+            get => (AxesVisibility)GetValue(AxesLinesVisibilityProperty);
+            set => SetValue(AxesLinesVisibilityProperty, value);
         }
         /// <summary>
         /// Gets or sets the visibility state of secondary horizontal and vertical lines. Can be one of <see cref="AxesVisibility"/> enumeration members.
@@ -1790,8 +1787,8 @@ namespace ag.WPF.Chart
         [Category("ChartAppearance"), Description("Gets or sets the visibility state of secondary horizontal and vertical lines. Can be one of AxesValuesVisibility enumeration members")]
         public AxesVisibility SecondaryLinesVisibility
         {
-            get { return (AxesVisibility)GetValue(SecondaryLinesVisibilityProperty); }
-            set { SetValue(SecondaryLinesVisibilityProperty, value); }
+            get => (AxesVisibility)GetValue(SecondaryLinesVisibilityProperty);
+            set => SetValue(SecondaryLinesVisibilityProperty, value);
         }
         /// <summary>
         /// Gets or sets the chart style. Can be one of <see cref="ChartStyle"/> enumeration members.
@@ -1799,8 +1796,8 @@ namespace ag.WPF.Chart
         [Category("ChartAppearance"), Description("Gets or sets the chart style. Can be one of ChartStyle enumeration members")]
         public ChartStyle ChartStyle
         {
-            get { return (ChartStyle)GetValue(ChartStyleProperty); }
-            set { SetValue(ChartStyleProperty, value); }
+            get => (ChartStyle)GetValue(ChartStyleProperty);
+            set => SetValue(ChartStyleProperty, value);
         }
         /// <summary>
         /// Specifies whether values should be drawn on bars and columns.
@@ -1808,8 +1805,8 @@ namespace ag.WPF.Chart
         [Category("ChartAppearance"), Description("Specifies whether values should be drawn on bars and columns")]
         public bool ShowValuesOnBarsAndColumns
         {
-            get { return (bool)GetValue(ShowValuesOnBarsAndColumnsProperty); }
-            set { SetValue(ShowValuesOnBarsAndColumnsProperty, value); }
+            get => (bool)GetValue(ShowValuesOnBarsAndColumnsProperty);
+            set => SetValue(ShowValuesOnBarsAndColumnsProperty, value);
         }
         /// <summary>
         /// Specifies whether chart legends should be shown.
@@ -1817,8 +1814,8 @@ namespace ag.WPF.Chart
         [Category("ChartLegend"), Description("Specifies whether chart legends should be shown")]
         public bool ShowLegend
         {
-            get { return (bool)GetValue(ShowLegendProperty); }
-            set { SetValue(ShowLegendProperty, value); }
+            get => (bool)GetValue(ShowLegendProperty);
+            set => SetValue(ShowLegendProperty, value);
         }
         /// <summary>
         /// Gets or sets the chart legend alignment. Can be one of <see cref="LegendAlignment"/> enumeration members.
@@ -1826,8 +1823,8 @@ namespace ag.WPF.Chart
         [Category("ChartLegend"), Description("Gets or sets the chart legend alignment. Can be one of LegendAlignment enumeration members")]
         public LegendAlignment LegendAlignment
         {
-            get { return (LegendAlignment)GetValue(LegendAlignmentProperty); }
-            set { SetValue(LegendAlignmentProperty, value); }
+            get => (LegendAlignment)GetValue(LegendAlignmentProperty);
+            set => SetValue(LegendAlignmentProperty, value);
         }
         /// <summary>
         /// Gets of sets the font size of the chart's title.
@@ -1835,8 +1832,8 @@ namespace ag.WPF.Chart
         [Category("ChartTitle"), Description("Gets of sets the font size of the chart's title")]
         public double TitleFontSize
         {
-            get { return (double)GetValue(TitleFontSizeProperty); }
-            set { SetValue(TitleFontSizeProperty, value); }
+            get => (double)GetValue(TitleFontSizeProperty);
+            set => SetValue(TitleFontSizeProperty, value);
         }
         /// <summary>
         /// Gets of sets the font style of the chart's title.
@@ -1844,8 +1841,8 @@ namespace ag.WPF.Chart
         [Category("ChartTitle"), Description("Gets of sets the font style of the chart's title")]
         public FontStyle TitleFontStyle
         {
-            get { return (FontStyle)GetValue(TitleFontStyleProperty); }
-            set { SetValue(TitleFontStyleProperty, value); }
+            get => (FontStyle)GetValue(TitleFontStyleProperty);
+            set => SetValue(TitleFontStyleProperty, value);
         }
         /// <summary>
         /// Gets of sets the font weight of the chart's title.
@@ -1853,8 +1850,8 @@ namespace ag.WPF.Chart
         [Category("ChartTitle"), Description("Gets of sets the font weight of the chart's title")]
         public FontWeight TitleFontWeight
         {
-            get { return (FontWeight)GetValue(TitleFontWeightProperty); }
-            set { SetValue(TitleFontWeightProperty, value); }
+            get => (FontWeight)GetValue(TitleFontWeightProperty);
+            set => SetValue(TitleFontWeightProperty, value);
         }
         /// <summary>
         /// Gets of sets the font family of the chart's title.
@@ -1862,8 +1859,8 @@ namespace ag.WPF.Chart
         [Category("ChartTitle"), Description("Gets of sets the font family of the chart's title")]
         public FontFamily TitleFontFamily
         {
-            get { return (FontFamily)GetValue(TitleFontFamilyProperty); }
-            set { SetValue(TitleFontFamilyProperty, value); }
+            get => (FontFamily)GetValue(TitleFontFamilyProperty);
+            set => SetValue(TitleFontFamilyProperty, value);
         }
         /// <summary>
         /// Gets of sets the font stretch of the chart's title.
@@ -1871,8 +1868,8 @@ namespace ag.WPF.Chart
         [Category("ChartTitle"), Description("Gets of sets the font stretch of the chart's title")]
         public FontStretch TitleFontStretch
         {
-            get { return (FontStretch)GetValue(TitleFontStretchProperty); }
-            set { SetValue(TitleFontStretchProperty, value); }
+            get => (FontStretch)GetValue(TitleFontStretchProperty);
+            set => SetValue(TitleFontStretchProperty, value);
         }
         /// <summary>
         /// Gets of sets the font family of the chart's axes.
@@ -1880,8 +1877,8 @@ namespace ag.WPF.Chart
         [Category("ChartAxes"), Description("Gets of sets the font family of the chart's axes")]
         public FontFamily AxesFontFamily
         {
-            get { return (FontFamily)GetValue(AxesFontFamilyProperty); }
-            set { SetValue(AxesFontFamilyProperty, value); }
+            get => (FontFamily)GetValue(AxesFontFamilyProperty);
+            set => SetValue(AxesFontFamilyProperty, value);
         }
         /// <summary>
         /// Gets of sets the font weight of the chart's axes.
@@ -1889,8 +1886,8 @@ namespace ag.WPF.Chart
         [Category("ChartAxes"), Description("Gets of sets the font weight of the chart's axes")]
         public FontWeight AxesFontWeight
         {
-            get { return (FontWeight)GetValue(AxesFontWeightProperty); }
-            set { SetValue(AxesFontWeightProperty, value); }
+            get => (FontWeight)GetValue(AxesFontWeightProperty);
+            set => SetValue(AxesFontWeightProperty, value);
         }
         /// <summary>
         /// Gets of sets the font size of the chart's axes.
@@ -1898,8 +1895,8 @@ namespace ag.WPF.Chart
         [Category("ChartAxes"), Description("Gets of sets the font size of the chart's axes")]
         public double AxesFontSize
         {
-            get { return (double)GetValue(AxesFontSizeProperty); }
-            set { SetValue(AxesFontSizeProperty, value); }
+            get => (double)GetValue(AxesFontSizeProperty);
+            set => SetValue(AxesFontSizeProperty, value);
         }
         /// <summary>
         /// Gets of sets the font style of the chart's axes.
@@ -1907,8 +1904,8 @@ namespace ag.WPF.Chart
         [Category("ChartAxes"), Description("Gets of sets the font style of the chart's axes")]
         public FontStyle AxesFontStyle
         {
-            get { return (FontStyle)GetValue(AxesFontStyleProperty); }
-            set { SetValue(AxesFontStyleProperty, value); }
+            get => (FontStyle)GetValue(AxesFontStyleProperty);
+            set => SetValue(AxesFontStyleProperty, value);
         }
         /// <summary>
         /// Gets of sets the font stretch of the chart's axes.
@@ -1916,8 +1913,8 @@ namespace ag.WPF.Chart
         [Category("ChartAxes"), Description("Gets of sets the font stretch of the chart's axes")]
         public FontStretch AxesFontStretch
         {
-            get { return (FontStretch)GetValue(AxesFontStretchProperty); }
-            set { SetValue(AxesFontStretchProperty, value); }
+            get => (FontStretch)GetValue(AxesFontStretchProperty);
+            set => SetValue(AxesFontStretchProperty, value);
         }
         /// <summary>
         /// Gets or sets the text which appears on the top/bottom of the vertical axis.
@@ -1926,8 +1923,8 @@ namespace ag.WPF.Chart
         [Category("ChartAxes"), Description("Gets or sets the text which appears on the top/bottom of the vertical axis")]
         public string AxisTitleY
         {
-            get { return (string)GetValue(AxisTitleYProperty); }
-            set { SetValue(AxisTitleYProperty, value); }
+            get => (string)GetValue(AxisTitleYProperty);
+            set => SetValue(AxisTitleYProperty, value);
         }
         /// <summary>
         /// Gets or sets the text which appears on right/left of the horizontal axis.
@@ -1936,8 +1933,8 @@ namespace ag.WPF.Chart
         [Category("ChartAxes"), Description("Gets or sets the text which appears on right/left of the horizontal axis")]
         public string AxisTitleX
         {
-            get { return (string)GetValue(AxisTitleXProperty); }
-            set { SetValue(AxisTitleXProperty, value); }
+            get => (string)GetValue(AxisTitleXProperty);
+            set => SetValue(AxisTitleXProperty, value);
         }
         /// <summary>
         /// Gets or sets the chart Title.
@@ -1945,8 +1942,8 @@ namespace ag.WPF.Chart
         [Category("ChartTitle"), Description("Gets or sets the chart's title")]
         public string Title
         {
-            get { return (string)GetValue(TitleProperty); }
-            set { SetValue(TitleProperty, value); }
+            get => (string)GetValue(TitleProperty);
+            set => SetValue(TitleProperty, value);
         }
         /// <summary>
         /// Gets or sets the amount of sections on x-axis.
@@ -1955,8 +1952,8 @@ namespace ag.WPF.Chart
         [Category("ChartMeasures"), Description("Gets or sets the amount of vertical lines")]
         public int SectionsX
         {
-            get { return (int)GetValue(SectionsXProperty); }
-            set { SetValue(SectionsXProperty, value); }
+            get => (int)GetValue(SectionsXProperty);
+            set => SetValue(SectionsXProperty, value);
         }
         /// <summary>
         /// Gets or sets the amount of sections on y-axis.
@@ -1965,8 +1962,8 @@ namespace ag.WPF.Chart
         [Category("ChartMeasures"), Description("Gets or sets the amount of horizontal lines")]
         public int SectionsY
         {
-            get { return (int)GetValue(SectionsYProperty); }
-            set { SetValue(SectionsYProperty, value); }
+            get => (int)GetValue(SectionsYProperty);
+            set => SetValue(SectionsYProperty, value);
         }
         /// <summary>
         /// Gets or sets the format for numeric values drawn next to the vertical axis.
@@ -1975,8 +1972,8 @@ namespace ag.WPF.Chart
         [Category("ChartAxes"), Description("Gets or sets the format for numeric values drawn next to the vertical axis")]
         public string ValuesFormatY
         {
-            get { return (string)GetValue(ValuesFormatYProperty); }
-            set { SetValue(ValuesFormatYProperty, value); }
+            get => (string)GetValue(ValuesFormatYProperty);
+            set => SetValue(ValuesFormatYProperty, value);
         }
         /// <summary>
         /// Gets or sets the format for numeric values drawn next to the horizontal axis.
@@ -1985,8 +1982,8 @@ namespace ag.WPF.Chart
         [Category("ChartAxes"), Description("Gets or sets the format for numeric values drawn next to the horizontal axis")]
         public string HorizontalAxisValuesFormat
         {
-            get { return (string)GetValue(ValuesFormatX); }
-            set { SetValue(ValuesFormatX, value); }
+            get => (string)GetValue(ValuesFormatX);
+            set => SetValue(ValuesFormatX, value);
         }
         /// <summary>
         /// Gets or sets the numeric format for pie percents.
@@ -1994,8 +1991,8 @@ namespace ag.WPF.Chart
         [Category("ChartAppearance"), Description("Gets or sets the numeric format for pie percents")]
         public string PiePercentsFormat
         {
-            get { return (string)GetValue(PiePercentsFormatProperty); }
-            set { SetValue(PiePercentsFormatProperty, value); }
+            get => (string)GetValue(PiePercentsFormatProperty);
+            set => SetValue(PiePercentsFormatProperty, value);
         }
         /// <summary>
         /// Gets legends collection.

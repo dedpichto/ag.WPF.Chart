@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
+﻿using System.Windows;
 
 namespace ag.WPF.Chart.Values
 {
@@ -23,8 +18,8 @@ namespace ag.WPF.Chart.Values
         /// <inheritdoc />
         public IChartCompositeValue CompositeValue
         {
-            get { return (IChartCompositeValue)GetValue(CompositeValueProperty); }
-            set { SetValue(CompositeValueProperty, value); }
+            get => (IChartCompositeValue)GetValue(CompositeValueProperty);
+            set => SetValue(CompositeValueProperty, value);
         }
         /// <inheritdoc />
         public string CustomValue { get; set; }

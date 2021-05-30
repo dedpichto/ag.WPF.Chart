@@ -1,17 +1,6 @@
-﻿using System;
+﻿using ag.WPF.Chart.Values;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Collections.Specialized;
-using System.ComponentModel;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Controls.Primitives;
-using System.Windows.Data;
 using System.Windows.Media;
-using System.Windows.Shapes;
-using ag.WPF.Chart.Values;
 
 namespace ag.WPF.Chart.Series
 {
