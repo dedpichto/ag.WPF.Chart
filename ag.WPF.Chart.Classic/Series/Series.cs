@@ -40,12 +40,9 @@ namespace ag.WPF.Chart.Series
             get
             {
                 var b = BindingOperations.GetBinding(this, ValuesSourceProperty);
-                if (b != null)
-                    return (IEnumerable<IChartValue>)GetValue(ValuesSourceProperty);
-                else
-                    return Values;
-            }            
-            set { SetValue(ValuesSourceProperty, value); }
+                return b != null ? (IEnumerable<IChartValue>)GetValue(ValuesSourceProperty) : Values;
+            }
+            set => SetValue(ValuesSourceProperty, value);
         }
         /// <inheritdoc />
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Content)]
@@ -70,7 +67,7 @@ namespace ag.WPF.Chart.Series
         /// <inheritdoc />
         public Brush MainBrush
         {
-            get { return _mainBrush; }
+            get => _mainBrush;
             set
             {
                 if (Equals(_mainBrush, value)) return;
@@ -81,7 +78,7 @@ namespace ag.WPF.Chart.Series
         /// <inheritdoc />
         public Brush SecondaryBrush
         {
-            get { return _secondaryBrush; }
+            get => _secondaryBrush;
             set
             {
                 if (Equals(_secondaryBrush, value)) return;
@@ -92,7 +89,7 @@ namespace ag.WPF.Chart.Series
         /// <inheritdoc />
         public string Name
         {
-            get { return _name; }
+            get => _name;
             set
             {
                 if (string.Equals(_name, value, StringComparison.Ordinal)) return;
@@ -103,7 +100,7 @@ namespace ag.WPF.Chart.Series
         /// <inheritdoc />
         public int Index
         {
-            get { return _index; }
+            get => _index;
             set
             {
                 if (_index == value) return; _index = value;
