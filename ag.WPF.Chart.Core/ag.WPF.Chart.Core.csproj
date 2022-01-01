@@ -26,18 +26,18 @@
     <Compile Include="..\ag.WPF.Chart.Classic\Series\PlainSeries.cs" Link="Series\PlainSeries.cs" />
     <Compile Include="..\ag.WPF.Chart.Classic\Series\Series.cs" Link="Series\Series.cs" />
     <Compile Include="..\ag.WPF.Chart.Classic\Statics.cs" Link="Statics.cs" />
-    <Compile Include="..\ag.WPF.Chart.Classic\Values\ChartCompositeValue.cs" Link="Valuess\ChartCompositeValue.cs" />
-    <Compile Include="..\ag.WPF.Chart.Classic\Values\ChartValue.cs" Link="Valuess\ChartValue.cs" />
-    <Compile Include="..\ag.WPF.Chart.Classic\Values\HighLowCloseChartValue.cs" Link="Valuess\HighLowCloseChartValue.cs" />
-    <Compile Include="..\ag.WPF.Chart.Classic\Values\IChartCompositeValue.cs" Link="Valuess\IChartCompositeValue.cs" />
-    <Compile Include="..\ag.WPF.Chart.Classic\Values\IChartValue.cs" Link="Valuess\IChartValue.cs" />
-    <Compile Include="..\ag.WPF.Chart.Classic\Values\OpenHighLowCloseChartValue.cs" Link="Valuess\OpenHighLowCloseChartValue.cs" />
-    <Compile Include="..\ag.WPF.Chart.Classic\Values\PlainChartValue.cs" Link="Valuess\PlainChartValue.cs" />
+    <Compile Include="..\ag.WPF.Chart.Classic\Values\ChartCompositeValue.cs" Link="Values\ChartCompositeValue.cs" />
+    <Compile Include="..\ag.WPF.Chart.Classic\Values\ChartValue.cs" Link="Values\ChartValue.cs" />
+    <Compile Include="..\ag.WPF.Chart.Classic\Values\HighLowCloseChartValue.cs" Link="Values\HighLowCloseChartValue.cs" />
+    <Compile Include="..\ag.WPF.Chart.Classic\Values\IChartCompositeValue.cs" Link="Values\IChartCompositeValue.cs" />
+    <Compile Include="..\ag.WPF.Chart.Classic\Values\IChartValue.cs" Link="Values\IChartValue.cs" />
+    <Compile Include="..\ag.WPF.Chart.Classic\Values\OpenHighLowCloseChartValue.cs" Link="Values\OpenHighLowCloseChartValue.cs" />
+    <Compile Include="..\ag.WPF.Chart.Classic\Values\PlainChartValue.cs" Link="Values\PlainChartValue.cs" />
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="Series\" />
-    <Folder Include="Valuess\" />
+    <Folder Include="Values\" />
     <Folder Include="Themes\" />
   </ItemGroup>
 
