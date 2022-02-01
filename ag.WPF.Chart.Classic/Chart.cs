@@ -1510,9 +1510,10 @@ namespace ag.WPF.Chart
         {
             if (series.Index > 0) return;
             PieLegendsCollection.Clear();
-            for (int i = 0, brushIndex = 0; i < values.Count(); i++)
+            var valuesArray = values.ToArray();
+            for (int i = 0, brushIndex = 0; i < valuesArray.Length; i++)
             {
-                var v = values.First();
+                var v = valuesArray[i];
                 if (brushIndex == PredefinedMainBrushes.Length) brushIndex = 0;
                 var legend = new Legend
                 {
