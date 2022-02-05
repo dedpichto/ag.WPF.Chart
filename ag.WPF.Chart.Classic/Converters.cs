@@ -97,15 +97,9 @@ namespace ag.WPF.Chart
                     yield return max / (b * (long)Math.Pow(10, p));
         }
 
-        private static bool isEven(double number)
-        {
-            return (number % 2) < double.Epsilon;
-        }
+        private static bool isEven(double number) => (number % 2) < double.Epsilon;
 
-        private static bool is5Delimited(double number)
-        {
-            return (number % 5) < double.Epsilon;
-        }
+        private static bool is5Delimited(double number) => (number % 5) < double.Epsilon;
 
         private static (double max, double min) getMaxMinForWaterfall(double[] values)
         {
@@ -120,10 +114,7 @@ namespace ag.WPF.Chart
             return (list.Max(), list.Min());
         }
 
-        private static int getMaxFractionPower(IEnumerable<double> numbers)
-        {
-            return numbers.Select(n => GetDecimalPlaces(n)).Max();
-        }
+        private static int getMaxFractionPower(IEnumerable<double> numbers) => numbers.Select(n => GetDecimalPlaces(n)).Max();
 
         internal static (string numericPart, string literalPart) GetFormatParts(string format, CultureInfo culture)
         {
@@ -152,10 +143,7 @@ namespace ag.WPF.Chart
             }
         }
 
-        internal static int GetDecimalPlaces(double number)
-        {
-            return BitConverter.GetBytes(decimal.GetBits((decimal)number)[3])[2];
-        }
+        internal static int GetDecimalPlaces(double number) => BitConverter.GetBytes(decimal.GetBits((decimal)number)[3])[2];
 
         internal static double GetUnitsForBars(ISeries[] series, ChartStyle chartStyle, Directions dir, double width, int linesCountX, double formatHeight, bool autoAdjust, double maxX)
         {
@@ -1059,7 +1047,7 @@ namespace ag.WPF.Chart
 
             var values = seriesArray.All(s => s is PlainSeries)
                 ? seriesArray.SelectMany(s => s.Values.Select(v => v.CompositeValue.PlainValue))
-                : seriesArray.All(s => !(s is PlainSeries))
+                : seriesArray.All(s => s is not PlainSeries)
                     ? seriesArray[0].Values.Select(v => v.CompositeValue.HighValue).Union(seriesArray[0].Values.Select(v => v.CompositeValue.LowValue))
                     : new double[] { 0, 0 };
             max = values.Max();
@@ -1189,10 +1177,7 @@ namespace ag.WPF.Chart
             return gm;
         }
 
-        internal static bool IsInteger(double step)
-        {
-            return Math.Abs(step % 1) < double.Epsilon;
-        }
+        internal static bool IsInteger(double step) => Math.Abs(step % 1) < double.Epsilon;
 
         internal static (double step, int limit) Limits(ChartStyle style, bool offsetBoundary, int stopsX, int ticks,
             double boundOffset, double width)
@@ -1211,30 +1196,15 @@ namespace ag.WPF.Chart
                 : (width / delimeter, ticks);
         }
 
-        internal static double BoundaryOffset(bool offsetBoundary, double width, int count)
-        {
-            return offsetBoundary ? (width - 2 * AXIS_THICKNESS) / (count + 2) / 2 : 0;
-        }
+        internal static double BoundaryOffset(bool offsetBoundary, double width, int count) => offsetBoundary ? (width - 2 * AXIS_THICKNESS) / (count + 2) / 2 : 0;
 
-        internal static bool StyleRadar(ChartStyle style)
-        {
-            return style.In(ChartStyle.Radar, ChartStyle.RadarWithMarkers, ChartStyle.RadarArea);
-        }
+        internal static bool StyleRadar(ChartStyle style) => style.In(ChartStyle.Radar, ChartStyle.RadarWithMarkers, ChartStyle.RadarArea);
 
-        internal static bool StyleBars(ChartStyle style)
-        {
-            return style.In(ChartStyle.Bars, ChartStyle.StackedBars, ChartStyle.FullStackedBars);
-        }
+        internal static bool StyleBars(ChartStyle style) => style.In(ChartStyle.Bars, ChartStyle.StackedBars, ChartStyle.FullStackedBars);
 
-        internal static bool StyleMeasuredBars(ChartStyle style)
-        {
-            return style.In(ChartStyle.Bars, ChartStyle.StackedBars);
-        }
+        internal static bool StyleMeasuredBars(ChartStyle style) => style.In(ChartStyle.Bars, ChartStyle.StackedBars);
 
-        internal static bool StyleColumns(ChartStyle style)
-        {
-            return style.In(ChartStyle.Columns, ChartStyle.StackedColumns, ChartStyle.FullStackedColumns, ChartStyle.Waterfall);
-        }
+        internal static bool StyleColumns(ChartStyle style) => style.In(ChartStyle.Columns, ChartStyle.StackedColumns, ChartStyle.FullStackedColumns, ChartStyle.Waterfall);
 
         internal static bool StyleLines(ChartStyle style)
         {
@@ -1406,22 +1376,16 @@ namespace ag.WPF.Chart
                 return Directions.NorthEastSouthEast;
         }
 
-        internal static bool IsStockSeries(this ISeries series)
-        {
-            return (series is HighLowCloseSeries) || (series is OpenHighLowCloseSeries);
-        }
+        internal static bool IsStockSeries(this ISeries series) => (series is HighLowCloseSeries) || (series is OpenHighLowCloseSeries);
 
-        internal static bool In<T>(this T t, params T[] values)
-        {
-            return values.Contains(t);
-        }
+        internal static bool In<T>(this T t, params T[] values) => values.Contains(t);
     }
 
     internal class StarDrawingConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (!(value is ShapeStyle shapeStyle))
+            if (value is not ShapeStyle shapeStyle)
                 return null;
             return shapeStyle switch
             {
@@ -1434,10 +1398,7 @@ namespace ag.WPF.Chart
             };
         }
 
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            throw new NotImplementedException();
-        }
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) => throw new NotImplementedException();
     }
 
     /// <summary>
@@ -1454,9 +1415,9 @@ namespace ag.WPF.Chart
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
             if (values == null
-                || !(values[0] is double width)
-                || !(values[1] is double height)
-                || !(values[4] is ChartStyle chartStyle))
+                || values[0] is not double width
+                || values[1] is not double height
+                || values[4] is not ChartStyle chartStyle)
                 return null;
 
             var seriesEnumerable = values[2] as IEnumerable<ISeries>;
@@ -1485,9 +1446,9 @@ namespace ag.WPF.Chart
                     return null;
                 if (!seriesArray[0].Values.Any())
                     return null;
-                if (chartStyle == ChartStyle.HighLowClose && !(seriesArray[0] is HighLowCloseSeries))
+                if (chartStyle == ChartStyle.HighLowClose && seriesArray[0] is not HighLowCloseSeries)
                     return null;
-                else if (chartStyle == ChartStyle.OpenHighLowClose && !(seriesArray[0] is OpenHighLowCloseSeries))
+                else if (chartStyle == ChartStyle.OpenHighLowClose && seriesArray[0] is not OpenHighLowCloseSeries)
                     return null;
 
                 var totalValues = seriesArray.First().Values.Select(v => (v.CompositeValue.HighValue, v.CompositeValue.LowValue));
@@ -1523,10 +1484,7 @@ namespace ag.WPF.Chart
         /// <param name="targetTypes">The array of types to convert to. The array length indicates the number and types of values that are suggested for the method to return.</param>
         /// <param name="parameter">The converter parameter to use.</param>
         /// <param name="culture">The culture to use in the converter.</param>
-        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
-        {
-            return null;
-        }
+        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture) => null;
     }
 
     /// <summary>
@@ -1543,9 +1501,9 @@ namespace ag.WPF.Chart
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
             if (values == null
-                || !(values[0] is double width)
-                || !(values[1] is double height)
-                || !(values[4] is ChartStyle chartStyle))
+                || values[0] is not double width
+                || values[1] is not double height
+                || values[4] is not ChartStyle chartStyle)
                 return null;
 
             var seriesEnumerable = values[2] as IEnumerable<ISeries>;
@@ -1575,9 +1533,9 @@ namespace ag.WPF.Chart
 
                 if (!seriesArray[0].Values.Any())
                     return null;
-                if (chartStyle == ChartStyle.HighLowClose && !(seriesArray[0] is HighLowCloseSeries))
+                if (chartStyle == ChartStyle.HighLowClose && seriesArray[0] is not HighLowCloseSeries)
                     return null;
-                else if (chartStyle == ChartStyle.OpenHighLowClose && !(seriesArray[0] is OpenHighLowCloseSeries))
+                else if (chartStyle == ChartStyle.OpenHighLowClose && seriesArray[0] is not OpenHighLowCloseSeries)
                     return null;
 
                 var totalValues = seriesArray.First().Values.Select(v => (v.CompositeValue.HighValue, v.CompositeValue.LowValue));
@@ -1613,10 +1571,7 @@ namespace ag.WPF.Chart
         /// <param name="targetTypes">The array of types to convert to. The array length indicates the number and types of values that are suggested for the method to return.</param>
         /// <param name="parameter">The converter parameter to use.</param>
         /// <param name="culture">The culture to use in the converter.</param>
-        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
-        {
-            return null;
-        }
+        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture) => null;
     }
 
     internal class LegendPieVisibilityConverter : IMultiValueConverter
@@ -1632,10 +1587,7 @@ namespace ag.WPF.Chart
             return Visibility.Visible;
         }
 
-        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
-        {
-            throw new NotImplementedException();
-        }
+        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture) => throw new NotImplementedException();
     }
     ///// <summary>
     ///// Defines pie legends visibility
@@ -1683,11 +1635,11 @@ namespace ag.WPF.Chart
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
             if (values == null
-                || !(values[0] is ChartStyle chartStyle)
+                || values[0] is not ChartStyle chartStyle
                 || !chartStyle.In(ChartStyle.HighLowClose, ChartStyle.OpenHighLowClose)
-                || !(values[1] is int index)
+                || values[1] is not int index
                 || index > 0
-                || !(parameter is ColoredPaths colored))
+                || parameter is not ColoredPaths colored)
                 return Visibility.Collapsed;
 
             var seriesEnumerable = values[2] as IEnumerable<ISeries>;
@@ -1701,9 +1653,9 @@ namespace ag.WPF.Chart
             if (!seriesArray[0].Values.Any())
                 return Visibility.Collapsed;
 
-            if (chartStyle == ChartStyle.HighLowClose && !(seriesArray[0] is HighLowCloseSeries))
+            if (chartStyle == ChartStyle.HighLowClose && seriesArray[0] is not HighLowCloseSeries)
                 return Visibility.Collapsed;
-            else if (chartStyle == ChartStyle.OpenHighLowClose && !(seriesArray[0] is OpenHighLowCloseSeries))
+            else if (chartStyle == ChartStyle.OpenHighLowClose && seriesArray[0] is not OpenHighLowCloseSeries)
                 return Visibility.Collapsed;
             else if (chartStyle == ChartStyle.OpenHighLowClose && colored == ColoredPaths.Stock)
                 return Visibility.Collapsed;
@@ -1715,10 +1667,7 @@ namespace ag.WPF.Chart
         /// <param name="targetTypes">The array of types to convert to. The array length indicates the number and types of values that are suggested for the method to return.</param>
         /// <param name="parameter">The converter parameter to use.</param>
         /// <param name="culture">The culture to use in the converter.</param>
-        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
-        {
-            throw new NotImplementedException();
-        }
+        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture) => throw new NotImplementedException();
     }
 
     /// <summary>
@@ -1735,9 +1684,9 @@ namespace ag.WPF.Chart
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
             if (values == null
-                || !(values[0] is ChartStyle chartStyle)
+                || values[0] is not ChartStyle chartStyle
                 || chartStyle != ChartStyle.Waterfall
-                || !(values[1] is int index)
+                || values[1] is not int index
                 || index > 0)
                 return Visibility.Collapsed;
 
@@ -1755,10 +1704,7 @@ namespace ag.WPF.Chart
         /// <param name="targetTypes">The array of types to convert to. The array length indicates the number and types of values that are suggested for the method to return.</param>
         /// <param name="parameter">The converter parameter to use.</param>
         /// <param name="culture">The culture to use in the converter.</param>
-        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
-        {
-            throw new NotImplementedException();
-        }
+        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture) => throw new NotImplementedException();
     }
 
     /// <summary>
@@ -1775,7 +1721,7 @@ namespace ag.WPF.Chart
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
             if (values == null
-                || !(values[0] is ChartStyle chartStyle)
+                || values[0] is not ChartStyle chartStyle
                 || chartStyle.In(ChartStyle.Waterfall, ChartStyle.HighLowClose, ChartStyle.OpenHighLowClose))
                 return Visibility.Collapsed;
 
@@ -1794,10 +1740,7 @@ namespace ag.WPF.Chart
         /// <param name="targetTypes">The array of types to convert to. The array length indicates the number and types of values that are suggested for the method to return.</param>
         /// <param name="parameter">The converter parameter to use.</param>
         /// <param name="culture">The culture to use in the converter.</param>
-        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
-        {
-            return null;
-        }
+        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture) => null;
     }
 
     /// <summary>
@@ -1817,26 +1760,26 @@ namespace ag.WPF.Chart
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
             if (values == null
-                || !(values[0] is double width)
-                || !(values[1] is double height)
-                || !(values[3] is ChartStyle chartStyle)
+                || values[0] is not double width
+                || values[1] is not double height
+                || values[3] is not ChartStyle chartStyle
                 || chartStyle.In(ChartStyle.SolidPie, ChartStyle.SlicedPie, ChartStyle.Doughnut)
-                || !(values[4] is int index)
+                || values[4] is not int index
                 || chartStyle.In(ChartStyle.Waterfall, ChartStyle.HighLowClose, ChartStyle.OpenHighLowClose) && index > 0
-                || !(values[5] is AutoAdjustmentMode autoAdjust)
-                || !(values[6] is double maxXConv)
-                || !(values[7] is double maxYConv)
-                || !(values[8] is ChartBoundary chartBoundary)
-                || !(values[9] is FontFamily fontFamily)
-                || !(values[10] is double fontSize)
-                || !(values[11] is FontStyle fontStyle)
-                || !(values[12] is FontWeight fontWeight)
-                || !(values[13] is FontStretch fontStretch)
-                || !(values[15] is int linesCountY)
-                || !(values[16] is int linesCountX)
-                || !(values[17] is bool showValues)
-                || !(values[18] is FlowDirection flowDirection)
-                || !(values[19] is ShapeStyle shapeStyle)
+                || values[5] is not AutoAdjustmentMode autoAdjust
+                || values[6] is not double maxXConv
+                || values[7] is not double maxYConv
+                || values[8] is not ChartBoundary chartBoundary
+                || values[9] is not FontFamily fontFamily
+                || values[10] is not double fontSize
+                || values[11] is not FontStyle fontStyle
+                || values[12] is not FontWeight fontWeight
+                || values[13] is not FontStretch fontStretch
+                || values[15] is not int linesCountY
+                || values[16] is not int linesCountX
+                || values[17] is not bool showValues
+                || values[18] is not FlowDirection flowDirection
+                || values[19] is not ShapeStyle shapeStyle
                 || !(parameter is (int order, ColoredPaths colored)))
                 return null;
 
@@ -1874,11 +1817,11 @@ namespace ag.WPF.Chart
                     return null;
                 if (!seriesArray[0].Values.Any())
                     return null;
-                if (chartStyle == ChartStyle.HighLowClose && !(seriesArray[0] is HighLowCloseSeries))
+                if (chartStyle == ChartStyle.HighLowClose && seriesArray[0] is not HighLowCloseSeries)
                 {
                     return null;
                 }
-                if (chartStyle == ChartStyle.OpenHighLowClose && !(seriesArray[0] is OpenHighLowCloseSeries))
+                if (chartStyle == ChartStyle.OpenHighLowClose && seriesArray[0] is not OpenHighLowCloseSeries)
                 {
                     return null;
                 }
@@ -1889,7 +1832,7 @@ namespace ag.WPF.Chart
             else
                 return null;
 
-            var customValues = values[14] is IEnumerable<string> customEnumerable ? customEnumerable.ToArray() : new string[] { };
+            var customValues = values[14] is IEnumerable<string> customEnumerable ? customEnumerable.ToArray() : Array.Empty<string>();
             var maxPointsCount = chartStyle.In(ChartStyle.Waterfall, ChartStyle.HighLowClose, ChartStyle.OpenHighLowClose)
                 ? seriesArray[0].Values.Count
                 : seriesArray.Max(s => s.Values.Count);
@@ -2901,7 +2844,7 @@ namespace ag.WPF.Chart
             {
                 points.Insert(0, new Point(centerX, centerY));
                 points.Add(new Point(points[points.Count - 1].X, centerY));
-                var bezierSegments = interpolatePointsWithBezierCurves(points, false);
+                var bezierSegments = InterpolatePointsWithBezierCurves(points, false);
                 if (bezierSegments == null || bezierSegments.Count == 0)
                 {
                     var poly = new PolyLineSegment(points, true);
@@ -3053,7 +2996,7 @@ namespace ag.WPF.Chart
 
             if (style.In(ChartStyle.SmoothFullStackedLines, ChartStyle.SmoothFullStackedLinesWithMarkers))
             {
-                var bezierSegments = interpolatePointsWithBezierCurves(currentSeries.RealPoints, false);
+                var bezierSegments = InterpolatePointsWithBezierCurves(currentSeries.RealPoints, false);
                 if (bezierSegments == null || bezierSegments.Count == 0)
                 {
                     var poly = new PolyLineSegment(currentSeries.RealPoints, true);
@@ -3169,7 +3112,7 @@ namespace ag.WPF.Chart
             {
                 points.Insert(0, new Point(centerX, centerY));
                 points.Add(new Point(points[points.Count - 1].X, centerY));
-                var bezierSegments = interpolatePointsWithBezierCurves(points, false);
+                var bezierSegments = InterpolatePointsWithBezierCurves(points, false);
                 if (bezierSegments == null || bezierSegments.Count == 0)
                 {
                     var poly = new PolyLineSegment(points, true);
@@ -3258,7 +3201,7 @@ namespace ag.WPF.Chart
             }
             if (style.In(ChartStyle.SmoothStackedLines, ChartStyle.SmoothStackedLinesWithMarkers))
             {
-                var bezierSegments = interpolatePointsWithBezierCurves(points, false);
+                var bezierSegments = InterpolatePointsWithBezierCurves(points, false);
                 if (bezierSegments == null || bezierSegments.Count == 0)
                 {
                     var poly = new PolyLineSegment(points, true);
@@ -3389,7 +3332,7 @@ namespace ag.WPF.Chart
             }
             if (style.In(ChartStyle.SmoothLines, ChartStyle.SmoothLinesWithMarkers))
             {
-                var bezierSegments = interpolatePointsWithBezierCurves(points, false);
+                var bezierSegments = InterpolatePointsWithBezierCurves(points, false);
                 if (bezierSegments == null || bezierSegments.Count == 0)
                 {
                     var poly = new PolyLineSegment(points, true);
@@ -3410,7 +3353,7 @@ namespace ag.WPF.Chart
             {
                 points.Insert(0, new Point(centerX, centerY));
                 points.Add(new Point(points[points.Count - 1].X, centerY));
-                var bezierSegments = interpolatePointsWithBezierCurves(points, false);
+                var bezierSegments = InterpolatePointsWithBezierCurves(points, false);
                 if (bezierSegments == null || bezierSegments.Count == 0)
                 {
                     var poly = new PolyLineSegment(points, true);
@@ -3505,7 +3448,7 @@ namespace ag.WPF.Chart
         //by Raul Otaño Hurtado and Maxim Shemanarev
         //http://www.codeproject.com/Articles/769055/Interpolate-D-points-usign-Bezier-curves-in-WPF
         //http://www.antigrain.com/research/bezier_interpolation/index.html#PAGE_BEZIER_INTERPOLATION
-        private List<BeizerCurveSegment> interpolatePointsWithBezierCurves(List<Point> points, bool isClosedCurve)
+        private static List<BeizerCurveSegment> InterpolatePointsWithBezierCurves(List<Point> points, bool isClosedCurve)
         {
             if (points.Count < 3)
                 return null;
@@ -3640,10 +3583,7 @@ namespace ag.WPF.Chart
         /// <param name="targetTypes">The array of types to convert to. The array length indicates the number and types of values that are suggested for the method to return.</param>
         /// <param name="parameter">The converter parameter to use.</param>
         /// <param name="culture">The culture to use in the converter.</param>
-        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
-        {
-            return null;
-        }
+        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture) => null;
     }
 
     /// <summary>
@@ -3659,7 +3599,7 @@ namespace ag.WPF.Chart
         /// <param name="culture">The culture to use in the converter.</param>
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (!(value is LegendSize legendSize))
+            if (value is not LegendSize legendSize)
                 return 16;
             return System.Convert.ToDouble(legendSize);
         }
@@ -3669,10 +3609,7 @@ namespace ag.WPF.Chart
         /// <param name="targetType">The type to convert to.</param>
         /// <param name="parameter">The converter parameter to use.</param>
         /// <param name="culture">The culture to use in the converter.</param>
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            throw new NotImplementedException();
-        }
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) => throw new NotImplementedException();
     }
 
     /// <summary>
@@ -3688,7 +3625,7 @@ namespace ag.WPF.Chart
         /// <param name="culture">The culture to use in the converter.</param>
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (!(value is LegendAlignment legendAlignment)) return Orientation.Vertical;
+            if (value is not LegendAlignment legendAlignment) return Orientation.Vertical;
             return legendAlignment switch
             {
                 LegendAlignment.Top => Orientation.Horizontal,
@@ -3703,10 +3640,7 @@ namespace ag.WPF.Chart
         /// <param name="targetType">The type to convert to.</param>
         /// <param name="parameter">The converter parameter to use.</param>
         /// <param name="culture">The culture to use in the converter.</param>
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            return Binding.DoNothing;
-        }
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) => Binding.DoNothing;
     }
 
     /// <summary>
@@ -3723,7 +3657,7 @@ namespace ag.WPF.Chart
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
             if (values == null
-                || !(values[2] is ChartStyle chartStyle))
+                || values[2] is not ChartStyle chartStyle)
                 return HorizontalAlignment.Right;
 
             var seriesEnumerable = values[0] as IEnumerable<ISeries>;
@@ -3755,18 +3689,12 @@ namespace ag.WPF.Chart
             else
                 return HorizontalAlignment.Right;
 
-            switch (dir)
+            return dir switch
             {
-                case Directions.NorthEast:
-                case Directions.NorthEastSouthEast:
-                case Directions.SouthEast:
-                case Directions.NorthEastNorthWest:
-                    return HorizontalAlignment.Right;
-                case Directions.NorthWest:
-                    return HorizontalAlignment.Left;
-                default:
-                    return HorizontalAlignment.Right;
-            }
+                Directions.NorthEast or Directions.NorthEastSouthEast or Directions.SouthEast or Directions.NorthEastNorthWest => HorizontalAlignment.Right,
+                Directions.NorthWest => HorizontalAlignment.Left,
+                _ => HorizontalAlignment.Right,
+            };
         }
 
         /// <summary>Converts a binding target value to the source binding values.</summary>
@@ -3775,10 +3703,7 @@ namespace ag.WPF.Chart
         /// <param name="targetTypes">The array of types to convert to. The array length indicates the number and types of values that are suggested for the method to return.</param>
         /// <param name="parameter">The converter parameter to use.</param>
         /// <param name="culture">The culture to use in the converter.</param>
-        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
-        {
-            return null;
-        }
+        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture) => null;
     }
 
     /// <summary>
@@ -3795,7 +3720,7 @@ namespace ag.WPF.Chart
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
             if (values == null
-                || !(values[2] is ChartStyle chartStyle))
+                || values[2] is not ChartStyle chartStyle)
                 return 2;
 
             var seriesEnumerable = values[0] as IEnumerable<ISeries>;
@@ -3827,18 +3752,12 @@ namespace ag.WPF.Chart
             else
                 return 2;
 
-            switch (dir)
+            return dir switch
             {
-                case Directions.NorthEast:
-                case Directions.NorthEastSouthEast:
-                case Directions.SouthEast:
-                case Directions.NorthEastNorthWest:
-                    return 2;
-                case Directions.NorthWest:
-                    return 4;
-                default:
-                    return 2;
-            }
+                Directions.NorthEast or Directions.NorthEastSouthEast or Directions.SouthEast or Directions.NorthEastNorthWest => 2,
+                Directions.NorthWest => 4,
+                _ => 2,
+            };
         }
 
         /// <summary>Converts a binding target value to the source binding values.</summary>
@@ -3847,10 +3766,7 @@ namespace ag.WPF.Chart
         /// <param name="targetTypes">The array of types to convert to. The array length indicates the number and types of values that are suggested for the method to return.</param>
         /// <param name="parameter">The converter parameter to use.</param>
         /// <param name="culture">The culture to use in the converter.</param>
-        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
-        {
-            return null;
-        }
+        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture) => null;
     }
 
     /// <summary>
@@ -3867,7 +3783,7 @@ namespace ag.WPF.Chart
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
             if (values == null
-                || !(values[2] is ChartStyle chartStyle))
+                || values[2] is not ChartStyle chartStyle)
                 return VerticalAlignment.Top;
 
             var seriesEnumerable = values[0] as IEnumerable<ISeries>;
@@ -3899,18 +3815,12 @@ namespace ag.WPF.Chart
             else
                 return VerticalAlignment.Top;
 
-            switch (dir)
+            return dir switch
             {
-                case Directions.SouthEast:
-                    return VerticalAlignment.Bottom;
-                case Directions.NorthWest:
-                case Directions.NorthEast:
-                case Directions.NorthEastNorthWest:
-                case Directions.NorthEastSouthEast:
-                    return VerticalAlignment.Top;
-                default:
-                    return VerticalAlignment.Top;
-            }
+                Directions.SouthEast => VerticalAlignment.Bottom,
+                Directions.NorthWest or Directions.NorthEast or Directions.NorthEastNorthWest or Directions.NorthEastSouthEast => VerticalAlignment.Top,
+                _ => VerticalAlignment.Top,
+            };
         }
 
         /// <summary>Converts a binding target value to the source binding values.</summary>
@@ -3919,10 +3829,7 @@ namespace ag.WPF.Chart
         /// <param name="targetTypes">The array of types to convert to. The array length indicates the number and types of values that are suggested for the method to return.</param>
         /// <param name="parameter">The converter parameter to use.</param>
         /// <param name="culture">The culture to use in the converter.</param>
-        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
-        {
-            return null;
-        }
+        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture) => null;
     }
 
     /// <summary>
@@ -3939,7 +3846,7 @@ namespace ag.WPF.Chart
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
             if (values == null
-                 || !(values[2] is ChartStyle chartStyle))
+                 || values[2] is not ChartStyle chartStyle)
                 return 5;
 
             var seriesEnumerable = values[0] as IEnumerable<ISeries>;
@@ -3971,18 +3878,12 @@ namespace ag.WPF.Chart
             else
                 return 5;
 
-            switch (dir)
+            return dir switch
             {
-                case Directions.SouthEast:
-                    return 3;
-                case Directions.NorthWest:
-                case Directions.NorthEast:
-                case Directions.NorthEastNorthWest:
-                case Directions.NorthEastSouthEast:
-                    return 5;
-                default:
-                    return 5;
-            }
+                Directions.SouthEast => 3,
+                Directions.NorthWest or Directions.NorthEast or Directions.NorthEastNorthWest or Directions.NorthEastSouthEast => 5,
+                _ => 5,
+            };
         }
 
         /// <summary>Converts a binding target value to the source binding values.</summary>
@@ -3991,10 +3892,7 @@ namespace ag.WPF.Chart
         /// <param name="targetTypes">The array of types to convert to. The array length indicates the number and types of values that are suggested for the method to return.</param>
         /// <param name="parameter">The converter parameter to use.</param>
         /// <param name="culture">The culture to use in the converter.</param>
-        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
-        {
-            return null;
-        }
+        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture) => null;
     }
 
     /// <summary>
@@ -4011,7 +3909,7 @@ namespace ag.WPF.Chart
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
             if (values == null
-                || !(values[2] is ChartStyle chartStyle))
+                || values[2] is not ChartStyle chartStyle)
                 return 2;
 
             var seriesEnumerable = values[0] as IEnumerable<ISeries>;
@@ -4059,10 +3957,7 @@ namespace ag.WPF.Chart
         /// <param name="targetTypes">The array of types to convert to. The array length indicates the number and types of values that are suggested for the method to return.</param>
         /// <param name="parameter">The converter parameter to use.</param>
         /// <param name="culture">The culture to use in the converter.</param>
-        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
-        {
-            return null;
-        }
+        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture) => null;
     }
 
     /// <summary>
@@ -4079,7 +3974,7 @@ namespace ag.WPF.Chart
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
             if (values == null
-                || !(values[2] is ChartStyle chartStyle))
+                || values[2] is not ChartStyle chartStyle)
                 return 5;
 
             var seriesEnumerable = values[0] as IEnumerable<ISeries>;
@@ -4128,10 +4023,7 @@ namespace ag.WPF.Chart
         /// <param name="targetTypes">The array of types to convert to. The array length indicates the number and types of values that are suggested for the method to return.</param>
         /// <param name="parameter">The converter parameter to use.</param>
         /// <param name="culture">The culture to use in the converter.</param>
-        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
-        {
-            return null;
-        }
+        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture) => null;
     }
 
     /// <summary>
@@ -4148,7 +4040,7 @@ namespace ag.WPF.Chart
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
             if (values == null
-                || !(values[2] is ChartStyle chartStyle))
+                || values[2] is not ChartStyle chartStyle)
                 return VerticalAlignment.Bottom;
 
             var seriesEnumerable = values[0] as IEnumerable<ISeries>;
@@ -4196,10 +4088,7 @@ namespace ag.WPF.Chart
         /// <param name="targetTypes">The array of types to convert to. The array length indicates the number and types of values that are suggested for the method to return.</param>
         /// <param name="parameter">The converter parameter to use.</param>
         /// <param name="culture">The culture to use in the converter.</param>
-        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
-        {
-            return null;
-        }
+        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture) => null;
     }
 
     /// <summary>
@@ -4216,7 +4105,7 @@ namespace ag.WPF.Chart
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
             if (values == null
-                || !(values[2] is ChartStyle chartStyle))
+                || values[2] is not ChartStyle chartStyle)
                 return HorizontalAlignment.Left;
 
             var seriesEnumerable = values[0] as IEnumerable<ISeries>;
@@ -4264,10 +4153,7 @@ namespace ag.WPF.Chart
         /// <param name="targetTypes">The array of types to convert to. The array length indicates the number and types of values that are suggested for the method to return.</param>
         /// <param name="parameter">The converter parameter to use.</param>
         /// <param name="culture">The culture to use in the converter.</param>
-        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
-        {
-            return null;
-        }
+        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture) => null;
     }
 
     /// <summary>
@@ -4284,28 +4170,14 @@ namespace ag.WPF.Chart
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
             if (values == null
-                || !(values[0] is ChartStyle chartStyle)
-                || !(values[1] is Brush brush))
+                || values[0] is not ChartStyle chartStyle
+                || values[1] is not Brush brush)
                 return null;
-            switch (chartStyle)
+            return chartStyle switch
             {
-                case ChartStyle.Lines:
-                case ChartStyle.StackedLines:
-                case ChartStyle.FullStackedLines:
-                case ChartStyle.SmoothLines:
-                case ChartStyle.SmoothStackedLines:
-                case ChartStyle.SmoothFullStackedLines:
-                case ChartStyle.SmoothLinesWithMarkers:
-                case ChartStyle.SmoothStackedLinesWithMarkers:
-                case ChartStyle.SmoothFullStackedLinesWithMarkers:
-                case ChartStyle.LinesWithMarkers:
-                case ChartStyle.StackedLinesWithMarkers:
-                case ChartStyle.FullStackedLinesWithMarkers:
-                case ChartStyle.Radar:
-                case ChartStyle.RadarWithMarkers:
-                    return null;
-            }
-            return brush;
+                ChartStyle.Lines or ChartStyle.StackedLines or ChartStyle.FullStackedLines or ChartStyle.SmoothLines or ChartStyle.SmoothStackedLines or ChartStyle.SmoothFullStackedLines or ChartStyle.SmoothLinesWithMarkers or ChartStyle.SmoothStackedLinesWithMarkers or ChartStyle.SmoothFullStackedLinesWithMarkers or ChartStyle.LinesWithMarkers or ChartStyle.StackedLinesWithMarkers or ChartStyle.FullStackedLinesWithMarkers or ChartStyle.Radar or ChartStyle.RadarWithMarkers => null,
+                _ => brush,
+            };
         }
         /// <summary>Converts a binding target value to the source binding values.</summary>
         /// <returns>An array of values that have been converted from the target value back to the source values.</returns>
@@ -4313,10 +4185,7 @@ namespace ag.WPF.Chart
         /// <param name="targetTypes">The array of types to convert to. The array length indicates the number and types of values that are suggested for the method to return.</param>
         /// <param name="parameter">The converter parameter to use.</param>
         /// <param name="culture">The culture to use in the converter.</param>
-        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
-        {
-            return null;
-        }
+        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture) => null;
     }
 
     /// <summary>
@@ -4333,26 +4202,14 @@ namespace ag.WPF.Chart
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
             if (values == null
-                || !(values[0] is ChartStyle chartStyle)
-                || !(values[1] is Brush brush))
+                || values[0] is not ChartStyle chartStyle
+                || values[1] is not Brush brush)
                 return null;
-            switch (chartStyle)
+            return chartStyle switch
             {
-                case ChartStyle.Area:
-                case ChartStyle.Bars:
-                case ChartStyle.StackedBars:
-                case ChartStyle.FullStackedBars:
-                case ChartStyle.Columns:
-                case ChartStyle.StackedColumns:
-                case ChartStyle.FullStackedColumns:
-                case ChartStyle.Bubbles:
-                case ChartStyle.Waterfall:
-                case ChartStyle.RadarArea:
-                case ChartStyle.SmoothArea:
-                case ChartStyle.Funnel:
-                    return null;
-            }
-            return brush;
+                ChartStyle.Area or ChartStyle.Bars or ChartStyle.StackedBars or ChartStyle.FullStackedBars or ChartStyle.Columns or ChartStyle.StackedColumns or ChartStyle.FullStackedColumns or ChartStyle.Bubbles or ChartStyle.Waterfall or ChartStyle.RadarArea or ChartStyle.SmoothArea or ChartStyle.Funnel => null,
+                _ => brush,
+            };
         }
         /// <summary>Converts a binding target value to the source binding values.</summary>
         /// <returns>An array of values that have been converted from the target value back to the source values.</returns>
@@ -4360,10 +4217,7 @@ namespace ag.WPF.Chart
         /// <param name="targetTypes">The array of types to convert to. The array length indicates the number and types of values that are suggested for the method to return.</param>
         /// <param name="parameter">The converter parameter to use.</param>
         /// <param name="culture">The culture to use in the converter.</param>
-        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
-        {
-            return null;
-        }
+        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture) => null;
     }
 
     /// <summary>
@@ -4382,18 +4236,18 @@ namespace ag.WPF.Chart
             var height = 8.0;
 
             if (values == null
-                || !(values[1] is ChartStyle chartStyle)
+                || values[1] is not ChartStyle chartStyle
                 || chartStyle == ChartStyle.Funnel
-                || !(values[2] is string formatX)
-                || !(values[3] is FontFamily fontFamily)
-                || !(values[4] is double fontSize)
-                || !(values[5] is FontStyle fontStyle)
-                || !(values[6] is FontWeight fontWeight)
-                || !(values[7] is FontStretch fontStretch)
-                || !(values[9] is AutoAdjustmentMode autoAdjust)
-                || !(values[10] is double maxX)
-                || !(values[12] is int linesCountX)
-                || !(values[13] is string formatY))
+                || values[2] is not string formatX
+                || values[3] is not FontFamily fontFamily
+                || values[4] is not double fontSize
+                || values[5] is not FontStyle fontStyle
+                || values[6] is not FontWeight fontWeight
+                || values[7] is not FontStretch fontStretch
+                || values[9] is not AutoAdjustmentMode autoAdjust
+                || values[10] is not double maxX
+                || values[12] is not int linesCountX
+                || values[13] is not string formatY)
                 return height;
 
             var seriesEnumerable = values[0] as IEnumerable<ISeries>;
@@ -4404,8 +4258,8 @@ namespace ag.WPF.Chart
 
             var seriesArray = seriesEnumerable != null && seriesEnumerable.Any() ? seriesEnumerable.ToArray() : chartSeries.ToArray();
 
-            var customValuesX = values[8] is IEnumerable<string> customEnumerableX ? customEnumerableX.ToArray() : new string[] { };
-            var customValuesY = values[11] is IEnumerable<string> customEnumerableY ? customEnumerableY.ToArray() : new string[] { };
+            var customValuesX = values[8] is IEnumerable<string> customEnumerableX ? customEnumerableX.ToArray() : Array.Empty<string>();
+            var customValuesY = values[11] is IEnumerable<string> customEnumerableY ? customEnumerableY.ToArray() : Array.Empty<string>();
 
             Directions dir;
             int maxFromValues = 0, maxForBars = 0;
@@ -4437,9 +4291,9 @@ namespace ag.WPF.Chart
 
                 if (!seriesArray[0].Values.Any())
                     return height;
-                if (chartStyle == ChartStyle.HighLowClose && !(seriesArray[0] is HighLowCloseSeries))
+                if (chartStyle == ChartStyle.HighLowClose && seriesArray[0] is not HighLowCloseSeries)
                     return height;
-                else if (chartStyle == ChartStyle.OpenHighLowClose && !(seriesArray[0] is OpenHighLowCloseSeries))
+                else if (chartStyle == ChartStyle.OpenHighLowClose && seriesArray[0] is not OpenHighLowCloseSeries)
                     return height;
 
                 var totalValues = seriesArray[0].Values.Select(v => (v.CompositeValue.HighValue, v.CompositeValue.LowValue));
@@ -4495,10 +4349,7 @@ namespace ag.WPF.Chart
         /// <param name="targetTypes">The array of types to convert to. The array length indicates the number and types of values that are suggested for the method to return.</param>
         /// <param name="parameter">The converter parameter to use.</param>
         /// <param name="culture">The culture to use in the converter.</param>
-        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
-        {
-            return null;
-        }
+        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture) => null;
     }
 
     /// <summary>
@@ -4515,18 +4366,18 @@ namespace ag.WPF.Chart
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
             if (values == null
-                || !(values[1] is ChartStyle chartStyle)
-                || !(values[2] is string formatY)
-                || !(values[3] is FontFamily fontFamily)
-                || !(values[4] is double fontSize)
-                || !(values[5] is FontStyle fontStyle)
-                || !(values[6] is FontWeight fontWeight)
-                || !(values[7] is FontStretch fontStretch)
-                || !(values[9] is AutoAdjustmentMode autoAdjust)
-                || !(values[10] is double maxY)
-                || !(values[11] is double height)
-                || !(values[12] is int linesCountY)
-                || !(values[14] is string formatX))
+                || values[1] is not ChartStyle chartStyle
+                || values[2] is not string formatY
+                || values[3] is not FontFamily fontFamily
+                || values[4] is not double fontSize
+                || values[5] is not FontStyle fontStyle
+                || values[6] is not FontWeight fontWeight
+                || values[7] is not FontStretch fontStretch
+                || values[9] is not AutoAdjustmentMode autoAdjust
+                || values[10] is not double maxY
+                || values[11] is not double height
+                || values[12] is not int linesCountY
+                || values[14] is not string formatX)
                 return 0.0;
             var width = 28.0;
 
@@ -4538,8 +4389,8 @@ namespace ag.WPF.Chart
 
             var seriesArray = seriesEnumerable != null && seriesEnumerable.Any() ? seriesEnumerable.ToArray() : chartSeries.ToArray();
 
-            var customValuesY = values[8] is IEnumerable<string> customEnumerableY ? customEnumerableY.ToArray() : new string[] { };
-            var customValuesX = values[13] is IEnumerable<string> customEnumerableX ? customEnumerableX.ToArray() : new string[] { };
+            var customValuesY = values[8] is IEnumerable<string> customEnumerableY ? customEnumerableY.ToArray() : Array.Empty<string>();
+            var customValuesX = values[13] is IEnumerable<string> customEnumerableX ? customEnumerableX.ToArray() : Array.Empty<string>();
 
             if (chartStyle.In(ChartStyle.Radar, ChartStyle.RadarWithMarkers, ChartStyle.RadarArea))
                 return 0.0;
@@ -4569,9 +4420,9 @@ namespace ag.WPF.Chart
 
                 if (!seriesArray[0].Values.Any())
                     return 0.0;
-                if (chartStyle == ChartStyle.HighLowClose && !(seriesArray[0] is HighLowCloseSeries))
+                if (chartStyle == ChartStyle.HighLowClose && seriesArray[0] is not HighLowCloseSeries)
                     return 0.0;
-                else if (chartStyle == ChartStyle.OpenHighLowClose && !(seriesArray[0] is OpenHighLowCloseSeries))
+                else if (chartStyle == ChartStyle.OpenHighLowClose && seriesArray[0] is not OpenHighLowCloseSeries)
                     return 0.0;
 
                 var totalValues = seriesArray[0].Values.Select(v => (v.CompositeValue.HighValue, v.CompositeValue.LowValue));
@@ -4698,10 +4549,7 @@ namespace ag.WPF.Chart
         /// <param name="targetTypes">The array of types to convert to. The array length indicates the number and types of values that are suggested for the method to return.</param>
         /// <param name="parameter">The converter parameter to use.</param>
         /// <param name="culture">The culture to use in the converter.</param>
-        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
-        {
-            return null;
-        }
+        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture) => null;
     }
 
     /// <summary>
@@ -4718,7 +4566,7 @@ namespace ag.WPF.Chart
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
             if (values == null
-                || !(values[2] is ChartStyle chartStyle))
+                || values[2] is not ChartStyle chartStyle)
                 return null;
 
             var seriesEnumerable = values[1] as IEnumerable<ISeries>;
@@ -4741,9 +4589,9 @@ namespace ag.WPF.Chart
 
                 if (!seriesArray[0].Values.Any())
                     return null;
-                if (chartStyle == ChartStyle.HighLowClose && !(seriesArray[0] is HighLowCloseSeries))
+                if (chartStyle == ChartStyle.HighLowClose && seriesArray[0] is not HighLowCloseSeries)
                     return null;
-                else if (chartStyle == ChartStyle.OpenHighLowClose && !(seriesArray[0] is OpenHighLowCloseSeries))
+                else if (chartStyle == ChartStyle.OpenHighLowClose && seriesArray[0] is not OpenHighLowCloseSeries)
                     return null;
             }
             else
@@ -4761,13 +4609,13 @@ namespace ag.WPF.Chart
         private PathGeometry drawVerticalValuesForFunnel(object[] values, CultureInfo culture)
         {
             if (values == null
-                || !(values[0] is double height)
-                || !(values[5] is FontFamily fontFamily)
-                || !(values[6] is double fontSize)
-                || !(values[7] is FontStyle fontStyle)
-                || !(values[8] is FontWeight fontWeight)
-                || !(values[9] is FontStretch fontStretch)
-                || !(values[14] is FlowDirection flowDir))
+                || values[0] is not double height
+                || values[5] is not FontFamily fontFamily
+                || values[6] is not double fontSize
+                || values[7] is not FontStyle fontStyle
+                || values[8] is not FontWeight fontWeight
+                || values[9] is not FontStretch fontStretch
+                || values[14] is not FlowDirection flowDir)
                 return null;
 
             var gm = new PathGeometry();
@@ -4820,17 +4668,17 @@ namespace ag.WPF.Chart
         private PathGeometry drawVerticalValuesForBars(object[] values, CultureInfo culture)
         {
             if (values == null
-                || !(values[0] is double height)
-                || !(values[2] is ChartStyle chartStyle)
-                || !(values[3] is int linesCount)
-                || !(values[15] is string formatX)
-                || !(values[5] is FontFamily fontFamily)
-                || !(values[6] is double fontSize)
-                || !(values[7] is FontStyle fontStyle)
-                || !(values[8] is FontWeight fontWeight)
-                || !(values[9] is FontStretch fontStretch)
-                || !(values[12] is AutoAdjustmentMode autoAdjust)
-                || !(values[14] is FlowDirection flowDir))
+                || values[0] is not double height
+                || values[2] is not ChartStyle chartStyle
+                || values[3] is not int linesCount
+                || values[15] is not string formatX
+                || values[5] is not FontFamily fontFamily
+                || values[6] is not double fontSize
+                || values[7] is not FontStyle fontStyle
+                || values[8] is not FontWeight fontWeight
+                || values[9] is not FontStretch fontStretch
+                || values[12] is not AutoAdjustmentMode autoAdjust
+                || values[14] is not FlowDirection flowDir)
                 return null;
 
             var seriesEnumerable = values[1] as IEnumerable<ISeries>;
@@ -4841,7 +4689,7 @@ namespace ag.WPF.Chart
 
             var seriesArray = seriesEnumerable != null && seriesEnumerable.Any() ? seriesEnumerable.ToArray() : chartSeries.ToArray();
 
-            var customValuesX = values[10] is IEnumerable<string> customEnumerableX ? customEnumerableX.ToArray() : new string[] { };
+            var customValuesX = values[10] is IEnumerable<string> customEnumerableX ? customEnumerableX.ToArray() : Array.Empty<string>();
 
             var gm = new PathGeometry();
 
@@ -4910,18 +4758,18 @@ namespace ag.WPF.Chart
         private PathGeometry drawVerticalValues(object[] values, CultureInfo culture)
         {
             if (values == null
-                || !(values[0] is double height)
-                || !(values[2] is ChartStyle chartStyle)
-                || !(values[3] is int linesCountY)
-                || !(values[4] is string formatY)
-                || !(values[5] is FontFamily fontFamily)
-                || !(values[6] is double fontSize)
-                || !(values[7] is FontStyle fontStyle)
-                || !(values[8] is FontWeight fontWeight)
-                || !(values[9] is FontStretch fontStretch)
-                || !(values[12] is AutoAdjustmentMode autoAdjust)
-                || !(values[13] is double maxY)
-                || !(values[14] is FlowDirection flowDir))
+                || values[0] is not double height
+                || values[2] is not ChartStyle chartStyle
+                || values[3] is not int linesCountY
+                || values[4] is not string formatY
+                || values[5] is not FontFamily fontFamily
+                || values[6] is not double fontSize
+                || values[7] is not FontStyle fontStyle
+                || values[8] is not FontWeight fontWeight
+                || values[9] is not FontStretch fontStretch
+                || values[12] is not AutoAdjustmentMode autoAdjust
+                || values[13] is not double maxY
+                || values[14] is not FlowDirection flowDir)
                 return null;
 
             var gm = new PathGeometry();
@@ -4934,7 +4782,7 @@ namespace ag.WPF.Chart
 
             var seriesArray = seriesEnumerable != null && seriesEnumerable.Any() ? seriesEnumerable.ToArray() : chartSeries.ToArray();
 
-            var customValuesY = values[11] is IEnumerable<string> customEnumerableY ? customEnumerableY.ToArray() : new string[] { };
+            var customValuesY = values[11] is IEnumerable<string> customEnumerableY ? customEnumerableY.ToArray() : Array.Empty<string>();
             var drawBetween = chartStyle.In(ChartStyle.Bars, ChartStyle.StackedBars, ChartStyle.FullStackedBars);
 
             double step, offset;
@@ -5114,10 +4962,7 @@ namespace ag.WPF.Chart
         /// <param name="targetTypes">The array of types to convert to. The array length indicates the number and types of values that are suggested for the method to return.</param>
         /// <param name="parameter">The converter parameter to use.</param>
         /// <param name="culture">The culture to use in the converter.</param>
-        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
-        {
-            return null;
-        }
+        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture) => null;
     }
 
     /// <summary>
@@ -5134,21 +4979,21 @@ namespace ag.WPF.Chart
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
             if (values == null
-                || !(values[0] is double width)
-                || !(values[2] is ChartStyle chartStyle)
+                || values[0] is not double width
+                || values[2] is not ChartStyle chartStyle
                 || chartStyle == ChartStyle.Funnel
-                || !(values[3] is int linesCount)
-                || !(values[4] is string formatX)
-                || !(values[5] is FontFamily fontFamily)
-                || !(values[6] is double fontSize)
-                || !(values[7] is FontStyle fontStyle)
-                || !(values[8] is FontWeight fontWeight)
-                || !(values[9] is FontStretch fontStretch)
-                || !(values[11] is AutoAdjustmentMode autoAdjust)
-                || !(values[12] is double maxX)
-                || !(values[13] is FlowDirection flowDir)
-                || !(values[14] is ChartBoundary chartBoundary)
-                || !(values[16] is string formatY))
+                || values[3] is not int linesCount
+                || values[4] is not string formatX
+                || values[5] is not FontFamily fontFamily
+                || values[6] is not double fontSize
+                || values[7] is not FontStyle fontStyle
+                || values[8] is not FontWeight fontWeight
+                || values[9] is not FontStretch fontStretch
+                || values[11] is not AutoAdjustmentMode autoAdjust
+                || values[12] is not double maxX
+                || values[13] is not FlowDirection flowDir
+                || values[14] is not ChartBoundary chartBoundary
+                || values[16] is not string formatY)
                 return null;
 
             if (chartStyle.In(ChartStyle.SlicedPie, ChartStyle.SolidPie, ChartStyle.Doughnut, ChartStyle.Radar, ChartStyle.RadarWithMarkers, ChartStyle.RadarArea))
@@ -5163,8 +5008,8 @@ namespace ag.WPF.Chart
             var seriesArray = seriesEnumerable != null && seriesEnumerable.Any() ? seriesEnumerable.ToArray() : chartSeries.ToArray();
 
             var drawBetween = Utils.StyleColumns(chartStyle);
-            var customValuesX = values[10] is IEnumerable<string> customEnumerableX ? customEnumerableX.ToArray() : new string[] { };
-            var customValuesY = values[15] is IEnumerable<string> customEnumerableY ? customEnumerableY.ToArray() : new string[] { };
+            var customValuesX = values[10] is IEnumerable<string> customEnumerableX ? customEnumerableX.ToArray() : Array.Empty<string>();
+            var customValuesY = values[15] is IEnumerable<string> customEnumerableY ? customEnumerableY.ToArray() : Array.Empty<string>();
 
             double xStep;
 
@@ -5193,9 +5038,9 @@ namespace ag.WPF.Chart
 
                 if (!seriesArray[0].Values.Any())
                     return null;
-                if (chartStyle == ChartStyle.HighLowClose && !(seriesArray[0] is HighLowCloseSeries))
+                if (chartStyle == ChartStyle.HighLowClose && seriesArray[0] is not HighLowCloseSeries)
                     return null;
-                else if (chartStyle == ChartStyle.OpenHighLowClose && !(seriesArray[0] is OpenHighLowCloseSeries))
+                else if (chartStyle == ChartStyle.OpenHighLowClose && seriesArray[0] is not OpenHighLowCloseSeries)
                     return null;
 
                 var totalValues = seriesArray[0].Values.Select(v => (v.CompositeValue.HighValue, v.CompositeValue.LowValue));
@@ -5526,10 +5371,7 @@ namespace ag.WPF.Chart
         /// <param name="targetTypes">The array of types to convert to. The array length indicates the number and types of values that are suggested for the method to return.</param>
         /// <param name="parameter">The converter parameter to use.</param>
         /// <param name="culture">The culture to use in the converter.</param>
-        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
-        {
-            return null;
-        }
+        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture) => null;
     }
 
     /// <summary>
@@ -5546,22 +5388,22 @@ namespace ag.WPF.Chart
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
             if (values == null
-                || !(values[0] is double width)
-                || !(values[1] is double height)
-                || !(values[2] is int linesCountX)
-                || !(values[3] is int linesCountY)
-                || !(values[5] is ChartStyle chartStyle)
-                || !(values[6] is ChartBoundary chartBoundary)
-                || !(values[7] is FontFamily fontFamily)
-                || !(values[8] is double fontSize)
-                || !(values[9] is FontStyle fontStyle)
-                || !(values[10] is FontWeight fontWeight)
-                || !(values[11] is FontStretch fontStretch)
-                || !(values[12] is AutoAdjustmentMode autoAdjust)
-                || !(values[13] is double maxX)
-                || !(values[14] is double maxY)
-                || !(values[15] is AxesVisibility axesVisibility)
-                || !(values[16] is AxesVisibility showTicks))
+                || values[0] is not double width
+                || values[1] is not double height
+                || values[2] is not int linesCountX
+                || values[3] is not int linesCountY
+                || values[5] is not ChartStyle chartStyle
+                || values[6] is not ChartBoundary chartBoundary
+                || values[7] is not FontFamily fontFamily
+                || values[8] is not double fontSize
+                || values[9] is not FontStyle fontStyle
+                || values[10] is not FontWeight fontWeight
+                || values[11] is not FontStretch fontStretch
+                || values[12] is not AutoAdjustmentMode autoAdjust
+                || values[13] is not double maxX
+                || values[14] is not double maxY
+                || values[15] is not AxesVisibility axesVisibility
+                || values[16] is not AxesVisibility showTicks)
                 return null;
 
             if (chartStyle.In(ChartStyle.Area, ChartStyle.StackedArea, ChartStyle.SmoothStackedArea, ChartStyle.FullStackedArea, ChartStyle.SmoothFullStackedArea, ChartStyle.Radar, ChartStyle.RadarWithMarkers, ChartStyle.RadarArea, ChartStyle.SmoothArea))
@@ -5600,9 +5442,9 @@ namespace ag.WPF.Chart
 
                 if (!seriesArray[0].Values.Any())
                     return null;
-                if (chartStyle == ChartStyle.HighLowClose && !(seriesArray[0] is HighLowCloseSeries))
+                if (chartStyle == ChartStyle.HighLowClose && seriesArray[0] is not HighLowCloseSeries)
                     return null;
-                else if (chartStyle == ChartStyle.OpenHighLowClose && !(seriesArray[0] is OpenHighLowCloseSeries))
+                else if (chartStyle == ChartStyle.OpenHighLowClose && seriesArray[0] is not OpenHighLowCloseSeries)
                     return null;
 
                 var totalValues = seriesArray[0].Values.Select(v => (v.CompositeValue.HighValue, v.CompositeValue.LowValue));
@@ -5963,10 +5805,7 @@ namespace ag.WPF.Chart
         /// <param name="targetTypes">The array of types to convert to. The array length indicates the number and types of values that are suggested for the method to return.</param>
         /// <param name="parameter">The converter parameter to use.</param>
         /// <param name="culture">The culture to use in the converter.</param>
-        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
-        {
-            return null;
-        }
+        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture) => null;
     }
 
     /// <summary>
@@ -5983,19 +5822,19 @@ namespace ag.WPF.Chart
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
             if (values == null
-                || !(values[0] is double width)
-                || !(values[1] is double height)
-                || !(values[3] is ChartStyle chartStyle)
+                || values[0] is not double width
+                || values[1] is not double height
+                || values[3] is not ChartStyle chartStyle
                 || chartStyle == ChartStyle.Funnel
-                || !(values[4] is int linesCount)
-                || !(values[5] is ChartBoundary chartBoundary)
-                || !(values[6] is FontFamily fontFamily)
-                || !(values[7] is double fontSize)
-                || !(values[8] is FontStyle fontStyle)
-                || !(values[9] is FontWeight fontWeight)
-                || !(values[10] is FontStretch fontStretch)
-                || !(values[11] is AutoAdjustmentMode autoAdjust)
-                || !(values[12] is double maxX))
+                || values[4] is not int linesCount
+                || values[5] is not ChartBoundary chartBoundary
+                || values[6] is not FontFamily fontFamily
+                || values[7] is not double fontSize
+                || values[8] is not FontStyle fontStyle
+                || values[9] is not FontWeight fontWeight
+                || values[10] is not FontStretch fontStretch
+                || values[11] is not AutoAdjustmentMode autoAdjust
+                || values[12] is not double maxX)
                 return null;
 
             if (chartStyle.In(ChartStyle.Area, ChartStyle.StackedArea, ChartStyle.SmoothStackedArea, ChartStyle.FullStackedArea, ChartStyle.SmoothFullStackedArea, ChartStyle.SmoothArea))
@@ -6031,9 +5870,9 @@ namespace ag.WPF.Chart
 
                 if (!seriesArray[0].Values.Any())
                     return null;
-                if (chartStyle == ChartStyle.HighLowClose && !(seriesArray[0] is HighLowCloseSeries))
+                if (chartStyle == ChartStyle.HighLowClose && seriesArray[0] is not HighLowCloseSeries)
                     return null;
-                else if (chartStyle == ChartStyle.OpenHighLowClose && !(seriesArray[0] is OpenHighLowCloseSeries))
+                else if (chartStyle == ChartStyle.OpenHighLowClose && seriesArray[0] is not OpenHighLowCloseSeries)
                     return null;
 
                 var totalValues = seriesArray[0].Values.Select(v => (v.CompositeValue.HighValue, v.CompositeValue.LowValue));
@@ -6245,10 +6084,7 @@ namespace ag.WPF.Chart
         /// <param name="targetTypes">The array of types to convert to. The array length indicates the number and types of values that are suggested for the method to return.</param>
         /// <param name="parameter">The converter parameter to use.</param>
         /// <param name="culture">The culture to use in the converter.</param>
-        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
-        {
-            return null;
-        }
+        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture) => null;
     }
 
     /// <summary>
@@ -6265,18 +6101,18 @@ namespace ag.WPF.Chart
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
             if (values == null
-                || !(values[0] is double width)
-                || !(values[1] is double height)
-                || !(values[3] is ChartStyle chartStyle)
+                || values[0] is not double width
+                || values[1] is not double height
+                || values[3] is not ChartStyle chartStyle
                 || chartStyle == ChartStyle.Funnel
-                || !(values[4] is int linesCount)
-                || !(values[5] is FontFamily fontFamily)
-                || !(values[6] is double fontSize)
-                || !(values[7] is FontStyle fontStyle)
-                || !(values[8] is FontWeight fontWeight)
-                || !(values[9] is FontStretch fontStretch)
-                || !(values[10] is AutoAdjustmentMode autoAdjust)
-                || !(values[11] is double maxY))
+                || values[4] is not int linesCount
+                || values[5] is not FontFamily fontFamily
+                || values[6] is not double fontSize
+                || values[7] is not FontStyle fontStyle
+                || values[8] is not FontWeight fontWeight
+                || values[9] is not FontStretch fontStretch
+                || values[10] is not AutoAdjustmentMode autoAdjust
+                || values[11] is not double maxY)
                 return null;
 
             var seriesEnumerable = values[2] as IEnumerable<ISeries>;
@@ -6306,9 +6142,9 @@ namespace ag.WPF.Chart
 
                 if (!seriesArray[0].Values.Any())
                     return null;
-                if (chartStyle == ChartStyle.HighLowClose && !(seriesArray[0] is HighLowCloseSeries))
+                if (chartStyle == ChartStyle.HighLowClose && seriesArray[0] is not HighLowCloseSeries)
                     return null;
-                else if (chartStyle == ChartStyle.OpenHighLowClose && !(seriesArray[0] is OpenHighLowCloseSeries))
+                else if (chartStyle == ChartStyle.OpenHighLowClose && seriesArray[0] is not OpenHighLowCloseSeries)
                     return null;
 
                 var totalValues = seriesArray[0].Values.Select(v => (v.CompositeValue.HighValue, v.CompositeValue.LowValue));
@@ -6416,10 +6252,7 @@ namespace ag.WPF.Chart
         /// <param name="targetTypes">The array of types to convert to. The array length indicates the number and types of values that are suggested for the method to return.</param>
         /// <param name="parameter">The converter parameter to use.</param>
         /// <param name="culture">The culture to use in the converter.</param>
-        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
-        {
-            return null;
-        }
+        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture) => null;
     }
 
     /// <summary>
@@ -6436,8 +6269,8 @@ namespace ag.WPF.Chart
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
             if (values == null
-                || !(values[0] is double width)
-                || !(values[1] is double height))
+                || values[0] is not double width
+                || values[1] is not double height)
                 return 0.0;
             var cw = width > height ? height : width;
             return (height - cw) / 2;
@@ -6449,10 +6282,7 @@ namespace ag.WPF.Chart
         /// <param name="targetTypes">The array of types to convert to. The array length indicates the number and types of values that are suggested for the method to return.</param>
         /// <param name="parameter">The converter parameter to use.</param>
         /// <param name="culture">The culture to use in the converter.</param>
-        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
-        {
-            return null;
-        }
+        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture) => null;
     }
 
     /// <summary>
@@ -6469,8 +6299,8 @@ namespace ag.WPF.Chart
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
             if (values == null
-                || !(values[0] is double width)
-                || !(values[1] is double height))
+                || values[0] is not double width
+                || values[1] is not double height)
                 return 0.0;
             var cw = width > height ? height : width;
             return (width - cw) / 2;
@@ -6482,10 +6312,7 @@ namespace ag.WPF.Chart
         /// <param name="targetTypes">The array of types to convert to. The array length indicates the number and types of values that are suggested for the method to return.</param>
         /// <param name="parameter">The converter parameter to use.</param>
         /// <param name="culture">The culture to use in the converter.</param>
-        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
-        {
-            return null;
-        }
+        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture) => null;
     }
 
     /// <summary>
@@ -6502,9 +6329,9 @@ namespace ag.WPF.Chart
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
             if (values == null
-                || !(values[0] is IEnumerable<IChartValue> chartValues)
-                || !(values[1] is string format)
-                || !(parameter is IChartValue chartValue))
+                || values[0] is not IEnumerable<IChartValue> chartValues
+                || values[1] is not string format
+                || parameter is not IChartValue chartValue)
                 return null;
             var sum = chartValues.Sum(p => Math.Abs(p.CompositeValue.PlainValue));
             if (format.EndsWith("%")) format = format.Substring(0, format.Length - 1);
@@ -6521,10 +6348,7 @@ namespace ag.WPF.Chart
         /// <param name="targetTypes">The array of types to convert to. The array length indicates the number and types of values that are suggested for the method to return.</param>
         /// <param name="parameter">The converter parameter to use.</param>
         /// <param name="culture">The culture to use in the converter.</param>
-        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
-        {
-            throw new NotImplementedException();
-        }
+        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture) => throw new NotImplementedException();
     }
 
     /// <summary>
@@ -6541,17 +6365,17 @@ namespace ag.WPF.Chart
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
             if (values == null
-                || !(values[0] is double width)
-                || !(values[1] is double height)
-                || !(values[3] is ChartStyle chartStyle)
+                || values[0] is not double width
+                || values[1] is not double height
+                || values[3] is not ChartStyle chartStyle
                 || !Utils.StyleRadar(chartStyle)
-                || !(values[4] is FontFamily fontFamily)
-                || !(values[5] is double fontSize)
-                || !(values[6] is FontStyle fontStyle)
-                || !(values[7] is FontWeight fontWeight)
-                || !(values[8] is FontStretch fontStretch)
-                || !(values[10] is int linesCount)
-                || !(values[11] is AutoAdjustmentMode autoAdjust))
+                || values[4] is not FontFamily fontFamily
+                || values[5] is not double fontSize
+                || values[6] is not FontStyle fontStyle
+                || values[7] is not FontWeight fontWeight
+                || values[8] is not FontStretch fontStretch
+                || values[10] is not int linesCount
+                || values[11] is not AutoAdjustmentMode autoAdjust)
                 return null;
 
             var gm = new PathGeometry();
@@ -6564,7 +6388,7 @@ namespace ag.WPF.Chart
 
             var seriesArray = seriesEnumerable != null && seriesEnumerable.Any() ? seriesEnumerable.ToArray() : chartSeries.ToArray();
 
-            var customValues = values[9] is IEnumerable<string> customEnumerable ? customEnumerable.ToArray() : new string[] { };
+            var customValues = values[9] is IEnumerable<string> customEnumerable ? customEnumerable.ToArray() : Array.Empty<string>();
 
             var currentDegrees = 0.0;
             var pointsCount = seriesArray.Max(s => s.Values.Count);
@@ -6620,10 +6444,7 @@ namespace ag.WPF.Chart
         /// <param name="targetTypes">The array of types to convert to. The array length indicates the number and types of values that are suggested for the method to return.</param>
         /// <param name="parameter">The converter parameter to use.</param>
         /// <param name="culture">The culture to use in the converter.</param>
-        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
-        {
-            return null;
-        }
+        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture) => null;
     }
 
     /// <summary>
@@ -6640,20 +6461,20 @@ namespace ag.WPF.Chart
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
             if (values == null
-                || !(values[0] is double width)
-                || !(values[1] is double height)
-                || !(values[3] is ChartStyle chartStyle)
+                || values[0] is not double width
+                || values[1] is not double height
+                || values[3] is not ChartStyle chartStyle
                 || !Utils.StyleRadar(chartStyle)
-                || !(values[4] is FontFamily fontFamily)
-                || !(values[5] is double fontSize)
-                || !(values[6] is FontStyle fontStyle)
-                || !(values[7] is FontWeight fontWeight)
-                || !(values[8] is FontStretch fontStretch)
-                || !(values[9] is FlowDirection flowDir)
-                || !(values[12] is int linesCount)
+                || values[4] is not FontFamily fontFamily
+                || values[5] is not double fontSize
+                || values[6] is not FontStyle fontStyle
+                || values[7] is not FontWeight fontWeight
+                || values[8] is not FontStretch fontStretch
+                || values[9] is not FlowDirection flowDir
+                || values[12] is not int linesCount
                 || linesCount < 2
-                || !(values[13] is string format)
-                || !(values[14] is AutoAdjustmentMode autoAdjust))
+                || values[13] is not string format
+                || values[14] is not AutoAdjustmentMode autoAdjust)
                 return null;
 
             var seriesEnumerable = values[2] as IEnumerable<ISeries>;
@@ -6668,8 +6489,8 @@ namespace ag.WPF.Chart
             if (!seriesArray.All(s => s is PlainSeries))
                 return null;
 
-            var customValuesHorizontal = values[10] is IEnumerable<string> customEnumerableX ? customEnumerableX.ToArray() : new string[] { };
-            var customValuesVertical = values[11] is IEnumerable<string> customEnumerableY ? customEnumerableY.ToArray() : new string[] { };
+            var customValuesHorizontal = values[10] is IEnumerable<string> customEnumerableX ? customEnumerableX.ToArray() : Array.Empty<string>();
+            var customValuesVertical = values[11] is IEnumerable<string> customEnumerableY ? customEnumerableY.ToArray() : Array.Empty<string>();
 
             var currentDegrees = 0.0;
             var pointsCount = seriesArray.Max(s => s.Values.Count);
@@ -6798,10 +6619,7 @@ namespace ag.WPF.Chart
         /// <param name="targetTypes">The array of types to convert to. The array length indicates the number and types of values that are suggested for the method to return.</param>
         /// <param name="parameter">The converter parameter to use.</param>
         /// <param name="culture">The culture to use in the converter.</param>
-        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
-        {
-            return null;
-        }
+        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture) => null;
     }
 
     /// <summary>
@@ -6818,12 +6636,12 @@ namespace ag.WPF.Chart
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
             if (values == null
-                || !(values[0] is double width)
-                || !(values[1] is double height)
-                || !(values[3] is Brush backgroundBrush)
-                || !(values[4] is ChartStyle chartStyle)
+                || values[0] is not double width
+                || values[1] is not double height
+                || values[3] is not Brush backgroundBrush
+                || values[4] is not ChartStyle chartStyle
                 || !chartStyle.In(ChartStyle.SlicedPie, ChartStyle.SolidPie, ChartStyle.Doughnut)
-                || !(values[5] is string format))
+                || values[5] is not string format)
                 return null;
 
             var seriesEnumerable = values[2] as IEnumerable<ISeries>;
@@ -7004,10 +6822,7 @@ namespace ag.WPF.Chart
         /// <param name="targetTypes">The array of types to convert to. The array length indicates the number and types of values that are suggested for the method to return.</param>
         /// <param name="parameter">The converter parameter to use.</param>
         /// <param name="culture">The culture to use in the converter.</param>
-        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
-        {
-            return null;
-        }
+        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture) => null;
     }
 #nullable restore
 }

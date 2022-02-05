@@ -32,10 +32,7 @@
 
         #region Abstraction metods overrides
         /// <inheritdoc />
-        public override IChartValue Clone()
-        {
-            return (HighLowCloseChartValue)MemberwiseClone();
-        }
+        public override IChartValue Clone() => (HighLowCloseChartValue)MemberwiseClone();
         #endregion
     }
 }

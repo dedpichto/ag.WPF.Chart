@@ -662,8 +662,8 @@ namespace ag.WPF.Chart
         #endregion
 
         #region Private fields
-        private readonly ObservableCollection<FrameworkElement> _legendsCollection = new ObservableCollection<FrameworkElement>();
-        private readonly ObservableCollection<FrameworkElement> _pieLegendsCollection = new ObservableCollection<FrameworkElement>();
+        private readonly ObservableCollection<FrameworkElement> _legendsCollection = new();
+        private readonly ObservableCollection<FrameworkElement> _pieLegendsCollection = new();
         #endregion
 
         #region Overrides
@@ -719,7 +719,7 @@ namespace ag.WPF.Chart
                 return;
             foreach (var series in actualSeries)
             {
-                for (var pathIndex = 0; pathIndex < series.Paths.Count(); pathIndex++)
+                for (var pathIndex = 0; pathIndex < series.Paths.Length; pathIndex++)
                 {
                     if (series.Paths[pathIndex] == null || (bool)series.Paths[pathIndex].GetValue(Statics.AddedToCanvasProperty)) continue;
                     setPathProperties(series, pathIndex);
@@ -733,7 +733,7 @@ namespace ag.WPF.Chart
             {
                 case NotifyCollectionChangedAction.Add:
                     {
-                        if (!(e.NewItems[0] is ISeries series)) break;
+                        if (e.NewItems[0] is not ISeries series) break;
 
                         addSeries(series, e.NewStartingIndex);
 
@@ -741,18 +741,18 @@ namespace ag.WPF.Chart
                     }
                 case NotifyCollectionChangedAction.Replace:
                     {
-                        if (!(e.OldItems[0] is ISeries oldSeries)) break;
+                        if (e.OldItems[0] is not ISeries oldSeries) break;
 
                         removeSeries(oldSeries, false);
 
-                        if (!(e.NewItems[0] is ISeries newSeries)) break;
+                        if (e.NewItems[0] is not ISeries newSeries) break;
 
                         addSeries(newSeries, e.OldStartingIndex, false);
                         break; ;
                     }
                 case NotifyCollectionChangedAction.Remove:
                     {
-                        if (!(e.OldItems[0] is ISeries series)) break;
+                        if (e.OldItems[0] is not ISeries series) break;
 
                         removeSeries(series);
 
@@ -765,7 +765,7 @@ namespace ag.WPF.Chart
         {
             var actualSeries = getActualSeries();
             if (!actualSeries.Any()) return;
-            if (!(_pieImage.ToolTip is ToolTip tooltip)) return;
+            if (_pieImage.ToolTip is not ToolTip tooltip) return;
             var position = e.GetPosition(_pieImage);
             if (_pieImage.Source is DrawingImage dw)
             {
@@ -773,7 +773,7 @@ namespace ag.WPF.Chart
                 {
                     foreach (var gd in dwg.Children.OfType<GeometryDrawing>())
                     {
-                        if (!(gd.Geometry is Geometry geometry)) continue;
+                        if (gd.Geometry is not Geometry geometry) continue;
                         if (!geometry.FillContains(position)) continue;
                         var data = (string)geometry.GetValue(Statics.SectorDataProperty);
                         if (!Equals(tooltip.Content, data))
@@ -817,14 +817,14 @@ namespace ag.WPF.Chart
                     updateBindings();
                     break;
             }
-            OnPropertyChanged("SeriesSource");
+            OnPropertyChanged(nameof(SeriesSource));
         }
 
         private void Path_MouseMove(object sender, MouseEventArgs e)
         {
-            if (!(sender is Path path)) return;
-            if (!(path.Tag is ISeries s)) return;
-            if (!(path.ToolTip is ToolTip tooltip)) return;
+            if (sender is not Path path) return;
+            if (path.Tag is not ISeries s) return;
+            if (path.ToolTip is not ToolTip tooltip) return;
             Rect rc;
             switch (ChartStyle)
             {
@@ -916,8 +916,8 @@ namespace ag.WPF.Chart
 
         private void Path_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            if (!(sender is Path path)) return;
-            if (!(path.Tag is ISeries s)) return;
+            if (sender is not Path path) return;
+            if (path.Tag is not ISeries s) return;
             if (!ChartStyle.In(ChartStyle.LinesWithMarkers, ChartStyle.StackedLinesWithMarkers,
                 ChartStyle.FullStackedLinesWithMarkers, ChartStyle.SmoothLinesWithMarkers,
                 ChartStyle.SmoothStackedLinesWithMarkers, ChartStyle.SmoothFullStackedLinesWithMarkers,
@@ -2097,7 +2097,7 @@ namespace ag.WPF.Chart
         #region Callbacks
         private static object CoerceLegendsWaterfall(DependencyObject d, object value)
         {
-            if (!(value is IEnumerable<string> legends))
+            if (value is not IEnumerable<string> legends)
                 throw new ArgumentException("LegendsWaterfall must be of type IEnumerable<string>", nameof(value));
             if (legends.Count() < 2)
                 throw new ArgumentException("LegendsWaterfall must have at least two items", nameof(value));
@@ -2105,7 +2105,7 @@ namespace ag.WPF.Chart
         }
         private static object CoerceLegendsHighLowClose(DependencyObject d, object value)
         {
-            if (!(value is IEnumerable<string> legends))
+            if (value is not IEnumerable<string> legends)
                 throw new ArgumentException("LegendsHighLowClose must be of type IEnumerable<string>", nameof(value));
             if (legends.Count() < 2)
                 throw new ArgumentException("LegendsHighLowClose must have at least two items", nameof(value));
@@ -2113,7 +2113,7 @@ namespace ag.WPF.Chart
         }
         private static object CoerceLegendsOpenHighLowClose(DependencyObject d, object value)
         {
-            if (!(value is IEnumerable<string> legends))
+            if (value is not IEnumerable<string> legends)
                 throw new ArgumentException("LegendsOpenHighLowClose must be of type IEnumerable<string>", nameof(value));
             if (legends.Count() < 2)
                 throw new ArgumentException("LegendsOpenHighLowClose must have at least two items", nameof(value));
@@ -2121,7 +2121,7 @@ namespace ag.WPF.Chart
         }
         private static void OnSeriesSourceChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
-            if (!(sender is Chart chart)) return;
+            if (sender is not Chart chart) return;
             if (e.OldValue is INotifyCollectionChanged oldValueNotifyCollectionChanged)
             {
                 oldValueNotifyCollectionChanged.CollectionChanged -= chart.SeriesSource_CollectionChanged;
@@ -2148,7 +2148,7 @@ namespace ag.WPF.Chart
 
         private static void OnChartBoundaryChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
-            if (!(sender is Chart ch)) return;
+            if (sender is not Chart ch) return;
             ch.OnChartBoundaryChanged((ChartBoundary)e.OldValue, (ChartBoundary)e.NewValue);
         }
         /// <summary>
@@ -2167,7 +2167,7 @@ namespace ag.WPF.Chart
 
         private static void OnShowTicksChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
-            if (!(sender is Chart ch)) return;
+            if (sender is not Chart ch) return;
             ch.OnShowTicksChanged((AxesVisibility)e.OldValue, (AxesVisibility)e.NewValue);
         }
         /// <summary>
@@ -2186,7 +2186,7 @@ namespace ag.WPF.Chart
 
         private static void OnMarkerShapeCahnged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
-            if (!(sender is Chart ch)) return;
+            if (sender is not Chart ch) return;
             ch.OnMarkerShapeCahnged((ShapeStyle)e.OldValue, (ShapeStyle)e.NewValue);
         }
         /// <summary>
@@ -2205,7 +2205,7 @@ namespace ag.WPF.Chart
 
         private static void OnLegendFontSizeChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
-            if (!(sender is Chart ch)) return;
+            if (sender is not Chart ch) return;
             ch.OnLegendFontSizeChanged((double)e.OldValue, (double)e.NewValue);
         }
         /// <summary>
@@ -2224,7 +2224,7 @@ namespace ag.WPF.Chart
 
         private static void OnLegendFontStyleChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
-            if (!(sender is Chart ch)) return;
+            if (sender is not Chart ch) return;
             ch.OnLegendFontStyleChanged((FontStyle)e.OldValue, (FontStyle)e.NewValue);
         }
         /// <summary>
@@ -2243,7 +2243,7 @@ namespace ag.WPF.Chart
 
         private static void OnLegendFontWeightChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
-            if (!(sender is Chart ch)) return;
+            if (sender is not Chart ch) return;
             ch.OnLegendFontWeightChanged((FontWeight)e.OldValue, (FontWeight)e.NewValue);
         }
         /// <summary>
@@ -2262,7 +2262,7 @@ namespace ag.WPF.Chart
 
         private static void OnLegendFontFamilyChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
-            if (!(sender is Chart ch)) return;
+            if (sender is not Chart ch) return;
             ch.OnLegendFontFamilyChanged((FontFamily)e.OldValue, (FontFamily)e.NewValue);
         }
         /// <summary>
@@ -2281,7 +2281,7 @@ namespace ag.WPF.Chart
 
         private static void OnLegendShapeChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
-            if (!(sender is Chart ch)) return;
+            if (sender is not Chart ch) return;
             ch.OnLegendShapeChanged((ShapeStyle)e.OldValue, (ShapeStyle)e.NewValue);
         }
         /// <summary>
@@ -2300,7 +2300,7 @@ namespace ag.WPF.Chart
 
         private static void OnLegendSizeChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
-            if (!(sender is Chart ch)) return;
+            if (sender is not Chart ch) return;
             ch.OnLegendSizeChanged((LegendSize)e.OldValue, (LegendSize)e.NewValue);
         }
         /// <summary>
@@ -2319,7 +2319,7 @@ namespace ag.WPF.Chart
 
         private static void OnAutoAdjustmentChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
-            if (!(sender is Chart ch)) return;
+            if (sender is not Chart ch) return;
             ch.OnAutoAdjustmentChanged((AutoAdjustmentMode)e.OldValue, (AutoAdjustmentMode)e.NewValue);
         }
         /// <summary>
@@ -2338,7 +2338,7 @@ namespace ag.WPF.Chart
 
         private static void OnCustomValuesXChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
-            if (!(sender is Chart ch)) return;
+            if (sender is not Chart ch) return;
             ch.OnCustomValuesXChanged((IEnumerable<string>)e.OldValue, (IEnumerable<string>)e.NewValue);
         }
         /// <summary>
@@ -2357,7 +2357,7 @@ namespace ag.WPF.Chart
 
         private static void OnCustomValuesYChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
-            if (!(sender is Chart ch)) return;
+            if (sender is not Chart ch) return;
             ch.OnCustomValuesYChanged((IEnumerable<string>)e.OldValue, (IEnumerable<string>)e.NewValue);
         }
         /// <summary>
@@ -2376,7 +2376,7 @@ namespace ag.WPF.Chart
 
         private static void OnVerticalAxisValuesFormatChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
-            if (!(sender is Chart ch)) return;
+            if (sender is not Chart ch) return;
             ch.OnVerticalAxisValuesFormatChanged((string)e.OldValue, (string)e.NewValue);
         }
         /// <summary>
@@ -2395,7 +2395,7 @@ namespace ag.WPF.Chart
 
         private static void OnHorizontalAxisValuesFormatChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
-            if (!(sender is Chart ch)) return;
+            if (sender is not Chart ch) return;
             ch.OnHorizontalAxisValuesFormatChanged((string)e.OldValue, (string)e.NewValue);
         }
         /// <summary>
@@ -2414,7 +2414,7 @@ namespace ag.WPF.Chart
 
         private static void OnPiePercentsFormatChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
-            if (!(sender is Chart ch)) return;
+            if (sender is not Chart ch) return;
             ch.OnPiePercentsFormatChanged((string)e.OldValue, (string)e.NewValue);
         }
         /// <summary>
@@ -2431,14 +2431,11 @@ namespace ag.WPF.Chart
             RaiseEvent(e);
         }
 
-        private static object CoerceFormats(DependencyObject d, object value)
-        {
-            return !(d is Chart) ? value : string.IsNullOrEmpty((string)value) ? "0" : value;
-        }
+        private static object CoerceFormats(DependencyObject d, object value) => d is not Chart ? value : string.IsNullOrEmpty((string)value) ? "0" : value;
 
         private static void OnAxesValuesVisibilityChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
-            if (!(sender is Chart ch)) return;
+            if (sender is not Chart ch) return;
             ch.OnAxesValuesVisibilityChanged((AxesVisibility)e.OldValue, (AxesVisibility)e.NewValue);
         }
         /// <summary>
@@ -2457,7 +2454,7 @@ namespace ag.WPF.Chart
 
         private static void OnAxesLinesVisibilityChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
-            if (!(sender is Chart ch)) return;
+            if (sender is not Chart ch) return;
             ch.OnAxesLinesVisibilityChanged((AxesVisibility)e.OldValue, (AxesVisibility)e.NewValue);
         }
         /// <summary>
@@ -2476,7 +2473,7 @@ namespace ag.WPF.Chart
 
         private static void OnSecondaryLinesVisibilityChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
-            if (!(sender is Chart ch)) return;
+            if (sender is not Chart ch) return;
             ch.OnSecondaryLinesVisibilityChanged((AxesVisibility)e.OldValue, (AxesVisibility)e.NewValue);
         }
         /// <summary>
@@ -2495,7 +2492,7 @@ namespace ag.WPF.Chart
 
         private static void OnChartStyleChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
-            if (!(sender is Chart ch)) return;
+            if (sender is not Chart ch) return;
             ch.OnChartStyleChanged((ChartStyle)e.OldValue, (ChartStyle)e.NewValue);
         }
         /// <summary>
@@ -2514,7 +2511,7 @@ namespace ag.WPF.Chart
 
         private static void OnShowLegendChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
-            if (!(sender is Chart ch)) return;
+            if (sender is not Chart ch) return;
             ch.OnShowLegendChanged((bool)e.OldValue, (bool)e.NewValue);
         }
         /// <summary>
@@ -2533,7 +2530,7 @@ namespace ag.WPF.Chart
 
         private static void OnShowValuesOnBarsAndColumnsChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
-            if (!(sender is Chart ch)) return;
+            if (sender is not Chart ch) return;
             ch.OnShowValuesOnBarsAndColumnsChanged((bool)e.OldValue, (bool)e.NewValue);
         }
         /// <summary>
@@ -2552,7 +2549,7 @@ namespace ag.WPF.Chart
 
         private static void OnLegendAlignmentChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
-            if (!(sender is Chart ch)) return;
+            if (sender is not Chart ch) return;
             ch.OnLegendAlignmentChanged((LegendAlignment)e.OldValue, (LegendAlignment)e.NewValue);
         }
         /// <summary>
@@ -2571,7 +2568,7 @@ namespace ag.WPF.Chart
 
         private static void OnTitleFontSizeChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
-            if (!(sender is Chart ch)) return;
+            if (sender is not Chart ch) return;
             ch.OnTitleFontSizeChanged((double)e.OldValue, (double)e.NewValue);
         }
         /// <summary>
@@ -2590,7 +2587,7 @@ namespace ag.WPF.Chart
 
         private static void OnTitleFontStyleChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
-            if (!(sender is Chart ch)) return;
+            if (sender is not Chart ch) return;
             ch.OnTitleFontStyleChanged((FontStyle)e.OldValue, (FontStyle)e.NewValue);
         }
         /// <summary>
@@ -2609,7 +2606,7 @@ namespace ag.WPF.Chart
 
         private static void OnTitleFontWeightChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
-            if (!(sender is Chart ch)) return;
+            if (sender is not Chart ch) return;
             ch.OnTitleFontWeightChanged((FontWeight)e.OldValue, (FontWeight)e.NewValue);
         }
         /// <summary>
@@ -2628,7 +2625,7 @@ namespace ag.WPF.Chart
 
         private static void OnAxesFontWeightChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
-            if (!(sender is Chart ch)) return;
+            if (sender is not Chart ch) return;
             ch.OnAxesFontWeightChanged((FontWeight)e.OldValue, (FontWeight)e.NewValue);
         }
         /// <summary>
@@ -2647,7 +2644,7 @@ namespace ag.WPF.Chart
 
         private static void OnTitleFontFamilyChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
-            if (!(sender is Chart ch)) return;
+            if (sender is not Chart ch) return;
             ch.OnTitleFontFamilyChanged((FontFamily)e.OldValue, (FontFamily)e.NewValue);
         }
         /// <summary>
@@ -2666,7 +2663,7 @@ namespace ag.WPF.Chart
 
         private static void OnAxesFontFamilyChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
-            if (!(sender is Chart ch)) return;
+            if (sender is not Chart ch) return;
             ch.OnAxesFontFamilyChanged((FontFamily)e.OldValue, (FontFamily)e.NewValue);
         }
         /// <summary>
@@ -2685,7 +2682,7 @@ namespace ag.WPF.Chart
 
         private static void OnAxesFontSizeChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
-            if (!(sender is Chart ch)) return;
+            if (sender is not Chart ch) return;
             ch.OnAxesFontSizeChanged((double)e.OldValue, (double)e.NewValue);
         }
         /// <summary>
@@ -2704,7 +2701,7 @@ namespace ag.WPF.Chart
 
         private static void OnAxesFontStyleChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
-            if (!(sender is Chart ch)) return;
+            if (sender is not Chart ch) return;
             ch.OnAxesFontStyleChanged((FontStyle)e.OldValue, (FontStyle)e.NewValue);
         }
         /// <summary>
@@ -2723,7 +2720,7 @@ namespace ag.WPF.Chart
 
         private static void OnAxesFontStretchChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
-            if (!(sender is Chart ch)) return;
+            if (sender is not Chart ch) return;
             ch.OnAxesFontStretchChanged((FontStretch)e.OldValue, (FontStretch)e.NewValue);
         }
         /// <summary>
@@ -2742,7 +2739,7 @@ namespace ag.WPF.Chart
 
         private static void OnTitleFontStretchChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
-            if (!(sender is Chart ch)) return;
+            if (sender is not Chart ch) return;
             ch.OnTitleFontStretchChanged((FontStretch)e.OldValue, (FontStretch)e.NewValue);
         }
         /// <summary>
@@ -2761,7 +2758,7 @@ namespace ag.WPF.Chart
 
         private static void OnAxisTitleYChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
-            if (!(sender is Chart ch)) return;
+            if (sender is not Chart ch) return;
             ch.OnAxisTitleYChanged((string)e.OldValue, (string)e.NewValue);
         }
         /// <summary>
@@ -2780,7 +2777,7 @@ namespace ag.WPF.Chart
 
         private static void OnAxisTitleXChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
-            if (!(sender is Chart ch)) return;
+            if (sender is not Chart ch) return;
             ch.OnAxisTitleXChanged((string)e.OldValue, (string)e.NewValue);
         }
         /// <summary>
@@ -2799,7 +2796,7 @@ namespace ag.WPF.Chart
 
         private static void OnTitleChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
-            if (!(sender is Chart ch)) return;
+            if (sender is not Chart ch) return;
             ch.OnTitleChanged((string)e.OldValue, (string)e.NewValue);
         }
         /// <summary>
@@ -2818,7 +2815,7 @@ namespace ag.WPF.Chart
 
         private static void OnLineThicknessChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
-            if (!(sender is Chart ch)) return;
+            if (sender is not Chart ch) return;
             ch.OnLineThicknessChanged((double)e.OldValue, (double)e.NewValue);
         }
 
@@ -2836,14 +2833,11 @@ namespace ag.WPF.Chart
             RaiseEvent(e);
         }
 
-        private static object CoerceLineThickness(DependencyObject d, object value)
-        {
-            return !(d is Chart) ? value : (double)value <= 0 ? 2.0 : value;
-        }
+        private static object CoerceLineThickness(DependencyObject d, object value) => d is not Chart ? value : (double)value <= 0 ? 2.0 : value;
 
         private static void OnMaxYChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
-            if (!(sender is Chart ch)) return;
+            if (sender is not Chart ch) return;
             ch.OnMaxYChanged((double)e.OldValue, (double)e.NewValue);
         }
         /// <summary>
@@ -2860,14 +2854,11 @@ namespace ag.WPF.Chart
             RaiseEvent(e);
         }
 
-        private static object CoerceMaxY(DependencyObject d, object value)
-        {
-            return !(d is Chart) ? value : (double)value < 0 ? 100.0 : value;
-        }
+        private static object CoerceMaxY(DependencyObject d, object value) => d is not Chart ? value : (double)value < 0 ? 100.0 : value;
 
         private static void OnMaxXChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
-            if (!(sender is Chart ch)) return;
+            if (sender is not Chart ch) return;
             ch.OnMaxXChanged((double)e.OldValue, (double)e.NewValue);
         }
         /// <summary>
@@ -2884,14 +2875,11 @@ namespace ag.WPF.Chart
             RaiseEvent(e);
         }
 
-        private static object CoerceMaxX(DependencyObject d, object value)
-        {
-            return !(d is Chart) ? value : (double)value < 0 ? 100.0 : value;
-        }
+        private static object CoerceMaxX(DependencyObject d, object value) => d is not Chart ? value : (double)value < 0 ? 100.0 : value;
 
         private static void OnChartOpacityChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
-            if (!(sender is Chart ch)) return;
+            if (sender is not Chart ch) return;
             ch.OnChartOpacityChanged((double)e.OldValue, (double)e.NewValue);
         }
         /// <summary>
@@ -2908,14 +2896,11 @@ namespace ag.WPF.Chart
             RaiseEvent(e);
         }
 
-        private static object CoerceChartOpacity(DependencyObject d, object value)
-        {
-            return !(d is Chart) ? value : (double)value < 0 || (double)value > 1 ? 1 : value;
-        }
+        private static object CoerceChartOpacity(DependencyObject d, object value) => d is not Chart ? value : (double)value < 0 || (double)value > 1 ? 1 : value;
 
         private static void OnSectionsYChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
-            if (!(sender is Chart ch)) return;
+            if (sender is not Chart ch) return;
             ch.OnSectionsYChanged((int)e.OldValue, (int)e.NewValue);
         }
         /// <summary>
@@ -2932,14 +2917,11 @@ namespace ag.WPF.Chart
             RaiseEvent(e);
         }
 
-        private static object CoerceSectionsY(DependencyObject d, object value)
-        {
-            return !(d is Chart) ? value : (int)value <= 0 ? 10 : value;
-        }
+        private static object CoerceSectionsY(DependencyObject d, object value) => d is not Chart ? value : (int)value <= 0 ? 10 : value;
 
         private static void OnSectionsXChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
-            if (!(sender is Chart ch)) return;
+            if (sender is not Chart ch) return;
             ch.OnSectionsXChanged((int)e.OldValue, (int)e.NewValue);
         }
         /// <summary>
@@ -2956,10 +2938,7 @@ namespace ag.WPF.Chart
             RaiseEvent(e);
         }
 
-        private static object CoerceSectionsX(DependencyObject d, object value)
-        {
-            return !(d is Chart) ? value : (int)value <= 0 ? 10 : value;
-        }
+        private static object CoerceSectionsX(DependencyObject d, object value) => d is not Chart ? value : (int)value <= 0 ? 10 : value;
         #endregion
 
         #region Routed events
@@ -3582,10 +3561,7 @@ namespace ag.WPF.Chart
         /// Raises the PropertyChanged event when the property value has changed
         /// </summary>
         /// <param name="propertyName">Property name</param>
-        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
+        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         #endregion
 #nullable restore
     }

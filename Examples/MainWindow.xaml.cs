@@ -99,8 +99,7 @@ namespace Examples
             }
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
-        {
+        private void Button_Click(object sender, RoutedEventArgs e) =>
             //for (var i = 0; i < AllSeries.Count; i++)
             //{
             //    chTest.Series.Add(new PlainSeries($"Series {i + 1}", AllSeries[i]));
@@ -108,6 +107,5 @@ namespace Examples
             //}
             //Series.Insert(1, new PlainSeries("kuku", new[] { 3.5, 7.3, 8.1, 7.64, 2.8 }));
             Series[1] = new PlainSeries("kuku", new[] { 3.5, 7.3, 8.1, 7.64, 2.8 });
-        }
     }
 }

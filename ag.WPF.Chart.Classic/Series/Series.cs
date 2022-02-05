@@ -24,7 +24,7 @@ namespace ag.WPF.Chart.Series
         private Brush _secondaryBrush;
         private string _name;
         private int _index;
-        private ChartItemsCollection<IChartValue> _values = new ChartItemsCollection<IChartValue>();
+        private ChartItemsCollection<IChartValue> _values = new();
         #endregion
 
         #region Dependency properties
@@ -126,7 +126,7 @@ namespace ag.WPF.Chart.Series
                 if (binding != null)
                     binding.UpdateTarget();
             }
-            OnPropertyChanged("Values");
+            OnPropertyChanged(nameof(Values));
         }
         #endregion
 
@@ -216,10 +216,7 @@ namespace ag.WPF.Chart.Series
         /// </summary>
         public event PropertyChangedEventHandler PropertyChanged;
 
-        private void OnPropertyChanged([CallerMemberName] string propertyName = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
+        private void OnPropertyChanged([CallerMemberName] string propertyName = null) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         #endregion
 #nullable restore
     }

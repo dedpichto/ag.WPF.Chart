@@ -35,73 +35,49 @@ namespace ag.WPF.Chart
         /// </summary>
         /// <param name="obj">DependencyObject</param>
         /// <returns>AddedToCanvas (boolean).</returns>
-        public static bool GetAddedToCanvas(DependencyObject obj)
-        {
-            return (bool)obj.GetValue(AddedToCanvasProperty);
-        }
+        public static bool GetAddedToCanvas(DependencyObject obj) => (bool)obj.GetValue(AddedToCanvasProperty);
         /// <summary>
         /// Sets AddedToCanvas attached dependency property.
         /// </summary>
         /// <param name="obj">DependencyObject</param>
         /// <param name="value">Boolean</param>
-        public static void SetAddedToCanvas(DependencyObject obj, bool value)
-        {
-            obj.SetValue(AddedToCanvasProperty, value);
-        }
+        public static void SetAddedToCanvas(DependencyObject obj, bool value) => obj.SetValue(AddedToCanvasProperty, value);
         /// <summary>
         /// Gets SectorData attached dependency property.
         /// </summary>
         /// <param name="obj">DependencyObject</param>
         /// <returns>SectorData (string).</returns>
-        public static string GetSectorData(DependencyObject obj)
-        {
-            return (string)obj.GetValue(SectorDataProperty);
-        }
+        public static string GetSectorData(DependencyObject obj) => (string)obj.GetValue(SectorDataProperty);
         /// <summary>
         /// Sets SectorData attached dependency property.
         /// </summary>
         /// <param name="obj">DependencyObject</param>
         /// <param name="value">String</param>
-        public static void SetSectorData(DependencyObject obj, string value)
-        {
-            obj.SetValue(SectorDataProperty, value);
-        }
+        public static void SetSectorData(DependencyObject obj, string value) => obj.SetValue(SectorDataProperty, value);
         /// <summary>
         /// Gets HasCustomMainBrush attached dependency property.
         /// </summary>
         /// <param name="obj">DependencyObject</param>
         /// <returns>HasCustomMainBrush (boolean).</returns>
-        public static bool GetHasCustomMainBrush(DependencyObject obj)
-        {
-            return (bool)obj.GetValue(HasCustomMainBrushProperty);
-        }
+        public static bool GetHasCustomMainBrush(DependencyObject obj) => (bool)obj.GetValue(HasCustomMainBrushProperty);
         /// <summary>
         /// Sets HasCustomMainBrush attached dependency property.
         /// </summary>
         /// <param name="obj">DependencyObject</param>
         /// <param name="value">Boolean</param>
-        public static void SetHasCustomMainBrush(DependencyObject obj, bool value)
-        {
-            obj.SetValue(HasCustomMainBrushProperty, value);
-        }
+        public static void SetHasCustomMainBrush(DependencyObject obj, bool value) => obj.SetValue(HasCustomMainBrushProperty, value);
         /// <summary>
         /// Gets HasCustomSecondaryBrush attached dependency property.
         /// </summary>
         /// <param name="obj">DependencyObject</param>
         /// <returns>HasCustomSecondaryBrush (boolean).</returns>
-        public static bool GetHasCustomSecondaryBrush(DependencyObject obj)
-        {
-            return (bool)obj.GetValue(HasCustomSecondaryBrushProperty);
-        }
+        public static bool GetHasCustomSecondaryBrush(DependencyObject obj) => (bool)obj.GetValue(HasCustomSecondaryBrushProperty);
         /// <summary>
         /// Sets HasCustomSecondaryBrush attached dependency property.
         /// </summary>
         /// <param name="obj">DependencyObject</param>
         /// <param name="value">Boolean</param>
-        public static void SetHasCustomSecondaryBrush(DependencyObject obj, bool value)
-        {
-            obj.SetValue(HasCustomSecondaryBrushProperty, value);
-        }
+        public static void SetHasCustomSecondaryBrush(DependencyObject obj, bool value) => obj.SetValue(HasCustomSecondaryBrushProperty, value);
 
         internal static (Brush Brush, int Counter)[] PredefinedMainBrushes { get; } =
         {

@@ -59,10 +59,7 @@ namespace ag.WPF.Chart
         }
 
         /// <inheritdoc />
-        public bool Remove(T item)
-        {
-            return !_useSource && _innerCollection.Remove(item);
-        }
+        public bool Remove(T item) => !_useSource && _innerCollection.Remove(item);
 
         /// <inheritdoc />
         public void RemoveAt(int index)
@@ -90,40 +87,22 @@ namespace ag.WPF.Chart
         }
 
         /// <inheritdoc />
-        public int IndexOf(T item)
-        {
-            return _innerCollection.IndexOf(item);
-        }
+        public int IndexOf(T item) => _innerCollection.IndexOf(item);
 
         /// <inheritdoc />
-        public void Insert(int index, T item)
-        {
-            _innerCollection.Insert(index, item);
-        }
+        public void Insert(int index, T item) => _innerCollection.Insert(index, item);
 
         /// <inheritdoc />
-        public bool Contains(T item)
-        {
-            return _innerCollection.Contains(item);
-        }
+        public bool Contains(T item) => _innerCollection.Contains(item);
 
         /// <inheritdoc />
-        public void CopyTo(T[] array, int arrayIndex)
-        {
-            _innerCollection.CopyTo(array, arrayIndex);
-        }
+        public void CopyTo(T[] array, int arrayIndex) => _innerCollection.CopyTo(array, arrayIndex);
 
         /// <inheritdoc />
-        public IEnumerator<T> GetEnumerator()
-        {
-            return _innerCollection.GetEnumerator();
-        }
+        public IEnumerator<T> GetEnumerator() => _innerCollection.GetEnumerator();
 
         /// <inheritdoc />
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return ((IEnumerable)_innerCollection).GetEnumerator();
-        }
+        IEnumerator IEnumerable.GetEnumerator() => ((IEnumerable)_innerCollection).GetEnumerator();
 #nullable restore
     }
 }

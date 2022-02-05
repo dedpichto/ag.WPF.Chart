@@ -39,10 +39,7 @@
 
         #region Abstraction metods overrides
         /// <inheritdoc />
-        public override IChartValue Clone()
-        {
-            return (PlainChartValue)MemberwiseClone();
-        } 
+        public override IChartValue Clone() => (PlainChartValue)MemberwiseClone();
         #endregion
     }
 }
