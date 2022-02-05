@@ -542,10 +542,10 @@ namespace ag.WPF.Chart
         public static readonly DependencyProperty SecondaryLinesVisibilityProperty = DependencyProperty.Register(nameof(SecondaryLinesVisibility), typeof(AxesVisibility), typeof(Chart),
                 new FrameworkPropertyMetadata(AxesVisibility.Both, OnSecondaryLinesVisibilityChanged));
         /// <summary>
-        /// The identifier of the <see cref="ValuesFormatY"/> dependency property.
+        /// The identifier of the <see cref="VerticalAxisValuesFormat"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty ValuesFormatYProperty = DependencyProperty.Register(nameof(ValuesFormatY), typeof(string), typeof(Chart),
-                new FrameworkPropertyMetadata("0", OnValuesFormatYChanged, CoerceFormats));
+        public static readonly DependencyProperty VerticalAxisValuesFormatProperty = DependencyProperty.Register(nameof(VerticalAxisValuesFormat), typeof(string), typeof(Chart),
+                new FrameworkPropertyMetadata("0", OnVerticalAxisValuesFormatChanged, CoerceFormats));
         /// <summary>
         /// The identifier of the <see cref="HorizontalAxisValuesFormat"/> dependency property.
         /// </summary>
@@ -1560,81 +1560,6 @@ namespace ag.WPF.Chart
             set => SetValue(LegendsWaterfallProperty, value);
         }
         /// <summary>
-        /// Gets or sets the collection of <see cref="WPF.Chart.Series"/> objects associated with chart control.
-        /// </summary>
-        [Category("ChartAppearance"), Description("Gets or sets the collection of Series objects associated with chart control")]
-        public IEnumerable<ISeries> SeriesSource
-        {
-            get
-            {
-                var b = BindingOperations.GetBinding(this, SeriesSourceProperty);
-                if (b != null)
-                    return (IEnumerable<ISeries>)GetValue(SeriesSourceProperty);
-                else
-                    return SeriesItems;
-            }
-            set => SetValue(SeriesSourceProperty, value);
-        }
-        /// <summary>
-        /// Gets the collection of <see cref="ISeries"/> objects used to generate the content of the <see cref="Chart"/> control.
-        /// </summary>
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Content)]
-        [EditorBrowsable(EditorBrowsableState.Never), Bindable(false)]
-        public ChartItemsCollection<ISeries> SeriesItems
-        {
-            get
-            {
-                var b = BindingOperations.GetBinding(this, SeriesSourceProperty);
-                if (b == null)
-                {
-                    if (_seriesItems == null)
-                    {
-                        _seriesItems = new ChartItemsCollection<ISeries>();
-                        _seriesItems.CollectionChanged += SeriesSource_CollectionChanged;
-                    }
-                }
-                else
-                {
-                    if (SeriesSource != null)
-                    {
-                        if (_seriesItems != null)
-                            _seriesItems.CollectionChanged -= SeriesSource_CollectionChanged;
-                        _seriesItems = new ChartItemsCollection<ISeries>(SeriesSource);
-                        _seriesItems.CollectionChanged += SeriesSource_CollectionChanged;
-                    }
-                    else
-                    {
-                        if (_seriesItems == null)
-                        {
-                            _seriesItems = new ChartItemsCollection<ISeries>();
-                            _seriesItems.CollectionChanged += SeriesSource_CollectionChanged;
-                        }
-                    }
-                }
-                return _seriesItems;
-            }
-        }
-        /// <summary>
-        /// Specifies whether chart boundary is started on y-axes or with offfset from y-axes./>.
-        /// </summary>
-        /// <remarks>This property will have no effect if <see cref="ChartStyle"/> is set to any non-line style.</remarks>
-        [Category("ChartAppearance"), Description("Specifies whether chart boundary is started on y-axes or with offfset from y-axes")]
-        public ChartBoundary ChartBoundary
-        {
-            get => (ChartBoundary)GetValue(ChartBoundaryProperty);
-            set => SetValue(ChartBoundaryProperty, value);
-        }
-        /// <summary>
-        /// Specifies whether ticks are drawn on axes. Can be one of <see cref="AxesVisibility"/> enumeration members.
-        /// </summary>
-        /// <remarks>This property will have no effect if <see cref="ChartStyle"/> property is set to one of the following: <see cref="ChartStyle.SolidPie"/>, <see cref="ChartStyle.SlicedPie"/>, <see cref="ChartStyle.Doughnut"/>, <see cref="ChartStyle.Radar"/>, <see cref="ChartStyle.RadarWithMarkers"/>, <see cref="ChartStyle.RadarArea"/>.</remarks>
-        [Category("ChartAppearance"), Description("Specifies whether ticks are drawn on axes. Can be one of AxesValuesVisibility enumeration members")]
-        public AxesVisibility ShowTicks
-        {
-            get => (AxesVisibility)GetValue(ShowTicksProperty);
-            set => SetValue(ShowTicksProperty, value);
-        }
-        /// <summary>
         /// Gets or sets the chart legend's font family.
         /// </summary>
         [Category("ChartLegend"), Description("Gets or sets the chart legend's font family")]
@@ -1673,7 +1598,7 @@ namespace ag.WPF.Chart
         /// <summary>
         /// Gets or sets the shape of the chart legend. Can be one of <see cref="LegendShape"/> enumeration members.
         /// </summary>
-        [Category("ChartLegend"), Description("Gets or sets the shape of the chart legend. Can be one of LegendShape enumeration members")]
+        [Category("ChartLegend"), Description("Gets or sets the shape of the chart legend. Can be one of ShapeStyle enumeration members")]
         public ShapeStyle LegendShape
         {
             get => (ShapeStyle)GetValue(LegendShapeProperty);
@@ -1689,19 +1614,55 @@ namespace ag.WPF.Chart
             set => SetValue(LegendSizeProperty, value);
         }
         /// <summary>
-        /// Specifies whether control will automatically adjust its max x- and y- values or they should be set explicitly.
+        /// Gets or sets the collection of <see cref="WPF.Chart.Series"/> objects associated with chart control.
+        /// </summary>
+        [Category("ChartAppearance"), Description("Gets or sets the collection of Series objects associated with chart control")]
+        public IEnumerable<ISeries> SeriesSource
+        {
+            get
+            {
+                var b = BindingOperations.GetBinding(this, SeriesSourceProperty);
+                if (b != null)
+                    return (IEnumerable<ISeries>)GetValue(SeriesSourceProperty);
+                else
+                    return SeriesItems;
+            }
+            set => SetValue(SeriesSourceProperty, value);
+        }
+        /// <summary>
+        /// Specifies whether chart boundary is started on y-axes or with offfset from y-axes. Can be one of ChartBoundary enumeration members/>.
+        /// </summary>
+        /// <remarks>This property will have no effect if <see cref="ChartStyle"/> is set to any non-line style.</remarks>
+        [Category("ChartAppearance"), Description("Specifies whether chart boundary is started on y-axes or with offfset from y-axes. Can be one of ChartBoundary enumeration members")]
+        public ChartBoundary ChartBoundary
+        {
+            get => (ChartBoundary)GetValue(ChartBoundaryProperty);
+            set => SetValue(ChartBoundaryProperty, value);
+        }
+        /// <summary>
+        /// Specifies whether ticks are drawn on axes. Can be one of <see cref="AxesVisibility"/> enumeration members.
         /// </summary>
         /// <remarks>This property will have no effect if <see cref="ChartStyle"/> property is set to one of the following: <see cref="ChartStyle.SolidPie"/>, <see cref="ChartStyle.SlicedPie"/>, <see cref="ChartStyle.Doughnut"/>, <see cref="ChartStyle.Radar"/>, <see cref="ChartStyle.RadarWithMarkers"/>, <see cref="ChartStyle.RadarArea"/>.</remarks>
-        [Category("ChartAppearance"), Description("Specifies whether control will automatically adjust its max x- and y- values or they should be set explicitly")]
+        [Category("ChartAppearance"), Description("Specifies whether ticks are drawn on axes. Can be one of AxesValuesVisibility enumeration members")]
+        public AxesVisibility ShowTicks
+        {
+            get => (AxesVisibility)GetValue(ShowTicksProperty);
+            set => SetValue(ShowTicksProperty, value);
+        }
+        /// <summary>
+        /// Specifies whether control will automatically adjust its max x- and y- values or they should be set explicitly. Can be one of AutoAdjustmentMode enumeration members.
+        /// </summary>
+        /// <remarks>This property will have no effect if <see cref="ChartStyle"/> property is set to one of the following: <see cref="ChartStyle.SolidPie"/>, <see cref="ChartStyle.SlicedPie"/>, <see cref="ChartStyle.Doughnut"/>, <see cref="ChartStyle.Radar"/>, <see cref="ChartStyle.RadarWithMarkers"/>, <see cref="ChartStyle.RadarArea"/>.</remarks>
+        [Category("ChartAppearance"), Description("Specifies whether control will automatically adjust its max x- and y- values or they should be set explicitly. Can be one of AutoAdjustmentMode enumeration members")]
         public AutoAdjustmentMode AutoAdjustment
         {
             get => (AutoAdjustmentMode)GetValue(AutoAdjustmentProperty);
             set => SetValue(AutoAdjustmentProperty, value);
         }
         /// <summary>
-        /// Gets or sets the shape of chart series markers.
+        /// Gets or sets the shape of chart series markers. Can be one of ShapeStyle enumeration members
         /// </summary>
-        [Category("ChartAppearance"), Description("Gets or sets the shape of chart series markers")]
+        [Category("ChartAppearance"), Description("Gets or sets the shape of chart series markers. Can be one of ShapeStyle enumeration members")]
         public ShapeStyle MarkerShape
         {
             get => (ShapeStyle)GetValue(MarkerShapeProperty);
@@ -1973,10 +1934,10 @@ namespace ag.WPF.Chart
         /// </summary>
         /// <remarks>This property will have no effect if <see cref="ChartStyle"/> property is set to one of the following: <see cref="ChartStyle.SolidPie"/>, <see cref="ChartStyle.SlicedPie"/>, <see cref="ChartStyle.Doughnut"/>.</remarks>
         [Category("ChartAxes"), Description("Gets or sets the format for numeric values drawn next to the vertical axis")]
-        public string ValuesFormatY
+        public string VerticalAxisValuesFormat
         {
-            get => (string)GetValue(ValuesFormatYProperty);
-            set => SetValue(ValuesFormatYProperty, value);
+            get => (string)GetValue(VerticalAxisValuesFormatProperty);
+            set => SetValue(VerticalAxisValuesFormatProperty, value);
         }
         /// <summary>
         /// Gets or sets the format for numeric values drawn next to the horizontal axis.
@@ -1996,6 +1957,48 @@ namespace ag.WPF.Chart
         {
             get => (string)GetValue(PiePercentsFormatProperty);
             set => SetValue(PiePercentsFormatProperty, value);
+        }
+        #endregion
+
+        #region Public properties
+        /// <summary>
+        /// Gets the collection of <see cref="ISeries"/> objects used to generate the content of the <see cref="Chart"/> control.
+        /// </summary>
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Content)]
+        [EditorBrowsable(EditorBrowsableState.Never), Bindable(false)]
+        public ChartItemsCollection<ISeries> SeriesItems
+        {
+            get
+            {
+                var b = BindingOperations.GetBinding(this, SeriesSourceProperty);
+                if (b == null)
+                {
+                    if (_seriesItems == null)
+                    {
+                        _seriesItems = new ChartItemsCollection<ISeries>();
+                        _seriesItems.CollectionChanged += SeriesSource_CollectionChanged;
+                    }
+                }
+                else
+                {
+                    if (SeriesSource != null)
+                    {
+                        if (_seriesItems != null)
+                            _seriesItems.CollectionChanged -= SeriesSource_CollectionChanged;
+                        _seriesItems = new ChartItemsCollection<ISeries>(SeriesSource);
+                        _seriesItems.CollectionChanged += SeriesSource_CollectionChanged;
+                    }
+                    else
+                    {
+                        if (_seriesItems == null)
+                        {
+                            _seriesItems = new ChartItemsCollection<ISeries>();
+                            _seriesItems.CollectionChanged += SeriesSource_CollectionChanged;
+                        }
+                    }
+                }
+                return _seriesItems;
+            }
         }
         /// <summary>
         /// Gets legends collection.
@@ -2371,21 +2374,21 @@ namespace ag.WPF.Chart
             RaiseEvent(e);
         }
 
-        private static void OnValuesFormatYChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
+        private static void OnVerticalAxisValuesFormatChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
             if (!(sender is Chart ch)) return;
-            ch.OnValuesFormatYChanged((string)e.OldValue, (string)e.NewValue);
+            ch.OnVerticalAxisValuesFormatChanged((string)e.OldValue, (string)e.NewValue);
         }
         /// <summary>
-        /// Invoked just before the <see cref="ValuesFormatYChangedEvent"/> event is raised on control
+        /// Invoked just before the <see cref="VerticalAxisValuesFormatChangedEvent"/> event is raised on control
         /// </summary>
         /// <param name="oldValue">Old value</param>
         /// <param name="newValue">New value</param>
-        protected void OnValuesFormatYChanged(string oldValue, string newValue)
+        protected void OnVerticalAxisValuesFormatChanged(string oldValue, string newValue)
         {
             var e = new RoutedPropertyChangedEventArgs<string>(oldValue, newValue)
             {
-                RoutedEvent = ValuesFormatYChangedEvent
+                RoutedEvent = VerticalAxisValuesFormatChangedEvent
             };
             RaiseEvent(e);
         }
@@ -3186,17 +3189,17 @@ namespace ag.WPF.Chart
             RoutingStrategy.Bubble, typeof(RoutedPropertyChangedEventHandler<IEnumerable<string>>), typeof(Chart));
 
         /// <summary>
-        /// Occurs when the <see cref="ValuesFormatY"/> property has been changed in some way
+        /// Occurs when the <see cref="VerticalAxisValuesFormat"/> property has been changed in some way
         /// </summary>
-        public event RoutedPropertyChangedEventHandler<string> ValuesFormatYChanged
+        public event RoutedPropertyChangedEventHandler<string> VerticalAxisValuesFormatChanged
         {
-            add { AddHandler(ValuesFormatYChangedEvent, value); }
-            remove { RemoveHandler(ValuesFormatYChangedEvent, value); }
+            add { AddHandler(VerticalAxisValuesFormatChangedEvent, value); }
+            remove { RemoveHandler(VerticalAxisValuesFormatChangedEvent, value); }
         }
         /// <summary>
-        /// Identifies the <see cref="ValuesFormatYChanged"/> routed event
+        /// Identifies the <see cref="VerticalAxisValuesFormatChanged"/> routed event
         /// </summary>
-        public static readonly RoutedEvent ValuesFormatYChangedEvent = EventManager.RegisterRoutedEvent("ValuesFormatYChanged",
+        public static readonly RoutedEvent VerticalAxisValuesFormatChangedEvent = EventManager.RegisterRoutedEvent("VerticalAxisValuesFormatChanged",
             RoutingStrategy.Bubble, typeof(RoutedPropertyChangedEventHandler<string>), typeof(Chart));
 
         /// <summary>

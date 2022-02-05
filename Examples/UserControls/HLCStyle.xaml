@@ -47,7 +47,7 @@
                     <xctk:PropertyDefinition TargetProperties="AxesFontWeight" />
                     <xctk:PropertyDefinition TargetProperties="AxesFontFamily" />
 
-                    <xctk:PropertyDefinition TargetProperties="ValuesFormatY" />
+                    <xctk:PropertyDefinition TargetProperties="VerticalAxisValuesFormat" />
                     <xctk:PropertyDefinition TargetProperties="HorizontalAxisValuesFormat" />
 
                     <xctk:PropertyDefinition TargetProperties="Title" />

@@ -22,7 +22,7 @@
                      AxisTitleY="Liters"
                      AxisTitleX="Countries"
                      Title="Alcohol per capita in liters"
-                     ValuesFormatY="0 L"
+                     VerticalAxisValuesFormat="0 L"
                      />
         <Grid Grid.Column="0">
             <Grid.RowDefinitions>
@@ -56,7 +56,7 @@
                         <xctk:PropertyDefinition TargetProperties="AxesFontWeight" />
                         <xctk:PropertyDefinition TargetProperties="AxesFontFamily" />
 
-                        <xctk:PropertyDefinition TargetProperties="ValuesFormatY" />
+                        <xctk:PropertyDefinition TargetProperties="VerticalAxisValuesFormat" />
                         <xctk:PropertyDefinition TargetProperties="HorizontalAxisValuesFormat" />
 
                         <xctk:PropertyDefinition TargetProperties="Title" />

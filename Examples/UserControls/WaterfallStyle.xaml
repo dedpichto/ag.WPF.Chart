@@ -22,7 +22,7 @@
                      AxisTitleY="Growing"
                      AxisTitleX="Years"
                      Title="Population growing in Portugal"
-                     ValuesFormatY="0 %"
+                     VerticalAxisValuesFormat="0 %"
                      />
         <Grid Grid.Column="0">
             <Grid.RowDefinitions>
@@ -57,7 +57,7 @@
                         <xctk:PropertyDefinition TargetProperties="AxesFontWeight" />
                         <xctk:PropertyDefinition TargetProperties="AxesFontFamily" />
 
-                        <xctk:PropertyDefinition TargetProperties="ValuesFormatY" />
+                        <xctk:PropertyDefinition TargetProperties="VerticalAxisValuesFormat" />
                         <xctk:PropertyDefinition TargetProperties="HorizontalAxisValuesFormat" />
 
                         <xctk:PropertyDefinition TargetProperties="Title" />

@@ -22,7 +22,7 @@
                      AxisTitleY="Amount"
                      AxisTitleX="Countries"
                      Title="Energy production"
-                     ValuesFormatY="0 TWh"
+                     VerticalAxisValuesFormat="0 TWh"
                      />
         <Grid Grid.Column="0">
             <Grid.RowDefinitions>
@@ -58,7 +58,7 @@
                         <xctk:PropertyDefinition TargetProperties="AxesFontWeight" />
                         <xctk:PropertyDefinition TargetProperties="AxesFontFamily" />
                         
-                        <xctk:PropertyDefinition TargetProperties="ValuesFormatY" />
+                        <xctk:PropertyDefinition TargetProperties="VerticalAxisValuesFormat" />
                         <xctk:PropertyDefinition TargetProperties="HorizontalAxisValuesFormat" />
 
                         <xctk:PropertyDefinition TargetProperties="Title" />

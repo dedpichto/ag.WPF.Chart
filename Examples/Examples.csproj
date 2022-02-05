@@ -177,13 +177,13 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="UserControls\bglines.png" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\ag.WPF.Chart.Classic\ag.WPF.Chart.csproj">
       <Project>{95d1ffa0-2cb9-43a0-9e05-e10f29089877}</Project>
       <Name>ag.WPF.Chart</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="UserControls\bglines.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
