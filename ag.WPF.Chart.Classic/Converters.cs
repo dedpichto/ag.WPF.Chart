@@ -11,6 +11,7 @@ using System.Windows.Media;
 
 namespace ag.WPF.Chart
 {
+#nullable disable
     internal enum Directions
     {
         None,
@@ -7008,4 +7009,5 @@ namespace ag.WPF.Chart
             return null;
         }
     }
+#nullable restore
 }

@@ -12,6 +12,7 @@ namespace ag.WPF.Chart
     /// <typeparam name="T">The type of elements in the collection.</typeparam>
     public class ChartItemsCollection<T> : IList<T>
     {
+#nullable disable
         private readonly ObservableCollection<T> _innerCollection;
         private readonly bool _useSource;
 
@@ -123,5 +124,6 @@ namespace ag.WPF.Chart
         {
             return ((IEnumerable)_innerCollection).GetEnumerator();
         }
+#nullable restore
     }
 }

@@ -7,6 +7,7 @@ namespace ag.WPF.Chart.Values
     /// </summary>
     public abstract class ChartValue : DependencyObject, IChartValue
     {
+#nullable disable
         #region Dependency properties
         /// <summary>
         /// The identifier of the <see cref="CompositeValue"/> dependency property.
@@ -26,5 +27,6 @@ namespace ag.WPF.Chart.Values
         /// <inheritdoc />
         public abstract IChartValue Clone();
         #endregion
+#nullable restore
     }
 }

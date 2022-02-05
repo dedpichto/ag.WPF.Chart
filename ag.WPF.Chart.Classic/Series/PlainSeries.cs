@@ -9,6 +9,7 @@ namespace ag.WPF.Chart.Series
     /// </summary>
     public class PlainSeries : Series
     {
+#nullable disable
         #region ctor
         /// <summary>
         /// Initializes a new instance of Series object using specified name and sequence of values
@@ -89,7 +90,8 @@ namespace ag.WPF.Chart.Series
         {
             MainBrush = mainBrush;
             SecondaryBrush = secondaryBrush;
-        } 
+        }
         #endregion
+#nullable restore
     }
 }

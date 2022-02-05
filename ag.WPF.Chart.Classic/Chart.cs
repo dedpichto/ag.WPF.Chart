@@ -345,6 +345,7 @@ namespace ag.WPF.Chart
     #endregion
     public class Chart : Control, INotifyPropertyChanged
     {
+#nullable disable
         private (Brush Brush, int Counter)[] PredefinedMainBrushes { get; } =
         {
             (new SolidColorBrush(Color.FromArgb(255, 91, 155, 213)),0),
@@ -3583,6 +3584,7 @@ namespace ag.WPF.Chart
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
         #endregion
+#nullable restore
     }
 
     /// <summary>

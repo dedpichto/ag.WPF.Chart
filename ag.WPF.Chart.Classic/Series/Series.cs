@@ -18,6 +18,7 @@ namespace ag.WPF.Chart.Series
     /// </summary>
     public abstract class Series : DependencyObject, ISeries
     {
+#nullable disable
         #region Private fields
         private Brush _mainBrush;
         private Brush _secondaryBrush;
@@ -220,5 +221,6 @@ namespace ag.WPF.Chart.Series
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
         #endregion
+#nullable restore
     }
 }
