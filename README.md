@@ -217,7 +217,11 @@ Field|Value|Description
 OnAxes|0|Chart boundary starts on y-axes
 WithOffset|1|Chart boundary starts with offset from y-axes (default)
 
+<hr />
+
 ## Chart class
+
+Represents a custom control containing series, axes, legends and other hosted content.
 
 ### Dependency properties
 
@@ -273,4 +277,135 @@ PiePercentsFormat|string|Gets or sets the numeric format for pie percents|ChartA
 
 Property|Type|Description
 ------|-----|-----------
-SeriesItems|ChartItemsCollection&lt;ISeries>&gt;|Gets the collection of ISeries objects used to generate the content of the  Chart  control
+SeriesItems|ChartItemsCollection&lt;ISeries&gt;|Gets the collection of ISeries objects used to generate the content of the  Chart  control
+
+<hr />
+
+## Series class
+
+Inherits ISeries interface. Represents the basic abstract class of series.
+
+### Dependency properties
+
+Property|Type|Description
+------|-----|-----------
+ValuesSource|IEnumerable&lt;IChartValue&gt;|Gets or sets the collection of IChartValue objects associated with chart control
+
+### Properties
+
+Property|Type|Description
+------|-----|-----------
+Values|ChartItemsCollection&lt;IChartValue&gt;| Gets the collection of IChartValue objects associated with current series
+Index|int|Gets or sets series index
+Name|string|Gets or sets series name
+MainBrush|Brush|Gets or sets series background
+SecondaryBrush|Brush|Gets or sets series seconday background
+RealRects|List&lt;Rect&gt;|Gets real coordinates of series rectangles
+RealPoints|List&lt;Pointt&gt;|Gets real coordinates of series points
+Paths|Path[]|Gets array of series drawing paths
+
+## PlainSeries class
+
+Represents plain series object with one value for each series point.
+
+### Constructors
+
+```csharp
+public PlainSeries(string name, IEnumerable<double> values)
+```
+
+Initializes a new instance of Series object using specified name and sequence of values
+
+```csharp
+public PlainSeries(Brush mainBrush, string name, IEnumerable<double> values)
+```
+
+Initializes a new instance of Series object using specified brush, name and sequence of values
+
+```csharp
+public PlainSeries(Brush mainBrush, Brush secondaryBrush, string name, IEnumerable<double> values)
+```
+
+Initializes a new instance of Series object using specified brush, secondary brush, name and sequence of values
+
+```csharp
+public PlainSeries(string name, IEnumerable<IChartValue> values)
+```
+
+Initializes a new instance of Series object using specified name and sequence of PlainChartValue objects
+
+```csharp
+public PlainSeries(Brush mainBrush, string name, IEnumerable<IChartValue> values)
+```
+
+Initializes a new instance of Series object using specified brush, name and sequence of PlainChartValue objects
+
+```csharp
+public PlainSeries(Brush mainBrush, Brush secondaryBrush, string name, IEnumerable<IChartValue> values)
+```
+
+Initializes a new instance of Series object using specified brush, secondary brush, name and sequence of PlainChartValue objects
+
+## HighLowCloseSeries class
+
+Represents stock series object with high, low, and close values for each series point.
+
+### Constructors
+
+```csharp
+public HighLowCloseSeries(string name, IEnumerable<(double highValue, double lowValue, double closeValue)> values)
+```
+
+Initializes a new instance of StockSeries object using specified name and sequence of values
+
+```csharp
+public HighLowCloseSeries(Brush mainBrush, string name, IEnumerable<(double highValue, double lowValue, double closeValue)> values)
+```
+
+Initializes a new instance of StockSeries object using specified brush, name and sequence of values
+
+```csharp
+public HighLowCloseSeries(Brush mainBrush, Brush secondaryBrush, string name, IEnumerable<(double highValue, double lowValue, double closeValue)> values)
+```
+
+Initializes a new instance of StockSeries object using specified brush, secondary brush, name and sequence of values
+
+```csharp
+public HighLowCloseSeries(string name, IEnumerable<IChartValue> values)
+```
+
+Initializes a new instance of StockSeries object using specified name and sequence of StockChartValue objects
+
+```csharp
+public HighLowCloseSeries(Brush mainBrush, string name, IEnumerable<IChartValue> values)
+```
+
+Initializes a new instance of StockSeries object using specified brush, name and sequence of StockChartValue objects
+
+```csharp
+public HighLowCloseSeries(Brush mainBrush, Brush secondaryBrush, string name, IEnumerable<IChartValue> values)
+```
+
+Initializes a new instance of StockSeries object using specified brush, secondary brush, name and sequence of StockChartValue objects
+
+## OpenHighLowCloseSeries class
+
+### Constructors
+
+```csharp
+public OpenHighLowCloseSeries(string name, IEnumerable<(double openValue, double highValue, double lowValue, double closeValue)> values)
+```
+
+Initializes a new instance of StockSeries object using specified name and sequence of values
+
+```csharp
+public OpenHighLowCloseSeries(Brush mainBrush, string name, IEnumerable<(double openValue, double highValue, double lowValue, double closeValue)> values)
+```
+
+Initializes a new instance of StockSeries object using specified brush, name and sequence of values
+
+```csharp
+public OpenHighLowCloseSeries(Brush mainBrush, Brush secondaryBrush, string name, IEnumerable<(double openValue, double highValue, double lowValue, double closeValue)> values)
+```
+
+Initializes a new instance of StockSeries object using specified brush, secondary brush, name and sequence of values

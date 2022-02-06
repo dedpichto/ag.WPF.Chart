@@ -22,7 +22,7 @@ namespace ag.WPF.Chart.Series
             {
                 Values.Add(new PlainChartValue(v, null));
             }
-
+            // call procedure from basic bstract class
             InitFields(name);
         }
 
@@ -39,7 +39,7 @@ namespace ag.WPF.Chart.Series
         }
 
         /// <summary>
-        /// Initializes a new instance of Series object using specified brush, name and sequence of values
+        /// Initializes a new instance of Series object using specified brush, secondary brush, name and sequence of values
         /// </summary>
         /// <param name="mainBrush">Series background</param>
         /// <param name="secondaryBrush">Series secondary background</param>
@@ -79,7 +79,7 @@ namespace ag.WPF.Chart.Series
         }
 
         /// <summary>
-        /// Initializes a new instance of Series object using specified brush, name and sequence of PlainChartValue objects
+        /// Initializes a new instance of Series object using specified brush, secondary brush, name and sequence of PlainChartValue objects
         /// </summary>
         /// <param name="mainBrush">Series background</param>
         /// <param name="secondaryBrush">Series secondary background</param>
