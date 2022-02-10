@@ -14,7 +14,7 @@
             CompositeValue = new ChartCompositeValue();
         }
         /// <summary>
-        /// Initializes a new instance of PlainChartValue object
+        /// Initializes a new instance of PlainChartValue object, using given numeric value
         /// </summary>
         /// <param name="plainValue">Current value</param>
         public PlainChartValue(double plainValue)
@@ -26,7 +26,7 @@
         }
 
         /// <summary>
-        /// Initializes a new instance of PlainChartValue object
+        /// Initializes a new instance of PlainChartValue object, using given numeric value and custom value
         /// </summary>
         /// <param name="plainValue">Current value</param>
         /// <param name="customValue">Current custom value</param>

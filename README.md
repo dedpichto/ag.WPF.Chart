@@ -108,6 +108,23 @@ namespace WpfApp4
 
 ![](https://am3pap005files.storage.live.com/y4mg_xxl-4GzNLmpQjQu-9hRHt6RxjZm9inNhVWMT4LMa7vXwLs6vWb-0xXSe0OFyb63PmZd_TTmGsCEIZ75l_WwEz5ajZqhSjuv7riAAlRKH3pBmH_wChavI62sQ9Qax7qubkD5uP3amORjX79292seOTeXDRicYb8V7_e6ulEESoZjSueOuyzVq4cOiVmvJg6?width=972&height=505&cropmode=none)
 
+*Instead of bindig, you may add series in code behind*
+
+```csharp
+chTest.SeriesItems.Add(new OpenHighLowCloseSeries("Stocks 1", new[] {
+                (40.0,50.0,35.0,45.0),
+                (45.0,50.0,30.0,35.0),
+                (35.0,45.0,30.0,40.0),
+                (40.0, 50.0,35.0,45.0),
+                (45.0,50.0,30.0,35.0),
+                (35.0, 45.0,30.0,40.0),
+                (40.0, 50.0,35.0,45.0),
+                (45.0,50.0,30.0,35.0),
+                (35.0,45.0,30.0,40.0),
+                (40.0, 50.0,35.0,45.0)
+            }));
+```
+
 ## Enumerations
 
 ### ChartStyle
@@ -306,7 +323,7 @@ Paths|Path[]|Gets array of series drawing paths
 
 ## PlainSeries class
 
-Represents plain series object with one value for each series point.
+Inherits abstract Series class. Represents plain series object with one value for each series point.
 
 ### Constructors
 
@@ -348,7 +365,7 @@ Initializes a new instance of Series object using specified brush, secondary bru
 
 ## HighLowCloseSeries class
 
-Represents stock series object with high, low, and close values for each series point.
+Inherits abstract Series class. Represents stock series object with high, low, and close values for each series point.
 
 ### Constructors
 
@@ -390,6 +407,8 @@ Initializes a new instance of StockSeries object using specified brush, secondar
 
 ## OpenHighLowCloseSeries class
 
+Inherits abstract Series class. Represents stock series object with open, high, low, and close values for each series point.
+
 ### Constructors
 
 ```csharp
@@ -409,3 +428,102 @@ public OpenHighLowCloseSeries(Brush mainBrush, Brush secondaryBrush, string name
 ```
 
 Initializes a new instance of StockSeries object using specified brush, secondary brush, name and sequence of values
+
+<hr />
+
+## ChartCompositeValue class
+
+Inherits IChartCompositeValue interface. Represnts values for various chart types.
+
+### Dependency properties
+
+Property|Type|Description
+------|-----|-----------
+PlainValue|double|Gets or sets PlainValue
+OpenValue|double|Gets or sets OpenValue
+CloseValue|double|Gets or sets CloseValue
+HighValue|double|Gets or sets HighValue
+LowValue|double|Gets or sets LowValue
+VolumeValue|double|Gets or sets VolumeValue
+
+## ChartValue class
+
+Inherits IChartValue interface. Represents the basic abstract class of chart value.
+
+### Dependency properties
+
+Property|Type|Description
+------|-----|-----------
+CompositeValue|IChartCompositeValue|Gets or sets current numeric values
+
+### Properties
+Property|Type|Description
+------|-----|-----------
+CustomValue|string|Gets or sets custom value to be displayed as chart point tooltip
+
+### Methods
+
+Method|Return value|Description
+------|------------|-----------
+Clone|IChartValue|Creates copy of current IChartValue object
+
+## PlainChartValue class
+
+Inherits abstract ChartValue class. Represents plain series value object.
+
+### Constructors
+
+```csharp
+public PlainChartValue()
+```
+
+Initializes a new instance of PlainChartValue object
+
+```csharp
+public PlainChartValue(double plainValue)
+```
+
+Initializes a new instance of PlainChartValue object, using given numeric value
+
+```csharp
+public PlainChartValue(double plainValue, string customValue)
+```
+
+Initializes a new instance of PlainChartValue object, using given numeric value and custom value
+
+## HighLowCloseChartValue class
+
+Inherits abstract ChartValue class. Represents stock value object (with high, low, and close values).
+
+### Constructors
+
+```csharp
+public HighLowCloseChartValue()
+```
+
+Initializes a new instance of HighLowCloseChartValue object
+
+```csharp
+public HighLowCloseChartValue(double highValue, double lowValue, double closeValue)
+```
+
+Initializes a new instance of HighLowCloseChartValue object, using given high, low and close values
+
+## OpenHighLowCloseChartValue class
+
+Inherits abstract ChartValue class. Represents stock value object (with open, high, low, and close values).
+
+### Constructors
+
+```csharp
+public OpenHighLowCloseChartValue()
+```
+
+Initializes a new instance of OpenHighLowCloseChartValue object
+
+```csharp
+public OpenHighLowCloseChartValue(double openValue, double highValue, double lowValue, double closeValue)
+```
+
+Initializes a new instance of OpenHighLowCloseChartValue object, using given open, high, low and close values
+

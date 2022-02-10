@@ -14,7 +14,7 @@
             CompositeValue = new ChartCompositeValue();
         }
         /// <summary>
-        /// Initializes a new instance of HighLowCloseChartValue object
+        /// Initializes a new instance of HighLowCloseChartValue object, using given high, low and close values
         /// </summary>
         /// <param name="highValue">High value</param>
         /// <param name="lowValue">Low value</param>
