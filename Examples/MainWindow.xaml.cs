@@ -65,7 +65,7 @@ namespace Examples
             //    (50.0,35.0,45.0)
             //}));
 
-            //chTest.Series.Add(new OpenHighLowCloseSeries("Stocks 1", new[] {
+            //chTest.SeriesItems.Add(new OpenHighLowCloseSeries("Stocks 1", new[] {
             //    (40.0,50.0,35.0,45.0),
             //    (45.0,50.0,30.0,35.0),
             //    (35.0,45.0,30.0,40.0),
@@ -94,7 +94,7 @@ namespace Examples
 
             for (var i = 0; i < AllSeries.Count; i++)
             {
-                //chTest.Series.Add(new PlainSeries($"Series {i + 1}", AllSeries[i]));
+                //chTest.SeriesItems.Add(new PlainSeries($"Series {i + 1}", AllSeries[i]));
                 Series.Add(new PlainSeries($"Series {i + 1}", AllSeries[i]));
             }
         }
