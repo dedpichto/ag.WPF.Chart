@@ -1241,8 +1241,17 @@ namespace ag.WPF.Chart
         internal static bool In<T>(this T t, params T[] values) => values.Contains(t);
     }
 
-    internal class StarDrawingConverter : IValueConverter
+    /// <summary>
+    /// Prepares geometry for shape drawing
+    /// </summary>
+    public class StarDrawingConverter : IValueConverter
     {
+        /// <summary>Converts a value. </summary>
+        /// <returns>A converted value. If the method returns null, the valid null value is used.</returns>
+        /// <param name="value">The value produced by the binding source.</param>
+        /// <param name="targetType">The type of the binding target property.</param>
+        /// <param name="parameter">The converter parameter to use.</param>
+        /// <param name="culture">The culture to use in the converter.</param>
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             if (value is not ShapeStyle shapeStyle)
@@ -1258,13 +1267,19 @@ namespace ag.WPF.Chart
             };
         }
 
+        /// <summary>Converts a value. </summary>
+        /// <returns>A converted value. If the method returns null, the valid null value is used.</returns>
+        /// <param name="value">The value that is produced by the binding target.</param>
+        /// <param name="targetType">The type to convert to.</param>
+        /// <param name="parameter">The converter parameter to use.</param>
+        /// <param name="culture">The culture to use in the converter.</param>
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) => throw new NotImplementedException();
     }
 
     /// <summary>
     /// Prepares geometry for drawing x- and y- axes lines
     /// </summary>
-    internal class AxesXLinesConverter : IMultiValueConverter
+    public class AxesXLinesConverter : IMultiValueConverter
     {
         /// <summary>Converts source values to a value for the binding target. The data binding engine calls this method when it propagates the values from source bindings to the binding target.</summary>
         /// <returns>A converted value.If the method returns null, the valid null value is used.A return value of <see cref="T:System.Windows.DependencyProperty" />.<see cref="F:System.Windows.DependencyProperty.UnsetValue" /> indicates that the converter did not produce a value, and that the binding will use the <see cref="P:System.Windows.Data.BindingBase.FallbackValue" /> if it is available, or else will use the default value.A return value of <see cref="T:System.Windows.Data.Binding" />.<see cref="F:System.Windows.Data.Binding.DoNothing" /> indicates that the binding does not transfer the value or use the <see cref="P:System.Windows.Data.BindingBase.FallbackValue" /> or the default value.</returns>
@@ -1350,7 +1365,7 @@ namespace ag.WPF.Chart
     /// <summary>
     /// Prepares geometry for drawing x- and y- axes lines
     /// </summary>
-    internal class AxesYLinesConverter : IMultiValueConverter
+    public class AxesYLinesConverter : IMultiValueConverter
     {
         /// <summary>Converts source values to a value for the binding target. The data binding engine calls this method when it propagates the values from source bindings to the binding target.</summary>
         /// <returns>A converted value.If the method returns null, the valid null value is used.A return value of <see cref="T:System.Windows.DependencyProperty" />.<see cref="F:System.Windows.DependencyProperty.UnsetValue" /> indicates that the converter did not produce a value, and that the binding will use the <see cref="P:System.Windows.Data.BindingBase.FallbackValue" /> if it is available, or else will use the default value.A return value of <see cref="T:System.Windows.Data.Binding" />.<see cref="F:System.Windows.Data.Binding.DoNothing" /> indicates that the binding does not transfer the value or use the <see cref="P:System.Windows.Data.BindingBase.FallbackValue" /> or the default value.</returns>
@@ -1434,8 +1449,17 @@ namespace ag.WPF.Chart
         public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture) => null;
     }
 
-    internal class LegendPieVisibilityConverter : IMultiValueConverter
+    /// <summary>
+    /// Defines pie legends visibility
+    /// </summary>
+    public class LegendPieVisibilityConverter : IMultiValueConverter
     {
+        /// <summary>Converts source values to a value for the binding target. The data binding engine calls this method when it propagates the values from source bindings to the binding target.</summary>
+        /// <returns>A converted value.If the method returns null, the valid null value is used.A return value of <see cref="T:System.Windows.DependencyProperty" />.<see cref="F:System.Windows.DependencyProperty.UnsetValue" /> indicates that the converter did not produce a value, and that the binding will use the <see cref="P:System.Windows.Data.BindingBase.FallbackValue" /> if it is available, or else will use the default value.A return value of <see cref="T:System.Windows.Data.Binding" />.<see cref="F:System.Windows.Data.Binding.DoNothing" /> indicates that the binding does not transfer the value or use the <see cref="P:System.Windows.Data.BindingBase.FallbackValue" /> or the default value.</returns>
+        /// <param name="values">The array of values that the source bindings in the <see cref="T:System.Windows.Data.MultiBinding" /> produces. The value <see cref="F:System.Windows.DependencyProperty.UnsetValue" /> indicates that the source binding has no value to provide for conversion.</param>
+        /// <param name="targetType">The type of the binding target property.</param>
+        /// <param name="parameter">The converter parameter to use.</param>
+        /// <param name="culture">The culture to use in the converter.</param>
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
             var seriesEnumerable = values[0] as IEnumerable<ISeries>;
@@ -1447,13 +1471,19 @@ namespace ag.WPF.Chart
             return Visibility.Visible;
         }
 
+        /// <summary>Converts a binding target value to the source binding values.</summary>
+        /// <returns>An array of values that have been converted from the target value back to the source values.</returns>
+        /// <param name="value">The value that the binding target produces.</param>
+        /// <param name="targetTypes">The array of types to convert to. The array length indicates the number and types of values that are suggested for the method to return.</param>
+        /// <param name="parameter">The converter parameter to use.</param>
+        /// <param name="culture">The culture to use in the converter.</param>
         public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture) => throw new NotImplementedException();
     }
 
     /// <summary>
     /// Defines stock series legend visibility
     /// </summary>
-    internal class LegendStockVisibilityConverter : IMultiValueConverter
+    public class LegendStockVisibilityConverter : IMultiValueConverter
     {
         /// <summary>Converts source values to a value for the binding target. The data binding engine calls this method when it propagates the values from source bindings to the binding target.</summary>
         /// <returns>A converted value.If the method returns null, the valid null value is used.A return value of <see cref="T:System.Windows.DependencyProperty" />.<see cref="F:System.Windows.DependencyProperty.UnsetValue" /> indicates that the converter did not produce a value, and that the binding will use the <see cref="P:System.Windows.Data.BindingBase.FallbackValue" /> if it is available, or else will use the default value.A return value of <see cref="T:System.Windows.Data.Binding" />.<see cref="F:System.Windows.Data.Binding.DoNothing" /> indicates that the binding does not transfer the value or use the <see cref="P:System.Windows.Data.BindingBase.FallbackValue" /> or the default value.</returns>
@@ -1502,7 +1532,7 @@ namespace ag.WPF.Chart
     /// <summary>
     /// Defines waterfall legends visibility
     /// </summary>
-    internal class LegendWaterfallVisibilityConverter : IMultiValueConverter
+    public class LegendWaterfallVisibilityConverter : IMultiValueConverter
     {
         /// <summary>Converts source values to a value for the binding target. The data binding engine calls this method when it propagates the values from source bindings to the binding target.</summary>
         /// <returns>A converted value.If the method returns null, the valid null value is used.A return value of <see cref="T:System.Windows.DependencyProperty" />.<see cref="F:System.Windows.DependencyProperty.UnsetValue" /> indicates that the converter did not produce a value, and that the binding will use the <see cref="P:System.Windows.Data.BindingBase.FallbackValue" /> if it is available, or else will use the default value.A return value of <see cref="T:System.Windows.Data.Binding" />.<see cref="F:System.Windows.Data.Binding.DoNothing" /> indicates that the binding does not transfer the value or use the <see cref="P:System.Windows.Data.BindingBase.FallbackValue" /> or the default value.</returns>
@@ -1539,7 +1569,7 @@ namespace ag.WPF.Chart
     /// <summary>
     /// Defines legend visibility
     /// </summary>
-    internal class LegendVisibilityConverter : IMultiValueConverter
+    public class LegendVisibilityConverter : IMultiValueConverter
     {
         /// <summary>Converts source values to a value for the binding target. The data binding engine calls this method when it propagates the values from source bindings to the binding target.</summary>
         /// <returns>A converted value.If the method returns null, the valid null value is used.A return value of <see cref="T:System.Windows.DependencyProperty" />.<see cref="F:System.Windows.DependencyProperty.UnsetValue" /> indicates that the converter did not produce a value, and that the binding will use the <see cref="P:System.Windows.Data.BindingBase.FallbackValue" /> if it is available, or else will use the default value.A return value of <see cref="T:System.Windows.Data.Binding" />.<see cref="F:System.Windows.Data.Binding.DoNothing" /> indicates that the binding does not transfer the value or use the <see cref="P:System.Windows.Data.BindingBase.FallbackValue" /> or the default value.</returns>
@@ -1575,7 +1605,7 @@ namespace ag.WPF.Chart
     /// <summary>
     /// Prepares geometry for drawing series
     /// </summary>
-    internal class ValuesToPathConverter : IMultiValueConverter
+    public class ValuesToPathConverter : IMultiValueConverter
     {
         private const double COLUMN_BAR_OFFSET = 4.0;
         private const double RECT_SIZE = 3.0;
@@ -3378,7 +3408,7 @@ namespace ag.WPF.Chart
     /// <summary>
     /// Defines size of legend rectangle
     /// </summary>
-    internal class LegendSizeConverter : IValueConverter
+    public class LegendSizeConverter : IValueConverter
     {
         /// <summary>Converts a value. </summary>
         /// <returns>A converted value. If the method returns null, the valid null value is used.</returns>
@@ -3404,7 +3434,7 @@ namespace ag.WPF.Chart
     /// <summary>
     /// Defines series legends container orientation
     /// </summary>
-    internal class LegendOrientationConverter : IValueConverter
+    public class LegendOrientationConverter : IValueConverter
     {
         /// <summary>Converts a value. </summary>
         /// <returns>A converted value. If the method returns null, the valid null value is used.</returns>
@@ -3435,7 +3465,7 @@ namespace ag.WPF.Chart
     /// <summary>
     /// Defines horizontal alignment of numeric/custom values drawn next to y-axis
     /// </summary>
-    internal class VerticalValuesAlignmentConverter : IMultiValueConverter
+    public class VerticalValuesAlignmentConverter : IMultiValueConverter
     {
         /// <summary>Converts source values to a value for the binding target. The data binding engine calls this method when it propagates the values from source bindings to the binding target.</summary>
         /// <returns>A converted value.If the method returns null, the valid null value is used.A return value of <see cref="T:System.Windows.DependencyProperty" />.<see cref="F:System.Windows.DependencyProperty.UnsetValue" /> indicates that the converter did not produce a value, and that the binding will use the <see cref="P:System.Windows.Data.BindingBase.FallbackValue" /> if it is available, or else will use the default value.A return value of <see cref="T:System.Windows.Data.Binding" />.<see cref="F:System.Windows.Data.Binding.DoNothing" /> indicates that the binding does not transfer the value or use the <see cref="P:System.Windows.Data.BindingBase.FallbackValue" /> or the default value.</returns>
@@ -3498,7 +3528,7 @@ namespace ag.WPF.Chart
     /// <summary>
     ///  Defines column of numeric/custom values draw next to y-axis
     /// </summary>
-    internal class VerticalValuesColumnConverter : IMultiValueConverter
+    public class VerticalValuesColumnConverter : IMultiValueConverter
     {
         /// <summary>Converts source values to a value for the binding target. The data binding engine calls this method when it propagates the values from source bindings to the binding target.</summary>
         /// <returns>A converted value.If the method returns null, the valid null value is used.A return value of <see cref="T:System.Windows.DependencyProperty" />.<see cref="F:System.Windows.DependencyProperty.UnsetValue" /> indicates that the converter did not produce a value, and that the binding will use the <see cref="P:System.Windows.Data.BindingBase.FallbackValue" /> if it is available, or else will use the default value.A return value of <see cref="T:System.Windows.Data.Binding" />.<see cref="F:System.Windows.Data.Binding.DoNothing" /> indicates that the binding does not transfer the value or use the <see cref="P:System.Windows.Data.BindingBase.FallbackValue" /> or the default value.</returns>
@@ -3561,7 +3591,7 @@ namespace ag.WPF.Chart
     /// <summary>
     ///  Defines vertical alignment of numeric/custom values drawn next to x-axis
     /// </summary>
-    internal class HorizontalValuesAlignmentConverter : IMultiValueConverter
+    public class HorizontalValuesAlignmentConverter : IMultiValueConverter
     {
         /// <summary>Converts source values to a value for the binding target. The data binding engine calls this method when it propagates the values from source bindings to the binding target.</summary>
         /// <returns>A converted value.If the method returns null, the valid null value is used.A return value of <see cref="T:System.Windows.DependencyProperty" />.<see cref="F:System.Windows.DependencyProperty.UnsetValue" /> indicates that the converter did not produce a value, and that the binding will use the <see cref="P:System.Windows.Data.BindingBase.FallbackValue" /> if it is available, or else will use the default value.A return value of <see cref="T:System.Windows.Data.Binding" />.<see cref="F:System.Windows.Data.Binding.DoNothing" /> indicates that the binding does not transfer the value or use the <see cref="P:System.Windows.Data.BindingBase.FallbackValue" /> or the default value.</returns>
@@ -3624,7 +3654,7 @@ namespace ag.WPF.Chart
     /// <summary>
     /// Defines row of numeric/custom values draw next to x-axis
     /// </summary>
-    internal class HorizontalValuesRowConverter : IMultiValueConverter
+    public class HorizontalValuesRowConverter : IMultiValueConverter
     {
         /// <summary>Converts source values to a value for the binding target. The data binding engine calls this method when it propagates the values from source bindings to the binding target.</summary>
         /// <returns>A converted value.If the method returns null, the valid null value is used.A return value of <see cref="T:System.Windows.DependencyProperty" />.<see cref="F:System.Windows.DependencyProperty.UnsetValue" /> indicates that the converter did not produce a value, and that the binding will use the <see cref="P:System.Windows.Data.BindingBase.FallbackValue" /> if it is available, or else will use the default value.A return value of <see cref="T:System.Windows.Data.Binding" />.<see cref="F:System.Windows.Data.Binding.DoNothing" /> indicates that the binding does not transfer the value or use the <see cref="P:System.Windows.Data.BindingBase.FallbackValue" /> or the default value.</returns>
@@ -3687,7 +3717,7 @@ namespace ag.WPF.Chart
     /// <summary>
     /// Defines row of y-axis text
     /// </summary>
-    internal class AxisYGridRowConverter : IMultiValueConverter
+    public class AxisYGridRowConverter : IMultiValueConverter
     {
         /// <summary>Converts source values to a value for the binding target. The data binding engine calls this method when it propagates the values from source bindings to the binding target.</summary>
         /// <returns>A converted value.If the method returns null, the valid null value is used.A return value of <see cref="T:System.Windows.DependencyProperty" />.<see cref="F:System.Windows.DependencyProperty.UnsetValue" /> indicates that the converter did not produce a value, and that the binding will use the <see cref="P:System.Windows.Data.BindingBase.FallbackValue" /> if it is available, or else will use the default value.A return value of <see cref="T:System.Windows.Data.Binding" />.<see cref="F:System.Windows.Data.Binding.DoNothing" /> indicates that the binding does not transfer the value or use the <see cref="P:System.Windows.Data.BindingBase.FallbackValue" /> or the default value.</returns>
@@ -3752,7 +3782,7 @@ namespace ag.WPF.Chart
     /// <summary>
     /// Defines column of x-axis text
     /// </summary>
-    internal class AxisXGridColumnConverter : IMultiValueConverter
+    public class AxisXGridColumnConverter : IMultiValueConverter
     {
         /// <summary>Converts source values to a value for the binding target. The data binding engine calls this method when it propagates the values from source bindings to the binding target.</summary>
         /// <returns>A converted value.If the method returns null, the valid null value is used.A return value of <see cref="T:System.Windows.DependencyProperty" />.<see cref="F:System.Windows.DependencyProperty.UnsetValue" /> indicates that the converter did not produce a value, and that the binding will use the <see cref="P:System.Windows.Data.BindingBase.FallbackValue" /> if it is available, or else will use the default value.A return value of <see cref="T:System.Windows.Data.Binding" />.<see cref="F:System.Windows.Data.Binding.DoNothing" /> indicates that the binding does not transfer the value or use the <see cref="P:System.Windows.Data.BindingBase.FallbackValue" /> or the default value.</returns>
@@ -3818,7 +3848,7 @@ namespace ag.WPF.Chart
     /// <summary>
     /// Defines vertical alignment of x-axis text
     /// </summary>
-    internal class AxisXTextAlignmentConverter : IMultiValueConverter
+    public class AxisXTextAlignmentConverter : IMultiValueConverter
     {
         /// <summary>Converts source values to a value for the binding target. The data binding engine calls this method when it propagates the values from source bindings to the binding target.</summary>
         /// <returns>A converted value.If the method returns null, the valid null value is used.A return value of <see cref="T:System.Windows.DependencyProperty" />.<see cref="F:System.Windows.DependencyProperty.UnsetValue" /> indicates that the converter did not produce a value, and that the binding will use the <see cref="P:System.Windows.Data.BindingBase.FallbackValue" /> if it is available, or else will use the default value.A return value of <see cref="T:System.Windows.Data.Binding" />.<see cref="F:System.Windows.Data.Binding.DoNothing" /> indicates that the binding does not transfer the value or use the <see cref="P:System.Windows.Data.BindingBase.FallbackValue" /> or the default value.</returns>
@@ -3883,7 +3913,7 @@ namespace ag.WPF.Chart
     /// <summary>
     /// Defines horizontal alignment of y-axis text
     /// </summary>
-    internal class AxisYTextAlignmentConverter : IMultiValueConverter
+    public class AxisYTextAlignmentConverter : IMultiValueConverter
     {
         /// <summary>Converts source values to a value for the binding target. The data binding engine calls this method when it propagates the values from source bindings to the binding target.</summary>
         /// <returns>A converted value.If the method returns null, the valid null value is used.A return value of <see cref="T:System.Windows.DependencyProperty" />.<see cref="F:System.Windows.DependencyProperty.UnsetValue" /> indicates that the converter did not produce a value, and that the binding will use the <see cref="P:System.Windows.Data.BindingBase.FallbackValue" /> if it is available, or else will use the default value.A return value of <see cref="T:System.Windows.Data.Binding" />.<see cref="F:System.Windows.Data.Binding.DoNothing" /> indicates that the binding does not transfer the value or use the <see cref="P:System.Windows.Data.BindingBase.FallbackValue" /> or the default value.</returns>
@@ -3948,7 +3978,7 @@ namespace ag.WPF.Chart
     /// <summary>
     /// Defines chart path fill brush
     /// </summary>
-    internal class PathFillConverter : IMultiValueConverter
+    public class PathFillConverter : IMultiValueConverter
     {
         /// <summary>Converts source values to a value for the binding target. The data binding engine calls this method when it propagates the values from source bindings to the binding target.</summary>
         /// <returns>A converted value.If the method returns null, the valid null value is used.A return value of <see cref="T:System.Windows.DependencyProperty" />.<see cref="F:System.Windows.DependencyProperty.UnsetValue" /> indicates that the converter did not produce a value, and that the binding will use the <see cref="P:System.Windows.Data.BindingBase.FallbackValue" /> if it is available, or else will use the default value.A return value of <see cref="T:System.Windows.Data.Binding" />.<see cref="F:System.Windows.Data.Binding.DoNothing" /> indicates that the binding does not transfer the value or use the <see cref="P:System.Windows.Data.BindingBase.FallbackValue" /> or the default value.</returns>
@@ -3980,7 +4010,7 @@ namespace ag.WPF.Chart
     /// <summary>
     /// Defines chart path stroke brush
     /// </summary>
-    internal class PathStrokeConverter : IMultiValueConverter
+    public class PathStrokeConverter : IMultiValueConverter
     {
         /// <summary>Converts source values to a value for the binding target. The data binding engine calls this method when it propagates the values from source bindings to the binding target.</summary>
         /// <returns>A converted value.If the method returns null, the valid null value is used.A return value of <see cref="T:System.Windows.DependencyProperty" />.<see cref="F:System.Windows.DependencyProperty.UnsetValue" /> indicates that the converter did not produce a value, and that the binding will use the <see cref="P:System.Windows.Data.BindingBase.FallbackValue" /> if it is available, or else will use the default value.A return value of <see cref="T:System.Windows.Data.Binding" />.<see cref="F:System.Windows.Data.Binding.DoNothing" /> indicates that the binding does not transfer the value or use the <see cref="P:System.Windows.Data.BindingBase.FallbackValue" /> or the default value.</returns>
@@ -4012,7 +4042,7 @@ namespace ag.WPF.Chart
     /// <summary>
     /// Defines height of row of numeric/custom values drawn next to x-axis
     /// </summary>
-    internal class HorizontalPlaceholderHeightConverter : IMultiValueConverter
+    public class HorizontalPlaceholderHeightConverter : IMultiValueConverter
     {
         /// <summary>Converts source values to a value for the binding target. The data binding engine calls this method when it propagates the values from source bindings to the binding target.</summary>
         /// <returns>A converted value.If the method returns null, the valid null value is used.A return value of <see cref="T:System.Windows.DependencyProperty" />.<see cref="F:System.Windows.DependencyProperty.UnsetValue" /> indicates that the converter did not produce a value, and that the binding will use the <see cref="P:System.Windows.Data.BindingBase.FallbackValue" /> if it is available, or else will use the default value.A return value of <see cref="T:System.Windows.Data.Binding" />.<see cref="F:System.Windows.Data.Binding.DoNothing" /> indicates that the binding does not transfer the value or use the <see cref="P:System.Windows.Data.BindingBase.FallbackValue" /> or the default value.</returns>
@@ -4144,7 +4174,7 @@ namespace ag.WPF.Chart
     /// <summary>
     /// Defines width of column of numeric/custom values drawn next to y-axis
     /// </summary>
-    internal class VerticalPlaceholderWidthConverter : IMultiValueConverter
+    public class VerticalPlaceholderWidthConverter : IMultiValueConverter
     {
         /// <summary>Converts source values to a value for the binding target. The data binding engine calls this method when it propagates the values from source bindings to the binding target.</summary>
         /// <returns>A converted value.If the method returns null, the valid null value is used.A return value of <see cref="T:System.Windows.DependencyProperty" />.<see cref="F:System.Windows.DependencyProperty.UnsetValue" /> indicates that the converter did not produce a value, and that the binding will use the <see cref="P:System.Windows.Data.BindingBase.FallbackValue" /> if it is available, or else will use the default value.A return value of <see cref="T:System.Windows.Data.Binding" />.<see cref="F:System.Windows.Data.Binding.DoNothing" /> indicates that the binding does not transfer the value or use the <see cref="P:System.Windows.Data.BindingBase.FallbackValue" /> or the default value.</returns>
@@ -4344,7 +4374,7 @@ namespace ag.WPF.Chart
     /// <summary>
     /// Prepares geometry for drawing numeric/custom values drawn next to y-axis
     /// </summary>
-    internal class VerticalValuesConverter : IMultiValueConverter
+    public class VerticalValuesConverter : IMultiValueConverter
     {
         /// <summary>Converts source values to a value for the binding target. The data binding engine calls this method when it propagates the values from source bindings to the binding target.</summary>
         /// <returns>A converted value.If the method returns null, the valid null value is used.A return value of <see cref="T:System.Windows.DependencyProperty" />.<see cref="F:System.Windows.DependencyProperty.UnsetValue" /> indicates that the converter did not produce a value, and that the binding will use the <see cref="P:System.Windows.Data.BindingBase.FallbackValue" /> if it is available, or else will use the default value.A return value of <see cref="T:System.Windows.Data.Binding" />.<see cref="F:System.Windows.Data.Binding.DoNothing" /> indicates that the binding does not transfer the value or use the <see cref="P:System.Windows.Data.BindingBase.FallbackValue" /> or the default value.</returns>
@@ -4743,7 +4773,7 @@ namespace ag.WPF.Chart
     /// <summary>
     /// Prepares geometry for drawing numeric/custom values drawn next to x-axis
     /// </summary>
-    internal class HorizontalValuesConverter : IMultiValueConverter
+    public class HorizontalValuesConverter : IMultiValueConverter
     {
         /// <summary>Converts source values to a value for the binding target. The data binding engine calls this method when it propagates the values from source bindings to the binding target.</summary>
         /// <returns>A converted value.If the method returns null, the valid null value is used.A return value of <see cref="T:System.Windows.DependencyProperty" />.<see cref="F:System.Windows.DependencyProperty.UnsetValue" /> indicates that the converter did not produce a value, and that the binding will use the <see cref="P:System.Windows.Data.BindingBase.FallbackValue" /> if it is available, or else will use the default value.A return value of <see cref="T:System.Windows.Data.Binding" />.<see cref="F:System.Windows.Data.Binding.DoNothing" /> indicates that the binding does not transfer the value or use the <see cref="P:System.Windows.Data.BindingBase.FallbackValue" /> or the default value.</returns>
@@ -5152,7 +5182,7 @@ namespace ag.WPF.Chart
     /// <summary>
     /// Prepares geometry for drawing ticks on x- and y- axes
     /// </summary>
-    internal class AxisTicksPathConverter : IMultiValueConverter
+    public class AxisTicksPathConverter : IMultiValueConverter
     {
         /// <summary>Converts source values to a value for the binding target. The data binding engine calls this method when it propagates the values from source bindings to the binding target.</summary>
         /// <returns>A converted value.If the method returns null, the valid null value is used.A return value of <see cref="T:System.Windows.DependencyProperty" />.<see cref="F:System.Windows.DependencyProperty.UnsetValue" /> indicates that the converter did not produce a value, and that the binding will use the <see cref="P:System.Windows.Data.BindingBase.FallbackValue" /> if it is available, or else will use the default value.A return value of <see cref="T:System.Windows.Data.Binding" />.<see cref="F:System.Windows.Data.Binding.DoNothing" /> indicates that the binding does not transfer the value or use the <see cref="P:System.Windows.Data.BindingBase.FallbackValue" /> or the default value.</returns>
@@ -5586,7 +5616,7 @@ namespace ag.WPF.Chart
     /// <summary>
     /// Prepares geometry for drawing vertical dotted lines
     /// </summary>
-    internal class VerticalLinesPathConverter : IMultiValueConverter
+    public class VerticalLinesPathConverter : IMultiValueConverter
     {
         /// <summary>Converts source values to a value for the binding target. The data binding engine calls this method when it propagates the values from source bindings to the binding target.</summary>
         /// <returns>A converted value.If the method returns null, the valid null value is used.A return value of <see cref="T:System.Windows.DependencyProperty" />.<see cref="F:System.Windows.DependencyProperty.UnsetValue" /> indicates that the converter did not produce a value, and that the binding will use the <see cref="P:System.Windows.Data.BindingBase.FallbackValue" /> if it is available, or else will use the default value.A return value of <see cref="T:System.Windows.Data.Binding" />.<see cref="F:System.Windows.Data.Binding.DoNothing" /> indicates that the binding does not transfer the value or use the <see cref="P:System.Windows.Data.BindingBase.FallbackValue" /> or the default value.</returns>
@@ -5865,7 +5895,7 @@ namespace ag.WPF.Chart
     /// <summary>
     /// Prepares geometry for drawing horizontal dotted lines
     /// </summary>
-    internal class HorizontalLinesPathConverter : IMultiValueConverter
+    public class HorizontalLinesPathConverter : IMultiValueConverter
     {
         /// <summary>Converts source values to a value for the binding target. The data binding engine calls this method when it propagates the values from source bindings to the binding target.</summary>
         /// <returns>A converted value.If the method returns null, the valid null value is used.A return value of <see cref="T:System.Windows.DependencyProperty" />.<see cref="F:System.Windows.DependencyProperty.UnsetValue" /> indicates that the converter did not produce a value, and that the binding will use the <see cref="P:System.Windows.Data.BindingBase.FallbackValue" /> if it is available, or else will use the default value.A return value of <see cref="T:System.Windows.Data.Binding" />.<see cref="F:System.Windows.Data.Binding.DoNothing" /> indicates that the binding does not transfer the value or use the <see cref="P:System.Windows.Data.BindingBase.FallbackValue" /> or the default value.</returns>
@@ -6032,7 +6062,7 @@ namespace ag.WPF.Chart
     /// <summary>
     /// Defines top coordinate of chart image when chart style is set to <see cref="ChartStyle.SolidPie"/> or <see cref="ChartStyle.SlicedPie"/> or <see cref="ag.WPF.Chart.ChartStyle.Doughnut"/>
     /// </summary>
-    internal class PieTopConverter : IMultiValueConverter
+    public class PieTopConverter : IMultiValueConverter
     {
         /// <summary>Converts source values to a value for the binding target. The data binding engine calls this method when it propagates the values from source bindings to the binding target.</summary>
         /// <returns>A converted value.If the method returns null, the valid null value is used.A return value of <see cref="T:System.Windows.DependencyProperty" />.<see cref="F:System.Windows.DependencyProperty.UnsetValue" /> indicates that the converter did not produce a value, and that the binding will use the <see cref="P:System.Windows.Data.BindingBase.FallbackValue" /> if it is available, or else will use the default value.A return value of <see cref="T:System.Windows.Data.Binding" />.<see cref="F:System.Windows.Data.Binding.DoNothing" /> indicates that the binding does not transfer the value or use the <see cref="P:System.Windows.Data.BindingBase.FallbackValue" /> or the default value.</returns>
@@ -6062,7 +6092,7 @@ namespace ag.WPF.Chart
     /// <summary>
     /// Defines left coordinate of chart image when chart style is set to <see cref="ChartStyle.SolidPie"/> or <see cref="ChartStyle.SlicedPie"/> or <see cref="ag.WPF.Chart.ChartStyle.Doughnut"/>
     /// </summary>
-    internal class PieLeftConverter : IMultiValueConverter
+    public class PieLeftConverter : IMultiValueConverter
     {
         /// <summary>Converts source values to a value for the binding target. The data binding engine calls this method when it propagates the values from source bindings to the binding target.</summary>
         /// <returns>A converted value.If the method returns null, the valid null value is used.A return value of <see cref="T:System.Windows.DependencyProperty" />.<see cref="F:System.Windows.DependencyProperty.UnsetValue" /> indicates that the converter did not produce a value, and that the binding will use the <see cref="P:System.Windows.Data.BindingBase.FallbackValue" /> if it is available, or else will use the default value.A return value of <see cref="T:System.Windows.Data.Binding" />.<see cref="F:System.Windows.Data.Binding.DoNothing" /> indicates that the binding does not transfer the value or use the <see cref="P:System.Windows.Data.BindingBase.FallbackValue" /> or the default value.</returns>
@@ -6092,7 +6122,7 @@ namespace ag.WPF.Chart
     /// <summary>
     /// Defines text to be shown as pie sector tooltip, when chart style is set to <see cref="ChartStyle.SolidPie"/> or <see cref="ChartStyle.SlicedPie"/> or <see cref="ag.WPF.Chart.ChartStyle.Doughnut"/>
     /// </summary>
-    internal class PieSectionTextConverter : IMultiValueConverter
+    public class PieSectionTextConverter : IMultiValueConverter
     {
         /// <summary>Converts source values to a value for the binding target. The data binding engine calls this method when it propagates the values from source bindings to the binding target.</summary>
         /// <returns>A converted value.If the method returns null, the valid null value is used.A return value of <see cref="T:System.Windows.DependencyProperty" />.<see cref="F:System.Windows.DependencyProperty.UnsetValue" /> indicates that the converter did not produce a value, and that the binding will use the <see cref="P:System.Windows.Data.BindingBase.FallbackValue" /> if it is available, or else will use the default value.A return value of <see cref="T:System.Windows.Data.Binding" />.<see cref="F:System.Windows.Data.Binding.DoNothing" /> indicates that the binding does not transfer the value or use the <see cref="P:System.Windows.Data.BindingBase.FallbackValue" /> or the default value.</returns>
@@ -6128,7 +6158,7 @@ namespace ag.WPF.Chart
     /// <summary>
     /// Draws radar lines
     /// </summary>
-    internal class RadarLinesPathConverter : IMultiValueConverter
+    public class RadarLinesPathConverter : IMultiValueConverter
     {
         /// <summary>Converts source values to a value for the binding target. The data binding engine calls this method when it propagates the values from source bindings to the binding target.</summary>
         /// <returns>A converted value.If the method returns null, the valid null value is used.A return value of <see cref="T:System.Windows.DependencyProperty" />.<see cref="F:System.Windows.DependencyProperty.UnsetValue" /> indicates that the converter did not produce a value, and that the binding will use the <see cref="P:System.Windows.Data.BindingBase.FallbackValue" /> if it is available, or else will use the default value.A return value of <see cref="T:System.Windows.Data.Binding" />.<see cref="F:System.Windows.Data.Binding.DoNothing" /> indicates that the binding does not transfer the value or use the <see cref="P:System.Windows.Data.BindingBase.FallbackValue" /> or the default value.</returns>
@@ -6224,7 +6254,7 @@ namespace ag.WPF.Chart
     /// <summary>
     /// Draws radar numeric values
     /// </summary>
-    internal class RadarAxesValuesConverter : IMultiValueConverter
+    public class RadarAxesValuesConverter : IMultiValueConverter
     {
         /// <summary>Converts source values to a value for the binding target. The data binding engine calls this method when it propagates the values from source bindings to the binding target.</summary>
         /// <returns>A converted value.If the method returns null, the valid null value is used.A return value of <see cref="T:System.Windows.DependencyProperty" />.<see cref="F:System.Windows.DependencyProperty.UnsetValue" /> indicates that the converter did not produce a value, and that the binding will use the <see cref="P:System.Windows.Data.BindingBase.FallbackValue" /> if it is available, or else will use the default value.A return value of <see cref="T:System.Windows.Data.Binding" />.<see cref="F:System.Windows.Data.Binding.DoNothing" /> indicates that the binding does not transfer the value or use the <see cref="P:System.Windows.Data.BindingBase.FallbackValue" /> or the default value.</returns>
@@ -6399,7 +6429,7 @@ namespace ag.WPF.Chart
     /// <summary>
     /// Prepares <see cref="DrawingGroup"/> to be used for drawing chart, when chart style is set to <see cref="ChartStyle.SolidPie"/> or <see cref="ChartStyle.SlicedPie"/> or <see cref="ag.WPF.Chart.ChartStyle.Doughnut"/>
     /// </summary>
-    internal class ValuesToPieSectionsConverter : IMultiValueConverter
+    public class ValuesToPieSectionsConverter : IMultiValueConverter
     {
         /// <summary>Converts source values to a value for the binding target. The data binding engine calls this method when it propagates the values from source bindings to the binding target.</summary>
         /// <returns>A converted value.If the method returns null, the valid null value is used.A return value of <see cref="T:System.Windows.DependencyProperty" />.<see cref="F:System.Windows.DependencyProperty.UnsetValue" /> indicates that the converter did not produce a value, and that the binding will use the <see cref="P:System.Windows.Data.BindingBase.FallbackValue" /> if it is available, or else will use the default value.A return value of <see cref="T:System.Windows.Data.Binding" />.<see cref="F:System.Windows.Data.Binding.DoNothing" /> indicates that the binding does not transfer the value or use the <see cref="P:System.Windows.Data.BindingBase.FallbackValue" /> or the default value.</returns>
