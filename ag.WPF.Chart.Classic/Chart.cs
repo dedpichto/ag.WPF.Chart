@@ -1,4 +1,5 @@
-﻿using ag.WPF.Chart.Series;
+﻿using ag.WPF.Chart.Converters;
+using ag.WPF.Chart.Series;
 using ag.WPF.Chart.Values;
 using System;
 using System.Collections.Generic;
@@ -1068,32 +1069,6 @@ namespace ag.WPF.Chart
 
             if (series.IsStockSeries())
             {
-                //#region Stock legend
-                //legend = new Legend() { Index = series.Index };
-
-                //legend.SetBinding(Legend.LegendBackgroundProperty, new Binding("Foreground") { Source = this });
-                //legendVisibilityBinding = new MultiBinding { Converter = new LegendStockVisibilityConverter() };
-                //legendVisibilityBinding.Bindings.Add(new Binding("ChartStyle")
-                //{
-                //    Source = this
-                //});
-                //legendVisibilityBinding.Bindings.Add(new Binding("Index")
-                //{
-                //    Source = series
-                //});
-                //legendVisibilityBinding.Bindings.Add(new Binding("SeriesSource")
-                //{
-                //    Source = this
-                //});
-                //legendVisibilityBinding.ConverterParameter = ColoredPaths.Stock;
-                //legendVisibilityBinding.NotifyOnSourceUpdated = true;
-                //legend.SetBinding(VisibilityProperty, legendVisibilityBinding);
-                //legend.Text = "Close";
-                ////legend.SetBinding(Legend.TextProperty, new Binding("LegendsWaterfall[1]") { Source = this });
-
-                //LegendsCollection.Add(legend);
-                //#endregion
-
                 #region Up stock legend
                 legend = new Legend() { Index = series.Index };
 

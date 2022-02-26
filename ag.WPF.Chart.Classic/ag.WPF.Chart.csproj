@@ -57,6 +57,39 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ChartItemsCollection.cs" />
+    <Compile Include="Converters\AxesXLinesConverter.cs" />
+    <Compile Include="Converters\AxesYLinesConverter.cs" />
+    <Compile Include="Converters\AxisTicksPathConverter.cs" />
+    <Compile Include="Converters\AxisXGridColumnConverter.cs" />
+    <Compile Include="Converters\AxisXTextAlignmentConverter.cs" />
+    <Compile Include="Converters\AxisYGridRowConverter.cs" />
+    <Compile Include="Converters\AxisYTextAlignmentConverter.cs" />
+    <Compile Include="Converters\HorizontalLinesPathConverter.cs" />
+    <Compile Include="Converters\HorizontalPlaceholderHeightConverter.cs" />
+    <Compile Include="Converters\HorizontalValuesAlignmentConverter.cs" />
+    <Compile Include="Converters\HorizontalValuesConverter.cs" />
+    <Compile Include="Converters\HorizontalValuesRowConverter.cs" />
+    <Compile Include="Converters\LegendOrientationConverter.cs" />
+    <Compile Include="Converters\LegendPieVisibilityConverter.cs" />
+    <Compile Include="Converters\LegendSizeConverter.cs" />
+    <Compile Include="Converters\LegendStockVisibilityConverter.cs" />
+    <Compile Include="Converters\LegendVisibilityConverter.cs" />
+    <Compile Include="Converters\LegendWaterfallVisibilityConverter.cs" />
+    <Compile Include="Converters\PathFillConverter.cs" />
+    <Compile Include="Converters\PathStrokeConverter.cs" />
+    <Compile Include="Converters\PieLeftConverter.cs" />
+    <Compile Include="Converters\PieSectionTextConverter.cs" />
+    <Compile Include="Converters\PieTopConverter.cs" />
+    <Compile Include="Converters\RadarAxesValuesConverter.cs" />
+    <Compile Include="Converters\RadarLinesPathConverter.cs" />
+    <Compile Include="Converters\StarDrawingConverter.cs" />
+    <Compile Include="Converters\ValuesToPathConverter.cs" />
+    <Compile Include="Converters\ValuesToPieSectionsConverter.cs" />
+    <Compile Include="Converters\VerticalLinesPathConverter.cs" />
+    <Compile Include="Converters\VerticalPlaceholderWidthConverter.cs" />
+    <Compile Include="Converters\VerticalValuesAlignmentConverter.cs" />
+    <Compile Include="Converters\VerticalValuesColumnConverter.cs" />
+    <Compile Include="Converters\VerticalValuesConverter.cs" />
     <Compile Include="Series\HighLowCloseSeries.cs" />
     <Compile Include="Series\ISeries.cs" />
     <Compile Include="Series\OpenHighLowCloseSeries.cs" />
@@ -80,7 +113,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Converters.cs" />
+    <Compile Include="Utils.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>

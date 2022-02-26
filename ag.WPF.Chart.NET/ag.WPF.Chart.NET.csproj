@@ -19,7 +19,39 @@
   <ItemGroup>
     <Compile Include="..\ag.WPF.Chart.Classic\Chart.cs" Link="Chart.cs" />
     <Compile Include="..\ag.WPF.Chart.Classic\ChartItemsCollection.cs" Link="ChartItemsCollection.cs" />
-    <Compile Include="..\ag.WPF.Chart.Classic\Converters.cs" Link="Converters.cs" />
+    <Compile Include="..\ag.WPF.Chart.Classic\Converters\AxesXLinesConverter.cs" Link="Converters\AxesXLinesConverter.cs" />
+    <Compile Include="..\ag.WPF.Chart.Classic\Converters\AxesYLinesConverter.cs" Link="Converters\AxesYLinesConverter.cs" />
+    <Compile Include="..\ag.WPF.Chart.Classic\Converters\AxisTicksPathConverter.cs" Link="Converters\AxisTicksPathConverter.cs" />
+    <Compile Include="..\ag.WPF.Chart.Classic\Converters\AxisXGridColumnConverter.cs" Link="Converters\AxisXGridColumnConverter.cs" />
+    <Compile Include="..\ag.WPF.Chart.Classic\Converters\AxisXTextAlignmentConverter.cs" Link="Converters\AxisXTextAlignmentConverter.cs" />
+    <Compile Include="..\ag.WPF.Chart.Classic\Converters\AxisYGridRowConverter.cs" Link="Converters\AxisYGridRowConverter.cs" />
+    <Compile Include="..\ag.WPF.Chart.Classic\Converters\AxisYTextAlignmentConverter.cs" Link="Converters\AxisYTextAlignmentConverter.cs" />
+    <Compile Include="..\ag.WPF.Chart.Classic\Converters\HorizontalLinesPathConverter.cs" Link="Converters\HorizontalLinesPathConverter.cs" />
+    <Compile Include="..\ag.WPF.Chart.Classic\Converters\HorizontalPlaceholderHeightConverter.cs" Link="Converters\HorizontalPlaceholderHeightConverter.cs" />
+    <Compile Include="..\ag.WPF.Chart.Classic\Converters\HorizontalValuesAlignmentConverter.cs" Link="Converters\HorizontalValuesAlignmentConverter.cs" />
+    <Compile Include="..\ag.WPF.Chart.Classic\Converters\HorizontalValuesConverter.cs" Link="Converters\HorizontalValuesConverter.cs" />
+    <Compile Include="..\ag.WPF.Chart.Classic\Converters\HorizontalValuesRowConverter.cs" Link="Converters\HorizontalValuesRowConverter.cs" />
+    <Compile Include="..\ag.WPF.Chart.Classic\Converters\LegendOrientationConverter.cs" Link="Converters\LegendOrientationConverter.cs" />
+    <Compile Include="..\ag.WPF.Chart.Classic\Converters\LegendPieVisibilityConverter.cs" Link="Converters\LegendPieVisibilityConverter.cs" />
+    <Compile Include="..\ag.WPF.Chart.Classic\Converters\LegendSizeConverter.cs" Link="Converters\LegendSizeConverter.cs" />
+    <Compile Include="..\ag.WPF.Chart.Classic\Converters\LegendStockVisibilityConverter.cs" Link="Converters\LegendStockVisibilityConverter.cs" />
+    <Compile Include="..\ag.WPF.Chart.Classic\Converters\LegendVisibilityConverter.cs" Link="Converters\LegendVisibilityConverter.cs" />
+    <Compile Include="..\ag.WPF.Chart.Classic\Converters\LegendWaterfallVisibilityConverter.cs" Link="Converters\LegendWaterfallVisibilityConverter.cs" />
+    <Compile Include="..\ag.WPF.Chart.Classic\Converters\PathFillConverter.cs" Link="Converters\PathFillConverter.cs" />
+    <Compile Include="..\ag.WPF.Chart.Classic\Converters\PathStrokeConverter.cs" Link="Converters\PathStrokeConverter.cs" />
+    <Compile Include="..\ag.WPF.Chart.Classic\Converters\PieLeftConverter.cs" Link="Converters\PieLeftConverter.cs" />
+    <Compile Include="..\ag.WPF.Chart.Classic\Converters\PieSectionTextConverter.cs" Link="Converters\PieSectionTextConverter.cs" />
+    <Compile Include="..\ag.WPF.Chart.Classic\Converters\PieTopConverter.cs" Link="Converters\PieTopConverter.cs" />
+    <Compile Include="..\ag.WPF.Chart.Classic\Converters\RadarAxesValuesConverter.cs" Link="Converters\RadarAxesValuesConverter.cs" />
+    <Compile Include="..\ag.WPF.Chart.Classic\Converters\RadarLinesPathConverter.cs" Link="Converters\RadarLinesPathConverter.cs" />
+    <Compile Include="..\ag.WPF.Chart.Classic\Converters\StarDrawingConverter.cs" Link="Converters\StarDrawingConverter.cs" />
+    <Compile Include="..\ag.WPF.Chart.Classic\Converters\ValuesToPathConverter.cs" Link="Converters\ValuesToPathConverter.cs" />
+    <Compile Include="..\ag.WPF.Chart.Classic\Converters\ValuesToPieSectionsConverter.cs" Link="Converters\ValuesToPieSectionsConverter.cs" />
+    <Compile Include="..\ag.WPF.Chart.Classic\Converters\VerticalLinesPathConverter.cs" Link="Converters\VerticalLinesPathConverter.cs" />
+    <Compile Include="..\ag.WPF.Chart.Classic\Converters\VerticalPlaceholderWidthConverter.cs" Link="Converters\VerticalPlaceholderWidthConverter.cs" />
+    <Compile Include="..\ag.WPF.Chart.Classic\Converters\VerticalValuesAlignmentConverter.cs" Link="Converters\VerticalValuesAlignmentConverter.cs" />
+    <Compile Include="..\ag.WPF.Chart.Classic\Converters\VerticalValuesColumnConverter.cs" Link="Converters\VerticalValuesColumnConverter.cs" />
+    <Compile Include="..\ag.WPF.Chart.Classic\Converters\VerticalValuesConverter.cs" Link="Converters\VerticalValuesConverter.cs" />
     <Compile Include="..\ag.WPF.Chart.Classic\Legend.cs" Link="Legend.cs" />
     <Compile Include="..\ag.WPF.Chart.Classic\Series\HighLowCloseSeries.cs" Link="Series\HighLowCloseSeries.cs" />
     <Compile Include="..\ag.WPF.Chart.Classic\Series\ISeries.cs" Link="Series\ISeries.cs" />
@@ -27,6 +59,7 @@
     <Compile Include="..\ag.WPF.Chart.Classic\Series\PlainSeries.cs" Link="Series\PlainSeries.cs" />
     <Compile Include="..\ag.WPF.Chart.Classic\Series\Series.cs" Link="Series\Series.cs" />
     <Compile Include="..\ag.WPF.Chart.Classic\Statics.cs" Link="Statics.cs" />
+    <Compile Include="..\ag.WPF.Chart.Classic\Utils.cs" Link="Utils.cs" />
     <Compile Include="..\ag.WPF.Chart.Classic\Values\ChartCompositeValue.cs" Link="Values\ChartCompositeValue.cs" />
     <Compile Include="..\ag.WPF.Chart.Classic\Values\ChartValue.cs" Link="Values\ChartValue.cs" />
     <Compile Include="..\ag.WPF.Chart.Classic\Values\HighLowCloseChartValue.cs" Link="Values\HighLowCloseChartValue.cs" />
@@ -37,6 +70,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Converters\" />
     <Folder Include="Values\" />
     <Folder Include="Series\" />
     <Folder Include="Themes\" />
