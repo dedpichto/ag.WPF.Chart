@@ -46,6 +46,6 @@ namespace ag.WPF.Chart
             set => SetValue(TextProperty, value);
         }
 
-        internal int Index { get; set; }
+        internal int SeriesIndex { get; set; }
     }
 }

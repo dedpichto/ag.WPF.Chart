@@ -25,6 +25,19 @@ using Path = System.Windows.Shapes.Path;
 namespace ag.WPF.Chart
 {
     /// <summary>
+    /// Represents the method that will handle the chart legend left button double click event
+    /// </summary>
+    /// <param name="sender">he object where the event handler is attached</param>
+    /// <param name="e">The event data</param>
+    public delegate void ChartPointLeftButtonDoubleClickEventHandler(object sender, ChartPointLeftButtonDoubleClickEventArgs e);
+    /// <summary>
+    /// Represents the method that will handle the chart legend left button double click event
+    /// </summary>
+    /// <param name="sender">he object where the event handler is attached</param>
+    /// <param name="e">The event data</param>
+    public delegate void LegendLeftButtonDoubleClickEventHandler(object sender, LegendLeftButtonDoubleClickEventArgs e);
+
+    /// <summary>
     /// Specifies chart style
     /// </summary>
     public enum ChartStyle
@@ -808,8 +821,7 @@ namespace ag.WPF.Chart
                             {
                                 if (p == null) continue;
                                 var b = BindingOperations.GetMultiBindingExpression(p, Path.DataProperty);
-                                if (b != null)
-                                    b.UpdateTarget();
+                                b?.UpdateTarget();
                             }
                         }
                         rebuildPieLegends(series.Values, series);
@@ -937,6 +949,13 @@ namespace ag.WPF.Chart
             }
             RaiseMarkerLeftButtonDoubleClickEvent(s.Values[index], s);
         }
+
+        private void Legend_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            if (sender is not Legend legend) return;
+            if (e.ClickCount == 1) return;
+            RaiseLegendLeftButtonDoubleClickEvent(legend.SeriesIndex);
+        }
         #endregion
 
         #region Private functions
@@ -986,7 +1005,7 @@ namespace ag.WPF.Chart
             }
 
             #region Main legend
-            var legend = new Legend() { Index = series.Index };
+            var legend = new Legend() { SeriesIndex = series.Index };
 
             legend.SetBinding(Legend.LegendBackgroundProperty, new Binding(nameof(ISeries.MainBrush)) { Source = series });
             var legendVisibilityBinding = new MultiBinding { Converter = new LegendVisibilityConverter() };
@@ -1004,14 +1023,13 @@ namespace ag.WPF.Chart
             });
             legendVisibilityBinding.NotifyOnSourceUpdated = true;
             legend.SetBinding(VisibilityProperty, legendVisibilityBinding);
-
             legend.SetBinding(Legend.TextProperty, new Binding(nameof(ISeries.Name)) { Source = series });
-
+            legend.MouseLeftButtonDown += Legend_MouseLeftButtonDown;
             LegendsCollection.Add(legend);
             #endregion
 
             #region Positive waterfall legend
-            legend = new Legend() { Index = series.Index };
+            legend = new Legend() { SeriesIndex = series.Index };
 
             legend.SetBinding(Legend.LegendBackgroundProperty, new Binding(nameof(ISeries.MainBrush)) { Source = series });
             legendVisibilityBinding = new MultiBinding { Converter = new LegendWaterfallVisibilityConverter() };
@@ -1032,14 +1050,13 @@ namespace ag.WPF.Chart
                 Source = this
             });
             legend.SetBinding(VisibilityProperty, legendVisibilityBinding);
-
             legend.SetBinding(Legend.TextProperty, new Binding("LegendsWaterfall[0]") { Source = this });
-
+            legend.MouseLeftButtonDown += Legend_MouseLeftButtonDown;
             LegendsCollection.Add(legend);
             #endregion
 
             #region Negative waterfall legend
-            legend = new Legend() { Index = series.Index };
+            legend = new Legend() { SeriesIndex = series.Index };
 
             legend.SetBinding(Legend.LegendBackgroundProperty, new Binding(nameof(ISeries.SecondaryBrush)) { Source = series });
             legendVisibilityBinding = new MultiBinding { Converter = new LegendWaterfallVisibilityConverter() };
@@ -1061,16 +1078,15 @@ namespace ag.WPF.Chart
             });
             legendVisibilityBinding.NotifyOnSourceUpdated = true;
             legend.SetBinding(VisibilityProperty, legendVisibilityBinding);
-
             legend.SetBinding(Legend.TextProperty, new Binding("LegendsWaterfall[1]") { Source = this });
-
+            legend.MouseLeftButtonDown += Legend_MouseLeftButtonDown;
             LegendsCollection.Add(legend);
             #endregion
 
             if (series.IsStockSeries())
             {
                 #region Up stock legend
-                legend = new Legend() { Index = series.Index };
+                legend = new Legend() { SeriesIndex = series.Index };
 
                 legend.SetBinding(Legend.LegendBackgroundProperty, new Binding(nameof(ISeries.MainBrush)) { Source = series });
                 legendVisibilityBinding = new MultiBinding { Converter = new LegendStockVisibilityConverter() };
@@ -1097,11 +1113,12 @@ namespace ag.WPF.Chart
                     legend.SetBinding(Legend.TextProperty, new Binding("LegendsHighLowClose[0]") { Source = this });
                 else if (series is OpenHighLowCloseSeries)
                     legend.SetBinding(Legend.TextProperty, new Binding("LegendsOpenHighLowClose[0]") { Source = this });
+                legend.MouseLeftButtonDown += Legend_MouseLeftButtonDown;
                 LegendsCollection.Add(legend);
                 #endregion
 
                 #region Stock down legend
-                legend = new Legend() { Index = series.Index };
+                legend = new Legend() { SeriesIndex = series.Index };
 
                 legend.SetBinding(Legend.LegendBackgroundProperty, new Binding(nameof(ISeries.SecondaryBrush)) { Source = series });
                 legendVisibilityBinding = new MultiBinding { Converter = new LegendStockVisibilityConverter() };
@@ -1128,6 +1145,7 @@ namespace ag.WPF.Chart
                     legend.SetBinding(Legend.TextProperty, new Binding("LegendsHighLowClose[1]") { Source = this });
                 else if (series is OpenHighLowCloseSeries)
                     legend.SetBinding(Legend.TextProperty, new Binding("LegendsOpenHighLowClose[1]") { Source = this });
+                legend.MouseLeftButtonDown += Legend_MouseLeftButtonDown;
                 LegendsCollection.Add(legend);
                 #endregion
             }
@@ -1160,15 +1178,18 @@ namespace ag.WPF.Chart
 
             for (var i = LegendsCollection.Count - 1; i >= 0; i--)
             {
-                if (((Legend)LegendsCollection[i]).Index == series.Index)
+                if (((Legend)LegendsCollection[i]).SeriesIndex == series.Index)
+                {
+                    LegendsCollection[i].MouseLeftButtonDown -= Legend_MouseLeftButtonDown;
                     LegendsCollection.RemoveAt(i);
+                }
             }
 
             if (shiftIndexes)
             {
-                foreach (Legend lg in LegendsCollection.Where(l => ((Legend)l).Index > series.Index).ToArray())
+                foreach (var lg in LegendsCollection.Where(l => ((Legend)l).SeriesIndex > series.Index).ToArray().Cast<Legend>())
                 {
-                    lg.Index--;
+                    lg.SeriesIndex--;
                 }
                 var actualSeries = getActualSeries();
                 foreach (var sr in actualSeries.Where(sc => sc.Index > series.Index).ToArray())
@@ -1413,56 +1434,39 @@ namespace ag.WPF.Chart
         private void updateBindings()
         {
             var binding = BindingOperations.GetMultiBindingExpression(_borderVPlaceholder, Grid.ColumnProperty);
-            if (binding != null)
-                binding.UpdateTarget();
+            binding?.UpdateTarget();
             binding = BindingOperations.GetMultiBindingExpression(_borderVPlaceholder, WidthProperty);
-            if (binding != null)
-                binding.UpdateTarget();
+            binding?.UpdateTarget();
             binding = BindingOperations.GetMultiBindingExpression(_pathYAxisValues, Grid.ColumnProperty);
-            if (binding != null)
-                binding.UpdateTarget();
+            binding?.UpdateTarget();
             binding = BindingOperations.GetMultiBindingExpression(_pathYAxisValues, HorizontalAlignmentProperty);
-            if (binding != null)
-                binding.UpdateTarget();
+            binding?.UpdateTarget();
             binding = BindingOperations.GetMultiBindingExpression(_pathYAxisValues, Path.DataProperty);
-            if (binding != null)
-                binding.UpdateTarget();
+            binding?.UpdateTarget();
             binding = BindingOperations.GetMultiBindingExpression(_borderHPlaceholder, Grid.RowProperty);
-            if (binding != null)
-                binding.UpdateTarget();
+            binding?.UpdateTarget();
             binding = BindingOperations.GetMultiBindingExpression(_borderHPlaceholder, HeightProperty);
-            if (binding != null)
-                binding.UpdateTarget();
+            binding?.UpdateTarget();
             binding = BindingOperations.GetMultiBindingExpression(_pathXAxisValues, Grid.RowProperty);
-            if (binding != null)
-                binding.UpdateTarget();
+            binding?.UpdateTarget();
             binding = BindingOperations.GetMultiBindingExpression(_pathXAxisValues, VerticalAlignmentProperty);
-            if (binding != null)
-                binding.UpdateTarget();
+            binding?.UpdateTarget();
             binding = BindingOperations.GetMultiBindingExpression(_pathXAxisValues, Path.DataProperty);
-            if (binding != null)
-                binding.UpdateTarget();
+            binding?.UpdateTarget();
             binding = BindingOperations.GetMultiBindingExpression(_pathRadarValues, Path.DataProperty);
-            if (binding != null)
-                binding.UpdateTarget();
+            binding?.UpdateTarget();
             binding = BindingOperations.GetMultiBindingExpression(_pathRadarLines, Path.DataProperty);
-            if (binding != null)
-                binding.UpdateTarget();
+            binding?.UpdateTarget();
             binding = BindingOperations.GetMultiBindingExpression(_pathXAxesLines, Path.DataProperty);
-            if (binding != null)
-                binding.UpdateTarget();
+            binding?.UpdateTarget();
             binding = BindingOperations.GetMultiBindingExpression(_pathYAxesLines, Path.DataProperty);
-            if (binding != null)
-                binding.UpdateTarget();
+            binding?.UpdateTarget();
             binding = BindingOperations.GetMultiBindingExpression(_pathTicks, Path.DataProperty);
-            if (binding != null)
-                binding.UpdateTarget();
+            binding?.UpdateTarget();
             binding = BindingOperations.GetMultiBindingExpression(_pathHorzLines, Path.DataProperty);
-            if (binding != null)
-                binding.UpdateTarget();
+            binding?.UpdateTarget();
             binding = BindingOperations.GetMultiBindingExpression(_pathVertLines, Path.DataProperty);
-            if (binding != null)
-                binding.UpdateTarget();
+            binding?.UpdateTarget();
             var actualSeries = getActualSeries();
             foreach (var series in actualSeries)
             {
@@ -1470,21 +1474,21 @@ namespace ag.WPF.Chart
                 {
                     if (p == null) continue;
                     binding = BindingOperations.GetMultiBindingExpression(p, Path.DataProperty);
-                    if (binding != null)
-                        binding.UpdateTarget();
+                    binding?.UpdateTarget();
                 }
             }
             foreach (var legend in LegendsCollection)
             {
                 binding = BindingOperations.GetMultiBindingExpression(legend, VisibilityProperty);
-                if (binding != null)
-                    binding.UpdateTarget();
+                binding?.UpdateTarget();
             }
         }
 
         private void rebuildPieLegends(IEnumerable<IChartValue> values, ISeries series)
         {
             if (series.Index > 0) return;
+            for (var i = PieLegendsCollection.Count - 1; i >= 0; i--)
+                PieLegendsCollection[i].MouseLeftButtonDown += Legend_MouseLeftButtonDown;
             PieLegendsCollection.Clear();
             var valuesArray = values.ToArray();
             for (int i = 0, brushIndex = 0; i < valuesArray.Length; i++)
@@ -1496,11 +1500,13 @@ namespace ag.WPF.Chart
                     LegendBackground = PredefinedMainBrushes[brushIndex++].Brush
                 };
 
+                legend.MouseLeftButtonDown += Legend_MouseLeftButtonDown;
+
                 var textBinding = new MultiBinding { Converter = new PieSectionTextConverter(), ConverterParameter = v };
                 textBinding.Bindings.Add(new Binding(nameof(ISeries.Values)) { Source = series });
                 textBinding.Bindings.Add(new Binding(nameof(PiePercentsFormat)) { Source = this });
                 legend.SetBinding(Legend.TextProperty, textBinding);
-
+                legend.MouseLeftButtonDown += Legend_MouseLeftButtonDown;
                 PieLegendsCollection.Add(legend);
             }
         }
@@ -3509,7 +3515,7 @@ namespace ag.WPF.Chart
         /// <summary>
         /// Occurs when chart point/column/bar is double-clicked by left mouse button
         /// </summary>
-        public event RoutedEventHandler ChartPointLeftButtonDoubleClick
+        public event ChartPointLeftButtonDoubleClickEventHandler ChartPointLeftButtonDoubleClick
         {
             add { AddHandler(ChartPointLeftButtonDoubleClickEvent, value); }
             remove { RemoveHandler(ChartPointLeftButtonDoubleClickEvent, value); }
@@ -3518,12 +3524,33 @@ namespace ag.WPF.Chart
         /// Identifies the <see cref="ChartPointLeftButtonDoubleClick"/> routed event
         /// </summary>
         public static readonly RoutedEvent ChartPointLeftButtonDoubleClickEvent =
-            EventManager.RegisterRoutedEvent("ChartPointLeftButtonDoubleClick", RoutingStrategy.Bubble,
-                typeof(RoutedEventHandler), typeof(Chart));
+            EventManager.RegisterRoutedEvent(nameof(ChartPointLeftButtonDoubleClick), RoutingStrategy.Direct,
+                typeof(ChartPointLeftButtonDoubleClickEventHandler), typeof(Chart));
 
         private void RaiseMarkerLeftButtonDoubleClickEvent(IChartValue point, ISeries series)
         {
             var e = new ChartPointLeftButtonDoubleClickEventArgs(ChartPointLeftButtonDoubleClickEvent, point, series);
+            RaiseEvent(e);
+        }
+
+        /// <summary>
+        /// Occurs when chart legend is double-clicked by left mouse button
+        /// </summary>
+        public event LegendLeftButtonDoubleClickEventHandler LegendLeftButtonDoubleClick
+        {
+            add { AddHandler(LegendLeftButtonDoubleClickEvent, value); }
+            remove { RemoveHandler(LegendLeftButtonDoubleClickEvent, value); }
+        }
+        /// <summary>
+        /// Identifies the <see cref="LegendLeftButtonDoubleClick"/> routed event
+        /// </summary>
+        public static readonly RoutedEvent LegendLeftButtonDoubleClickEvent =
+            EventManager.RegisterRoutedEvent(nameof(LegendLeftButtonDoubleClick), RoutingStrategy.Direct,
+                typeof(LegendLeftButtonDoubleClickEventHandler), typeof(Chart));
+
+        private void RaiseLegendLeftButtonDoubleClickEvent(int seriesIndex)
+        {
+            var e = new LegendLeftButtonDoubleClickEventArgs(Chart.LegendLeftButtonDoubleClickEvent, seriesIndex);
             RaiseEvent(e);
         }
         #endregion
@@ -3565,6 +3592,27 @@ namespace ag.WPF.Chart
         {
             Value = value;
             Series = series;
+        }
+    }
+
+    /// <summary>
+    /// Represents event args for <see cref="Chart.LegendLeftButtonDoubleClick"/> routed event.
+    /// </summary>
+    public class LegendLeftButtonDoubleClickEventArgs : RoutedEventArgs
+    {
+        /// <summary>
+        /// Gets the legend's series index
+        /// </summary>
+        public int SeriesIndex { get; private set; }
+        /// <summary>
+        /// Initialzes a new instance of <see cref="LegendLeftButtonDoubleClickEventArgs"/>s.
+        /// </summary>
+        /// <param name="baseEvent">Base routed event</param>
+        /// <param name="seriesIndex">The legend's series index</param>
+        public LegendLeftButtonDoubleClickEventArgs(RoutedEvent baseEvent, int seriesIndex)
+            : base(baseEvent)
+        {
+            SeriesIndex = seriesIndex;
         }
     }
 }

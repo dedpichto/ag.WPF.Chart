@@ -296,7 +296,11 @@ Property|Type|Description
 ------|-----|-----------
 SeriesItems|ChartItemsCollection&lt;ISeries&gt;|Gets the collection of ISeries objects used to generate the content of the  Chart  control
 
-<hr />
+### Events
+Event|Description
+-----|-----------
+ChartPointLeftButtonDoubleClick|Occurs when chart point/column/bar is double-clicked by left mouse button
+LegendLeftButtonDoubleClick|Occurs when chart legend is double-clicked by left mouse button
 
 ## Series class
 
@@ -428,8 +432,6 @@ public OpenHighLowCloseSeries(Brush mainBrush, Brush secondaryBrush, string name
 ```
 
 Initializes a new instance of StockSeries object using specified brush, secondary brush, name and sequence of values
-
-<hr />
 
 ## ChartCompositeValue class
 
