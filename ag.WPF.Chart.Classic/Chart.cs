@@ -1424,10 +1424,13 @@ namespace ag.WPF.Chart
             path.SetBinding(Shape.FillProperty, fillBinding);
             #endregion
 
-            path.SetBinding(VisibilityProperty, new Binding(nameof(IsVisible)) { Converter = new SeriesVisibilityConverter(), Source = series, NotifyOnSourceUpdated = true, UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged });
             path.SetBinding(OpacityProperty, new Binding(nameof(ChartOpacity)) { Source = this });
             path.MouseLeftButtonDown += Path_MouseLeftButtonDown;
             path.MouseMove += Path_MouseMove;
+
+            //apply visibility binding only on PlainSeries
+            if (series is PlainSeries)
+                path.SetBinding(VisibilityProperty, new Binding(nameof(IsVisible)) { Converter = new SeriesVisibilityConverter(), Source = series, NotifyOnSourceUpdated = true, UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged });
 
             path.SetValue(Statics.AddedToCanvasProperty, true);
             _canvas.Children.Add(path);
