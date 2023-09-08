@@ -82,6 +82,7 @@
     <Compile Include="Converters\PieTopConverter.cs" />
     <Compile Include="Converters\RadarAxesValuesConverter.cs" />
     <Compile Include="Converters\RadarLinesPathConverter.cs" />
+    <Compile Include="Converters\SeriesVisibilityConverter.cs" />
     <Compile Include="Converters\StarDrawingConverter.cs" />
     <Compile Include="Converters\ValuesToPathConverter.cs" />
     <Compile Include="Converters\ValuesToPieSectionsConverter.cs" />

@@ -45,6 +45,7 @@
     <Compile Include="..\ag.WPF.Chart.Classic\Converters\PieTopConverter.cs" Link="Converters\PieTopConverter.cs" />
     <Compile Include="..\ag.WPF.Chart.Classic\Converters\RadarAxesValuesConverter.cs" Link="Converters\RadarAxesValuesConverter.cs" />
     <Compile Include="..\ag.WPF.Chart.Classic\Converters\RadarLinesPathConverter.cs" Link="Converters\RadarLinesPathConverter.cs" />
+    <Compile Include="..\ag.WPF.Chart.Classic\Converters\SeriesVisibilityConverter.cs" Link="Converters\SeriesVisibilityConverter.cs" />
     <Compile Include="..\ag.WPF.Chart.Classic\Converters\StarDrawingConverter.cs" Link="Converters\StarDrawingConverter.cs" />
     <Compile Include="..\ag.WPF.Chart.Classic\Converters\ValuesToPathConverter.cs" Link="Converters\ValuesToPathConverter.cs" />
     <Compile Include="..\ag.WPF.Chart.Classic\Converters\ValuesToPieSectionsConverter.cs" Link="Converters\ValuesToPieSectionsConverter.cs" />

@@ -47,6 +47,10 @@ namespace ag.WPF.Chart.Converters
             var seriesEnumerable = values[2] as IEnumerable<ISeries>;
             var chartSeries = values[13] as IEnumerable<ISeries>;
 
+            if (seriesEnumerable != null && seriesEnumerable.Any())
+                seriesEnumerable = seriesEnumerable.Where(s => s.IsVisible);
+            if (chartSeries != null && chartSeries.Any())
+                chartSeries = chartSeries.Where(s => s.IsVisible);
             if ((seriesEnumerable == null || !seriesEnumerable.Any()) && (chartSeries == null || !chartSeries.Any()))
                 return null;
 

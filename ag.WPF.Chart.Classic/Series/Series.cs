@@ -25,6 +25,7 @@ namespace ag.WPF.Chart.Series
         private string _name;
         private int _index;
         private ChartItemsCollection<IChartValue> _values = new();
+        private bool _isVisible = true;
         #endregion
 
         #region Dependency properties
@@ -114,6 +115,16 @@ namespace ag.WPF.Chart.Series
         public List<Point> RealPoints { get; } = new List<Point>();
         /// <inheritdoc />
         public Path[] Paths { get; } = new Path[9];
+        /// <inheritdoc />
+        public bool IsVisible
+        {
+            get => _isVisible;
+            set
+            {
+                if (_isVisible == value) return; _isVisible = value;
+                OnPropertyChanged();
+            }
+        }
         #endregion
 
         #region Event handlers

@@ -23,6 +23,7 @@
                      AxisTitleX="Countries"
                      Title="Energy production"
                      VerticalAxisValuesFormat="0 TWh"
+                     LegendLeftButtonDoubleClick="AgChart_LegendLeftButtonDoubleClick"
                      />
         <Grid Grid.Column="0">
             <Grid.RowDefinitions>

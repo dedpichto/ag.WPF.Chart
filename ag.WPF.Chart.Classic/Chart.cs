@@ -811,6 +811,7 @@ namespace ag.WPF.Chart
         {
             switch (e.PropertyName)
             {
+                case "IsVisible":
                 case "Values":
                     if (sender is ISeries series)
                     {
@@ -1423,6 +1424,7 @@ namespace ag.WPF.Chart
             path.SetBinding(Shape.FillProperty, fillBinding);
             #endregion
 
+            path.SetBinding(VisibilityProperty, new Binding(nameof(IsVisible)) { Converter = new SeriesVisibilityConverter(), Source = series, NotifyOnSourceUpdated = true, UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged });
             path.SetBinding(OpacityProperty, new Binding(nameof(ChartOpacity)) { Source = this });
             path.MouseLeftButtonDown += Path_MouseLeftButtonDown;
             path.MouseMove += Path_MouseMove;
@@ -1468,7 +1470,7 @@ namespace ag.WPF.Chart
             binding = BindingOperations.GetMultiBindingExpression(_pathVertLines, Path.DataProperty);
             binding?.UpdateTarget();
             var actualSeries = getActualSeries();
-            foreach (var series in actualSeries)
+            foreach (var series in actualSeries.Where(s => s.IsVisible))
             {
                 foreach (var p in series.Paths)
                 {

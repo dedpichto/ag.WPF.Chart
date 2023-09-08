@@ -36,5 +36,12 @@ namespace Examples.UserControls
         {
             AgChart.SaveAsImage(imageFilePath);
         }
+
+        private void AgChart_LegendLeftButtonDoubleClick(object sender, LegendLeftButtonDoubleClickEventArgs e)
+        {
+            if (!(sender is  Chart chart)) return;
+            chart.SeriesItems[e.SeriesIndex].IsVisible = !chart.SeriesItems[e.SeriesIndex].IsVisible;
+
+        }
     }
 }

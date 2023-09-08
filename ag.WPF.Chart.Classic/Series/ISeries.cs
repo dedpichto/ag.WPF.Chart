@@ -48,5 +48,9 @@ namespace ag.WPF.Chart.Series
         /// Gets array of series drawing paths.
         /// </summary>
         Path[] Paths { get; }
+        /// <summary>
+        /// Gets or sets series visibility.
+        /// </summary>
+        bool IsVisible { get; set; }
     }
 }
