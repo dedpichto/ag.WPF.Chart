@@ -856,8 +856,9 @@ namespace ag.WPF.Chart
                 }
                 else
                 {
-                    var resultValues = seriesArray.Select(s => new { Items = s.Values.ToList(), s.Index }).ToArray();
-                    var tempValues = seriesArray.Select(s => new { Items = s.Values.ToList(), s.Index }).ToArray();
+                    int k = 0, m = 0;
+                    var resultValues = seriesArray.Select(s => new { Items = s.Values.ToList(), Index=k++ }).ToArray();
+                    var tempValues = seriesArray.Select(s => new { Items = s.Values.ToList(), Index=m++ }).ToArray();
                     var maxCount = resultValues.Max(rw => rw.Items.Count);
                     for (var i = 0; i < resultValues.Length; i++)
                     {

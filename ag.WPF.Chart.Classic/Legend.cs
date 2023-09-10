@@ -15,15 +15,21 @@ namespace ag.WPF.Chart
         /// <summary>
         /// The identifier of the <see cref="Text"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty TextProperty = DependencyProperty.Register("Text", typeof(string),
-            typeof(Legend), new FrameworkPropertyMetadata(""));
+        public static readonly DependencyProperty TextProperty =
+            DependencyProperty.Register(nameof(Text), typeof(string), typeof(Legend),
+                new FrameworkPropertyMetadata(""));
         /// <summary>
         /// The identifier of the <see cref="LegendBackground"/> dependency property.
         /// </summary>
         public static readonly DependencyProperty LegendBackgroundProperty =
-            DependencyProperty.Register("LegendBackground", typeof(Brush), typeof(Legend),
+            DependencyProperty.Register(nameof(LegendBackground), typeof(Brush), typeof(Legend),
                 new FrameworkPropertyMetadata(null));
-
+        /// <summary>
+        /// The identifier of the <see cref="IsChecked"/> dependency property.
+        /// </summary>
+        public static readonly DependencyProperty IsCheckedProperty =
+            DependencyProperty.Register(nameof(IsChecked), typeof(bool), typeof(Legend),
+                new FrameworkPropertyMetadata(true));
         static Legend()
         {
             DefaultStyleKeyProperty.OverrideMetadata(typeof(Legend), new FrameworkPropertyMetadata(typeof(Legend)));
@@ -45,7 +51,14 @@ namespace ag.WPF.Chart
             get => (string)GetValue(TextProperty);
             set => SetValue(TextProperty, value);
         }
-
+        /// <summary>
+        /// Gets or sets legend's checkbox state
+        /// </summary>
+        public bool IsChecked
+        {
+            get => (bool)GetValue(IsCheckedProperty);
+            set => SetValue(IsCheckedProperty, value);
+        }
         internal int SeriesIndex { get; set; }
     }
 }

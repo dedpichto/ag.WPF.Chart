@@ -53,8 +53,20 @@ namespace ag.WPF.Chart.Converters
                 || !(parameter is (int order, ColoredPaths colored)))
                 return null;
 
+            var realIndex = index;
             var seriesEnumerable = values[2] as IEnumerable<ISeries>;
             var chartSeries = values[20] as IEnumerable<ISeries>;
+
+            if (chartStyle.In(ChartStyle.Columns, ChartStyle.StackedColumns, ChartStyle.FullStackedColumns)
+                || chartStyle.In(ChartStyle.Bars, ChartStyle.StackedBars, ChartStyle.FullStackedBars)
+                || chartStyle.In(ChartStyle.StackedLines, ChartStyle.StackedLinesWithMarkers, ChartStyle.FullStackedLines, ChartStyle.FullStackedLinesWithMarkers, ChartStyle.StackedArea, ChartStyle.FullStackedArea, ChartStyle.SmoothStackedLines, ChartStyle.SmoothStackedLinesWithMarkers, ChartStyle.SmoothFullStackedLines, ChartStyle.SmoothFullStackedLinesWithMarkers, ChartStyle.SmoothStackedArea, ChartStyle.SmoothFullStackedArea))
+            {
+                var indices = seriesEnumerable.Select(s => new { s.IsVisible, s.Index }).ToList();
+                if (indices.Any(i => i.Index == index && !i.IsVisible))
+                    return null;
+                indices.RemoveAll(i => !i.IsVisible);
+                index = indices.IndexOf(indices.FirstOrDefault(i => i.Index == index));
+            }
 
             if (seriesEnumerable != null && seriesEnumerable.Any())
                 seriesEnumerable = seriesEnumerable.Where(s => s.IsVisible);
@@ -189,21 +201,21 @@ namespace ag.WPF.Chart.Converters
                     {
                         var units = Utils.GetUnitsForLines(seriesArray, chartStyle, dir, width, height, boundOffset, linesCountY, fmt.Height, autoAdjust, maxYConv);
                         maxX = seriesArray.Max(s => s.Values.Count);
-                        return drawStackedLine(width, height, maxX, units, chartStyle, dir, seriesArray, index, rawValues, offsetBoundary, boundOffset, shapeStyle);
+                        return drawStackedLine(width, height, maxX, units, chartStyle, dir, seriesArray, index, realIndex, rawValues, offsetBoundary, boundOffset, shapeStyle);
                     }
                 case ChartStyle.StackedArea:
                 case ChartStyle.SmoothStackedArea:
                     {
                         var units = Utils.GetUnitsForLines(seriesArray, chartStyle, dir, width, height, boundOffset, linesCountY, fmt.Height, autoAdjust, maxYConv);
                         maxX = seriesArray.Max(s => s.Values.Count);
-                        return drawStackedArea(width, height, maxX, units, chartStyle, dir, seriesArray, index, rawValues);
+                        return drawStackedArea(width, height, maxX, units, chartStyle, dir, seriesArray, index, realIndex, rawValues);
                     }
                 case ChartStyle.FullStackedLines:
                 case ChartStyle.FullStackedLinesWithMarkers:
                 case ChartStyle.SmoothFullStackedLines:
                 case ChartStyle.SmoothFullStackedLinesWithMarkers:
                     maxX = seriesArray.Max(s => s.Values.Count);
-                    return drawFullStackedLine(width, height, maxX, chartStyle, dir, seriesArray, index, rawValues, offsetBoundary, boundOffset, shapeStyle);
+                    return drawFullStackedLine(width, height, maxX, chartStyle, dir, seriesArray, index, realIndex, rawValues, offsetBoundary, boundOffset, shapeStyle);
                 case ChartStyle.Columns:
                     {
                         var units = Utils.GetUnitsForLines(seriesArray, chartStyle, dir, width, height, boundOffset, linesCountY, fmt.Height, autoAdjust, maxYConv);
@@ -212,10 +224,10 @@ namespace ag.WPF.Chart.Converters
                 case ChartStyle.StackedColumns:
                     {
                         var units = Utils.GetUnitsForLines(seriesArray, chartStyle, dir, width, height, boundOffset, linesCountY, fmt.Height, autoAdjust, maxYConv);
-                        return drawStackedColumns(width, height, units, dir, seriesArray, index, rawValues, showValues, fontFamily, fontStyle, fontWeight, fontStretch, fontSize, culture, flowDirection);
+                        return drawStackedColumns(width, height, units, dir, seriesArray, index, realIndex, rawValues, showValues, fontFamily, fontStyle, fontWeight, fontStretch, fontSize, culture, flowDirection);
                     }
                 case ChartStyle.FullStackedColumns:
-                    return drawFullStackedColumns(width, height, dir, seriesArray, index, rawValues, showValues, fontFamily, fontStyle, fontWeight, fontStretch, fontSize, culture, flowDirection);
+                    return drawFullStackedColumns(width, height, dir, seriesArray, index, realIndex, rawValues, showValues, fontFamily, fontStyle, fontWeight, fontStretch, fontSize, culture, flowDirection);
                 //break;
                 case ChartStyle.Bars:
                     {
@@ -225,14 +237,14 @@ namespace ag.WPF.Chart.Converters
                 case ChartStyle.StackedBars:
                     {
                         var units = getUnitsForBars(seriesArray, chartStyle, dir, width, linesCountX, fmt.Height, autoAdjust, maxXConv);
-                        return drawStackedBars(width, height, units, dir, seriesArray, index, rawValues, showValues, fontFamily, fontStyle, fontWeight, fontStretch, fontSize, culture, flowDirection);
+                        return drawStackedBars(width, height, units, dir, seriesArray, index, realIndex, rawValues, showValues, fontFamily, fontStyle, fontWeight, fontStretch, fontSize, culture, flowDirection);
                     }
                 case ChartStyle.FullStackedBars:
-                    return drawFullStackedBars(width, height, dir, seriesArray, index, rawValues, showValues, fontFamily, fontStyle, fontWeight, fontStretch, fontSize, culture, flowDirection);
+                    return drawFullStackedBars(width, height, dir, seriesArray, index, realIndex, rawValues, showValues, fontFamily, fontStyle, fontWeight, fontStretch, fontSize, culture, flowDirection);
                 case ChartStyle.FullStackedArea:
                 case ChartStyle.SmoothFullStackedArea:
                     maxX = seriesArray.Max(s => s.Values.Count);
-                    return drawFullStackedArea(width, height, maxX, dir, seriesArray, index, rawValues, chartStyle);
+                    return drawFullStackedArea(width, height, maxX, dir, seriesArray, index, realIndex, rawValues, chartStyle);
             }
 
             return null;
@@ -580,8 +592,9 @@ namespace ag.WPF.Chart.Converters
             var segSize = heigth / series.Max(s => s.Values.Count);
             var barHeight = (segSize - COLUMN_BAR_OFFSET * 2) / series.Length;
             var startX = 0.0;
-            var currentSeries = series.FirstOrDefault(s => s.Index == index);
-            if (currentSeries == null) return null;
+            if (series.Length < index + 1)
+                return null;
+            var currentSeries = series[index];
 
             switch (dir)
             {
@@ -625,7 +638,7 @@ namespace ag.WPF.Chart.Converters
             return cgm;
         }
 
-        private CombinedGeometry drawStackedBars(double width, double height, double units, Directions dir, ISeries[] series, int index, List<(List<IChartValue> Values, int Index)> tuples, bool showValues,
+        private CombinedGeometry drawStackedBars(double width, double height, double units, Directions dir, ISeries[] series, int index, int realIndex, List<(List<IChartValue> Values, int Index)> tuples, bool showValues,
            FontFamily fontFamily, FontStyle fontStyle, FontWeight fontWeight, FontStretch fontStretch, double fontSize,
            CultureInfo culture, FlowDirection flowDirection)
         {
@@ -637,14 +650,15 @@ namespace ag.WPF.Chart.Converters
                 Geometry1 = gm,
                 Geometry2 = gmValues
             };
-            var tp = tuples.FirstOrDefault(t => t.Index == index);
+            var tp = tuples.FirstOrDefault(t => t.Index == realIndex);
             if (tp == default) return null;
             var values = tp.Values;
             var segSize = height / values.Count;
             var barHeight = segSize - COLUMN_BAR_OFFSET * 2;
             var startX = 0.0;
-            var currentSeries = series.FirstOrDefault(s => s.Index == index);
-            if (currentSeries == null) return null;
+            if (series.Length < index + 1)
+                return null;
+            var currentSeries = series[index];
 
             switch (dir)
             {
@@ -672,9 +686,17 @@ namespace ag.WPF.Chart.Converters
                 if (index > 0)
                 {
                     var i1 = i;
-                    var prevsTuples =
-                        tuples.Where(t => t.Index < index && Math.Sign(t.Values[i1].CompositeValue.PlainValue) == Math.Sign(values[i1].CompositeValue.PlainValue));
-                    x += prevsTuples.Sum(sr => sr.Values[i].CompositeValue.PlainValue * units);
+
+                    var prevs = new List<(List<IChartValue> Values, int Index)>();
+                    for (var j = 0; j < tuples.Count; j++)
+                    {
+                        if (j < index && Math.Sign(tuples[j].Values[i1].CompositeValue.PlainValue) == Math.Sign(values[i1].CompositeValue.PlainValue))
+                            prevs.Add(tuples[j]);
+                    }
+
+                    //var prevsTuples =
+                    //    tuples.Where(t => t.Index < index && Math.Sign(t.Values[i1].CompositeValue.PlainValue) == Math.Sign(values[i1].CompositeValue.PlainValue));
+                    x += prevs.Sum(sr => sr.Values[i].CompositeValue.PlainValue * units);
                 }
                 var y = height - (i * segSize + COLUMN_BAR_OFFSET);
                 var rect = new Rect(new Point(x, y), new Point(x + values[i].CompositeValue.PlainValue * units, y - barHeight));
@@ -697,7 +719,7 @@ namespace ag.WPF.Chart.Converters
             return cgm;
         }
 
-        private CombinedGeometry drawFullStackedBars(double width, double height, Directions dir, ISeries[] series, int index, List<(List<IChartValue> Values, int Index)> tuples, bool showValues,
+        private CombinedGeometry drawFullStackedBars(double width, double height, Directions dir, ISeries[] series, int index, int realIndex, List<(List<IChartValue> Values, int Index)> tuples, bool showValues,
            FontFamily fontFamily, FontStyle fontStyle, FontWeight fontWeight, FontStretch fontStretch, double fontSize,
            CultureInfo culture, FlowDirection flowDirection)
         {
@@ -709,15 +731,16 @@ namespace ag.WPF.Chart.Converters
                 Geometry1 = gm,
                 Geometry2 = gmValues
             };
-            var tp = tuples.FirstOrDefault(t => t.Index == index);
+            var tp = tuples.FirstOrDefault(t => t.Index == realIndex);
             if (tp == default) return null;
             var values = tp.Values;
             var segSize = height / values.Count;
             var barHeight = segSize - COLUMN_BAR_OFFSET * 2;
             var startX = Utils.AXIS_THICKNESS;
             var stepX = 0.0;
-            var currentSeries = series.FirstOrDefault(s => s.Index == index);
-            if (currentSeries == null) return null;
+            if (series.Length < index + 1)
+                return null;
+            var currentSeries = series[index];
 
             switch (dir)
             {
@@ -752,8 +775,14 @@ namespace ag.WPF.Chart.Converters
                 var percent = Math.Abs(values[i].CompositeValue.PlainValue) / (sum != 0 ? sum : 1) * 100;
                 var segWidth = sign * stepX / 100 * percent;
 
-                var prevs = tuples.Where(s => s.Index < index)
-                    .Where(s => Math.Sign(s.Values[i1].CompositeValue.PlainValue) == sign);
+                var prevs = new List<(List<IChartValue> Values, int Index)>();
+                for (var j = 0; j < tuples.Count; j++)
+                {
+                    if (j < index && Math.Sign(tuples[j].Values[i1].CompositeValue.PlainValue) == sign)
+                        prevs.Add(tuples[j]);
+                }
+
+                //var prevs = tuples.Where(s => s.Index < index).Where(s => Math.Sign(s.Values[i1].CompositeValue.PlainValue) == sign);
                 var prevSum = prevs.Sum(pvs => Math.Abs(pvs.Values[i1].CompositeValue.PlainValue));
                 var prevPerc = prevSum / (sum != 0 ? sum : 1) * 100;
                 var prevWidth = stepX / 100 * prevPerc;
@@ -778,7 +807,7 @@ namespace ag.WPF.Chart.Converters
             return cgm;
         }
 
-        private CombinedGeometry drawFullStackedColumns(double width, double height, Directions dir, ISeries[] series, int index, List<(List<IChartValue> Values, int Index)> tuples, bool showValues,
+        private CombinedGeometry drawFullStackedColumns(double width, double height, Directions dir, ISeries[] series, int index, int realIndex, List<(List<IChartValue> Values, int Index)> tuples, bool showValues,
            FontFamily fontFamily, FontStyle fontStyle, FontWeight fontWeight, FontStretch fontStretch, double fontSize,
            CultureInfo culture, FlowDirection flowDirection)
         {
@@ -790,15 +819,16 @@ namespace ag.WPF.Chart.Converters
                 Geometry1 = gm,
                 Geometry2 = gmValues
             };
-            var tp = tuples.FirstOrDefault(t => t.Index == index);
+            var tp = tuples.FirstOrDefault(t => t.Index == realIndex);
             if (tp == default) return null;
             var values = tp.Values;
             var segSize = width / values.Count;
             var columnWidth = segSize - COLUMN_BAR_OFFSET * 2;
             var startY = Utils.AXIS_THICKNESS;
             var stepY = 0.0;
-            var currentSeries = series.FirstOrDefault(s => s.Index == index);
-            if (currentSeries == null) return null;
+            if (series.Length < index + 1)
+                return null;
+            var currentSeries = series[index];
 
             switch (dir)
             {
@@ -833,8 +863,15 @@ namespace ag.WPF.Chart.Converters
                 var sum = tuples.Sum(sr => Math.Abs(sr.Values[i1].CompositeValue.PlainValue));
                 var percent = Math.Abs(values[i].CompositeValue.PlainValue) / (sum != 0 ? sum : 1) * 100;
                 var segHeight = sign * stepY / 100 * percent;
-                var prevs = tuples.Where(s => s.Index < index)
-                    .Where(s => Math.Sign(s.Values[i1].CompositeValue.PlainValue) == sign);
+
+                var prevs = new List<(List<IChartValue> Values, int Index)>();
+                for (var j = 0; j < tuples.Count; j++)
+                {
+                    if (j < index && Math.Sign(tuples[j].Values[i1].CompositeValue.PlainValue) == sign)
+                        prevs.Add(tuples[j]);
+                }
+
+                //var prevs = tuples.Where(s => s.Index < index).Where(s => Math.Sign(s.Values[i1].CompositeValue.PlainValue) == sign);
                 var prevSum = prevs.Sum(pvs => Math.Abs(pvs.Values[i1].CompositeValue.PlainValue));
                 var prevPerc = prevSum / (sum != 0 ? sum : 1) * 100;
                 var prevHeight = stepY / 100 * prevPerc;
@@ -859,7 +896,7 @@ namespace ag.WPF.Chart.Converters
             return cgm;
         }
 
-        private CombinedGeometry drawStackedColumns(double width, double height, double units, Directions dir, ISeries[] series, int index, List<(List<IChartValue> Values, int Index)> tuples, bool showValues,
+        private CombinedGeometry drawStackedColumns(double width, double height, double units, Directions dir, ISeries[] series, int index, int realIndex, List<(List<IChartValue> Values, int Index)> tuples, bool showValues,
            FontFamily fontFamily, FontStyle fontStyle, FontWeight fontWeight, FontStretch fontStretch, double fontSize,
            CultureInfo culture, FlowDirection flowDirection)
         {
@@ -872,14 +909,15 @@ namespace ag.WPF.Chart.Converters
                 Geometry2 = gmValues
             };
 
-            var tp = tuples.FirstOrDefault(t => t.Index == index);
+            var tp = tuples.FirstOrDefault(t => t.Index == realIndex);
             if (tp == default) return null;
             var values = tp.Values;
             var segSize = width / values.Count;
             var columnWidth = segSize - COLUMN_BAR_OFFSET * 2;
             var startY = Utils.AXIS_THICKNESS;
-            var currentSeries = series.FirstOrDefault(s => s.Index == index);
-            if (currentSeries == null) return null;
+            if (series.Length < index + 1)
+                return null;
+            var currentSeries = series[index];
 
             switch (dir)
             {
@@ -908,9 +946,16 @@ namespace ag.WPF.Chart.Converters
                 if (index > 0)
                 {
                     var i1 = i;
-                    var prevs =
-                        tuples.Where(
-                            s => s.Index < index && Math.Sign(s.Values[i1].CompositeValue.PlainValue) == Math.Sign(values[i1].CompositeValue.PlainValue));
+                    var prevs = new List<(List<IChartValue> Values, int Index)>();
+                    for (var j = 0; j < tuples.Count; j++)
+                    {
+                        if (j < index && Math.Sign(tuples[j].Values[i1].CompositeValue.PlainValue) == Math.Sign(values[i1].CompositeValue.PlainValue))
+                            prevs.Add(tuples[j]);
+                    }
+
+                    //var prevs =
+                    //    tuples.Where(
+                    //        s => s.Index < index && Math.Sign(s.Values[i1].CompositeValue.PlainValue) == Math.Sign(values[i1].CompositeValue.PlainValue));
                     y -= prevs.Sum(sr => sr.Values[i].CompositeValue.PlainValue * units);
                 }
                 var rect = new Rect(new Point(x, y), new Point(x + columnWidth, y - values[i].CompositeValue.PlainValue * units));
@@ -947,8 +992,9 @@ namespace ag.WPF.Chart.Converters
             };
 
             var startY = Utils.AXIS_THICKNESS;
-            var currentSeries = series.FirstOrDefault(s => s.Index == index);
-            if (currentSeries == null) return null;
+            if (series.Length < index + 1)
+                return null;
+            var currentSeries = series[index];
 
             var segSize = width / series.Max(s => s.Values.Count);
             var columnWidth = (segSize - COLUMN_BAR_OFFSET * 2) / series.Length;
@@ -996,17 +1042,18 @@ namespace ag.WPF.Chart.Converters
         }
 
         private PathGeometry drawFullStackedArea(double width, double height, double maxX, Directions dir,
-            ISeries[] series, int index, List<(List<IChartValue> Values, int Index)> tuples, ChartStyle chartStyle)
+            ISeries[] series, int index, int realIndex, List<(List<IChartValue> Values, int Index)> tuples, ChartStyle chartStyle)
         {
-            var tp = tuples.FirstOrDefault(t => t.Index == index);
+            var tp = tuples.FirstOrDefault(t => t.Index == realIndex);
             if (tp == default) return null;
             var values = tp.Values;
             double stepX, stepY;
             double centerX, centerY;
             var gm = new PathGeometry();
 
-            var currentSeries = series.FirstOrDefault(s => s.Index == index);
-            if (currentSeries == null) return null;
+            if (series.Length < index + 1)
+                return null;
+            var currentSeries = series[index];
 
             var delimeter = maxX > 1 ? maxX - 1 : 1;
             switch (dir)
@@ -1058,8 +1105,9 @@ namespace ag.WPF.Chart.Converters
                 }
                 else
                 {
-                    var prevSeries = series.FirstOrDefault(s => s.Index == index - 1);
-                    if (prevSeries == null) return null;
+                    if (series.Length < index)
+                        return null;
+                    var prevSeries = series[index - 1];
                     y = prevSeries.RealPoints[i].Y;
                 }
                 var sum = tuples.Sum(s => Math.Abs(s.Values[i].CompositeValue.PlainValue));
@@ -1083,8 +1131,9 @@ namespace ag.WPF.Chart.Converters
             }
             else
             {
-                var prevSeries = series.FirstOrDefault(s => s.Index == index - 1);
-                if (prevSeries == null) return null;
+                if (series.Length < index)
+                    return null;
+                var prevSeries = series[index - 1];
                 for (var i = prevSeries.RealPoints.Count - 1; i >= 0; i--)
                 {
                     points.Add(prevSeries.RealPoints[i]);
@@ -1164,9 +1213,9 @@ namespace ag.WPF.Chart.Converters
         }
 
         private PathGeometry drawFullStackedLine(double width, double height, double maxX, ChartStyle style,
-            Directions dir, ISeries[] series, int index, List<(List<IChartValue> Values, int Index)> tuples, bool offsetBoundary, double boundOffset, ShapeStyle shapeStyle)
+            Directions dir, ISeries[] series, int index, int realIndex, List<(List<IChartValue> Values, int Index)> tuples, bool offsetBoundary, double boundOffset, ShapeStyle shapeStyle)
         {
-            var tp = tuples.FirstOrDefault(t => t.Index == index);
+            var tp = tuples.FirstOrDefault(t => t.Index == realIndex);
             if (tp == default) return null;
             var values = tp.Values;
             double stepX, stepY;
@@ -1175,8 +1224,9 @@ namespace ag.WPF.Chart.Converters
 
             var delimeter = maxX > 1 ? maxX - 1 : 1;
 
-            var currentSeries = series.FirstOrDefault(s => s.Index == index);
-            if (currentSeries == null) return null;
+            if (series.Length < index + 1)
+                return null;
+            var currentSeries = series[index];
 
             switch (dir)
             {
@@ -1221,8 +1271,9 @@ namespace ag.WPF.Chart.Converters
                 }
                 else
                 {
-                    var prevSeries = series.FirstOrDefault(s => s.Index == index - 1);
-                    if (prevSeries == null) return null;
+                    if (series.Length < index)
+                        return null;
+                    var prevSeries = series[index - 1];
                     y = prevSeries.RealPoints[i].Y;
                 }
                 var sum = tuples.Sum(s => Math.Abs(s.Values[i].CompositeValue.PlainValue));
@@ -1266,16 +1317,17 @@ namespace ag.WPF.Chart.Converters
         }
 
         private PathGeometry drawStackedArea(double width, double height, double maxX, double units, ChartStyle chartStyle, Directions dir,
-           ISeries[] series, int index, List<(List<IChartValue> Values, int Index)> tuples)
+           ISeries[] series, int index, int realIndex, List<(List<IChartValue> Values, int Index)> tuples)
         {
-            var tp = tuples.FirstOrDefault(t => t.Index == index);
+            var tp = tuples.FirstOrDefault(t => t.Index == realIndex);
             if (tp == default) return null;
             var values = tp.Values;
             double stepX;
             double centerX, centerY;
             var gm = new PathGeometry();
-            var currentSeries = series.FirstOrDefault(s => s.Index == index);
-            if (currentSeries == null) return null;
+            if (series.Length < index + 1)
+                return null;
+            var currentSeries = series[index];
 
             var delimeter = maxX > 1 ? maxX - 1 : 1;
             switch (dir)
@@ -1314,7 +1366,14 @@ namespace ag.WPF.Chart.Converters
             var y = centerY;
             if (index > 0)
             {
-                var prevs = tuples.Where(s => s.Index < index);
+                var prevs = new List<(List<IChartValue> Values, int Index)>();
+                for (var j = 0; j < tuples.Count; j++)
+                {
+                    if (j >= index)
+                        break;
+                    prevs.Add(tuples[j]);
+                }
+                //var prevs = tuples.Where(s => s.Index < index);
                 var sum = prevs.Sum(sr => sr.Values[0].CompositeValue.PlainValue);
                 y -= sum * units;
             }
@@ -1341,7 +1400,14 @@ namespace ag.WPF.Chart.Converters
             }
             else
             {
-                var prevs = tuples.Where(s => s.Index < index).ToList();
+                var prevs = new List<(List<IChartValue> Values, int Index)>();
+                for (var j = 0; j < tuples.Count; j++)
+                {
+                    if (j >= index)
+                        break;
+                    prevs.Add(tuples[j]);
+                }
+                //var prevs = tuples.Where(s => s.Index < index).ToList();
                 for (var i = values.Count - 1; i >= 0; i--)
                 {
                     y = centerY;
@@ -1382,16 +1448,17 @@ namespace ag.WPF.Chart.Converters
         }
 
         private PathGeometry drawStackedLine(double width, double height, double maxX, double units, ChartStyle style,
-            Directions dir, ISeries[] series, int index, List<(List<IChartValue> Values, int Index)> tuples, bool offsetBoundary, double boundOffset, ShapeStyle shapeStyle)
+            Directions dir, ISeries[] series, int index, int realIndex, List<(List<IChartValue> Values, int Index)> tuples, bool offsetBoundary, double boundOffset, ShapeStyle shapeStyle)
         {
-            var tp = tuples.FirstOrDefault(t => t.Index == index);
+            var tp = tuples.FirstOrDefault(t => t.Index == realIndex);
             if (tp == default) return null;
             var values = tp.Values;
             double stepX;
             double centerX, centerY;
             var gm = new PathGeometry();
-            var currentSeries = series.FirstOrDefault(s => s.Index == index);
-            if (currentSeries == null) return null;
+            if (series.Length < index + 1)
+                return null;
+            var currentSeries = series[index];
 
             var delimeter = maxX > 1 ? maxX - 1 : 1;
 
@@ -1435,7 +1502,14 @@ namespace ag.WPF.Chart.Converters
                 var y = centerY - values[i].CompositeValue.PlainValue * units;
                 if (index > 0)
                 {
-                    var prevs = tuples.Where(s => s.Index < index);
+                    var prevs = new List<(List<IChartValue> Values, int Index)>();
+                    for (var j = 0; j < tuples.Count; j++)
+                    {
+                        if (j >= index)
+                            break;
+                        prevs.Add(tuples[j]);
+                    }
+                    //var prevs = tuples.Where(s => s.Index < realIndex);
                     var sum = prevs.Sum(sr => sr.Values[i].CompositeValue.PlainValue);
                     y -= sum * units;
                 }

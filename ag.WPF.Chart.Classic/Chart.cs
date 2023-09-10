@@ -585,6 +585,11 @@ namespace ag.WPF.Chart
 
         #region Misc properties
         /// <summary>
+        /// The identifier of the <see cref="AllowSeriesHide"/> dependency property.
+        /// </summary>
+        public static readonly DependencyProperty AllowSeriesHideProperty = DependencyProperty.Register(nameof(AllowSeriesHide), typeof(bool), typeof(Chart),
+            new FrameworkPropertyMetadata(false, OnAllowSeriesHideChanged, CoerceAllowSeriesHide));
+        /// <summary>
         /// The identifier of the <see cref="MarkerShape"/> dependency property.
         /// </summary>
         public static readonly DependencyProperty MarkerShapeProperty = DependencyProperty.Register(nameof(MarkerShape), typeof(ShapeStyle), typeof(Chart),
@@ -1025,6 +1030,7 @@ namespace ag.WPF.Chart
             legendVisibilityBinding.NotifyOnSourceUpdated = true;
             legend.SetBinding(VisibilityProperty, legendVisibilityBinding);
             legend.SetBinding(Legend.TextProperty, new Binding(nameof(ISeries.Name)) { Source = series });
+            legend.SetBinding(Legend.IsCheckedProperty, new Binding(nameof(ISeries.IsVisible)) { Source = series, Mode = BindingMode.TwoWay, UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged });
             legend.MouseLeftButtonDown += Legend_MouseLeftButtonDown;
             LegendsCollection.Add(legend);
             #endregion
@@ -1051,7 +1057,8 @@ namespace ag.WPF.Chart
                 Source = this
             });
             legend.SetBinding(VisibilityProperty, legendVisibilityBinding);
-            legend.SetBinding(Legend.TextProperty, new Binding("LegendsWaterfall[0]") { Source = this });
+            if (series is PlainSeries)
+                legend.SetBinding(Legend.TextProperty, new Binding("LegendsWaterfall[0]") { Source = this });
             legend.MouseLeftButtonDown += Legend_MouseLeftButtonDown;
             LegendsCollection.Add(legend);
             #endregion
@@ -1518,6 +1525,17 @@ namespace ag.WPF.Chart
         #endregion
 
         #region Dependency properties wrappers
+        /// <summary>
+        /// Specifies whether chrat series can be hidden.
+        /// </summary>
+        /// <remarks>This property is affected only PlainSeries.</remarks>
+        [Category("ChartAppearance"), Description("Specifies whether check box allows to hide/show series is shown next to series legend")]
+        public bool AllowSeriesHide
+        {
+            get => (bool)GetValue(AllowSeriesHideProperty);
+            set => SetValue(AllowSeriesHideProperty, value);
+        }
+
         /// <summary>
         /// Gets or sets the collection of custom legend text when <see cref="ChartStyle"/> is set to <see cref="ChartStyle.OpenHighLowClose"/>.
         /// </summary>
@@ -2081,6 +2099,15 @@ namespace ag.WPF.Chart
         #endregion
 
         #region Callbacks
+        private static object CoerceAllowSeriesHide(DependencyObject d, object value)
+        {
+            if (d is not Chart chart) return false;
+            var actualSeries = chart.getActualSeries();
+            if (actualSeries == null) return false;
+            if (!actualSeries.All(s => s is PlainSeries)) 
+                return false;
+            return value;
+        }
         private static object CoerceLegendsWaterfall(DependencyObject d, object value)
         {
             if (value is not IEnumerable<string> legends)
@@ -2533,6 +2560,24 @@ namespace ag.WPF.Chart
             RaiseEvent(e);
         }
 
+        private static void OnAllowSeriesHideChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
+        {
+            if (sender is not Chart ch) return;
+            ch.OnAllowSeriesHideChanged((bool)e.OldValue, (bool)e.NewValue);
+        }
+        /// <summary>
+        /// Invoked just before the <see cref="AllowSeriesHideChangedEvent"/> event is raised on control
+        /// </summary>
+        /// <param name="oldValue">Old value</param>
+        /// <param name="newValue">New value</param>
+        protected void OnAllowSeriesHideChanged(bool oldValue, bool newValue)
+        {
+            var e = new RoutedPropertyChangedEventArgs<bool>(oldValue, newValue)
+            {
+                RoutedEvent = AllowSeriesHideChangedEvent
+            };
+            RaiseEvent(e);
+        }
         private static void OnLegendAlignmentChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
             if (sender is not Chart ch) return;
@@ -3291,6 +3336,20 @@ namespace ag.WPF.Chart
         /// Identifies the <see cref="ShowValuesOnBarsAndColumnsChanged"/> routed event
         /// </summary>
         public static readonly RoutedEvent ShowValuesOnBarsAndColumnsChangedEvent = EventManager.RegisterRoutedEvent("ShowValuesOnBarsAndColumnsChanged",
+            RoutingStrategy.Bubble, typeof(RoutedPropertyChangedEventHandler<bool>), typeof(Chart));
+
+        /// <summary>
+        /// Occurs when the <see cref="AllowSeriesHide"/> property has been changed in some way
+        /// </summary>
+        public event RoutedPropertyChangedEventHandler<bool> AllowSeriesHideChanged
+        {
+            add { AddHandler(AllowSeriesHideChangedEvent, value); }
+            remove { RemoveHandler(AllowSeriesHideChangedEvent, value); }
+        }
+        /// <summary>
+        /// Identifies the <see cref="AllowSeriesHideChanged"/> routed event
+        /// </summary>
+        public static readonly RoutedEvent AllowSeriesHideChangedEvent = EventManager.RegisterRoutedEvent("AllowSeriesHideChanged",
             RoutingStrategy.Bubble, typeof(RoutedPropertyChangedEventHandler<bool>), typeof(Chart));
 
         /// <summary>

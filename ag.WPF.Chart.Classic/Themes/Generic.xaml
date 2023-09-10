@@ -701,8 +701,9 @@
                                     Height="{Binding LegendSize, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=chart:Chart}, Converter={StaticResource LegendSizeConverter}}" >
                                 <Path Fill="{TemplateBinding LegendBackground}" Stretch="Fill" Data="{Binding LegendShape, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=chart:Chart}, Converter={StaticResource StarDrawingConverter}}"/>
                             </Border>
-                            <!--Text block has FlowDirection explicitly set to LeftToRight in order to preserve correct string order when parent FlowDirection is set to RightToLeft-->
-                            <TextBlock x:Name="LegendText" 
+                            <StackPanel x:Name="textStack" Orientation="Horizontal">
+                                <!--Text block has FlowDirection explicitly set to LeftToRight in order to preserve correct string order when parent FlowDirection is set to RightToLeft-->
+                                <TextBlock x:Name="LegendText" 
                                        FlowDirection="LeftToRight"
                                        Text="{TemplateBinding Text}" 
                                        FontFamily="{Binding LegendFontFamily, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=chart:Chart}}"
@@ -711,18 +712,30 @@
                                        FontSize="{Binding LegendFontSize, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=chart:Chart}}"
                                        VerticalAlignment="Center"
                                        Margin="2"/>
+                                <CheckBox x:Name="SeriesVisibility"
+                                          IsChecked="{Binding IsChecked, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=chart:Legend}}"
+                                          Visibility="Collapsed"
+                                          Margin="2"/>
+                            </StackPanel>
                         </StackPanel>
                     </Border>
                     <ControlTemplate.Triggers>
                         <DataTrigger Binding="{Binding LegendAlignment, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=chart:Chart}}" Value="Left">
                             <Setter Property="HorizontalAlignment" TargetName="star" Value="Center"/>
                             <Setter Property="HorizontalAlignment" TargetName="LegendText" Value="Center"/>
+                            <Setter Property="HorizontalAlignment" TargetName="SeriesVisibility" Value="Center"/>
                             <Setter Property="Orientation" TargetName="stack" Value="Vertical"/>
+                            <Setter Property="Orientation" TargetName="textStack" Value="Vertical"/>
                         </DataTrigger>
                         <DataTrigger Binding="{Binding LegendAlignment, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=chart:Chart}}" Value="Right">
                             <Setter Property="HorizontalAlignment" TargetName="star" Value="Center"/>
                             <Setter Property="HorizontalAlignment" TargetName="LegendText" Value="Center"/>
+                            <Setter Property="HorizontalAlignment" TargetName="SeriesVisibility" Value="Center"/>
                             <Setter Property="Orientation" TargetName="stack" Value="Vertical"/>
+                            <Setter Property="Orientation" TargetName="textStack" Value="Vertical"/>
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding AllowSeriesHide, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=chart:Chart}}" Value="True">
+                            <Setter Property="Visibility" TargetName="SeriesVisibility" Value="Visible"/>
                         </DataTrigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
