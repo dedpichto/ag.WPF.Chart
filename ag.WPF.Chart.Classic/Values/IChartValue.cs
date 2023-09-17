@@ -1,9 +1,11 @@
-﻿namespace ag.WPF.Chart.Values
+﻿using System.ComponentModel;
+
+namespace ag.WPF.Chart.Values
 {
     /// <summary>
     /// Represents IChartValue interface
     /// </summary>
-    public interface IChartValue
+    public interface IChartValue : INotifyPropertyChanged
     {
         /// <summary>
         /// Gets or sets custom value to be displayed as chart point tooltip
@@ -18,5 +20,9 @@
         /// </summary>
         /// <returns>A copy of current <see cref="IChartValue"/> object</returns>
         IChartValue Clone();
+        /// <summary>
+        /// Gets or sets value visibility.
+        /// </summary>
+        bool IsVisible { get; set; }
     }
 }

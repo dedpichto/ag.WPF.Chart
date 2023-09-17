@@ -1,4 +1,5 @@
 ﻿using ag.WPF.Chart.Series;
+using ag.WPF.Chart.Values;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -59,7 +60,8 @@ namespace ag.WPF.Chart.Converters
             var brushIndex = 0;
             var radius = width > height ? (height - 2 * Utils.AXIS_THICKNESS) / 2 : (width - 2 * Utils.AXIS_THICKNESS) / 2;
             var series = seriesArray.First();
-            var pts = series.Values.ToArray();
+            var realPoints = series.Values.ToArray();
+            var pts = series.Values.Where(v=>v.IsVisible).ToArray();
             var sum = pts.Sum(p => Math.Abs(p.CompositeValue.PlainValue));
             var currentDegrees = 90.0;
             var startPoint = new Point(radius, radius);
@@ -71,6 +73,15 @@ namespace ag.WPF.Chart.Converters
             if (format.EndsWith("%")) format = format.Substring(0, format.Length - 1);
             if (pts.Length == 1)
             {
+                for(var i = 0; i < realPoints.Length; i++)
+                {
+                    if (realPoints[i].IsVisible)
+                    {
+                        brushIndex = i;
+                        break;
+                    }
+                }
+                if (brushIndex == Statics.PredefinedMainBrushes.Length) brushIndex = 0;
                 var sectorData = $"{pts[0].CompositeValue.PlainValue} ({100.ToString(format, culture)}%)";
                 if (!string.IsNullOrEmpty(pts[0].CustomValue))
                     sectorData += $"\n{pts[0].CustomValue}";
@@ -96,8 +107,14 @@ namespace ag.WPF.Chart.Converters
             }
 
             var lines = new List<LineGeometry>();
-            foreach (var pt in pts)
+            foreach (var pt in realPoints)
             {
+                if (brushIndex == Statics.PredefinedMainBrushes.Length) brushIndex = 0;
+                if(!pt.IsVisible)
+                {
+                    brushIndex++;
+                    continue;
+                }
                 var addition = Math.Abs(pt.CompositeValue.PlainValue) / (sum != 0 ? sum : 1) * 360.0;
                 if (currentDegrees <= 90.0 && currentDegrees > 0)
                 {
@@ -119,7 +136,6 @@ namespace ag.WPF.Chart.Converters
                     currentDegrees -= addition;
                 }
 
-                if (brushIndex == Statics.PredefinedMainBrushes.Length) brushIndex = 0;
                 var gmDrawing = new GeometryDrawing
                 {
                     Brush = Statics.PredefinedMainBrushes[brushIndex].Brush,

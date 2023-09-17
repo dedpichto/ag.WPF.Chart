@@ -1,4 +1,6 @@
-﻿using System.Windows;
+﻿using System.ComponentModel;
+using System.Runtime.CompilerServices;
+using System.Windows;
 
 namespace ag.WPF.Chart.Values
 {
@@ -8,6 +10,8 @@ namespace ag.WPF.Chart.Values
     public abstract class ChartValue : DependencyObject, IChartValue
     {
 #nullable disable
+        private bool _isVisible = true;
+
         #region Dependency properties
         /// <summary>
         /// The identifier of the <see cref="CompositeValue"/> dependency property.
@@ -26,6 +30,25 @@ namespace ag.WPF.Chart.Values
         public string CustomValue { get; set; }
         /// <inheritdoc />
         public abstract IChartValue Clone();
+        /// <inheritdoc />
+        public bool IsVisible
+        {
+            get => _isVisible;
+            set
+            {
+                if (_isVisible == value) return; _isVisible = value;
+                OnPropertyChanged();
+            }
+        }
+        #endregion
+
+        #region INotifyPropertyChanged members
+        /// <summary>
+        /// Raises the PropertyChanged event when the property value has changed
+        /// </summary>
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        private void OnPropertyChanged([CallerMemberName] string propertyName = null) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         #endregion
 #nullable restore
     }

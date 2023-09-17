@@ -31,7 +31,7 @@
     <conv:AxesYLinesConverter x:Key="AxesYLinesConverter"/>
     <conv:LegendPieVisibilityConverter x:Key="LegendPieVisibilityConverter"/>
     <conv:StarDrawingConverter x:Key="StarDrawingConverter"/>
-
+    
     <Style TargetType="{x:Type chart:Chart}">
         <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.WindowTextBrushKey}}"/>
         <Setter Property="Background" Value="{DynamicResource {x:Static SystemColors.WindowBrushKey}}"/>
@@ -720,6 +720,10 @@
                         </StackPanel>
                     </Border>
                     <ControlTemplate.Triggers>
+                        <Trigger Property="IsChecked" Value="False">
+                            <Setter Property="Opacity" TargetName="LegendText" Value="0.3"/>
+                            <Setter Property="Opacity" TargetName="star" Value="0.3"/>
+                        </Trigger>
                         <DataTrigger Binding="{Binding LegendAlignment, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=chart:Chart}}" Value="Left">
                             <Setter Property="HorizontalAlignment" TargetName="star" Value="Center"/>
                             <Setter Property="HorizontalAlignment" TargetName="LegendText" Value="Center"/>

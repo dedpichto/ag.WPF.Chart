@@ -28,6 +28,7 @@ namespace ag.WPF.Chart.Converters
                 || values[1] is not string format
                 || parameter is not IChartValue chartValue)
                 return null;
+            chartValues = chartValues.Where(v => v.IsVisible);
             var sum = chartValues.Sum(p => Math.Abs(p.CompositeValue.PlainValue));
             if (format.EndsWith("%")) format = format.Substring(0, format.Length - 1);
             var perc = Math.Abs(chartValue.CompositeValue.PlainValue) / (sum != 0 ? sum : 1) * 100;

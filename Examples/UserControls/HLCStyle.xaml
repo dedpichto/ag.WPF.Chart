@@ -65,7 +65,7 @@
                     <xctk:PropertyDefinition TargetProperties="LegendFontFamily" />
                     <xctk:PropertyDefinition TargetProperties="LegendFontStyle" />
                     <xctk:PropertyDefinition TargetProperties="LegendFontWeight" />
-
+                    <xctk:PropertyDefinition TargetProperties="AllowSeriesHide" />
                 </xctk:PropertyGrid.PropertyDefinitions>
             </xctk:PropertyGrid>
         </ScrollViewer>

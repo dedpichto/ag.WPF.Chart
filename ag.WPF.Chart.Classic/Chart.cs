@@ -832,7 +832,20 @@ namespace ag.WPF.Chart
                         }
                         rebuildPieLegends(series.Values, series);
                     }
-
+                    else if (ChartStyle.In(ChartStyle.SolidPie, ChartStyle.SlicedPie, ChartStyle.Doughnut))
+                    {
+                        var pieSeries = getActualSeries().FirstOrDefault();
+                        if (pieSeries != null)
+                        {
+                            foreach (var p in pieSeries.Paths)
+                            {
+                                if (p == null) continue;
+                                var b = BindingOperations.GetMultiBindingExpression(p, Path.DataProperty);
+                                b?.UpdateTarget();
+                            }
+                            rebuildPieLegends(pieSeries.Values, pieSeries);
+                        }
+                    }
                     updateBindings();
                     break;
             }
@@ -1030,7 +1043,8 @@ namespace ag.WPF.Chart
             legendVisibilityBinding.NotifyOnSourceUpdated = true;
             legend.SetBinding(VisibilityProperty, legendVisibilityBinding);
             legend.SetBinding(Legend.TextProperty, new Binding(nameof(ISeries.Name)) { Source = series });
-            legend.SetBinding(Legend.IsCheckedProperty, new Binding(nameof(ISeries.IsVisible)) { Source = series, Mode = BindingMode.TwoWay, UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged });
+            if (!ChartStyle.In(ChartStyle.SlicedPie, ChartStyle.Doughnut, ChartStyle.SlicedPie, ChartStyle.Funnel))
+                legend.SetBinding(Legend.IsCheckedProperty, new Binding(nameof(ISeries.IsVisible)) { Source = series, Mode = BindingMode.TwoWay, UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged });
             legend.MouseLeftButtonDown += Legend_MouseLeftButtonDown;
             LegendsCollection.Add(legend);
             #endregion
@@ -1436,7 +1450,7 @@ namespace ag.WPF.Chart
             path.MouseMove += Path_MouseMove;
 
             //apply visibility binding only on PlainSeries
-            if (series is PlainSeries)
+            if (series is PlainSeries && !ChartStyle.In(ChartStyle.SlicedPie, ChartStyle.Doughnut, ChartStyle.SlicedPie, ChartStyle.Funnel))
                 path.SetBinding(VisibilityProperty, new Binding(nameof(IsVisible)) { Converter = new SeriesVisibilityConverter(), Source = series, NotifyOnSourceUpdated = true, UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged });
 
             path.SetValue(Statics.AddedToCanvasProperty, true);
@@ -1500,25 +1514,40 @@ namespace ag.WPF.Chart
         {
             if (series.Index > 0) return;
             for (var i = PieLegendsCollection.Count - 1; i >= 0; i--)
-                PieLegendsCollection[i].MouseLeftButtonDown += Legend_MouseLeftButtonDown;
+            {
+                PieLegendsCollection[i].MouseLeftButtonDown -= Legend_MouseLeftButtonDown;
+            }
             PieLegendsCollection.Clear();
-            var valuesArray = values.ToArray();
+
+            var valuesArray = series.Values.ToArray();
             for (int i = 0, brushIndex = 0; i < valuesArray.Length; i++)
             {
+                Brush brush = null;
                 var v = valuesArray[i];
-                if (brushIndex == PredefinedMainBrushes.Length) brushIndex = 0;
+                v.PropertyChanged -= Series_PropertyChanged;
+                if (brushIndex == Statics.PredefinedMainBrushes.Length) brushIndex = 0;
+                brush = PredefinedMainBrushes[brushIndex++].Brush;
                 var legend = new Legend
                 {
-                    LegendBackground = PredefinedMainBrushes[brushIndex++].Brush
+                    LegendBackground = brush
                 };
 
-                legend.MouseLeftButtonDown += Legend_MouseLeftButtonDown;
+                if (v.IsVisible)
+                {
+                    var textBinding = new MultiBinding { Converter = new PieSectionTextConverter(), ConverterParameter = v };
+                    textBinding.Bindings.Add(new Binding(nameof(ISeries.Values)) { Source = series });
+                    textBinding.Bindings.Add(new Binding(nameof(PiePercentsFormat)) { Source = this });
+                    legend.SetBinding(Legend.TextProperty, textBinding);
 
-                var textBinding = new MultiBinding { Converter = new PieSectionTextConverter(), ConverterParameter = v };
-                textBinding.Bindings.Add(new Binding(nameof(ISeries.Values)) { Source = series });
-                textBinding.Bindings.Add(new Binding(nameof(PiePercentsFormat)) { Source = this });
-                legend.SetBinding(Legend.TextProperty, textBinding);
-                legend.MouseLeftButtonDown += Legend_MouseLeftButtonDown;
+                    legend.MouseLeftButtonDown += Legend_MouseLeftButtonDown;
+                }
+                else
+                {
+                    legend.Text = v.CustomValue;
+                }
+                legend.SetBinding(Legend.IsCheckedProperty, new Binding(nameof(v.IsVisible)) { Source = v, Mode = BindingMode.TwoWay, UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged });
+
+                v.PropertyChanged += Series_PropertyChanged;
                 PieLegendsCollection.Add(legend);
             }
         }
@@ -2104,7 +2133,7 @@ namespace ag.WPF.Chart
             if (d is not Chart chart) return false;
             var actualSeries = chart.getActualSeries();
             if (actualSeries == null) return false;
-            if (!actualSeries.All(s => s is PlainSeries)) 
+            if (!actualSeries.All(s => s is PlainSeries) || chart.ChartStyle == ChartStyle.Waterfall)
                 return false;
             return value;
         }
