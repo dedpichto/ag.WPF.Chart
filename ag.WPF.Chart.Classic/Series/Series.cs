@@ -114,7 +114,7 @@ namespace ag.WPF.Chart.Series
         /// <inheritdoc />
         public List<Point> RealPoints { get; } = new List<Point>();
         /// <inheritdoc />
-        public Path[] Paths { get; } = new Path[9];
+        public Path[] Paths { get; } = new Path[3];
         /// <inheritdoc />
         public bool IsVisible
         {
@@ -134,8 +134,7 @@ namespace ag.WPF.Chart.Series
             {
                 if (p == null) continue;
                 var binding = BindingOperations.GetMultiBindingExpression(p, Path.DataProperty);
-                if (binding != null)
-                    binding.UpdateTarget();
+                binding?.UpdateTarget();
             }
             OnPropertyChanged(nameof(Values));
         }
@@ -177,47 +176,6 @@ namespace ag.WPF.Chart.Series
                     ToolTip = new ToolTip { Placement = PlacementMode.Mouse }
                 };
             }
-            //Path = new Path
-            //{
-            //    StrokeThickness = 2,
-            //    StrokeLineJoin = PenLineJoin.Round,
-            //    StrokeEndLineCap = PenLineCap.Round,
-            //    StrokeStartLineCap = PenLineCap.Round,
-            //    StrokeDashCap = PenLineCap.Round,
-            //    Tag = this,
-            //    ToolTip = new ToolTip { Placement = PlacementMode.Mouse }
-            //};
-            //PositivePath = new Path
-            //{
-            //    StrokeThickness = 2,
-            //    StrokeLineJoin = PenLineJoin.Miter,
-            //    StrokeEndLineCap = PenLineCap.Flat,
-            //    StrokeStartLineCap = PenLineCap.Flat,
-            //    StrokeDashCap = PenLineCap.Flat,
-            //    Tag = this,
-            //    ToolTip = new ToolTip { Placement = PlacementMode.Mouse }
-            //};
-            //NegativePath = new Path
-            //{
-            //    StrokeThickness = 2,
-            //    StrokeLineJoin = PenLineJoin.Miter,
-            //    StrokeEndLineCap = PenLineCap.Flat,
-            //    StrokeStartLineCap = PenLineCap.Flat,
-            //    StrokeDashCap = PenLineCap.Flat,
-            //    Tag = this,
-            //    ToolTip = new ToolTip { Placement = PlacementMode.Mouse }
-            //};
-            //StockPath = new Path
-            //{
-            //    StrokeThickness = 2,
-            //    StrokeLineJoin = PenLineJoin.Miter,
-            //    StrokeEndLineCap = PenLineCap.Flat,
-            //    StrokeStartLineCap = PenLineCap.Flat,
-            //    StrokeDashCap = PenLineCap.Flat,
-            //    Tag = this,
-            //    ToolTip = new ToolTip { Placement = PlacementMode.Mouse }
-            //};
-            //_values.Path = Path;
         }
         #endregion
 

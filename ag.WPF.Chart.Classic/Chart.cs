@@ -342,19 +342,19 @@ namespace ag.WPF.Chart
     /// </para>
     ///</remarks>
     #region Named parts
-    [TemplatePart(Name = ElementCanvas, Type = typeof(Canvas))]
-    [TemplatePart(Name = ElementPieImage, Type = typeof(Image))]
-    [TemplatePart(Name = ElementVPlaceholder, Type = typeof(Border))]
-    [TemplatePart(Name = ElementPathYAxisValues, Type = typeof(Path))]
-    [TemplatePart(Name = ElementHPlaceholder, Type = typeof(Border))]
-    [TemplatePart(Name = ElementPathXAxisValues, Type = typeof(Path))]
-    [TemplatePart(Name = ElementPathRadarValues, Type = typeof(Path))]
-    [TemplatePart(Name = ElementPathRadarLines, Type = typeof(Path))]
-    [TemplatePart(Name = ElementPathXAxesLines, Type = typeof(Path))]
-    [TemplatePart(Name = ElementPathYAxesLines, Type = typeof(Path))]
-    [TemplatePart(Name = ElementPathTicks, Type = typeof(Path))]
-    [TemplatePart(Name = ElementPathHorzLines, Type = typeof(Path))]
-    [TemplatePart(Name = ElementPathVertLines, Type = typeof(Path))]
+    [TemplatePart(Name = _elementCanvas, Type = typeof(Canvas))]
+    [TemplatePart(Name = _elementPieImage, Type = typeof(Image))]
+    [TemplatePart(Name = _elementVPlaceholder, Type = typeof(Border))]
+    [TemplatePart(Name = _elementPathYAxisValues, Type = typeof(Path))]
+    [TemplatePart(Name = _elementHPlaceholder, Type = typeof(Border))]
+    [TemplatePart(Name = _elementPathXAxisValues, Type = typeof(Path))]
+    [TemplatePart(Name = _elementPathRadarValues, Type = typeof(Path))]
+    [TemplatePart(Name = _elementPathRadarLines, Type = typeof(Path))]
+    [TemplatePart(Name = _elementPathXAxesLines, Type = typeof(Path))]
+    [TemplatePart(Name = _elementPathYAxesLines, Type = typeof(Path))]
+    [TemplatePart(Name = _elementPathTicks, Type = typeof(Path))]
+    [TemplatePart(Name = _elementPathHorzLines, Type = typeof(Path))]
+    [TemplatePart(Name = _elementPathVertLines, Type = typeof(Path))]
 
     #endregion
     public class Chart : Control, INotifyPropertyChanged
@@ -391,19 +391,19 @@ namespace ag.WPF.Chart
         private ChartItemsCollection<ISeries> _seriesItems;
 
         #region Constants
-        private const string ElementCanvas = "PART_Canvas";
-        private const string ElementPieImage = "PART_PieImage";
-        private const string ElementVPlaceholder = "PART_VPlaceHolder";
-        private const string ElementPathYAxisValues = "PART_PathYAxisValues";
-        private const string ElementHPlaceholder = "PART_HPlaceHolder";
-        private const string ElementPathXAxisValues = "PART_PathXAxisValues";
-        private const string ElementPathRadarValues = "PART_PathRadarValues";
-        private const string ElementPathRadarLines = "PART_PathRadarLines";
-        private const string ElementPathXAxesLines = "PART_PathXAxesLines";
-        private const string ElementPathYAxesLines = "PART_PathYAxesLines";
-        private const string ElementPathTicks = "PART_PathTicks";
-        private const string ElementPathHorzLines = "PART_PathHorzLines";
-        private const string ElementPathVertLines = "PART_PathVertLines";
+        private const string _elementCanvas = "PART_Canvas";
+        private const string _elementPieImage = "PART_PieImage";
+        private const string _elementVPlaceholder = "PART_VPlaceHolder";
+        private const string _elementPathYAxisValues = "PART_PathYAxisValues";
+        private const string _elementHPlaceholder = "PART_HPlaceHolder";
+        private const string _elementPathXAxisValues = "PART_PathXAxisValues";
+        private const string _elementPathRadarValues = "PART_PathRadarValues";
+        private const string _elementPathRadarLines = "PART_PathRadarLines";
+        private const string _elementPathXAxesLines = "PART_PathXAxesLines";
+        private const string _elementPathYAxesLines = "PART_PathYAxesLines";
+        private const string _elementPathTicks = "PART_PathTicks";
+        private const string _elementPathHorzLines = "PART_PathHorzLines";
+        private const string _elementPathVertLines = "PART_PathVertLines";
 
         #endregion
 
@@ -691,23 +691,23 @@ namespace ag.WPF.Chart
         public override void OnApplyTemplate()
         {
             base.OnApplyTemplate();
-            _borderVPlaceholder = GetTemplateChild(ElementVPlaceholder) as Border;
-            _pathYAxisValues = GetTemplateChild(ElementPathYAxisValues) as Path;
-            _borderHPlaceholder = GetTemplateChild(ElementHPlaceholder) as Border;
-            _pathXAxisValues = GetTemplateChild(ElementPathXAxisValues) as Path;
-            _pathRadarValues = GetTemplateChild(ElementPathRadarValues) as Path;
-            _pathRadarLines = GetTemplateChild(ElementPathRadarLines) as Path;
-            _pathXAxesLines = GetTemplateChild(ElementPathXAxesLines) as Path;
-            _pathYAxesLines = GetTemplateChild(ElementPathYAxesLines) as Path;
-            _pathTicks = GetTemplateChild(ElementPathTicks) as Path;
-            _pathHorzLines = GetTemplateChild(ElementPathHorzLines) as Path;
-            _pathVertLines = GetTemplateChild(ElementPathVertLines) as Path;
+            _borderVPlaceholder = GetTemplateChild(_elementVPlaceholder) as Border;
+            _pathYAxisValues = GetTemplateChild(_elementPathYAxisValues) as Path;
+            _borderHPlaceholder = GetTemplateChild(_elementHPlaceholder) as Border;
+            _pathXAxisValues = GetTemplateChild(_elementPathXAxisValues) as Path;
+            _pathRadarValues = GetTemplateChild(_elementPathRadarValues) as Path;
+            _pathRadarLines = GetTemplateChild(_elementPathRadarLines) as Path;
+            _pathXAxesLines = GetTemplateChild(_elementPathXAxesLines) as Path;
+            _pathYAxesLines = GetTemplateChild(_elementPathYAxesLines) as Path;
+            _pathTicks = GetTemplateChild(_elementPathTicks) as Path;
+            _pathHorzLines = GetTemplateChild(_elementPathHorzLines) as Path;
+            _pathVertLines = GetTemplateChild(_elementPathVertLines) as Path;
 
             if (_canvas != null)
             {
                 _canvas.Loaded -= Canvas_Loaded;
             }
-            _canvas = GetTemplateChild(ElementCanvas) as Canvas;
+            _canvas = GetTemplateChild(_elementCanvas) as Canvas;
             if (_canvas != null)
             {
                 _canvas.Loaded += Canvas_Loaded;
@@ -717,7 +717,7 @@ namespace ag.WPF.Chart
             {
                 _pieImage.MouseMove -= PieImage_MouseMove;
             }
-            _pieImage = GetTemplateChild(ElementPieImage) as Image;
+            _pieImage = GetTemplateChild(_elementPieImage) as Image;
             if (_pieImage != null)
             {
                 _pieImage.MouseMove += PieImage_MouseMove;
@@ -830,7 +830,7 @@ namespace ag.WPF.Chart
                                 b?.UpdateTarget();
                             }
                         }
-                        rebuildPieLegends(series.Values, series);
+                        rebuildPieLegends(series);
                     }
                     else if (ChartStyle.In(ChartStyle.SolidPie, ChartStyle.SlicedPie, ChartStyle.Doughnut))
                     {
@@ -843,7 +843,7 @@ namespace ag.WPF.Chart
                                 var b = BindingOperations.GetMultiBindingExpression(p, Path.DataProperty);
                                 b?.UpdateTarget();
                             }
-                            rebuildPieLegends(pieSeries.Values, pieSeries);
+                            rebuildPieLegends(pieSeries);
                         }
                     }
                     updateBindings();
@@ -1006,10 +1006,9 @@ namespace ag.WPF.Chart
                     {
                         if (p == null) continue;
                         var binding = BindingOperations.GetMultiBindingExpression(p, Path.DataProperty);
-                        if (binding != null)
-                            binding.UpdateTarget();
+                        binding?.UpdateTarget();
                     }
-                    rebuildPieLegends(sr.Values, sr);
+                    rebuildPieLegends(sr);
                 }
             }
 
@@ -1172,7 +1171,7 @@ namespace ag.WPF.Chart
                 #endregion
             }
 
-            rebuildPieLegends(series.Values, series);
+            rebuildPieLegends(series);
 
             // if canvas is null, so are all other elements
             if (_canvas == null)
@@ -1221,10 +1220,9 @@ namespace ag.WPF.Chart
                     {
                         if (p == null) continue;
                         var binding = BindingOperations.GetMultiBindingExpression(p, Path.DataProperty);
-                        if (binding != null)
-                            binding.UpdateTarget();
+                        binding?.UpdateTarget();
                     }
-                    rebuildPieLegends(sr.Values, sr);
+                    rebuildPieLegends(sr);
                 }
             }
 
@@ -1312,8 +1310,8 @@ namespace ag.WPF.Chart
             }
             #region Path data
             var ptsBinding = new MultiBinding { Converter = new ValuesToPathConverter() };
-            ptsBinding.Bindings.Add(new Binding("ActualWidth") { ElementName = ElementCanvas });
-            ptsBinding.Bindings.Add(new Binding("ActualHeight") { ElementName = ElementCanvas });
+            ptsBinding.Bindings.Add(new Binding("ActualWidth") { ElementName = _elementCanvas });
+            ptsBinding.Bindings.Add(new Binding("ActualHeight") { ElementName = _elementCanvas });
             ptsBinding.Bindings.Add(new Binding(nameof(SeriesSource))
             {
                 Source = this
@@ -1510,7 +1508,7 @@ namespace ag.WPF.Chart
             }
         }
 
-        private void rebuildPieLegends(IEnumerable<IChartValue> values, ISeries series)
+        private void rebuildPieLegends(ISeries series)
         {
             if (series.Index > 0) return;
             for (var i = PieLegendsCollection.Count - 1; i >= 0; i--)
