@@ -244,6 +244,7 @@ Represents a custom control containing series, axes, legends and other hosted co
 
 Property|Type|Description|Category
 ------|-----|-----------|---------
+AllowSeriesHide|bool|Specifies whether chrat series can be hidden|ChartAppearance
 LegendsOpenHighLowClose|IEnumerable&lt;string&gt;|Gets or sets the collection of custom legend text when ChartStyle is set to OpenHighLowClose|ChartLegend
 LegendsHighLowClose|IEnumerable&lt;string&gt;|Gets or sets the collection of custom legend text when ChartStyle is set to HighLowClose|ChartLegend
 LegendsWaterfall|IEnumerable&lt;string&gt;|Gets or sets the collection of custom legend text when ChartStyle is set to Waterfall|ChartLegend
@@ -314,16 +315,17 @@ ValuesSource|IEnumerable&lt;IChartValue&gt;|Gets or sets the collection of IChar
 
 ### Properties
 
-Property|Type|Description
-------|-----|-----------
-Values|ChartItemsCollection&lt;IChartValue&gt;| Gets the collection of IChartValue objects associated with current series
-Index|int|Gets or sets series index
-Name|string|Gets or sets series name
-MainBrush|Brush|Gets or sets series background
-SecondaryBrush|Brush|Gets or sets series seconday background
-RealRects|List&lt;Rect&gt;|Gets real coordinates of series rectangles
-RealPoints|List&lt;Pointt&gt;|Gets real coordinates of series points
-Paths|Path[]|Gets array of series drawing paths
+Property|Type|Description|Remarks
+------|-----|-----------|-----------
+Values|ChartItemsCollection&lt;IChartValue&gt;| Gets the collection of IChartValue objects associated with current series|
+Index|int|Gets or sets series index|
+Name|string|Gets or sets series name|
+MainBrush|Brush|Gets or sets series background|
+SecondaryBrush|Brush|Gets or sets series seconday background|
+RealRects|List&lt;Rect&gt;|Gets real coordinates of series rectangles|
+RealPoints|List&lt;Pointt&gt;|Gets real coordinates of series points|
+Paths|Path[]|Gets array of series drawing paths|
+IsVisible|bool|Gets or sets series visibility|This property is affected only PlainSeries
 
 ## PlainSeries class
 
@@ -465,9 +467,10 @@ CustomValue|string|Gets or sets custom value to be displayed as chart point tool
 
 ### Methods
 
-Method|Return value|Description
-------|------------|-----------
-Clone|IChartValue|Creates copy of current IChartValue object
+Method|Return value|Description|Remarks
+------|------------|-----------|-----------
+Clone|IChartValue|Creates copy of current IChartValue object|
+IsVisible|bool|Gets or sets value visibility|This property is affected only SolidPie, SlicedPie, Doughnut styles
 
 ## PlainChartValue class
 

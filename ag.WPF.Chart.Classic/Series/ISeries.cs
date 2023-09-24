@@ -51,6 +51,7 @@ namespace ag.WPF.Chart.Series
         /// <summary>
         /// Gets or sets series visibility.
         /// </summary>
+        /// <remarks>This property is affected only PlainSeries.</remarks>
         bool IsVisible { get; set; }
     }
 }

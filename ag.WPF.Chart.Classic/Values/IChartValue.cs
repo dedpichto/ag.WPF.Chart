@@ -23,6 +23,7 @@ namespace ag.WPF.Chart.Values
         /// <summary>
         /// Gets or sets value visibility.
         /// </summary>
+        /// <remarks>This property is affected only <see cref="ChartStyle.SolidPie"/>,<see cref="ChartStyle.SlicedPie"/>,<see cref="ChartStyle.Doughnut"/> styles.</remarks>
         bool IsVisible { get; set; }
     }
 }
