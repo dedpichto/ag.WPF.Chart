@@ -820,15 +820,11 @@ namespace ag.WPF.Chart
                 case "Values":
                     if (sender is ISeries series)
                     {
-                        var actualSeries = getActualSeries();
-                        foreach (var sr in actualSeries.Where(s => s.Index != series.Index))
+                        foreach (var p in series.Paths)
                         {
-                            foreach (var p in sr.Paths)
-                            {
-                                if (p == null) continue;
-                                var b = BindingOperations.GetMultiBindingExpression(p, Path.DataProperty);
-                                b?.UpdateTarget();
-                            }
+                            if (p == null) continue;
+                            var b = BindingOperations.GetMultiBindingExpression(p, Path.DataProperty);
+                            b?.UpdateTarget();
                         }
                         rebuildPieLegends(series);
                     }
