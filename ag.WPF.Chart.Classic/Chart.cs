@@ -2127,7 +2127,7 @@ namespace ag.WPF.Chart
             if (d is not Chart chart) return false;
             var actualSeries = chart.getActualSeries();
             if (actualSeries == null) return false;
-            if (!actualSeries.All(s => s is PlainSeries) || chart.ChartStyle == ChartStyle.Waterfall)
+            if (!actualSeries.All(s => s is PlainSeries) || chart.ChartStyle.In(ChartStyle.Waterfall, ChartStyle.Funnel))
                 return false;
             return value;
         }
@@ -2155,6 +2155,7 @@ namespace ag.WPF.Chart
                 throw new ArgumentException("LegendsOpenHighLowClose must have at least two items", nameof(value));
             return value;
         }
+
         private static void OnSeriesSourceChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
             if (sender is not Chart chart) return;
@@ -2529,6 +2530,39 @@ namespace ag.WPF.Chart
         private static void OnChartStyleChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
             if (sender is not Chart ch) return;
+            if (ch.AllowSeriesHide)
+            {
+                var actualSeries = ch.getActualSeries();
+                if (actualSeries != null)
+                {
+                    if (!actualSeries.All(s => s is PlainSeries) || ((ChartStyle)e.NewValue).In(ChartStyle.Waterfall, ChartStyle.Funnel))
+                    {
+                        ch.AllowSeriesHide = false;
+                    }
+                }
+            }
+            else
+            {
+                var actualSeries = ch.getActualSeries();
+                if (actualSeries != null)
+                {
+                    if (actualSeries.All(s => s is PlainSeries) && !((ChartStyle)e.NewValue).In(ChartStyle.Waterfall, ChartStyle.Funnel))
+                    {
+                        if (((ChartStyle)e.NewValue).In(ChartStyle.SolidPie, ChartStyle.SlicedPie, ChartStyle.Doughnut))
+                        {
+                            var series = actualSeries.FirstOrDefault();
+                            if (series != null && series.Values.Any(v => !v.IsVisible))
+                            {
+                                ch.AllowSeriesHide = true;
+                            }
+                        }
+                        else if (actualSeries.Any(s => !s.IsVisible))
+                        {
+                            ch.AllowSeriesHide = true;
+                        }
+                    }
+                }
+            }
             ch.OnChartStyleChanged((ChartStyle)e.OldValue, (ChartStyle)e.NewValue);
         }
         /// <summary>
