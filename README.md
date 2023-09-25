@@ -4,7 +4,7 @@
 
 ## A custom WPF control, containing series, axes, legends, and other hosted content
 
-| <img src="https://am3pap005files.storage.live.com/y4mRpL4FHZcnYnnhp6K9XK_OtiaqY-2nK8RRDT0U3nw2_2NH-1RPF1qscOpxtKuNOuCl4fHFkNs_53vhDw2qkrxximIddK8MPzFADUtlbhbqsC31AfgLEkm_pPjSBCz23AS38QfRNBO7USC3jke4LuCsD8DZ9SnZv27vxf4ktMkT0rTkPo9MxMD2KHfSS_D2o-a?width=972&height=623&cropmode=none" style="zoom:50%;" /> | <img src="https://am3pap005files.storage.live.com/y4mAZbRE7gAwdbJ9mUH5iZ1fgzjxjvrypHOb3DzVGoTFJ4K3fg6vPGzb_6HFz3eK59PhIxVeo9LSZMy1GhnWcUiZc1GOSffJEhPw6jgkLNmBudCoXCoxb0AUEZm466MgNZ9NLWQYcAj4QIPPOMWgZFTts7Kv4SWQb0xeG8VxgU_ndXsO-GjhRBP48PGxWXVfDaO?width=972&height=623&cropmode=none" style="zoom:50%;" /> |
+| <img src="https://onedrive.live.com/embed?resid=85A56FFB53C19F6D%2114310&authkey=%21AO_R2P4zCXBFiW4&width=972&height=623&cropmode=none" style="zoom:50%;"/> | <img src="https://am3pap005files.storage.live.com/y4mAZbRE7gAwdbJ9mUH5iZ1fgzjxjvrypHOb3DzVGoTFJ4K3fg6vPGzb_6HFz3eK59PhIxVeo9LSZMy1GhnWcUiZc1GOSffJEhPw6jgkLNmBudCoXCoxb0AUEZm466MgNZ9NLWQYcAj4QIPPOMWgZFTts7Kv4SWQb0xeG8VxgU_ndXsO-GjhRBP48PGxWXVfDaO?width=972&height=623&cropmode=none" style="zoom:50%;" /> |
 | :----------------------------------------------------------: | :----------------------------------------------------------: |
 | <img src="https://am3pap005files.storage.live.com/y4m54k6vUNZPtzUJI02-BvpegKfxp-zHOh84oojJ_3ZgTbDP6ijKC4wgMYO_krfXbhO1DWMEUkssWjfqH4cYnJrBk3WVeocaRfyVFNrTuuVQohZlDgRIi6euSjuUNV4lBwJas-yNUS47Rg5Inzgr6hllSVeH-1au5VwTz_TMHhL4shMXdDTenqIV9p9K5gNqDO_?width=972&height=623&cropmode=none" style="zoom:50%;" /> | <img src="https://am3pap005files.storage.live.com/y4mFDD9m2tK3mMA6b6IEJeZOVh8IzDt_yi8YMt1w1YuVzccxW8KRad27pljtOy2UtvovuMERG-3qElfn5xtYLg4091apKdL1yBHSqQydFELjtB_m-2qBLd6CeCgxso68ZXkDjxOpw-7o6tSkzKqOOvzaUYeVYXIciMwyKJ7nzVWa3OkS3wGKTkC1ioBrmwVPAwj?width=972&height=623&cropmode=none" style="zoom:50%;" /> |
 
@@ -17,6 +17,8 @@ A Chart contains a collection of Series objects, which are in SeriesSource prope
 Series type is defined by ChartStyle enumeration below.
 
 Although a series collection can contain an unlimited amount of series, several chart styles will display only one series at a time, i.e. the very first series in the collection. Such styles are SolidPie, SlicedPie, Doughnut, Waterfall, Funnel, HighLowClose, OpenHighLowClose.
+
+By setting AllowSeriesHide property to true, you can hide/show individual series (or values for chart types SolidPie, SlicedPie, Doughnut).
 
 The example below shows how to create and use ag.WPF.Chart.
 
