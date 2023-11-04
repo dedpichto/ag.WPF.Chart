@@ -206,6 +206,7 @@ namespace ag.WPF.Chart
             if (!autoAdjust.In(AutoAdjustmentMode.Both, AutoAdjustmentMode.Vertical))
                 return radius / maxY;
             var centerPoint = new Point(centerX, radius);
+
             var (_, _, _, _, _, units, _) = GetMeasures(
                chartStyle,
                series,
@@ -336,13 +337,14 @@ namespace ag.WPF.Chart
 
         private static (double max, double min, int linesCount, double stepSize, double stepLength, double units, ZeroPoint zeroPoint) getMeasuresForNegative(double min, int linesCount, double radius, double fontHeight, int fractionPower, ZeroPoint zeroPoint)
         {
-            if (min < double.Epsilon || radius <= 0)
-                return (0, 0, 1, 1, 1, 1, default);
             var stepSize = 0.0;
             var stepLength = 0.0;
             var units = 0.0;
 
             var originalMin = Math.Abs(min);
+
+            if (originalMin < double.Epsilon || radius <= 0)
+                return (0, 0, 1, 1, 1, 1, default);
 
             // round min to prevous integer
             min = originalMin > 1 ? Math.Floor(min) : transformSmallFractionalNumber(min);

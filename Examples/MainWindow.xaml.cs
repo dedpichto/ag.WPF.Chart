@@ -29,7 +29,7 @@ namespace Examples
 
         public List<double[]> AllSeries = new List<double[]>
         {
-            new double [] { 327, 20, 210, 27, 17, 37, 89, 56, -1324 },
+            new double [] { -327, -20, -210, -27, -17, -37, -89, -56, -1324 },
             new double []{ 30, 115, 175, 593, 37 },
             new double[]{ 60, 128.3, 37 },
             new double[]{ 1, 8.3, 72, 90, 130, -23, -12, -13, -14, -121  },
