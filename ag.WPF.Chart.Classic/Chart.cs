@@ -777,6 +777,15 @@ namespace ag.WPF.Chart
 
                         break;
                     }
+                case NotifyCollectionChangedAction.Reset:
+                    {
+                        for (var i = 0; i < PredefinedMainBrushes.Length; i++)
+                            PredefinedMainBrushes[i].Counter = 0;
+                        for (var i = 0; i < PredefinedSecondaryBrushes.Length; i++)
+                            PredefinedSecondaryBrushes[i].Counter = 0;
+                        LegendsCollection.Clear();
+                        break;
+                    }
             }
         }
 
