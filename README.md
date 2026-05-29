@@ -133,43 +133,43 @@ chTest.SeriesItems.Add(new OpenHighLowCloseSeries("Stocks 1", new[] {
 
 Specifies chart style
 
-Field|Value|Description
-------|-----|-----------
-Lines|0|The style represented by straight lines
-StackedLines|1|The style represented by straight stacked lines
-FullStackedLines|2|The style represented by straight 100% stacked lines
-SmoothLines|3|The style represented by smooth lines
-SmoothStackedLines|4|The style represented by smooth stacked lines
-SmoothFullStackedLines|5|The style represented by smooth 100% stacked lines
-LinesWithMarkers|6|The style represented by straight lines with markers at control points
-StackedLinesWithMarkers|7|The style represented by straight stacked lines with markers at control points
-FullStackedLinesWithMarkers|8|The style represented by straight 100% stacked lines with markers at control points
-SmoothLinesWithMarkers|9|The style represented by smooth lines with markers at control points
-SmoothStackedLinesWithMarkers|10|The style represented by smooth stacked lines with markers at control points
-SmoothFullStackedLinesWithMarkers|11|The style represented by smooth 100% stacked lines with markers at control points
-Columns|12|The style represented by columns
-StackedColumns|13|The style represented by stacked columns
-FullStackedColumns|14|The style represented by 100% stacked columns
-Bars|15|The style represented by bars
-StackedBars|16|The style represented by stacked bars
-FullStackedBars|17|The style represented by 100% stacked bars
-Area|18|The style represented by areas
-StackedArea|19|The style represented by stacked areas
-FullStackedArea|20|The style represented by 100% stacked areas
-SmoothArea|21|The style represented by smooth areas
-SmoothStackedArea|22|The style represented by smooth stacked areas
-SmoothFullStackedArea|23|The style represented by 100% smooth stacked areas
-Bubbles|24|The style represented by bubbles
-SolidPie|25|The style represented by solid sectors
-SlicedPie|26|The style represented by sectors divided with thin lines
-Doughnut|27|The style represented by solid arcs
-Waterfall|28|The style represented by cumulated effect of positive and negative values
-Radar|29|The style represented by radar
-RadarWithMarkers|30|The style represented by radar with markers at control points
-RadarArea|31|The style represented by radar areas
-Funnel|32|The style represented by funnel
-HighLowClose|33|The stock style represented by high, low, and close prices
-OpenHighLowClose|34|The stock style represented by open, high, low, and close prices
+| Field | Value | Description |
+|-------|-------|-------------|
+| Lines | 0 | The style represented by straight lines |
+| StackedLines | 1 | The style represented by straight stacked lines |
+| FullStackedLines | 2 | The style represented by straight 100% stacked lines |
+| SmoothLines | 3 | The style represented by smooth lines |
+| SmoothStackedLines | 4 | The style represented by smooth stacked lines |
+| SmoothFullStackedLines | 5 | The style represented by smooth 100% stacked lines |
+| LinesWithMarkers | 6 | The style represented by straight lines with markers at control points |
+| StackedLinesWithMarkers | 7 | The style represented by straight stacked lines with markers at control points |
+| FullStackedLinesWithMarkers | 8 | The style represented by straight 100% stacked lines with markers at control points |
+| SmoothLinesWithMarkers | 9 | The style represented by smooth lines with markers at control points |
+| SmoothStackedLinesWithMarkers | 10 | The style represented by smooth stacked lines with markers at control points |
+| SmoothFullStackedLinesWithMarkers | 11 | The style represented by smooth 100% stacked lines with markers at control points |
+| Columns | 12 | The style represented by columns |
+| StackedColumns | 13 | The style represented by stacked columns |
+| FullStackedColumns | 14 | The style represented by 100% stacked columns |
+| Bars | 15 | The style represented by bars |
+| StackedBars | 16 | The style represented by stacked bars |
+| FullStackedBars | 17 | The style represented by 100% stacked bars |
+| Area | 18 | The style represented by areas |
+| StackedArea | 19 | The style represented by stacked areas |
+| FullStackedArea | 20 | The style represented by 100% stacked areas |
+| SmoothArea | 21 | The style represented by smooth areas |
+| SmoothStackedArea | 22 | The style represented by smooth stacked areas |
+| SmoothFullStackedArea | 23 | The style represented by 100% smooth stacked areas |
+| Bubbles | 24 | The style represented by bubbles |
+| SolidPie | 25 | The style represented by solid sectors |
+| SlicedPie | 26 | The style represented by sectors divided with thin lines |
+| Doughnut | 27 | The style represented by solid arcs |
+| Waterfall | 28 | The style represented by cumulated effect of positive and negative values |
+| Radar | 29 | The style represented by radar |
+| RadarWithMarkers | 30 | The style represented by radar with markers at control points |
+| RadarArea | 31 | The style represented by radar areas |
+| Funnel | 32 | The style represented by funnel |
+| HighLowClose |33|The stock style represented by high, low, and close prices |
+| OpenHighLowClose |34|The stock style represented by open, high, low, and close prices |
 
 ### LegendAlignment
 
@@ -207,36 +207,35 @@ Both|3|Both horizontal and vertical values are auto-adjusted (default)
 ### LegendSize
 
 Specifies size of legend
-Field|Value|Description
-------|-----|-----------
-ExtraSmall|16|16x16 size (default)
-Small|24|24x24 size
-Menium|32|32x32 size
-Large|48|48x48 size
-ExtraLarge|64|64x64 size
+
+|Field|Value|Description|
+|------|-----|-----------|
+|ExtraSmall|16|16x16 size (default)|
+|Small|24|24x24 size|
+|Menium|32|32x32 size|
+|Large|48|48x48 size|
+|ExtraLarge|64|64x64 size|
 
 ### ShapeStyle
 
 Specifies shape of legend
 
-Field|Value|Description
-------|-----|-----------
-Rectangle|0|Rectanglular shape (default)
-Circle|1|Circular shape
-Star5|2|Star shape with five rays
-Star6|3|Star shape with six rays
-Star8|4|Star shape with eight rays
+|Field|Value|Description|
+|------|-----|-----------|
+|Rectangle|0|Rectanglular shape (default)|
+|Circle|1|Circular shape|
+|Star5|2|Star shape with five rays|
+|Star6|3|Star shape with six rays|
+|Star8|4|Star shape with eight rays|
 
 ### ChartBoundary
 
 Specifies chart boundary
 
-Field|Value|Description
-------|-----|-----------
-OnAxes|0|Chart boundary starts on y-axes
-WithOffset|1|Chart boundary starts with offset from y-axes (default)
-
-<hr />
+|Field|Value|Description|
+|------|-----|-----------|
+|OnAxes|0|Chart boundary starts on y-axes|
+|WithOffset|1|Chart boundary starts with offset from y-axes (default)|
 
 ## Chart class
 
@@ -244,21 +243,21 @@ Represents a custom control containing series, axes, legends and other hosted co
 
 ### Dependency properties
 
-Property|Type|Description|Category
-------|-----|-----------|---------
-AllowSeriesHide|bool|Specifies whether chrat series can be hidden|ChartAppearance
-LegendsOpenHighLowClose|IEnumerable&lt;string&gt;|Gets or sets the collection of custom legend text when ChartStyle is set to OpenHighLowClose|ChartLegend
-LegendsHighLowClose|IEnumerable&lt;string&gt;|Gets or sets the collection of custom legend text when ChartStyle is set to HighLowClose|ChartLegend
-LegendsWaterfall|IEnumerable&lt;string&gt;|Gets or sets the collection of custom legend text when ChartStyle is set to Waterfall|ChartLegend
-LegendFontFamily|FontFamily|ets or sets the chart legend's font family|ChartLegend
-LegendFontWeight|FontWeight|Gets or sets the chart legend's font wweight|ChartLegend
-LegendFontStyle|FontStyle|Gets or sets the chart legend's font style|ChartLegend
-LegendFontSize|double|Gets or sets the chart legend's font size|ChartLegend
-LegendShape|ShapeStyle|Gets or sets the shape of the chart legend. Can be one of ShapeStyle enumeration members|ChartLegend
-LegendSize|LegendSize|Gets or sets the size of the chart legend. Can be one of LegendSize enumeration members|ChartLegend
-ShowLegend|bool|Specifies whether chart legends should be shown|ChartLegend
-LegendAlignment|LegendAlignment|"Gets or sets the chart legend alignment. Can be one of LegendAlignment enumeration members|ChartLegend
-SeriesSource|IEnumerable&lt;ISeries>&gt;|Gets or sets the collection of Series objects associated with chart control|ChartAppearance
+|Property|Type|Description|Category|
+|------|-----|-----------|---------|
+|AllowSeriesHide|bool|Specifies whether chrat series can be hidden|ChartAppearance|
+|LegendsOpenHighLowClose|IEnumerable&lt;string&gt;|Gets or sets the collection of custom legend text when ChartStyle is set to OpenHighLowClose|ChartLegend|
+|LegendsHighLowClose|IEnumerable&lt;string&gt;|Gets or sets the collection of custom legend text when ChartStyle is set to HighLowClose|ChartLegend|
+|LegendsWaterfall|IEnumerable&lt;string&gt;|Gets or sets the collection of custom legend text when ChartStyle is set to Waterfall|ChartLegend|
+|LegendFontFamily|FontFamily|ets or sets the chart legend's font family|ChartLegend|
+|LegendFontWeight|FontWeight|Gets or sets the chart legend's font wweight|ChartLegend|
+|LegendFontStyle|FontStyle|Gets or sets the chart legend's font style|ChartLegend|
+|LegendFontSize|double|Gets or sets the chart legend's font size|ChartLegend|
+|LegendShape|ShapeStyle|Gets or sets the shape of the chart legend. Can be one of ShapeStyle enumeration members|ChartLegend|
+|LegendSize|LegendSize|Gets or sets the size of the chart legend. Can be one of LegendSize enumeration members|ChartLegend|
+|ShowLegend|bool|Specifies whether chart legends should be shown|ChartLegend|
+|LegendAlignment|LegendAlignment|"Gets or sets the chart legend alignment. Can be one of LegendAlignment enumeration members|ChartLegend|
+|SeriesSource|IEnumerable&lt;ISeries>&gt;|Gets or sets the collection of Series objects associated with chart control|ChartAppearance|
 ChartBoundary|ChartBoundary|Specifies whether chart boundary is started on y-axes or with offfset from y-axes|ChartAppearance
 ShowTicks|AxesVisibility|Specifies whether ticks are drawn on axes. Can be one of AxesValuesVisibility enumeration members|ChartAppearance
 AutoAdjustment|AutoAdjustmentMode|Specifies whether control will automatically adjust its max x- and y- values or they should be set explicitly. Can be one of AutoAdjustmentMode enumeration members|ChartAppearance
@@ -299,11 +298,19 @@ Property|Type|Description
 ------|-----|-----------
 SeriesItems|ChartItemsCollection&lt;ISeries&gt;|Gets the collection of ISeries objects used to generate the content of the  Chart  control
 
+### Methods
+
+| Method | Description | Parameters |
+| ------ | ----------- | ---------- |
+| ClearProperties | Clears selected dependency-property local values on this Chart instance | |
+| SaveAsImage(string imageFileName) | Saves the chart as image | The full path to image file |
+
 ### Events
-Event|Description
------|-----------
-ChartPointLeftButtonDoubleClick|Occurs when chart point/column/bar is double-clicked by left mouse button
-LegendLeftButtonDoubleClick|Occurs when chart legend is double-clicked by left mouse button
+
+| Event | Description |
+| ----- | ----------- |
+| ChartPointLeftButtonDoubleClick | Occurs when chart point/column/bar is double-clicked by left mouse button |
+| LegendLeftButtonDoubleClick | Occurs when chart legend is double-clicked by left mouse button |
 
 ## Series class
 
@@ -443,14 +450,14 @@ Inherits IChartCompositeValue interface. Represnts values for various chart type
 
 ### Dependency properties
 
-Property|Type|Description
-------|-----|-----------
-PlainValue|double|Gets or sets PlainValue
-OpenValue|double|Gets or sets OpenValue
-CloseValue|double|Gets or sets CloseValue
-HighValue|double|Gets or sets HighValue
-LowValue|double|Gets or sets LowValue
-VolumeValue|double|Gets or sets VolumeValue
+|Property|Type|Description|
+|------|-----|-----------|
+|PlainValue|double|Gets or sets PlainValue|
+|OpenValue|double|Gets or sets OpenValue|
+|CloseValue|double|Gets or sets CloseValue|
+|HighValue|double|Gets or sets HighValue|
+|LowValue|double|Gets or sets LowValue|
+|VolumeValue|double|Gets or sets VolumeValue|
 
 ## ChartValue class
 
@@ -458,21 +465,22 @@ Inherits IChartValue interface. Represents the basic abstract class of chart val
 
 ### Dependency properties
 
-Property|Type|Description
-------|-----|-----------
-CompositeValue|IChartCompositeValue|Gets or sets current numeric values
+|Property|Type|Description|
+|------|-----|-----------|
+|CompositeValue|IChartCompositeValue|Gets or sets current numeric values|
 
 ### Properties
-Property|Type|Description
-------|-----|-----------
-CustomValue|string|Gets or sets custom value to be displayed as chart point tooltip
+
+|Property|Type|Description|
+|------|-----|-----------|
+|CustomValue|string|Gets or sets custom value to be displayed as chart point tooltip|
 
 ### Methods
 
-Method|Return value|Description|Remarks
-------|------------|-----------|-----------
-Clone|IChartValue|Creates copy of current IChartValue object|
-IsVisible|bool|Gets or sets value visibility|This property is affected only SolidPie, SlicedPie, Doughnut styles
+|Method|Return value|Description|Remarks|
+|------|------------|-----------|-----------|
+|Clone|IChartValue|Creates copy of current IChartValue object|
+|IsVisible|bool|Gets or sets value visibility|This property is affected only SolidPie, SlicedPie, Doughnut styles|
 
 ## PlainChartValue class
 
@@ -533,4 +541,3 @@ public OpenHighLowCloseChartValue(double openValue, double highValue, double low
 ```
 
 Initializes a new instance of OpenHighLowCloseChartValue object, using given open, high, low and close values
-
