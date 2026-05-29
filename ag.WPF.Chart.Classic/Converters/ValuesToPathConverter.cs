@@ -260,17 +260,17 @@ namespace ag.WPF.Chart.Converters
                 case Directions.NorthEast:
                     centerX = Utils.AXIS_THICKNESS + boundOffset;
                     centerY = height - Utils.AXIS_THICKNESS;
-                    stepX = (width - 2 * Utils.AXIS_THICKNESS - 2 * boundOffset) / delimeter;
+                    stepX = (width - 2 * boundOffset) / delimeter;
                     break;
                 case Directions.NorthEastSouthEast:
                     centerX = Utils.AXIS_THICKNESS + boundOffset;
                     centerY = height / 2;
-                    stepX = (width - 2 * Utils.AXIS_THICKNESS - 2 * boundOffset) / delimeter;
+                    stepX = (width - 2 * boundOffset) / delimeter;
                     break;
                 case Directions.SouthEast:
                     centerX = Utils.AXIS_THICKNESS + boundOffset;
                     centerY = Utils.AXIS_THICKNESS;
-                    stepX = (width - 2 * Utils.AXIS_THICKNESS - 2 * boundOffset) / delimeter;
+                    stepX = (width - 2 * boundOffset) / delimeter;
                     break;
                 default:
                     return null;
@@ -350,17 +350,17 @@ namespace ag.WPF.Chart.Converters
                 case Directions.NorthEast:
                     centerX = Utils.AXIS_THICKNESS + boundOffset;
                     centerY = height - Utils.AXIS_THICKNESS;
-                    stepX = (width - 2 * Utils.AXIS_THICKNESS - 2 * boundOffset) / delimeter;
+                    stepX = (width - 2 * boundOffset) / delimeter;
                     break;
                 case Directions.NorthEastSouthEast:
                     centerX = Utils.AXIS_THICKNESS + boundOffset;
                     centerY = height / 2;
-                    stepX = (width - 2 * Utils.AXIS_THICKNESS - 2 * boundOffset) / delimeter;
+                    stepX = (width - 2 * boundOffset) / delimeter;
                     break;
                 case Directions.SouthEast:
                     centerX = Utils.AXIS_THICKNESS + boundOffset;
                     centerY = Utils.AXIS_THICKNESS;
-                    stepX = (width - 2 * Utils.AXIS_THICKNESS - 2 * boundOffset) / delimeter;
+                    stepX = (width - 2 * boundOffset) / delimeter;
                     break;
                 default:
                     return null;
@@ -1230,7 +1230,9 @@ namespace ag.WPF.Chart.Converters
             {
                 case Directions.NorthEast:
                     centerY = height - Utils.AXIS_THICKNESS;
-                    stepX = offsetBoundary ? (width - 2 * Utils.AXIS_THICKNESS - 2 * boundOffset) / delimeter : (width - 2 * Utils.AXIS_THICKNESS) / delimeter;
+                    stepX = offsetBoundary 
+                        ? (width - 2 * boundOffset) / delimeter 
+                        : (width - 2 * Utils.AXIS_THICKNESS) / delimeter;
                     stepY = height - 2 * Utils.AXIS_THICKNESS;
                     break;
                 case Directions.NorthEastNorthWest:
@@ -1240,12 +1242,16 @@ namespace ag.WPF.Chart.Converters
                     break;
                 case Directions.NorthEastSouthEast:
                     centerY = height / 2;
-                    stepX = offsetBoundary ? (width - 2 * Utils.AXIS_THICKNESS - 2 * boundOffset) / delimeter : (width - 2 * Utils.AXIS_THICKNESS) / delimeter;
+                    stepX = offsetBoundary 
+                        ? (width - 2 * boundOffset) / delimeter 
+                        : (width - 2 * Utils.AXIS_THICKNESS) / delimeter;
                     stepY = (height - 2 * Utils.AXIS_THICKNESS) / 2;
                     break;
                 case Directions.SouthEast:
                     centerY = Utils.AXIS_THICKNESS;
-                    stepX = offsetBoundary ? (width - 2 * Utils.AXIS_THICKNESS - 2 * boundOffset) / delimeter : (width - 2 * Utils.AXIS_THICKNESS) / delimeter;
+                    stepX = offsetBoundary 
+                        ? (width - 2 * boundOffset) / delimeter 
+                        : (width - 2 * Utils.AXIS_THICKNESS) / delimeter;
                     stepY = height - 2 * Utils.AXIS_THICKNESS;
                     break;
                 case Directions.NorthWest:
@@ -1465,7 +1471,9 @@ namespace ag.WPF.Chart.Converters
                 case Directions.NorthEast:
                     centerX = Utils.AXIS_THICKNESS + boundOffset;
                     centerY = height - Utils.AXIS_THICKNESS;
-                    stepX = offsetBoundary ? (width - 2 * Utils.AXIS_THICKNESS - 2 * boundOffset) / delimeter : (width - 2 * Utils.AXIS_THICKNESS) / delimeter;
+                    stepX = offsetBoundary 
+                        ? (width - 2 * boundOffset) / delimeter 
+                        : (width - 2 * Utils.AXIS_THICKNESS) / delimeter;
                     break;
                 case Directions.NorthEastNorthWest:
                     centerX = width / 2;
@@ -1475,12 +1483,16 @@ namespace ag.WPF.Chart.Converters
                 case Directions.NorthEastSouthEast:
                     centerX = Utils.AXIS_THICKNESS + boundOffset;
                     centerY = height / 2;
-                    stepX = offsetBoundary ? (width - 2 * Utils.AXIS_THICKNESS - 2 * boundOffset) / delimeter : (width - 2 * Utils.AXIS_THICKNESS) / delimeter;
+                    stepX = offsetBoundary 
+                        ? (width - 2 * boundOffset) / delimeter 
+                        : (width - 2 * Utils.AXIS_THICKNESS) / delimeter;
                     break;
                 case Directions.SouthEast:
                     centerX = Utils.AXIS_THICKNESS + boundOffset;
                     centerY = Utils.AXIS_THICKNESS;
-                    stepX = offsetBoundary ? (width - 2 * Utils.AXIS_THICKNESS - 2 * boundOffset) / delimeter : (width - 2 * Utils.AXIS_THICKNESS) / delimeter;
+                    stepX = offsetBoundary 
+                        ? (width - 2 * boundOffset) / delimeter 
+                        : (width - 2 * Utils.AXIS_THICKNESS) / delimeter;
                     break;
                 case Directions.NorthWest:
                     centerX = width - Utils.AXIS_THICKNESS;
@@ -1598,7 +1610,8 @@ namespace ag.WPF.Chart.Converters
                     centerX = Utils.AXIS_THICKNESS + boundOffset;
                     centerY = height - Utils.AXIS_THICKNESS;
                     stepX = offsetBoundary
-                        ? (width - 2 * Utils.AXIS_THICKNESS - 2 * boundOffset) / delimeter
+                        //? (width - 2 * Utils.AXIS_THICKNESS - 2 * boundOffset) / delimeter
+                        ? (width - 2 * boundOffset) / delimeter
                         : (width - 2 * Utils.AXIS_THICKNESS) / delimeter;
                     break;
                 case Directions.NorthEastNorthWest:
@@ -1610,13 +1623,15 @@ namespace ag.WPF.Chart.Converters
                     centerX = Utils.AXIS_THICKNESS + boundOffset;
                     centerY = height / 2;
                     stepX = offsetBoundary
-                        ? (width - 2 * Utils.AXIS_THICKNESS - 2 * boundOffset) / delimeter
+                        ? (width - 2 * boundOffset) / delimeter
                         : (width - 2 * Utils.AXIS_THICKNESS) / delimeter;
                     break;
                 case Directions.SouthEast:
                     centerX = Utils.AXIS_THICKNESS + boundOffset;
                     centerY = Utils.AXIS_THICKNESS;
-                    stepX = offsetBoundary ? (width - 2 * Utils.AXIS_THICKNESS - 2 * boundOffset) / delimeter : (width - 2 * Utils.AXIS_THICKNESS) / delimeter;
+                    stepX = offsetBoundary 
+                        ? (width - 2 * boundOffset) / delimeter 
+                        : (width - 2 * Utils.AXIS_THICKNESS) / delimeter;
                     break;
                 case Directions.NorthWest:
                     centerX = width - Utils.AXIS_THICKNESS;
@@ -1712,7 +1727,9 @@ namespace ag.WPF.Chart.Converters
                 case Directions.NorthEast:
                     centerX = Utils.AXIS_THICKNESS + boundOffset;
                     centerY = height - Utils.AXIS_THICKNESS;
-                    stepX = offsetBoundary ? (width - 2 * Utils.AXIS_THICKNESS - 2 * boundOffset) / delimeter : (width - 2 * Utils.AXIS_THICKNESS) / delimeter;
+                    stepX = offsetBoundary 
+                        ? (width - 2 * boundOffset) / delimeter 
+                        : (width - 2 * Utils.AXIS_THICKNESS) / delimeter;
                     break;
                 case Directions.NorthEastNorthWest:
                     centerX = width / 2;
@@ -1722,12 +1739,16 @@ namespace ag.WPF.Chart.Converters
                 case Directions.NorthEastSouthEast:
                     centerX = Utils.AXIS_THICKNESS + boundOffset;
                     centerY = height / 2;
-                    stepX = offsetBoundary ? (width - 2 * Utils.AXIS_THICKNESS - 2 * boundOffset) / delimeter : (width - 2 * Utils.AXIS_THICKNESS) / delimeter;
+                    stepX = offsetBoundary 
+                        ? (width - 2 * boundOffset) / delimeter
+                        : (width - 2 * Utils.AXIS_THICKNESS) / delimeter;
                     break;
                 case Directions.SouthEast:
                     centerX = Utils.AXIS_THICKNESS + boundOffset;
                     centerY = Utils.AXIS_THICKNESS;
-                    stepX = offsetBoundary ? (width - 2 * Utils.AXIS_THICKNESS - 2 * boundOffset) / delimeter : (width - 2 * Utils.AXIS_THICKNESS) / delimeter;
+                    stepX = offsetBoundary 
+                        ? (width - 2 * boundOffset) / delimeter 
+                        : (width - 2 * Utils.AXIS_THICKNESS) / delimeter;
                     break;
                 case Directions.NorthWest:
                     centerX = width - Utils.AXIS_THICKNESS;

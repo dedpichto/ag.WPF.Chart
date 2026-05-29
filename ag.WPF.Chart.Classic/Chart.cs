@@ -2050,6 +2050,75 @@ namespace ag.WPF.Chart
 
         #region Public methods
         /// <summary>
+        /// Clears selected dependency-property local values on this <see cref="Chart"/> instance.
+        /// The method calls <see cref="DependencyObject.ClearValue(DependencyProperty)"/> explicitly for each property (no reflection, no loop)
+        /// so you can control exactly which properties are reset on this instance.
+        /// </summary>
+        /// <remarks>
+        /// - Clearing a dependency property removes its local value and any local binding on this control instance.
+        /// - This method does not alter default metadata values or values inherited from styles/themes.
+        /// - After calling this method you may need to call update routines (for example <c>updateBindings()</c> or visual refresh helpers)
+        ///   if you want the control to immediately reflect the cleared state.
+        /// </remarks>
+        public void ClearProperties()
+        {
+            // Title properties
+            ClearValue(TitleProperty);
+            ClearValue(TitleFontFamilyProperty);
+            ClearValue(TitleFontWeightProperty);
+            ClearValue(TitleFontStyleProperty);
+            ClearValue(TitleFontSizeProperty);
+            ClearValue(TitleFontStretchProperty);
+
+            // Legend properties
+            ClearValue(LegendFontFamilyProperty);
+            ClearValue(LegendFontWeightProperty);
+            ClearValue(LegendFontStyleProperty);
+            ClearValue(LegendFontSizeProperty);
+            ClearValue(LegendAlignmentProperty);
+            ClearValue(LegendSizeProperty);
+            ClearValue(LegendShapeProperty);
+            ClearValue(ShowLegendProperty);
+
+            // Axes properties
+            ClearValue(AxesFontFamilyProperty);
+            ClearValue(AxesFontWeightProperty);
+            ClearValue(AxesFontSizeProperty);
+            ClearValue(AxesFontStyleProperty);
+            ClearValue(AxesFontStretchProperty);
+            ClearValue(AxisTitleXProperty);
+            ClearValue(AxisTitleYProperty);
+            ClearValue(AxesValuesVisibilityProperty);
+            ClearValue(AxesLinesVisibilityProperty);
+            ClearValue(SecondaryLinesVisibilityProperty);
+            ClearValue(VerticalAxisValuesFormatProperty);
+            ClearValue(ValuesFormatX);
+            ClearValue(PiePercentsFormatProperty);
+            ClearValue(CustomValuesXProperty);
+            ClearValue(CustomValuesYProperty);
+
+            // Misc properties
+            ClearValue(AllowSeriesHideProperty);
+            ClearValue(MarkerShapeProperty);
+            ClearValue(SectionsXProperty);
+            ClearValue(SectionsYProperty);
+            ClearValue(ShowValuesOnBarsAndColumnsProperty);
+            ClearValue(ChartStyleProperty);
+            ClearValue(ChartOpacityProperty);
+            ClearValue(MaxXProperty);
+            ClearValue(MaxYProperty);
+            ClearValue(LineThicknessProperty);
+            ClearValue(AutoAdjustmentProperty);
+            ClearValue(ShowTicksProperty);
+            ClearValue(ChartBoundaryProperty);
+
+            // Attached / collection properties
+            //ClearValue(LegendsWaterfallProperty);
+            //ClearValue(LegendsHighLowCloseProperty);
+            //ClearValue(LegendsOpenHighLowCloseProperty);
+            //ClearValue(SeriesSourceProperty);
+        }
+        /// <summary>
         /// Saves the chart as image
         /// </summary>
         /// <param name="imageFileName">The full path to image file</param>
