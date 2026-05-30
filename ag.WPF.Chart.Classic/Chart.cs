@@ -2001,7 +2001,7 @@ namespace ag.WPF.Chart
         /// Gets the collection of <see cref="ISeries"/> objects used to generate the content of the <see cref="Chart"/> control.
         /// </summary>
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Content)]
-        [EditorBrowsable(EditorBrowsableState.Never), Bindable(false)]
+        [EditorBrowsable(EditorBrowsableState.Advanced), Bindable(false)]
         public ChartItemsCollection<ISeries> SeriesItems
         {
             get

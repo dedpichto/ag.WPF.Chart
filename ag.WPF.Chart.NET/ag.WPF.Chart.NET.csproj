@@ -9,12 +9,12 @@
     <RootNamespace>ag.WPF.Chart</RootNamespace>
     <Authors>Andrey Gruber</Authors>
     <Description>Custom WPF control , containing series, axes, legends, and other hosted content.</Description>
-    <Copyright>© Andrey Gruber 2022-2023</Copyright>
+    <Copyright>© Andrey Gruber 2022-2026</Copyright>
     <PackageProjectUrl>https://github.com/dedpichto/ag.WPF.Chart</PackageProjectUrl>
     <RepositoryUrl>https://github.com/dedpichto/ag.WPF.Chart</RepositoryUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <DebugType>none</DebugType>
-    <Version>1.1.3</Version>
+    <Version>1.1.4</Version>
   </PropertyGroup>
 
   <ItemGroup>
