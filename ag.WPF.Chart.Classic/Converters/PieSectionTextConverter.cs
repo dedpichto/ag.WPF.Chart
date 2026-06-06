@@ -32,7 +32,7 @@ namespace ag.WPF.Chart.Converters
             var perc = Math.Abs(chartValue.CompositeValue.PlainValue) / (sum != 0 ? sum : 1) * 100;
             var sectorData = $"{chartValue.CompositeValue.PlainValue.ToString(culture)} ({perc.ToString(format, culture)}%)";
             if (!string.IsNullOrEmpty(chartValue.CustomValue))
-                sectorData += $" {chartValue.CustomValue}";
+                sectorData = $"{chartValue.CustomValue} {sectorData}";
             return sectorData;
         }
 
